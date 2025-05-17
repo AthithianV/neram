@@ -1,4 +1,3 @@
-// src/components/sidebar.tsx
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -16,6 +15,8 @@ import {
   Cloud,
 } from "lucide-react";
 
+import NeramLogo from "@/assets/logo.svg";
+
 const links = [
   { to: "/", icon: Home, label: "Dashboard" },
   { to: "/focus", icon: Timer, label: "Focus Mode" },
@@ -28,7 +29,10 @@ const links = [
 export function Sidebar() {
   return (
     <aside className="h-screen w-60 shrink-0 border-r bg-background p-4">
-      <div className="mb-6 text-lg font-semibold">⌛ Neram</div>
+      <div className="text-lg font-semibold flex gap-2 items-center justify-center border-b-2 border-gray-100 pb-2 mb-2">
+        <img src={NeramLogo} alt="Neram Logo" className="h-8 w-8 rounded-md" />
+        <h1>Neram</h1>
+      </div>
       <NavigationMenu
         orientation="vertical"
         className="flex-1 max-w-full w-full items-start [&>div]:w-full"
