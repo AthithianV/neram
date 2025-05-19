@@ -20,8 +20,8 @@ import NeramLogo from "@/assets/logo.svg";
 const links = [
   { to: "/", icon: Home, label: "Dashboard" },
   { to: "/focus", icon: Timer, label: "Focus Mode" },
+  { to: "/tasks-tags", icon: FolderGit2, label: "Tasks/Tags" },
   { to: "/analytics", icon: BarChart2, label: "Analytics" },
-  { to: "/tasks", icon: FolderGit2, label: "Tasks" },
   { to: "/cloud-sync", icon: Cloud, label: "Cloud Sync" },
   { to: "/settings", icon: Settings, label: "Settings" },
 ];
