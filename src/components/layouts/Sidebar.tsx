@@ -15,7 +15,8 @@ import {
   Cloud,
 } from "lucide-react";
 
-import NeramLogo from "@/assets/logo.svg";
+import NeramLogo from "@/assets/logo.png";
+import { Separator } from "../ui/separator";
 
 const links = [
   { to: "/", icon: Home, label: "Dashboard" },
@@ -29,10 +30,11 @@ const links = [
 export function Sidebar() {
   return (
     <aside className="h-screen w-60 shrink-0 border-r bg-background p-4">
-      <div className="text-lg font-semibold flex gap-2 items-center justify-center border-b-2 border-gray-100 pb-2 mb-2">
+      <div className="text-lg font-semibold flex gap-2 items-center justify-center mb-4">
         <img src={NeramLogo} alt="Neram Logo" className="h-8 w-8 rounded-md" />
         <h1>Neram</h1>
       </div>
+      <Separator className="my-2" />
       <NavigationMenu
         orientation="vertical"
         className="flex-1 max-w-full w-full items-start [&>div]:w-full"

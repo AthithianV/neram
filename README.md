@@ -9,3 +9,6 @@
 5. clsx
 6. lucide-react (icon)
 7. shadcn
+
+#100d28
+#ff00e2
