@@ -15,11 +15,12 @@ import {
 
 import { SIDEBAR_BODY_LINKS, SIDEBAR_FOOTER_LINKS } from "@/constants/sidebar";
 import Brand from "../Brand";
+import NeramLogo from "@/assets/logo.png";
 import { Separator } from "../ui/separator";
 
 const NeramSidebar = () => {
   return (
-    <SidebarProvider>
+    <SidebarProvider className="w-fit">
       <Sidebar collapsible="icon">
         {/* Header */}
         <NeramSidebarHeader />
@@ -77,7 +78,15 @@ const NeramSidebarHeader = () => {
             open ? "flex-row" : "flex-col"
           } flex gap-2 px-2 justify-between items-center`}
         >
-          <Brand collapse={open} />
+          {open ? (
+            <Brand />
+          ) : (
+            <img
+              src={NeramLogo}
+              alt="Neram Logo"
+              className="h-4 w-4 rounded-md"
+            />
+          )}
           <SidebarTrigger />
         </SidebarMenuItem>
       </SidebarMenu>
