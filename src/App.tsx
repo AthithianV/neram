@@ -8,7 +8,6 @@ import { AppLayout } from "./components/layouts/AppLayout";
 
 // Components
 import Analytics from "./pages/Analytics.tsx";
-import Dashboard from "./pages/TimeTracking.tsx";
 import Focus from "./pages/Focus.tsx";
 import CloudSync from "./pages/CloudSync.tsx";
 import Settings from "./pages/Settings.tsx";

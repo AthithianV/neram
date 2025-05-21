@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -5,26 +6,25 @@ import {
   DialogContent,
   DialogTitle,
   DialogHeader,
-  DialogFooter,
-  DialogDescription,
 } from "../ui/dialog";
 
-const DialogFormWrapper = ({ name }: { name: string }) => {
+const DialogFormWrapper = ({
+  name,
+  children,
+}: {
+  name: string;
+  children: ReactNode;
+}) => {
   return (
     <Dialog>
-      <DialogTrigger>
-        <Button type="button">{name}</Button>
+      <DialogTrigger asChild>
+        <Button>{name}</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Are you absolutely sure?</DialogTitle>
-          <DialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
-          </DialogDescription>
+          <DialogTitle>{name}</DialogTitle>
         </DialogHeader>
-        <div></div>
-        <DialogFooter></DialogFooter>
+        {children}
       </DialogContent>
     </Dialog>
   );
