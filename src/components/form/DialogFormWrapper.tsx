@@ -24,10 +24,8 @@ const DialogFormWrapper = ({
         <DialogHeader>
           <DialogTitle>{name}</DialogTitle>
         </DialogHeader>
-        <div className="max-h-[500px] overflow-y-auto hide-scrollbar">
-          <div className="bg-gradient-to-t from-white to-transparent">
-            {children}
-          </div>
+        <div className="max-h-[75vh] overflow-y-auto custom-scrollbar p-2">
+          {children}
         </div>
       </DialogContent>
     </Dialog>

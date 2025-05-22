@@ -2,15 +2,27 @@ import { useEffect, useState } from "react";
 import ComboboxInput from "./ComboxInput";
 
 const TimeElement = ({
+  value,
   setValue,
   withAmPm = true,
 }: {
+  value: string | number;
   setValue: (val: string) => void;
   withAmPm?: boolean;
 }) => {
-  const [hour, setHour] = useState("");
-  const [minute, setMinute] = useState("");
-  const [ampm, setAmpm] = useState("am");
+  const [hour, setHour] = useState<string>(
+    typeof value === "string"
+      ? value.split(":")[0].padStart(2, "0")
+      : `${Math.floor(value / 3600)}`.padStart(2, "0")
+  );
+  const [minute, setMinute] = useState(
+    typeof value === "string"
+      ? value.split(":")[0].split(" ")[0].padStart(2, "0")
+      : `${Math.floor(value % 60)}`.padStart(2, "0")
+  );
+  const [ampm, setAmpm] = useState(
+    value ? (typeof value === "string" ? value.split(" ")[1] : "") : ""
+  );
 
   useEffect(() => {
     setValue(`${hour}:${minute} ${ampm}`);

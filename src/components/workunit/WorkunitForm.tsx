@@ -1,33 +1,25 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import dayjs from "dayjs";
+import { CalendarIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
-import { z } from "zod";
 import WorkunitSchema from "@/schema/WorkunitSchema";
-import dayjs from "dayjs";
 import { Textarea } from "../ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
 import SelectElement from "../form/SelectElement";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
 import { Calendar } from "../ui/calendar";
 import TimeElement from "../form/TimeElement";
 
@@ -41,9 +33,9 @@ const WorkunitForm = () => {
       description: "",
       task: "",
       date: new Date(),
-      startTime: dayjs(new Date()).subtract(1, "hour").format("HH:mm"),
-      endTime: dayjs(new Date()).format("HH:mm"),
-      duration: 60 * 60 * 1000,
+      startTime: dayjs(new Date()).subtract(1, "hour").format("HH:mm a"),
+      endTime: dayjs(new Date()).format("HH:mm a"),
+      duration: 60 * 60,
       break: 0,
       tags: [],
     },
@@ -158,6 +150,7 @@ const WorkunitForm = () => {
               <FormLabel>Start Time</FormLabel>
               <FormControl>
                 <TimeElement
+                  value={form.getValues("startTime")}
                   setValue={(val) => {
                     form.setValue("startTime", val);
                   }}
@@ -177,6 +170,7 @@ const WorkunitForm = () => {
               <FormLabel>End Time</FormLabel>
               <FormControl>
                 <TimeElement
+                  value={form.getValues("endTime")}
                   setValue={(val) => {
                     form.setValue("endTime", val);
                   }}
@@ -196,6 +190,7 @@ const WorkunitForm = () => {
               <FormLabel>Duration</FormLabel>
               <FormControl>
                 <TimeElement
+                  value={form.getValues("duration")}
                   withAmPm={false}
                   setValue={(val) => {
                     const [hours, minutes] = val.split(":");
@@ -218,6 +213,7 @@ const WorkunitForm = () => {
               <FormLabel>Break</FormLabel>
               <FormControl>
                 <TimeElement
+                  value={form.getValues("break")}
                   withAmPm={false}
                   setValue={(val) => {
                     const [hours, minutes] = val.split(":");

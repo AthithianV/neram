@@ -4,14 +4,25 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* For webkit browsers (Chrome, Edge, Safari) */
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
+/* Targeting WebKit-based browsers */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px; /* for vertical scroll */
+  height: 4px; /* for horizontal scroll */
 }
 
-.hide-scrollbar {
-  -ms-overflow-style: none; /* IE/Edge */
-  scrollbar-width: none; /* Firefox */
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  display: none;
+  border-radius: 6px;
+  border: 1px solid transparent;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  display: block;
+  background-color: rgba(100, 100, 100, 0.6);
 }
 
 @theme inline {

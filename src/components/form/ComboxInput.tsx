@@ -9,6 +9,7 @@ import {
 } from "../ui/dropdown-menu";
 import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
 
 const ComboboxInput = ({
   label,
@@ -43,13 +44,13 @@ const ComboboxInput = ({
   return (
     <DropdownMenu onOpenChange={setOpen}>
       <DropdownMenuTrigger className={cn(width)}>
-        <button ref={triggerRef} className={"w-full"}>
+        <span ref={triggerRef} className={"w-full"}>
           <Input
             value={value}
             onChange={(e) => setValue(e.target.value)}
             placeholder={placeholder}
           />
-        </button>
+        </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         className="max-h-[200px] overflow-y-auto"
