@@ -4,6 +4,16 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* For webkit browsers (Chrome, Edge, Safari) */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
 @theme inline {
   --default-font-family: Plus Jakarta Sans;
   --radius-sm: calc(var(--radius) - 4px);

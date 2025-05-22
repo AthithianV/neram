@@ -29,6 +29,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "../ui/calendar";
+import TimeElement from "../form/TimeElement";
 
 type WorkunitSchemaType = z.infer<typeof WorkunitSchema>;
 
@@ -143,6 +144,88 @@ const WorkunitForm = () => {
                   />
                 </PopoverContent>
               </Popover>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Start Time */}
+        <FormField
+          control={form.control}
+          name="startTime"
+          render={() => (
+            <FormItem>
+              <FormLabel>Start Time</FormLabel>
+              <FormControl>
+                <TimeElement
+                  setValue={(val) => {
+                    form.setValue("startTime", val);
+                  }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* End Time */}
+        <FormField
+          control={form.control}
+          name="endTime"
+          render={() => (
+            <FormItem>
+              <FormLabel>End Time</FormLabel>
+              <FormControl>
+                <TimeElement
+                  setValue={(val) => {
+                    form.setValue("endTime", val);
+                  }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Duration */}
+        <FormField
+          control={form.control}
+          name="duration"
+          render={() => (
+            <FormItem>
+              <FormLabel>Duration</FormLabel>
+              <FormControl>
+                <TimeElement
+                  withAmPm={false}
+                  setValue={(val) => {
+                    const [hours, minutes] = val.split(":");
+                    const duration = parseInt(hours) * 60 + parseInt(minutes);
+                    form.setValue("duration", duration);
+                  }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Break */}
+        <FormField
+          control={form.control}
+          name="break"
+          render={() => (
+            <FormItem>
+              <FormLabel>Break</FormLabel>
+              <FormControl>
+                <TimeElement
+                  withAmPm={false}
+                  setValue={(val) => {
+                    const [hours, minutes] = val.split(":");
+                    const duration = parseInt(hours) * 60 + parseInt(minutes);
+                    form.setValue("break", duration);
+                  }}
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
