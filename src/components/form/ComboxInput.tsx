@@ -9,7 +9,6 @@ import {
 } from "../ui/dropdown-menu";
 import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";
-import { Button } from "../ui/button";
 
 const ComboboxInput = ({
   label,
@@ -32,10 +31,6 @@ const ComboboxInput = ({
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    console.log(triggerRef);
-
-    console.log(triggerRef.current);
-
     if (open && triggerRef.current) {
       setDropdownWidth(triggerRef.current.offsetWidth);
     }

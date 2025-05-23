@@ -1,32 +1,44 @@
 import { useEffect, useState } from "react";
 import ComboboxInput from "./ComboxInput";
+import dayjs from "dayjs";
 
 const TimeElement = ({
   value,
   setValue,
-  withAmPm = true,
 }: {
-  value: string | number;
-  setValue: (val: string) => void;
-  withAmPm?: boolean;
+  value: Date;
+  setValue: (val: Date) => void;
 }) => {
   const [hour, setHour] = useState<string>(
-    typeof value === "string"
-      ? value.split(":")[0].padStart(2, "0")
-      : `${Math.floor(value / 3600)}`.padStart(2, "0")
+    value.getHours().toString().padStart(2, "0")
   );
-  const [minute, setMinute] = useState(
-    typeof value === "string"
-      ? value.split(":")[0].split(" ")[0].padStart(2, "0")
-      : `${Math.floor(value % 60)}`.padStart(2, "0")
+  const [minute, setMinute] = useState<string>(
+    value.getMinutes().toString().padStart(2, "0")
   );
-  const [ampm, setAmpm] = useState(
-    value ? (typeof value === "string" ? value.split(" ")[1] : "") : ""
-  );
+  const [ampm, setAmpm] = useState<string>(value.getHours() < 12 ? "am" : "pm");
 
+  // Update local state when value prop changes
   useEffect(() => {
-    setValue(`${hour}:${minute} ${ampm}`);
-  }, [hour, minute, ampm, setValue]);
+    setHour(value.getHours().toString().padStart(2, "0"));
+    setMinute(value.getMinutes().toString().padStart(2, "0"));
+    setAmpm(value.getHours() < 12 ? "am" : "pm");
+  }, [value]);
+
+  // Update parent value only when local state changes
+  useEffect(() => {
+    const newHour =
+      ampm === "pm" ? (Number(hour) % 12) + 12 : Number(hour) % 12;
+    const newDate = dayjs(value)
+      .hour(newHour)
+      .minute(Number(minute))
+      .second(0)
+      .millisecond(0)
+      .toDate();
+
+    if (!dayjs(newDate).isSame(value)) {
+      setValue(newDate);
+    }
+  }, [hour, minute, ampm]);
 
   const hours = Array.from({ length: 12 }, (_, i) =>
     (i + 1).toString().padStart(2, "0")
@@ -43,7 +55,7 @@ const TimeElement = ({
         setValue={setHour}
         options={hours}
         placeholder="HH"
-        width={withAmPm ? "w-3/8" : "w-1/2"}
+        width={"w-1/2"}
       />
       <span className="text-lg">:</span>
       <ComboboxInput
@@ -52,18 +64,16 @@ const TimeElement = ({
         setValue={setMinute}
         options={minutes}
         placeholder="MM"
-        width={withAmPm ? "w-3/8" : "w-1/2"}
+        width={"w-1/2"}
       />
-      {withAmPm && (
-        <ComboboxInput
-          label="AM/PM"
-          value={ampm}
-          setValue={setAmpm}
-          options={["am", "pm"]}
-          placeholder="AM/PM"
-          width={"w-2/8"}
-        />
-      )}
+      <ComboboxInput
+        label="AM/PM"
+        value={ampm}
+        setValue={setAmpm}
+        options={["am", "pm"]}
+        placeholder="AM/PM"
+        width={"w-2/8"}
+      />
     </div>
   );
 };

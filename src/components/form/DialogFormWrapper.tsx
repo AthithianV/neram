@@ -20,7 +20,7 @@ const DialogFormWrapper = ({
       <DialogTrigger asChild>
         <Button>{name}</Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="overflow-visible">
         <DialogHeader>
           <DialogTitle>{name}</DialogTitle>
         </DialogHeader>

@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import dayjs from "dayjs";
 import { CalendarIcon } from "lucide-react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,17 +16,22 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import WorkunitSchema from "@/schema/WorkunitSchema";
-import { Textarea } from "../ui/textarea";
-import SelectElement from "../form/SelectElement";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { Calendar } from "../ui/calendar";
+import { Separator } from "../ui/separator";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+
+import SelectElement from "../form/SelectElement";
 import TimeElement from "../form/TimeElement";
+import DurationElement from "../form/DurationElement";
+import WorkunitSchema from "@/schema/WorkunitSchema";
+import { Textarea } from "../ui/textarea";
 
 type WorkunitSchemaType = z.infer<typeof WorkunitSchema>;
 
 const WorkunitForm = () => {
+  const [calendarOpen, setCalendarOpen] = useState(false);
+
   const form = useForm<WorkunitSchemaType>({
     resolver: zodResolver(WorkunitSchema),
     defaultValues: {
@@ -33,8 +39,8 @@ const WorkunitForm = () => {
       description: "",
       task: "",
       date: new Date(),
-      startTime: dayjs(new Date()).subtract(1, "hour").format("HH:mm a"),
-      endTime: dayjs(new Date()).format("HH:mm a"),
+      startTime: dayjs(new Date()).subtract(1, "hour").toDate(),
+      endTime: dayjs(new Date()).toDate(),
       duration: 60 * 60,
       break: 0,
       tags: [],
@@ -79,67 +85,77 @@ const WorkunitForm = () => {
           )}
         />
 
-        {/* Task */}
-        <FormField
-          control={form.control}
-          name="task"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Task</FormLabel>
-              <FormControl>
-                <SelectElement
-                  field={field}
-                  options={[
-                    { title: "Study", value: "study" },
-                    { title: "work", value: "work" },
-                  ]}
-                  defaultOption={{ title: "Study", value: "study" }}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Date */}
-        <FormField
-          control={form.control}
-          name="date"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Date</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-full pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? (
-                        dayjs(field.value).format("DD/MM/YYYY")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={false}
+        <div className="flex gap-4 w-full">
+          {/* Task */}
+          <FormField
+            control={form.control}
+            name="task"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormLabel>Task</FormLabel>
+                <FormControl>
+                  <SelectElement
+                    field={field}
+                    options={[
+                      { title: "Study", value: "study" },
+                      { title: "work", value: "work" },
+                    ]}
+                    defaultOption={{ title: "Study", value: "study" }}
                   />
-                </PopoverContent>
-              </Popover>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Date */}
+          <FormField
+            control={form.control}
+            name="date"
+            render={({ field }) => (
+              <FormItem className="flex flex-col flex-1">
+                <FormLabel>Date</FormLabel>
+                <FormControl>
+                  <Popover
+                    open={calendarOpen}
+                    onOpenChange={setCalendarOpen}
+                    modal={false}
+                  >
+                    <PopoverTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {field.value ? (
+                          dayjs(field.value).format("DD/MM/YYYY")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent forceMount className="z-999">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={(date) => {
+                          field.onChange(date);
+                          setCalendarOpen(false);
+                        }}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         {/* Start Time */}
         <FormField
@@ -161,6 +177,8 @@ const WorkunitForm = () => {
           )}
         />
 
+        <Separator orientation="vertical" />
+
         {/* End Time */}
         <FormField
           control={form.control}
@@ -181,51 +199,49 @@ const WorkunitForm = () => {
           )}
         />
 
-        {/* Duration */}
-        <FormField
-          control={form.control}
-          name="duration"
-          render={() => (
-            <FormItem>
-              <FormLabel>Duration</FormLabel>
-              <FormControl>
-                <TimeElement
-                  value={form.getValues("duration")}
-                  withAmPm={false}
-                  setValue={(val) => {
-                    const [hours, minutes] = val.split(":");
-                    const duration = parseInt(hours) * 60 + parseInt(minutes);
-                    form.setValue("duration", duration);
-                  }}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="flex gap-4 w-full">
+          {/* Duration */}
+          <FormField
+            control={form.control}
+            name="duration"
+            render={() => (
+              <FormItem>
+                <FormLabel>Duration</FormLabel>
+                <FormControl>
+                  <DurationElement
+                    value={form.getValues("duration")}
+                    setValue={(val) => {
+                      form.setValue("duration", val);
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        {/* Break */}
-        <FormField
-          control={form.control}
-          name="break"
-          render={() => (
-            <FormItem>
-              <FormLabel>Break</FormLabel>
-              <FormControl>
-                <TimeElement
-                  value={form.getValues("break")}
-                  withAmPm={false}
-                  setValue={(val) => {
-                    const [hours, minutes] = val.split(":");
-                    const duration = parseInt(hours) * 60 + parseInt(minutes);
-                    form.setValue("break", duration);
-                  }}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <Separator orientation="vertical" />
+
+          {/* Break */}
+          <FormField
+            control={form.control}
+            name="break"
+            render={() => (
+              <FormItem>
+                <FormLabel>Break</FormLabel>
+                <FormControl>
+                  <DurationElement
+                    value={form.getValues("break")}
+                    setValue={(val) => {
+                      form.setValue("break", val);
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <Button type="submit">Submit</Button>
       </form>
