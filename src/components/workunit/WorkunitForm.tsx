@@ -21,17 +21,22 @@ import { Calendar } from "../ui/calendar";
 import { Separator } from "../ui/separator";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
-import SelectElement from "../form/SelectElement";
 import TimeElement from "../form/TimeElement";
 import DurationElement from "../form/DurationElement";
 import WorkunitSchema from "@/schema/WorkunitSchema";
 import { Textarea } from "../ui/textarea";
+import { SelectGroup, SelectContent } from "../ui/select";
+import { Select, SelectItem, SelectValue } from "../ui/select";
+import { SelectTrigger } from "../ui/select";
+
+const taskOptions = [
+  { title: "Study", value: "study" },
+  { title: "work", value: "work" },
+];
 
 type WorkunitSchemaType = z.infer<typeof WorkunitSchema>;
 
 const WorkunitForm = () => {
-  const [calendarOpen, setCalendarOpen] = useState(false);
-
   const form = useForm<WorkunitSchemaType>({
     resolver: zodResolver(WorkunitSchema),
     defaultValues: {
@@ -85,7 +90,7 @@ const WorkunitForm = () => {
           )}
         />
 
-        <div className="flex gap-4 w-full">
+        <div className="flex gap-6 w-full">
           {/* Task */}
           <FormField
             control={form.control}
@@ -94,14 +99,27 @@ const WorkunitForm = () => {
               <FormItem className="flex-1">
                 <FormLabel>Task</FormLabel>
                 <FormControl>
-                  <SelectElement
-                    field={field}
-                    options={[
-                      { title: "Study", value: "study" },
-                      { title: "work", value: "work" },
-                    ]}
-                    defaultOption={{ title: "Study", value: "study" }}
-                  />
+                  <Select
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                    }}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue
+                        placeholder="Select a Task"
+                        defaultValue={"Study"}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {taskOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.title}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -116,11 +134,7 @@ const WorkunitForm = () => {
               <FormItem className="flex flex-col flex-1">
                 <FormLabel>Date</FormLabel>
                 <FormControl>
-                  <Popover
-                    open={calendarOpen}
-                    onOpenChange={setCalendarOpen}
-                    modal={false}
-                  >
+                  <Popover>
                     <PopoverTrigger asChild>
                       <Button
                         type="button"
@@ -138,15 +152,13 @@ const WorkunitForm = () => {
                         )}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent forceMount className="z-999">
+                    <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
                         mode="single"
                         selected={field.value}
                         onSelect={(date) => {
-                          field.onChange(date);
-                          setCalendarOpen(false);
+                          if (date) field.onChange(date);
                         }}
-                        initialFocus
                       />
                     </PopoverContent>
                   </Popover>
@@ -157,93 +169,79 @@ const WorkunitForm = () => {
           />
         </div>
 
-        {/* Start Time */}
-        <FormField
-          control={form.control}
-          name="startTime"
-          render={() => (
-            <FormItem>
-              <FormLabel>Start Time</FormLabel>
-              <FormControl>
-                <TimeElement
-                  value={form.getValues("startTime")}
-                  setValue={(val) => {
-                    form.setValue("startTime", val);
-                  }}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <Separator orientation="vertical" />
-
-        {/* End Time */}
-        <FormField
-          control={form.control}
-          name="endTime"
-          render={() => (
-            <FormItem>
-              <FormLabel>End Time</FormLabel>
-              <FormControl>
-                <TimeElement
-                  value={form.getValues("endTime")}
-                  setValue={(val) => {
-                    form.setValue("endTime", val);
-                  }}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="flex gap-4 w-full">
-          {/* Duration */}
+        <div className="flex gap-6 w-full">
+          {/* Start Time */}
           <FormField
             control={form.control}
-            name="duration"
+            name="startTime"
             render={() => (
-              <FormItem>
-                <FormLabel>Duration</FormLabel>
-                <FormControl>
-                  <DurationElement
-                    value={form.getValues("duration")}
-                    setValue={(val) => {
-                      form.setValue("duration", val);
-                    }}
-                  />
-                </FormControl>
+              <FormItem className="flex-1">
+                <FormLabel>Start Time</FormLabel>
+                <TimeElement
+                  value={form.getValues("startTime")}
+                  setValue={(val) => form.setValue("startTime", val)}
+                />
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <Separator orientation="vertical" />
-
-          {/* Break */}
+          {/* End Time */}
           <FormField
             control={form.control}
-            name="break"
+            name="endTime"
             render={() => (
-              <FormItem>
-                <FormLabel>Break</FormLabel>
-                <FormControl>
-                  <DurationElement
-                    value={form.getValues("break")}
-                    setValue={(val) => {
-                      form.setValue("break", val);
-                    }}
-                  />
-                </FormControl>
+              <FormItem className="flex-1">
+                <FormLabel>End Time</FormLabel>
+                <TimeElement
+                  value={form.getValues("endTime")}
+                  setValue={(val) => form.setValue("endTime", val)}
+                />
                 <FormMessage />
               </FormItem>
             )}
           />
         </div>
 
-        <Button type="submit">Submit</Button>
+        <div className="flex gap-6 w-full">
+          {/* Start Time */}
+          <FormField
+            control={form.control}
+            name="duration"
+            render={() => (
+              <FormItem className="flex-1">
+                <FormLabel>Duration</FormLabel>
+                <DurationElement
+                  value={form.getValues("duration")}
+                  setValue={(val) => form.setValue("duration", val)}
+                />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Break */}
+          <FormField
+            control={form.control}
+            name="break"
+            render={() => (
+              <FormItem className="flex-1">
+                <FormLabel>Break</FormLabel>
+                <DurationElement
+                  value={form.getValues("break")}
+                  setValue={(val) => form.setValue("break", val)}
+                />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="flex justify-center">
+          <Button type="submit" className="cursor-pointer">
+            Submit
+          </Button>
+        </div>
       </form>
     </Form>
   );

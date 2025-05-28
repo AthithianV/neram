@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 const DurationElement = ({
   value,
@@ -27,17 +30,44 @@ const DurationElement = ({
 
   return (
     <div className="flex items-center gap-1 justify-end">
-      <Input
-        type="number"
-        value={hours}
-        onChange={(e) => setHours(e.target.value)}
-      />
-      <span className="text-lg">:</span>
-      <Input
-        type="number"
-        value={minutes}
-        onChange={(e) => setMinutes(e.target.value)}
-      />
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            type="button"
+            variant="outline"
+            role="combobox"
+            className="w-full justify-center font-normal"
+          >
+            {`${hours}:${minutes}`}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent
+          className="w-[250px] p-4 flex items-center gap-2"
+          align="center"
+          side="top"
+        >
+          <div className="flex items-center gap-2 flex-col">
+            <label htmlFor="hours">Hours</label>
+            <Input
+              type="number"
+              name="hours"
+              value={hours}
+              className="text-center"
+              onChange={(e) => setHours(e.target.value)}
+            />
+          </div>
+          <div className="flex items-center gap-2 flex-col">
+            <label htmlFor="minutes">Minutes</label>
+            <Input
+              type="number"
+              name="minutes"
+              value={minutes}
+              className="text-center"
+              onChange={(e) => setMinutes(e.target.value)}
+            />
+          </div>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 };
