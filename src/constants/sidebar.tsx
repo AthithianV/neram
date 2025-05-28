@@ -2,30 +2,30 @@ import { ListTodo, Timer, Database, Settings } from "lucide-react";
 
 export const SIDEBAR_BODY_LINKS = [
   {
-    key: "time-tracking",
-    title: "Time Tracking",
+    key: "dashboard",
+    title: "Dashboard",
     icon: <Timer size={5} />,
-    href: "time-tracking",
+    href: "/dashboard",
   },
   {
     key: "todos",
     title: "Todos",
     icon: <ListTodo size={5} />,
-    href: "todos",
+    href: "/todos",
   },
   {
     key: "data",
     title: "Data",
     icon: <Database size={5} />,
-    href: "data",
+    href: "/data",
   },
 ];
 
 export const SIDEBAR_FOOTER_LINKS = [
   {
     key: "settings",
-    title: "Setting",
+    title: "Settings",
     icon: <Settings size={5} />,
-    href: "settings",
+    href: "/settings",
   },
 ];

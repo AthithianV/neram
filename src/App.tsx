@@ -12,14 +12,16 @@ import Focus from "./pages/Focus.tsx";
 import CloudSync from "./pages/CloudSync.tsx";
 import Settings from "./pages/Settings.tsx";
 import Todo from "./pages/Todo.tsx";
-import TimeTracking from "./pages/TimeTracking.tsx";
+import Dashboard from "./pages/Dashboard.tsx";
+import TaskTag from "./pages/TaskTag.tsx";
 
 export default function App() {
   return (
     <Routes>
       <Route element={<AppLayout />}>
-        <Route path="/" element={<Navigate to="/time-tracking" />} />
-        <Route path="time-tracking" element={<TimeTracking />} />
+        <Route path="/" element={<Navigate to="/dashboard" />} />
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="task-tag" element={<TaskTag />} />
         <Route path="focus" element={<Focus />} />
         <Route path="todos" element={<Todo />} />
         <Route path="analytics" element={<Analytics />} />

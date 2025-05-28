@@ -12,13 +12,15 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-
+import { useLocation } from "react-router-dom";
 import { SIDEBAR_BODY_LINKS, SIDEBAR_FOOTER_LINKS } from "@/constants/sidebar";
 import Brand from "../Brand";
 import NeramLogo from "@/assets/logo.png";
 import { Separator } from "../ui/separator";
 
 const NeramSidebar = () => {
+  const { pathname } = useLocation();
+
   return (
     <SidebarProvider className="w-fit">
       <Sidebar collapsible="icon">
@@ -34,7 +36,13 @@ const NeramSidebar = () => {
               <SidebarMenu>
                 {SIDEBAR_BODY_LINKS.map((link) => (
                   <SidebarMenuItem key={link.title}>
-                    <SidebarMenuButton asChild>
+                    <SidebarMenuButton
+                      asChild
+                      className={`${
+                        link.key === pathname.split("/")[1] &&
+                        "bg-sidebar-accent font-semibold text-theme hover:text-theme"
+                      }`}
+                    >
                       <a href={link.href}>
                         {link.icon}
                         <span>{link.title}</span>
@@ -52,7 +60,13 @@ const NeramSidebar = () => {
           <SidebarMenu>
             {SIDEBAR_FOOTER_LINKS.map((link) => (
               <SidebarMenuItem key={link.title}>
-                <SidebarMenuButton asChild>
+                <SidebarMenuButton
+                  asChild
+                  className={`${
+                    link.key === pathname.split("/")[1] &&
+                    "bg-sidebar-accent font-semibold text-theme hover:text-theme"
+                  }`}
+                >
                   <a href={link.href}>
                     {link.icon}
                     <span>{link.title}</span>

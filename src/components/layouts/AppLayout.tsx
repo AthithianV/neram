@@ -7,7 +7,7 @@ export function AppLayout() {
     <div className="flex h-screen w-full">
       <Sidebar />
       <Toaster />
-      <main className="flex-1 bg-background text-foreground p-4 overflow-y-auto">
+      <main className="flex-1 bg-background text-foreground p-4 overflow-y-auto h-full">
         <Outlet />
       </main>
     </div>
