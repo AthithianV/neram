@@ -52,7 +52,6 @@ const WorkunitForm = () => {
   });
 
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const [taskOptionOpen, setTaskOptionOpen] = useState(false);
 
   function onSubmit(data: z.infer<typeof WorkunitSchema>) {
     toast("Work unit has been Created");

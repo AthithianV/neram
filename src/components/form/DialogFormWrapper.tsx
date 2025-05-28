@@ -23,7 +23,10 @@ const DialogFormWrapper = ({
           <Button>{name}</Button>
         </div>
       </DialogTrigger>
-      <DialogContent className="max-h-[95vh] overflow-y-auto custom-scrollbar">
+      <DialogContent
+        onPointerDownOutside={(e) => e.preventDefault()}
+        className="max-h-[95vh] overflow-y-auto custom-scrollbar"
+      >
         <DialogHeader>
           <DialogTitle>{name}</DialogTitle>
           <DialogDescription>

@@ -50,7 +50,7 @@ const TimeElement = ({ value, setValue }: TimeElementProps) => {
     }
   }, [hour, minute, period]);
 
-  const displayTime = `${hour}:${minute} ${period.toUpperCase()}`;
+  const displayTime = `${Number(hour) % 12}:${minute} ${period.toUpperCase()}`;
 
   const handleTimeSelect = (
     newHour: string,
