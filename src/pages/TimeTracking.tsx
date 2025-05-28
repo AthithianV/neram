@@ -4,8 +4,10 @@ import Workunit from "@/components/workunit";
 const TimeTracking = () => {
   return (
     <Tabs defaultValue="workunit">
-      <TabsList>
-        <TabsTrigger value="workunit">Workunit</TabsTrigger>
+      <TabsList className="w-full">
+        <TabsTrigger value="workunit" className="font-bold text-sm">
+          Workunit
+        </TabsTrigger>
         <TabsTrigger value="task">Task</TabsTrigger>
         <TabsTrigger value="tag">Tag</TabsTrigger>
       </TabsList>

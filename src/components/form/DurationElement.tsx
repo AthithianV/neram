@@ -47,7 +47,7 @@ const DurationElement = ({
           side="top"
         >
           <div className="flex items-center gap-2 flex-col">
-            <label htmlFor="hours">Hours</label>
+            <span className="text-sm font-medium">Hours</span>
             <Input
               type="number"
               name="hours"
@@ -57,7 +57,7 @@ const DurationElement = ({
             />
           </div>
           <div className="flex items-center gap-2 flex-col">
-            <label htmlFor="minutes">Minutes</label>
+            <span className="text-sm font-medium">Minutes</span>
             <Input
               type="number"
               name="minutes"

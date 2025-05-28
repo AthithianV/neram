@@ -4,7 +4,6 @@ import { toast } from "sonner";
 import { z } from "zod";
 import dayjs from "dayjs";
 import { CalendarIcon } from "lucide-react";
-import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,7 +17,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Calendar } from "../ui/calendar";
-import { Separator } from "../ui/separator";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 import TimeElement from "../form/TimeElement";
@@ -28,6 +26,7 @@ import { Textarea } from "../ui/textarea";
 import { SelectGroup, SelectContent } from "../ui/select";
 import { Select, SelectItem, SelectValue } from "../ui/select";
 import { SelectTrigger } from "../ui/select";
+import { useState } from "react";
 
 const taskOptions = [
   { title: "Study", value: "study" },
@@ -52,6 +51,9 @@ const WorkunitForm = () => {
     },
   });
 
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [taskOptionOpen, setTaskOptionOpen] = useState(false);
+
   function onSubmit(data: z.infer<typeof WorkunitSchema>) {
     toast("Work unit has been Created");
     console.log(data);
@@ -70,7 +72,7 @@ const WorkunitForm = () => {
               <FormControl>
                 <Input {...field} />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-xs" />
             </FormItem>
           )}
         />
@@ -85,7 +87,7 @@ const WorkunitForm = () => {
               <FormControl>
                 <Textarea {...field} />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-xs" />
             </FormItem>
           )}
         />
@@ -100,15 +102,11 @@ const WorkunitForm = () => {
                 <FormLabel>Task</FormLabel>
                 <FormControl>
                   <Select
-                    onValueChange={(value) => {
-                      field.onChange(value);
-                    }}
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
                   >
                     <SelectTrigger className="w-full">
-                      <SelectValue
-                        placeholder="Select a Task"
-                        defaultValue={"Study"}
-                      />
+                      <SelectValue placeholder="Select a Task" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
@@ -121,7 +119,7 @@ const WorkunitForm = () => {
                     </SelectContent>
                   </Select>
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-xs" />
               </FormItem>
             )}
           />
@@ -134,7 +132,7 @@ const WorkunitForm = () => {
               <FormItem className="flex flex-col flex-1">
                 <FormLabel>Date</FormLabel>
                 <FormControl>
-                  <Popover>
+                  <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
                     <PopoverTrigger asChild>
                       <Button
                         type="button"
@@ -143,6 +141,7 @@ const WorkunitForm = () => {
                           "w-full justify-start text-left font-normal",
                           !field.value && "text-muted-foreground"
                         )}
+                        onClick={() => setCalendarOpen(true)}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
                         {field.value ? (
@@ -152,18 +151,23 @@ const WorkunitForm = () => {
                         )}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
+                    <PopoverContent
+                      className="w-auto p-0"
+                      align="start"
+                      side="top"
+                    >
                       <Calendar
                         mode="single"
                         selected={field.value}
                         onSelect={(date) => {
                           if (date) field.onChange(date);
                         }}
+                        initialFocus
                       />
                     </PopoverContent>
                   </Popover>
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-xs" />
               </FormItem>
             )}
           />
@@ -181,7 +185,7 @@ const WorkunitForm = () => {
                   value={form.getValues("startTime")}
                   setValue={(val) => form.setValue("startTime", val)}
                 />
-                <FormMessage />
+                <FormMessage className="text-xs" />
               </FormItem>
             )}
           />
@@ -197,7 +201,7 @@ const WorkunitForm = () => {
                   value={form.getValues("endTime")}
                   setValue={(val) => form.setValue("endTime", val)}
                 />
-                <FormMessage />
+                <FormMessage className="text-xs" />
               </FormItem>
             )}
           />
@@ -215,7 +219,7 @@ const WorkunitForm = () => {
                   value={form.getValues("duration")}
                   setValue={(val) => form.setValue("duration", val)}
                 />
-                <FormMessage />
+                <FormMessage className="text-xs" />
               </FormItem>
             )}
           />
@@ -231,7 +235,7 @@ const WorkunitForm = () => {
                   value={form.getValues("break")}
                   setValue={(val) => form.setValue("break", val)}
                 />
-                <FormMessage />
+                <FormMessage className="text-xs" />
               </FormItem>
             )}
           />
