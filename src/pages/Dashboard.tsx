@@ -1,7 +1,6 @@
 import DialogFormWrapper from "@/components/form/DialogFormWrapper";
 import { Button } from "@/components/ui/button";
 import WorkunitForm from "@/components/dashboard/WorkunitForm";
-import { Link } from "react-router-dom";
 
 const Dashboard = () => {
   return (
@@ -9,15 +8,15 @@ const Dashboard = () => {
       <div className="flex items-center justify-between">
         <div className="flex gap-2">
           <Button variant={"default"}>Start</Button>
-          <DialogFormWrapper name={"Add Work Unit"}>
+          <DialogFormWrapper
+            title={"Add Work Unit"}
+            description={"Fill in the details below to create a new work unit."}
+            trigger={<Button variant={"default"}>Add Work Unit</Button>}
+          >
             <WorkunitForm />
           </DialogFormWrapper>
         </div>
-        <div>
-          <Link to={"/task-tag"}>
-            <Button variant={"outline"}>{"Task/Tag"}</Button>
-          </Link>
-        </div>
+        <div></div>
       </div>
 
       <div></div>

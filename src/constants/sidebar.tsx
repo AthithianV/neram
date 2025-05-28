@@ -1,23 +1,42 @@
-import { ListTodo, Timer, Database, Settings } from "lucide-react";
+import {
+  Timer,
+  Settings,
+  Tag,
+  NotebookPen,
+  RotateCcw,
+  BarChart,
+} from "lucide-react";
 
 export const SIDEBAR_BODY_LINKS = [
   {
     key: "dashboard",
     title: "Dashboard",
-    icon: <Timer size={5} />,
+    icon: <Timer />,
     href: "/dashboard",
+  },
+  {
+    key: "task-tag",
+    title: "Task/Tag",
+    icon: <Tag />,
+    href: "/task-tag",
   },
   {
     key: "todos",
     title: "Todos",
-    icon: <ListTodo size={5} />,
+    icon: <NotebookPen />,
     href: "/todos",
   },
   {
-    key: "data",
-    title: "Data",
-    icon: <Database size={5} />,
-    href: "/data",
+    key: "analytics",
+    title: "Analytics",
+    icon: <BarChart />,
+    href: "/analytics",
+  },
+  {
+    key: "pomodoro",
+    title: "Pomodoro",
+    icon: <RotateCcw />,
+    href: "/pomodoro",
   },
 ];
 
@@ -25,7 +44,7 @@ export const SIDEBAR_FOOTER_LINKS = [
   {
     key: "settings",
     title: "Settings",
-    icon: <Settings size={5} />,
+    icon: <Settings />,
     href: "/settings",
   },
 ];

@@ -10,28 +10,28 @@ import {
 } from "../ui/dialog";
 
 const DialogFormWrapper = ({
-  name,
+  title,
+  description,
+  trigger,
   children,
+  modal = false,
 }: {
-  name: string;
+  title: string;
+  description: string;
+  trigger: ReactNode;
   children: ReactNode;
+  modal?: boolean;
 }) => {
   return (
-    <Dialog modal={false}>
-      <DialogTrigger asChild>
-        <div>
-          <Button>{name}</Button>
-        </div>
-      </DialogTrigger>
+    <Dialog modal={modal}>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent
         onPointerDownOutside={(e) => e.preventDefault()}
         className="max-h-[95vh] overflow-y-auto custom-scrollbar"
       >
         <DialogHeader>
-          <DialogTitle>{name}</DialogTitle>
-          <DialogDescription>
-            Fill in the details below to create a new work unit.
-          </DialogDescription>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <div>{children}</div>
       </DialogContent>

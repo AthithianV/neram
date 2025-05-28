@@ -8,7 +8,7 @@ import { AppLayout } from "./components/layouts/AppLayout";
 
 // Components
 import Analytics from "./pages/Analytics.tsx";
-import Focus from "./pages/Focus.tsx";
+import Pomodoro from "./pages/Pomodaro.tsx";
 import CloudSync from "./pages/CloudSync.tsx";
 import Settings from "./pages/Settings.tsx";
 import Todo from "./pages/Todo.tsx";
@@ -22,7 +22,7 @@ export default function App() {
         <Route path="/" element={<Navigate to="/dashboard" />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="task-tag" element={<TaskTag />} />
-        <Route path="focus" element={<Focus />} />
+        <Route path="pomodoro" element={<Pomodoro />} />
         <Route path="todos" element={<Todo />} />
         <Route path="analytics" element={<Analytics />} />
         <Route path="cloud-sync" element={<CloudSync />} />
