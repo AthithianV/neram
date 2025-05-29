@@ -33,7 +33,7 @@ export const TaskFormDialog = ({
     children: ReactNode;
 }) => {
     return (
-        <Dialog modal={false}>
+        <Dialog>
             <DialogFormTrigger>{children}</DialogFormTrigger>
             <DialogFormContent
                 title={type == 'EDIT' ? 'Edit Task' : 'Create Task'}

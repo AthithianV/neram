@@ -3,39 +3,76 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import DialogFormWrapper from '@/components/form/DialogFormWrapper';
-import TaskForm, { TaskFormDialog } from '@/components/dashboard/TaskForm';
-import TagForm from '@/components/dashboard/TagForm';
+import { TaskFormDialog } from '@/components/dashboard/TaskForm';
+import { TagFormDialog } from '@/components/dashboard/TagForm';
 
 const tasks = [
-    {
-        id: 1,
-        title: 'Study',
-        description: 'Description 1',
-        color: '#121063',
-    },
-    {
-        id: 2,
-        title: 'Work',
-        description: 'Description 2',
-        color: '#3ab7bf',
-    },
-    {
-        id: 3,
-        title: 'Social',
-        description: 'Description 3',
-        color: '#78dcca',
-    },
+    { id: 1, title: 'Study', description: 'Description 1', color: '#121063' },
+    { id: 2, title: 'Work', description: 'Description 2', color: '#3ab7bf' },
+    { id: 3, title: 'Social', description: 'Description 3', color: '#78dcca' },
 ];
 
 const tags = [
-    {
-        id: 1,
-        title: 'Tag 1',
-        description: 'Description 1',
-        color: '#3ab7bf',
-    },
+    { id: 1, title: 'Tag 1', description: 'Description 1', color: '#3ab7bf' },
 ];
+
+type Item = {
+    id: number;
+    title: string;
+    description: string;
+    color: string;
+};
+
+type TabListProps = {
+    items: Item[];
+    type: 'tasks' | 'tags';
+    FormDialog: any;
+};
+
+const ItemListCard = ({ items, type, FormDialog }: TabListProps) => {
+    return (
+        <Card className="flex-1 max-h-2/3 gap-1">
+            <CardContent className="h-11/12 overflow-y-auto">
+                <ul>
+                    {items.length > 0 ? (
+                        items.map((item) => (
+                            <FormDialog
+                                type="EDIT"
+                                initialValue={item}
+                                key={item.id}
+                            >
+                                <li
+                                    className={cn(
+                                        'hover:bg-gray-100 rounded-md cursor-pointer',
+                                        'flex items-center gap-2 py-1 my-1 px-2'
+                                    )}
+                                >
+                                    <span
+                                        className="w-4 h-4 rounded-full"
+                                        style={{ backgroundColor: item.color }}
+                                    />
+                                    <div>{item.title}</div>
+                                </li>
+                            </FormDialog>
+                        ))
+                    ) : (
+                        <div className="flex justify-center items-center h-full">
+                            <p>No {type} found</p>
+                        </div>
+                    )}
+                </ul>
+            </CardContent>
+            <CardFooter className="flex justify-end">
+                <FormDialog type="CREATE">
+                    <Button variant="outline">
+                        <Plus />
+                        <span>Add {type === 'tasks' ? 'Task' : 'Tag'}</span>
+                    </Button>
+                </FormDialog>
+            </CardFooter>
+        </Card>
+    );
+};
 
 const TaskTag = () => {
     return (
@@ -47,110 +84,21 @@ const TaskTag = () => {
                 <TabsTrigger value="tasks">Tasks</TabsTrigger>
                 <TabsTrigger value="tags">Tags</TabsTrigger>
             </TabsList>
+
             <TabsContent value="tasks">
-                <Card className="flex-1 max-h-2/3 gap-1">
-                    <CardContent className="h-11/12 overflow-y-auto">
-                        <ul>
-                            {tasks.length > 0 ? (
-                                tasks.map((task) => (
-                                    <TaskFormDialog
-                                        type="EDIT"
-                                        initialValue={task}
-                                    >
-                                        <li
-                                            key={task.id}
-                                            className={cn(
-                                                'hover:bg-gray-100 rounded-md cursor-pointer',
-                                                'flex items-center gap-2',
-                                                'py-1 my-1 px-2'
-                                            )}
-                                        >
-                                            <span
-                                                className="w-4 h-4 rounded-full"
-                                                style={{
-                                                    backgroundColor: task.color,
-                                                }}
-                                            ></span>
-                                            <div>{task.title}</div>
-                                        </li>
-                                    </TaskFormDialog>
-                                ))
-                            ) : (
-                                <div className="flex justify-center items-center h-full">
-                                    <p>No tasks found</p>
-                                </div>
-                            )}
-                        </ul>
-                    </CardContent>
-                    <CardFooter className="flex justify-end">
-                        <TaskFormDialog type="CREATE">
-                            <Button variant={'outline'}>
-                                <Plus />
-                                <span>Add Task</span>
-                            </Button>
-                        </TaskFormDialog>
-                    </CardFooter>
-                </Card>
+                <ItemListCard
+                    items={tasks}
+                    type="tasks"
+                    FormDialog={TaskFormDialog}
+                />
             </TabsContent>
 
             <TabsContent value="tags">
-                <Card className="flex-1 max-h-2/3 gap-1">
-                    <CardContent className="h-11/12 overflow-y-auto">
-                        <ul>
-                            {tags.length > 0 ? (
-                                tags.map((tag) => (
-                                    <DialogFormWrapper
-                                        modal={true}
-                                        title={'Edit Tag'}
-                                        description={
-                                            'Edit the details of the tag.'
-                                        }
-                                        trigger={
-                                            <li
-                                                key={tag.id}
-                                                className={cn(
-                                                    'flex items-center gap-2',
-                                                    'hover:bg-gray-100 rounded cursor-pointer',
-                                                    'py-1 my-1 px-2 rounded-md'
-                                                )}
-                                            >
-                                                <span
-                                                    className="w-4 h-4 rounded-full"
-                                                    style={{
-                                                        backgroundColor:
-                                                            tag.color,
-                                                    }}
-                                                ></span>
-                                                <div>{tag.title}</div>
-                                            </li>
-                                        }
-                                    >
-                                        <TagForm />
-                                    </DialogFormWrapper>
-                                ))
-                            ) : (
-                                <div className="flex justify-center items-center h-full">
-                                    <p>No tags found</p>
-                                </div>
-                            )}
-                        </ul>
-                    </CardContent>
-                    <CardFooter className="flex justify-end">
-                        <DialogFormWrapper
-                            modal={true}
-                            title={'Add Tag'}
-                            description={'Add a new tag.'}
-                            trigger={
-                                <Button variant={'outline'}>
-                                    <Plus />
-                                    <span>Add Tag</span>
-                                </Button>
-                            }
-                        >
-                            <TagForm />
-                        </DialogFormWrapper>
-                    </CardFooter>
-                </Card>
+                <ItemListCard
+                    items={tags}
+                    type="tags"
+                    FormDialog={TagFormDialog}
+                />
             </TabsContent>
         </Tabs>
     );
