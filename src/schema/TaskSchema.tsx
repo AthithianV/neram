@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const TaskSchema = z.object({
-  id: z.string(),
+  id: z.number(),
   title: z.string().optional(),
   description: z.string().optional(),
   color: z.string().optional(),

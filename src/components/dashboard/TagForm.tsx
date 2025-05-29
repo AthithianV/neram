@@ -23,6 +23,7 @@ const TagForm = () => {
   const form = useForm<TagSchemaType>({
     resolver: zodResolver(TagSchema),
     defaultValues: {
+      id: Date.now().toString(),
       title: "",
       description: "",
       color: "",
