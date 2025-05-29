@@ -21,12 +21,17 @@ const DurationElement = ({
       .toString()
       .padStart(2, "0")
   );
+  const [seconds, setSeconds] = useState(
+    (value % 60).toString().padStart(2, "0")
+  );
 
   useEffect(() => {
     const totalSeconds =
-      (Number(hours) || 0) * 3600 + (Number(minutes) || 0) * 60;
+      (Number(hours) || 0) * 3600 +
+      (Number(minutes) || 0) * 60 +
+      (Number(seconds) || 0);
     setValue(totalSeconds);
-  }, [hours, minutes, setValue]);
+  }, [hours, minutes, setValue, seconds]);
 
   return (
     <div className="flex items-center gap-1 justify-end">
@@ -38,7 +43,7 @@ const DurationElement = ({
             role="combobox"
             className="w-full justify-center font-normal"
           >
-            {`${hours}:${minutes}`}
+            {`${hours}:${minutes}:${seconds}`}
           </Button>
         </PopoverTrigger>
         <PopoverContent
@@ -64,6 +69,16 @@ const DurationElement = ({
               value={minutes}
               className="text-center"
               onChange={(e) => setMinutes(e.target.value)}
+            />
+          </div>
+          <div className="flex items-center gap-2 flex-col">
+            <span className="text-sm font-medium">Seconds</span>
+            <Input
+              type="number"
+              name="seconds"
+              value={seconds}
+              className="text-center"
+              onChange={(e) => setSeconds(e.target.value)}
             />
           </div>
         </PopoverContent>

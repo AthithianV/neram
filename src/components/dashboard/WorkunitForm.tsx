@@ -27,18 +27,18 @@ import { SelectGroup, SelectContent } from "../ui/select";
 import { Select, SelectItem, SelectValue } from "../ui/select";
 import { SelectTrigger } from "../ui/select";
 import { useState } from "react";
+import useWorkunitStore from "@/store/WorkunitStore";
+import { Workunit } from "@/schema/WorkunitSchema";
 
 const taskOptions = [
   { title: "Study", value: "study" },
   { title: "work", value: "work" },
 ];
 
-type WorkunitSchemaType = z.infer<typeof WorkunitSchema>;
-
-const WorkunitForm = () => {
-  const form = useForm<WorkunitSchemaType>({
+const WorkunitForm = ({ defaultValues }: { defaultValues?: Workunit }) => {
+  const form = useForm<Workunit>({
     resolver: zodResolver(WorkunitSchema),
-    defaultValues: {
+    defaultValues: defaultValues || {
       title: "",
       description: "",
       task: "",
@@ -51,11 +51,12 @@ const WorkunitForm = () => {
     },
   });
 
+  const { addWorkunit } = useWorkunitStore();
   const [calendarOpen, setCalendarOpen] = useState(false);
 
   function onSubmit(data: z.infer<typeof WorkunitSchema>) {
     toast("Work unit has been Created");
-    console.log(data);
+    addWorkunit(data);
   }
 
   return (

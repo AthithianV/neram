@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 
 const WorkunitSchema = z
   .object({
+    id: z.string(),
     title: z.string().optional(),
     description: z.string().optional(),
     task: z.string(),
@@ -28,5 +29,7 @@ const WorkunitSchema = z
     message: "End time must be after start time",
     path: ["endTime"],
   });
+
+export type Workunit = z.infer<typeof WorkunitSchema>;
 
 export default WorkunitSchema;
