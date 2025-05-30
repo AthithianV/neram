@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 import dayjs from 'dayjs';
 import { CalendarIcon } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -16,26 +17,44 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { Calendar } from '../ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/components/ui/popover';
 
-import TimeElement from '../form/TimeElement';
-import DurationElement from '../form/DurationElement';
+import TimeElement from '@/components/form/TimeElement';
+import DurationElement from '@/components/form/DurationElement';
 import WorkunitSchema from '@/schema/WorkunitSchema';
-import { Textarea } from '../ui/textarea';
-import { SelectGroup, SelectContent } from '../ui/select';
-import { Select, SelectItem, SelectValue } from '../ui/select';
-import { SelectTrigger } from '../ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { SelectGroup, SelectContent } from '@/components/ui/select';
+import { Select, SelectItem, SelectValue } from '@/components/ui/select';
+import { SelectTrigger } from '@/components/ui/select';
 import { useEffect, useState } from 'react';
 import useWorkunitStore from '@/store/WorkunitStore';
 import { Workunit } from '@/schema/WorkunitSchema';
+import {
+    Sheet,
+    SheetClose,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from '@/components/ui/sheet';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const taskOptions = [
     { title: 'Study', value: 'study' },
     { title: 'work', value: 'work' },
 ];
 
-const WorkunitForm = ({ defaultValues }: { defaultValues?: Workunit }) => {
+export const WorkunitForm = ({
+    defaultValues,
+}: {
+    defaultValues?: Workunit;
+}) => {
     const form = useForm<Workunit>({
         resolver: zodResolver(WorkunitSchema),
         defaultValues: defaultValues || {
@@ -68,7 +87,7 @@ const WorkunitForm = ({ defaultValues }: { defaultValues?: Workunit }) => {
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="w-full space-y-6"
+                className="space-y-6 px-8"
             >
                 {/* title */}
                 <FormField
@@ -78,7 +97,7 @@ const WorkunitForm = ({ defaultValues }: { defaultValues?: Workunit }) => {
                         <FormItem>
                             <FormLabel>Title</FormLabel>
                             <FormControl>
-                                <Input {...field} />
+                                <Input {...field} className="bg-white shadow" />
                             </FormControl>
                             <FormMessage className="text-xs" />
                         </FormItem>
@@ -100,7 +119,7 @@ const WorkunitForm = ({ defaultValues }: { defaultValues?: Workunit }) => {
                     )}
                 />
 
-                <div className="flex gap-6 w-full">
+                <div className="flex gap-6 w-full max-sm:flex-col">
                     {/* Task */}
                     <FormField
                         control={form.control}
@@ -193,7 +212,7 @@ const WorkunitForm = ({ defaultValues }: { defaultValues?: Workunit }) => {
                     />
                 </div>
 
-                <div className="flex gap-6 w-full">
+                <div className="flex gap-6 w-full max-sm:flex-col">
                     {/* Start Time */}
                     <FormField
                         control={form.control}
@@ -231,7 +250,7 @@ const WorkunitForm = ({ defaultValues }: { defaultValues?: Workunit }) => {
                     />
                 </div>
 
-                <div className="flex gap-6 w-full">
+                <div className="flex gap-6 w-full max-sm:flex-col">
                     {/* Start Time */}
                     <FormField
                         control={form.control}
@@ -269,7 +288,16 @@ const WorkunitForm = ({ defaultValues }: { defaultValues?: Workunit }) => {
                     />
                 </div>
 
-                <div className="flex justify-center">
+                <div className="flex justify-center items-center gap-2">
+                    <SheetClose asChild>
+                        <Button
+                            type="button"
+                            className="cursor-pointer"
+                            variant={'outline'}
+                        >
+                            Cancel
+                        </Button>
+                    </SheetClose>
                     <Button type="submit" className="cursor-pointer">
                         Submit
                     </Button>
@@ -279,4 +307,34 @@ const WorkunitForm = ({ defaultValues }: { defaultValues?: Workunit }) => {
     );
 };
 
-export default WorkunitForm;
+export const WorkunitSheet = ({
+    defaultValue,
+    children,
+}: {
+    defaultValue?: Workunit;
+    children: React.ReactNode;
+}) => {
+    return (
+        <Sheet modal={false}>
+            <SheetTrigger asChild>{children}</SheetTrigger>
+            <SheetContent
+                onPointerDownOutside={(e) => e.preventDefault()}
+                className="max-lg:w-8/12 max-sm:w-11/12"
+            >
+                <SheetHeader className="px-8">
+                    <SheetTitle>
+                        {defaultValue ? 'Edit Work Unit' : 'Create Work Unit'}
+                    </SheetTitle>
+                    <SheetDescription>
+                        {defaultValue
+                            ? 'Edit a work unit to track your time.'
+                            : 'Create a new work unit to track your time.'}
+                    </SheetDescription>
+                </SheetHeader>
+                <ScrollArea className="h-10/12 max-md:border-t-2 pt-2">
+                    <WorkunitForm defaultValues={defaultValue} />
+                </ScrollArea>
+            </SheetContent>
+        </Sheet>
+    );
+};
