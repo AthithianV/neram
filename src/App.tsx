@@ -19,7 +19,7 @@ export default function App() {
     return (
         <Routes>
             <Route element={<AppLayout />}>
-                <Route path="/" element={<Navigate to="/workunit" />} />
+                <Route path="/" element={<Navigate to="/dashboard" />} />
                 <Route path="dashboard" element={<Workunit />} />
                 <Route path="task-tag" element={<TaskTag />} />
                 <Route path="pomodoro" element={<Pomodoro />} />

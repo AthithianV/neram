@@ -15,6 +15,10 @@ interface WorkunitStore {
     addWorkunit: (workunit: Workunit) => void;
     removeWorkunit: (workunit: Workunit) => void;
     updateWorkunit: (workunit: Workunit) => void;
+    addTag: (tag: Tag) => void;
+    removeTag: (tag: Tag) => void;
+    addTask: (task: Task) => void;
+    removeTask: (task: Task) => void;
 }
 
 const useWorkunitStore = create<WorkunitStore>((set) => ({
@@ -57,6 +61,14 @@ const useWorkunitStore = create<WorkunitStore>((set) => ({
             workunits: state.workunits.map((w) =>
                 w.id === workunit.id ? workunit : w
             ),
+        })),
+    addTag: (tag) => set((state) => ({ tags: [...state.tags, tag] })),
+    removeTag: (tag) =>
+        set((state) => ({ tags: state.tags.filter((t) => t.id !== tag.id) })),
+    addTask: (task) => set((state) => ({ tasks: [...state.tasks, task] })),
+    removeTask: (task) =>
+        set((state) => ({
+            tasks: state.tasks.filter((t) => t.id !== task.id),
         })),
 }));
 
