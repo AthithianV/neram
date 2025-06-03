@@ -28,6 +28,10 @@ const WorkunitSchema = z
     .refine((data) => dayjs(data.endTime).isAfter(dayjs(data.startTime)), {
         message: 'End time must be after start time',
         path: ['endTime'],
+    })
+    .refine((data) => dayjs(data.endTime).isAfter(dayjs()), {
+        message: 'End time must be after current time',
+        path: ['endTime'],
     });
 
 export type Workunit = z.infer<typeof WorkunitSchema>;

@@ -3,17 +3,72 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import useWorkunitStore from '@/store/WorkunitStore';
 import WorkunitCard from '@/components/workunit/WorkunitCard';
 import { WorkunitSheet } from '@/components/workunit/WorkunitForm';
+import { PlayIcon, PauseIcon, PlusIcon } from 'lucide-react';
+import { useState } from 'react';
+import { Workunit } from '@/schema/WorkunitSchema';
 
 const Dashboard = () => {
-    const { workunits } = useWorkunitStore();
+    const { workunits, addWorkunit, setTimer } = useWorkunitStore();
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
+    const [currentWorkunit, setCurrentWorkunit] = useState<Workunit | null>(
+        null
+    );
+
+    const handlePlay = () => {
+        const workunit = {
+            id: Date.now(),
+            startTime: new Date(),
+            endTime: new Date(),
+            task: 'Workunit 1',
+            date: new Date(),
+            duration: 0,
+            break: 0,
+            tags: [],
+        };
+        if (isPlaying) {
+            setIsPlaying(false);
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
+        } else {
+            addWorkunit(workunit);
+            setCurrentWorkunit(workunit);
+            setIsPlaying(true);
+            const interval = setInterval(() => {
+                setTimer(1, workunit.id);
+            }, 1000);
+            setIntervalId(interval);
+        }
+    };
 
     return (
         <div className="flex flex-col gap-4 h-full">
             <div className="flex items-center justify-between h-1/12">
                 <div className="flex gap-2">
-                    <Button variant={'default'}>Start</Button>
+                    <Button
+                        variant={'default'}
+                        className="flex items-center gap-1"
+                        onClick={handlePlay}
+                    >
+                        {isPlaying ? (
+                            <PauseIcon
+                                fill="currentColor"
+                                className="w-4 h-4"
+                            />
+                        ) : (
+                            <PlayIcon fill="currentColor" className="w-4 h-4" />
+                        )}
+                        <span>Start</span>
+                    </Button>
                     <WorkunitSheet>
-                        <Button variant={'default'}>Add Work Unit</Button>
+                        <Button
+                            variant={'default'}
+                            className="flex items-center gap-1"
+                        >
+                            <PlusIcon fill="currentColor" className="w-4 h-4" />
+                            <span>Add Work Unit</span>
+                        </Button>
                     </WorkunitSheet>
                 </div>
                 <div></div>

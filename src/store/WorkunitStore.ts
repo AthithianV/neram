@@ -19,6 +19,7 @@ interface WorkunitStore {
     removeTag: (tag: Tag) => void;
     addTask: (task: Task) => void;
     removeTask: (task: Task) => void;
+    setTimer: (duration: number, workunitId: number) => void;
 }
 
 const useWorkunitStore = create<WorkunitStore>((set) => ({
@@ -51,7 +52,7 @@ const useWorkunitStore = create<WorkunitStore>((set) => ({
     tags: [],
     tasks: [],
     addWorkunit: (workunit) =>
-        set((state) => ({ workunits: [...state.workunits, workunit] })),
+        set((state) => ({ workunits: [workunit, ...state.workunits] })),
     removeWorkunit: (workunit) =>
         set((state) => ({
             workunits: state.workunits.filter((w) => w.id !== workunit.id),
@@ -69,6 +70,14 @@ const useWorkunitStore = create<WorkunitStore>((set) => ({
     removeTask: (task) =>
         set((state) => ({
             tasks: state.tasks.filter((t) => t.id !== task.id),
+        })),
+    setTimer: (duration: number, workunitId: number) =>
+        set((state) => ({
+            workunits: state.workunits.map((w) =>
+                w.id === workunitId
+                    ? { ...w, duration: w.duration + duration }
+                    : w
+            ),
         })),
 }));
 
