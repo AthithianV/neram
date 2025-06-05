@@ -2,12 +2,10 @@ mod commands;
 mod entities;
 
 use commands::db::init_db;
-use tauri::Builder;
 
 use sea_orm::{DatabaseConnection};
 use std::sync::Arc;
 use tokio::sync::Mutex;
-use tauri::{Manager, State};
 
 #[derive(Clone)]
 struct AppState {
