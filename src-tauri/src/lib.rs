@@ -1,5 +1,4 @@
 mod commands;
-mod entities;
 
 use commands::db::init_db;
 
