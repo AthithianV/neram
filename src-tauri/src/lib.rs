@@ -2,7 +2,7 @@ mod commands;
 
 use commands::db::init_db;
 
-use sea_orm::DatabaseConnection;
+pub use sea_orm::DatabaseConnection;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
