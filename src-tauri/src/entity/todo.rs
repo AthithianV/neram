@@ -25,10 +25,9 @@ pub struct Model {
     pub description: Option<String>,
     pub color: Option<String>,
     pub status: TodosStatus,
-    pub date: DateTimeWithTimeZone,
+    pub deadline: DateTimeWithTimeZone,
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
-    pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

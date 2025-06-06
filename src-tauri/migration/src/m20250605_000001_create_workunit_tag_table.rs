@@ -1,0 +1,86 @@
+use sea_orm_migration::prelude::*;
+use sea_query::Expr;
+
+#[derive(DeriveMigrationName)]
+pub struct Migration;
+
+#[async_trait::async_trait]
+impl MigrationTrait for Migration {
+    async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .create_table(
+                Table::create()
+                    .table(WorkunitTag::Table)
+                    .if_not_exists()
+                    .col(
+                        ColumnDef::new(WorkunitTag::WorkunitId)
+                            .integer()
+                            .not_null()
+                            .primary_key(),
+                    )
+                    .col(
+                        ColumnDef::new(WorkunitTag::TagId)
+                            .integer()
+                            .not_null()
+                            .primary_key(),
+                    )
+                    .col(
+                        ColumnDef::new(WorkunitTag::CreatedAt)
+                            .date_time()
+                            .not_null()
+                            .default(Expr::current_timestamp()),
+                    )
+                    .col(
+                        ColumnDef::new(WorkunitTag::UpdatedAt)
+                            .date_time()
+                            .not_null()
+                            .default(Expr::current_timestamp()),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk-workunits-tag-relation_id1")
+                            .from(WorkunitTag::Table, WorkunitTag::TagId)
+                            .to(Tags::Table, Tags::Id)
+                            .on_delete(ForeignKeyAction::Cascade)
+                            .on_update(ForeignKeyAction::Cascade),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk-workunits-tag-relation_id2")
+                            .from(WorkunitTag::Table, WorkunitTag::TagId)
+                            .to(Workunits::Table, Workunits::Id)
+                            .on_delete(ForeignKeyAction::Cascade)
+                            .on_update(ForeignKeyAction::Cascade),
+                    )
+                    .to_owned(),
+            )
+            .await
+    }
+
+    async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .drop_table(Table::drop().table(WorkunitTag::Table).to_owned())
+            .await
+    }
+}
+
+#[derive(DeriveIden)]
+enum Workunits {
+    Table,
+    Id,
+}
+
+#[derive(DeriveIden)]
+enum Tags {
+    Table,
+    Id,
+}
+
+#[derive(DeriveIden)]
+enum WorkunitTag {
+    Table,
+    WorkunitId,
+    TagId,
+    CreatedAt,
+    UpdatedAt,
+}

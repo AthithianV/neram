@@ -16,13 +16,11 @@ pub enum TimerType {
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
-    pub running: bool,
-    #[sea_orm(column_name = "type")]
-    pub r#type: TimerType,
+    pub is_running: bool,
+    pub timer_type: TimerType,
     pub duration: f64,
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
-    pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

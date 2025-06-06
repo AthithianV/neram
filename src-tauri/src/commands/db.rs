@@ -1,8 +1,7 @@
-use sea_orm::{Database};
+use sea_orm::Database;
 use std::sync::Arc;
-use tokio::sync::Mutex;
 use tauri::{AppHandle, Manager};
-
+use tokio::sync::Mutex;
 
 use crate::AppState;
 
