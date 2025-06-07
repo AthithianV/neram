@@ -9,7 +9,7 @@ import { Workunit } from '@/schema/WorkunitSchema';
 import { useWorkunit } from '@/hooks/useWorkunit';
 
 const Dashboard = () => {
-    const { addWorkunit, setTimer } = useWorkunitStore();
+    // const { addWorkunit, setTimer } = useWorkunitStore();
     const [isPlaying, setIsPlaying] = useState(false);
     const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
     const [currentWorkunit, setCurrentWorkunit] = useState<Workunit | null>(
@@ -30,30 +30,30 @@ const Dashboard = () => {
     }
 
     const handlePlay = () => {
-        const workunit = {
-            id: Date.now(),
-            startTime: new Date(),
-            endTime: new Date(),
-            task: 'Workunit 1',
-            date: new Date(),
-            sessionDuration: 0,
-            breakDuration: 0,
-            tags: [],
-        };
-        if (isPlaying) {
-            setIsPlaying(false);
-            if (intervalId) {
-                clearInterval(intervalId);
-            }
-        } else {
-            addWorkunit(workunit);
-            setCurrentWorkunit(workunit);
-            setIsPlaying(true);
-            const interval = setInterval(() => {
-                setTimer(1, workunit.id);
-            }, 1000);
-            setIntervalId(interval);
-        }
+        // const workunit = {
+        //     id: Date.now(),
+        //     startTime: new Date(),
+        //     endTime: new Date(),
+        //     task: 'Workunit 1',
+        //     date: new Date(),
+        //     session_duration: 0,
+        //     break_duration: 0,
+        //     tags: [],
+        // };
+        // if (isPlaying) {
+        //     setIsPlaying(false);
+        //     if (intervalId) {
+        //         clearInterval(intervalId);
+        //     }
+        // } else {
+        //     addWorkunit(workunit);
+        //     setCurrentWorkunit(workunit);
+        //     setIsPlaying(true);
+        //     const interval = setInterval(() => {
+        //         setTimer(1, workunit.id);
+        //     }, 1000);
+        //     setIntervalId(interval);
+        // }
     };
 
     return (

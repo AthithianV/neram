@@ -57,26 +57,38 @@ export const WorkunitForm = ({
 }) => {
     const form = useForm<Workunit>({
         resolver: zodResolver(WorkunitSchema),
-        defaultValues: defaultValues || {
-            id: Date.now(),
-            title: '',
-            description: '',
-            task: '',
-            date: new Date(),
-            startTime: dayjs(new Date()).subtract(1, 'hour').toDate(),
-            endTime: dayjs(new Date()).toDate(),
-            sessionDuration: 60 * 60,
-            breakDuration: 0,
-            tags: [],
-        },
+        defaultValues: defaultValues
+            ? {
+                  ...defaultValues,
+                  start_time: dayjs(
+                      defaultValues.start_time || new Date()
+                  ).toDate(),
+                  end_time: dayjs(
+                      defaultValues.end_time || new Date()
+                  ).toDate(),
+              }
+            : {
+                  id: Date.now(),
+                  title: '',
+                  description: '',
+                  task: '',
+                  date: new Date(),
+                  start_time: dayjs(new Date()).subtract(1, 'hour').toDate(),
+                  end_time: dayjs(new Date()).toDate(),
+                  session_duration: 60 * 60,
+                  break_duration: 0,
+                  tags: [],
+              },
     });
+
+    useEffect(() => {
+        if (defaultValues) {
+            console.log(defaultValues);
+        }
+    }, []);
 
     const { addWorkunit } = useWorkunitStore();
     const [calendarOpen, setCalendarOpen] = useState(false);
-
-    useEffect(() => {
-        console.log(form.formState.errors);
-    }, [form.formState.errors]);
 
     function onSubmit(data: z.infer<typeof WorkunitSchema>) {
         toast('Work unit has been Created');
@@ -216,14 +228,14 @@ export const WorkunitForm = ({
                     {/* Start Time */}
                     <FormField
                         control={form.control}
-                        name="startTime"
+                        name="start_time"
                         render={() => (
                             <FormItem className="flex-1">
                                 <FormLabel>Start Time</FormLabel>
                                 <TimeElement
-                                    value={form.getValues('startTime')}
+                                    value={form.getValues('start_time')}
                                     setValue={(val) =>
-                                        form.setValue('startTime', val)
+                                        form.setValue('start_time', val)
                                     }
                                 />
                                 <FormMessage className="text-xs" />
@@ -234,14 +246,14 @@ export const WorkunitForm = ({
                     {/* End Time */}
                     <FormField
                         control={form.control}
-                        name="endTime"
+                        name="end_time"
                         render={() => (
                             <FormItem className="flex-1">
                                 <FormLabel>End Time</FormLabel>
                                 <TimeElement
-                                    value={form.getValues('endTime')}
+                                    value={form.getValues('end_time')}
                                     setValue={(val) =>
-                                        form.setValue('endTime', val)
+                                        form.setValue('end_time', val)
                                     }
                                 />
                                 <FormMessage className="text-xs" />
@@ -254,14 +266,14 @@ export const WorkunitForm = ({
                     {/* Start Time */}
                     <FormField
                         control={form.control}
-                        name="sessionDuration"
+                        name="session_duration"
                         render={() => (
                             <FormItem className="flex-1">
                                 <FormLabel>Duration</FormLabel>
                                 <DurationElement
-                                    value={form.getValues('sessionDuration')}
+                                    value={form.getValues('session_duration')}
                                     setValue={(val) =>
-                                        form.setValue('sessionDuration', val)
+                                        form.setValue('session_duration', val)
                                     }
                                 />
                                 <FormMessage className="text-xs" />
@@ -272,14 +284,14 @@ export const WorkunitForm = ({
                     {/* Break */}
                     <FormField
                         control={form.control}
-                        name="breakDuration"
+                        name="break_duration"
                         render={() => (
                             <FormItem className="flex-1">
                                 <FormLabel>Break</FormLabel>
                                 <DurationElement
-                                    value={form.getValues('breakDuration')}
+                                    value={form.getValues('break_duration')}
                                     setValue={(val) =>
-                                        form.setValue('breakDuration', val)
+                                        form.setValue('break_duration', val)
                                     }
                                 />
                                 <FormMessage className="text-xs" />

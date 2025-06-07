@@ -8,30 +8,30 @@ const WorkunitSchema = z
         description: z.string().optional(),
         task: z.string(),
         date: z.date(),
-        startTime: z.date(),
-        endTime: z.date(),
-        sessionDuration: z.number(),
-        breakDuration: z.number(),
+        start_time: z.date(),
+        end_time: z.date(),
+        session_duration: z.number(),
+        break_duration: z.number(),
         tags: z.array(z.string()),
     })
     .transform((data) => ({
         ...data,
-        startTime: dayjs(data.date)
-            .hour(dayjs(data.startTime).hour())
-            .minute(dayjs(data.startTime).minute())
+        start_time: dayjs(data.date)
+            .hour(dayjs(data.start_time).hour())
+            .minute(dayjs(data.start_time).minute())
             .toDate(),
-        endTime: dayjs(data.date)
-            .hour(dayjs(data.endTime).hour())
-            .minute(dayjs(data.endTime).minute())
+        end_time: dayjs(data.date)
+            .hour(dayjs(data.end_time).hour())
+            .minute(dayjs(data.end_time).minute())
             .toDate(),
     }))
-    .refine((data) => dayjs(data.endTime).isAfter(dayjs(data.startTime)), {
+    .refine((data) => dayjs(data.end_time).isAfter(dayjs(data.start_time)), {
         message: 'End time must be after start time',
-        path: ['endTime'],
+        path: ['end_time'],
     })
-    .refine((data) => dayjs(data.endTime).isAfter(dayjs()), {
+    .refine((data) => dayjs(data.end_time).isAfter(dayjs()), {
         message: 'End time must be after current time',
-        path: ['endTime'],
+        path: ['end_time'],
     });
 
 export type Workunit = z.infer<typeof WorkunitSchema>;
