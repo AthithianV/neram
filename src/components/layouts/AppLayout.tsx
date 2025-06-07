@@ -1,25 +1,26 @@
 import { Outlet } from 'react-router-dom';
-import Sidebar from './NeramSidebar';
+import NeramSidebar from './NeramSidebar';
 import { Toaster } from '../ui/sonner';
 import { useDb } from '../../hooks/useDb';
-import { useEffect } from 'react';
+import TitleBar from './TitleBar';
 
 export function AppLayout() {
-    const { data, isLoading, error } = useDb();
-
-    useEffect(() => {
-        console.log(data);
-    }, [data]);
+    const { isLoading, error } = useDb();
 
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>Error: {error.toString()}</div>;
 
     return (
         <div className="flex h-screen w-full">
-            <Sidebar />
+            <NeramSidebar />
             <Toaster />
-            <main className="flex-1 text-foreground p-4 overflow-y-auto h-full bg-main">
-                <Outlet />
+            <main className="flex flex-col text-foreground overflow-y-auto h-full w-full bg-gray-50">
+                <div className="h-[6%] bg-white border-b-2 border-gray-100">
+                    <TitleBar />
+                </div>
+                <div className="h-[94%] w-full p-4">
+                    <Outlet />
+                </div>
             </main>
         </div>
     );
