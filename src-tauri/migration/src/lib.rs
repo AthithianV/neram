@@ -1,5 +1,5 @@
-pub use sea_orm_migration::prelude::*;
 pub use sea_orm;
+pub use sea_orm_migration::prelude::*;
 
 mod m20250605_000001_create_journal_table;
 mod m20250605_000001_create_pomodaro_table;

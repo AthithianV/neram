@@ -73,7 +73,7 @@ impl MigrationTrait for Migration {
 #[derive(DeriveIden)]
 enum Workunits {
     Table,
-    Id, 
+    Id,
 }
 
 #[derive(DeriveIden)]
