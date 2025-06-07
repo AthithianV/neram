@@ -1,50 +1,39 @@
 import {
-  Timer,
-  Settings,
-  Tag,
-  NotebookPen,
-  RotateCcw,
-  BarChart,
-} from "lucide-react";
+    Settings,
+    Tag,
+    NotebookPen,
+    RotateCcw,
+    BarChart,
+    LayoutDashboard,
+} from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export const SIDEBAR_BODY_LINKS = [
-  {
-    key: "dashboard",
-    title: "Dashboard",
-    icon: <Timer />,
-    href: "/dashboard",
-  },
-  {
-    key: "task-tag",
-    title: "Task/Tag",
-    icon: <Tag />,
-    href: "/task-tag",
-  },
-  {
-    key: "todos",
-    title: "Todos",
-    icon: <NotebookPen />,
-    href: "/todos",
-  },
-  {
-    key: "analytics",
-    title: "Analytics",
-    icon: <BarChart />,
-    href: "/analytics",
-  },
-  {
-    key: "pomodoro",
-    title: "Pomodoro",
-    icon: <RotateCcw />,
-    href: "/pomodoro",
-  },
+    <Link to="/dashboard" key="dashboard" className="flex items-center gap-2">
+        <LayoutDashboard size={18} />
+        <span>Dashboard</span>
+    </Link>,
+    <Link to="/task-tag" key="task-tag" className="flex items-center gap-2">
+        <Tag size={18} />
+        <span>Task/Tag</span>
+    </Link>,
+    <Link to="/todos" key="todos" className="flex items-center gap-2">
+        <NotebookPen size={18} />
+        <span>Todos</span>
+    </Link>,
+    <Link to="/analytics" key="analytics" className="flex items-center gap-2">
+        <BarChart size={18} />
+        <span>Analytics</span>
+    </Link>,
+    <Link to="/pomodoro" key="pomodoro" className="flex items-center gap-2">
+        <RotateCcw size={18} />
+        <span>Pomodoro</span>
+    </Link>,
 ];
 
 export const SIDEBAR_FOOTER_LINKS = [
-  {
-    key: "settings",
-    title: "Settings",
-    icon: <Settings />,
-    href: "/settings",
-  },
+    <Link to="/settings" key="settings" className="flex items-center gap-2">
+        <Settings size={18} />
+        <span>Settings</span>
+    </Link>,
 ];

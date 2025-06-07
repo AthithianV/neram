@@ -81,12 +81,6 @@ export const WorkunitForm = ({
               },
     });
 
-    useEffect(() => {
-        if (defaultValues) {
-            console.log(defaultValues);
-        }
-    }, []);
-
     const { addWorkunit } = useWorkunitStore();
     const [calendarOpen, setCalendarOpen] = useState(false);
 

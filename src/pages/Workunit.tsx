@@ -17,10 +17,6 @@ const Dashboard = () => {
     );
     const { data: workunits, isLoading, error } = useWorkunit();
 
-    useEffect(() => {
-        console.log(workunits);
-    }, [workunits]);
-
     if (isLoading) {
         return <div>Loading...</div>;
     }
