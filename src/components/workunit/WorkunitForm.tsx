@@ -65,8 +65,8 @@ export const WorkunitForm = ({
             date: new Date(),
             startTime: dayjs(new Date()).subtract(1, 'hour').toDate(),
             endTime: dayjs(new Date()).toDate(),
-            duration: 60 * 60,
-            break: 0,
+            sessionDuration: 60 * 60,
+            breakDuration: 0,
             tags: [],
         },
     });
@@ -254,14 +254,14 @@ export const WorkunitForm = ({
                     {/* Start Time */}
                     <FormField
                         control={form.control}
-                        name="duration"
+                        name="sessionDuration"
                         render={() => (
                             <FormItem className="flex-1">
                                 <FormLabel>Duration</FormLabel>
                                 <DurationElement
-                                    value={form.getValues('duration')}
+                                    value={form.getValues('sessionDuration')}
                                     setValue={(val) =>
-                                        form.setValue('duration', val)
+                                        form.setValue('sessionDuration', val)
                                     }
                                 />
                                 <FormMessage className="text-xs" />
@@ -272,14 +272,14 @@ export const WorkunitForm = ({
                     {/* Break */}
                     <FormField
                         control={form.control}
-                        name="break"
+                        name="breakDuration"
                         render={() => (
                             <FormItem className="flex-1">
                                 <FormLabel>Break</FormLabel>
                                 <DurationElement
-                                    value={form.getValues('break')}
+                                    value={form.getValues('breakDuration')}
                                     setValue={(val) =>
-                                        form.setValue('break', val)
+                                        form.setValue('breakDuration', val)
                                     }
                                 />
                                 <FormMessage className="text-xs" />

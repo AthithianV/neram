@@ -10,8 +10,8 @@ const WorkunitSchema = z
         date: z.date(),
         startTime: z.date(),
         endTime: z.date(),
-        duration: z.number(),
-        break: z.number(),
+        sessionDuration: z.number(),
+        breakDuration: z.number(),
         tags: z.array(z.string()),
     })
     .transform((data) => ({

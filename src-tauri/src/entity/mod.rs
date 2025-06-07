@@ -7,3 +7,5 @@ pub mod journal;
 pub mod pomadoro;
 pub mod settings;
 pub mod timer;
+
+pub mod prelude;

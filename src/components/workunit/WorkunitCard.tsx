@@ -33,13 +33,15 @@ const WorkunitCard = React.forwardRef<HTMLLIElement, WorkunitCardProps>(
                                 </li>
                             ))
                         ) : (
-                            <li className="text-sm text-gray-500 opacity-40">No tags</li>
+                            <li className="text-sm text-gray-500 opacity-40">
+                                No tags
+                            </li>
                         )}
                     </ul>
                 </div>
                 <div>
                     <p className="text-sm text-gray-500">
-                        {formatTime(workunit.duration)}
+                        {formatTime(workunit.sessionDuration)}
                     </p>
                 </div>
             </li>

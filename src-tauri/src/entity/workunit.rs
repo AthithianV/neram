@@ -1,6 +1,7 @@
 use sea_orm::entity::prelude::*;
+use serde::{ Deserialize, Serialize };
 
-#[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
+#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize)]
 #[sea_orm(table_name = "workunits")]
 pub struct Model {
     #[sea_orm(primary_key)]
@@ -15,15 +16,14 @@ pub struct Model {
     pub start_time: DateTimeWithTimeZone,
     pub end_time: DateTimeWithTimeZone,
 
-    pub duration: i32,
-    #[sea_orm(column_name = "break")]
-    pub break_time: i32,
+    pub session_duration: i32,
+    pub break_duration: i32,
 
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
+#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation, Serialize, Deserialize)]
 pub enum Relation {
     #[sea_orm(
         belongs_to = "super::task::Entity",

@@ -4,16 +4,30 @@ import useWorkunitStore from '@/store/WorkunitStore';
 import WorkunitCard from '@/components/workunit/WorkunitCard';
 import { WorkunitSheet } from '@/components/workunit/WorkunitForm';
 import { PlayIcon, PauseIcon, PlusIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Workunit } from '@/schema/WorkunitSchema';
+import { useWorkunit } from '@/hooks/useWorkunit';
 
 const Dashboard = () => {
-    const { workunits, addWorkunit, setTimer } = useWorkunitStore();
+    const { addWorkunit, setTimer } = useWorkunitStore();
     const [isPlaying, setIsPlaying] = useState(false);
     const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
     const [currentWorkunit, setCurrentWorkunit] = useState<Workunit | null>(
         null
     );
+    const { data: workunits, isLoading, error } = useWorkunit();
+
+    useEffect(() => {
+        console.log(workunits);
+    }, [workunits]);
+
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error.toString()}</div>;
+    }
 
     const handlePlay = () => {
         const workunit = {
@@ -22,8 +36,8 @@ const Dashboard = () => {
             endTime: new Date(),
             task: 'Workunit 1',
             date: new Date(),
-            duration: 0,
-            break: 0,
+            sessionDuration: 0,
+            breakDuration: 0,
             tags: [],
         };
         if (isPlaying) {
@@ -76,14 +90,16 @@ const Dashboard = () => {
 
             <ScrollArea className="h-11/12 border-t-2 pt-2">
                 <ul className="flex flex-col gap-[1px]">
-                    {workunits.map((workunit) => (
-                        <WorkunitSheet
-                            key={workunit.id}
-                            defaultValue={workunit}
-                        >
-                            <WorkunitCard workunit={workunit} />
-                        </WorkunitSheet>
-                    ))}
+                    {workunits &&
+                        workunits.length > 0 &&
+                        workunits.map((workunit: Workunit) => (
+                            <WorkunitSheet
+                                key={workunit.id}
+                                defaultValue={workunit}
+                            >
+                                <WorkunitCard workunit={workunit} />
+                            </WorkunitSheet>
+                        ))}
                 </ul>
             </ScrollArea>
         </div>
