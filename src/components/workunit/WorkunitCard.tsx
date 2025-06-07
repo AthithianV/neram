@@ -1,14 +1,20 @@
-import { Workunit } from '@/schema/WorkunitSchema';
 import { formatTime } from '@/lib/time';
 import { Badge } from '@/components/ui/badge';
 import React from 'react';
+import { WorkunitWithTaskAndTag } from '@/hooks/useWorkunit';
 
 interface WorkunitCardProps extends React.LiHTMLAttributes<HTMLLIElement> {
-    workunit: Workunit;
+    workunitWithTaskAndTag: WorkunitWithTaskAndTag;
 }
 
 const WorkunitCard = React.forwardRef<HTMLLIElement, WorkunitCardProps>(
-    ({ workunit, className, children, ...props }, ref) => {
+    ({ workunitWithTaskAndTag, className, children, ...props }, ref) => {
+        if (!workunitWithTaskAndTag) {
+            return null;
+        }
+
+        const { workunit, task, tags } = workunitWithTaskAndTag;
+
         return (
             <li
                 ref={ref}
@@ -17,21 +23,38 @@ const WorkunitCard = React.forwardRef<HTMLLIElement, WorkunitCardProps>(
                 }`}
                 {...props}
             >
-                <div className="flex flex-col gap-2">
-                    <h3 className="text-md font-semibold">{workunit.task}</h3>
-                    <ul className="flex flex-wrap gap-2">
-                        {workunit.tags && workunit.tags.length > 0 ? (
-                            workunit.tags.map((tag) => (
-                                <li key={tag} className="text-sm text-gray-500">
-                                    <Badge>{tag}</Badge>
+                <div className="flex items-center gap-4">
+                    <div
+                        className="p-2 rounded-md"
+                        style={{ backgroundColor: task.color }}
+                    ></div>
+                    <div className="flex flex-col gap-2">
+                        <h3 className="text-md font-semibold">{task.title}</h3>
+                        <ul className="flex flex-wrap gap-2">
+                            {tags && tags.length > 0 ? (
+                                tags.map((tag) => (
+                                    <li
+                                        key={tag.title}
+                                        className="text-sm text-gray-500"
+                                    >
+                                        <Badge
+                                            style={{
+                                                backgroundColor: tag.color,
+                                            }}
+                                        >
+                                            {tag.title}
+                                        </Badge>
+                                    </li>
+                                ))
+                            ) : (
+                                <li className="text-sm text-gray-500 opacity-40">
+                                    <Badge className="bg-gray-200 text-gray-500">
+                                        No tags
+                                    </Badge>
                                 </li>
-                            ))
-                        ) : (
-                            <li className="text-sm text-gray-500 opacity-40">
-                                No tags
-                            </li>
-                        )}
-                    </ul>
+                            )}
+                        </ul>
+                    </div>
                 </div>
                 <div>
                     <p className="text-sm text-gray-500">

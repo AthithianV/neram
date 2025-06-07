@@ -1,13 +1,16 @@
-use sea_orm::{ ActiveModelTrait, EntityTrait, Set };
+use sea_orm::{ ActiveModelTrait, EntityTrait, QuerySelect, Set, JoinType };
 use tauri::{ command, State };
 use chrono::{ DateTime, Utc };
 
-use crate::entity::prelude::{ Workunit, WorkunitModel, WorkunitActiveModel };
+use crate::entity::workunit;
+use crate::entity::task;
+use crate::entity::tag;
 
+use crate::entity::workunit_tag;
 use crate::AppState;
 
-fn model_to_active_model(model: WorkunitModel) -> WorkunitActiveModel {
-    WorkunitActiveModel {
+fn model_to_active_model(model: workunit::Model) -> workunit::ActiveModel {
+    workunit::ActiveModel {
         id: Set(model.id),
         title: Set(model.title),
         description: Set(model.description),
@@ -52,7 +55,7 @@ pub async fn create_workunit(
     end_time: String,
     session_duration: i32,
     break_duration: i32
-) -> Result<WorkunitModel, String> {
+) -> Result<workunit::Model, String> {
     // Acquire a lock on the database connection
     let db = app_state.conn.lock().await;
 
@@ -72,7 +75,7 @@ pub async fn create_workunit(
 
     let now = Utc::now().fixed_offset();
 
-    let new_workunit = WorkunitActiveModel {
+    let new_workunit = workunit::ActiveModel {
         // id is primary key and auto-incremented, so we don't set it here for creation.
         id: Set(Default::default()),
         title: Set(title),
@@ -102,13 +105,48 @@ pub async fn create_workunit(
 #[command]
 pub async fn get_all_workunits(
     app_state: State<'_, AppState>
-) -> Result<Vec<WorkunitModel>, String> {
-    // Acquire a lock on the database connection
+) -> Result<Vec<(workunit::Model, Option<task::Model>, Vec<tag::Model>)>, String> {
     let db = app_state.conn.lock().await;
-    let workunits = Workunit::find() // Changed WorkunitEntity to Workunit
+    // First get workunits with their tasks
+    let workunits_with_tasks: Vec<(workunit::Model, Vec<task::Model>)> = workunit::Entity
+        ::find()
+        .find_with_related(task::Entity)
         .all(&*db).await
         .map_err(|e| e.to_string())?;
-    Ok(workunits)
+
+    // Then get workunits with their tags
+    let workunits_with_tags: Vec<(workunit::Model, Vec<tag::Model>)> = workunit::Entity
+        ::find()
+        .find_with_related(tag::Entity)
+        .all(&*db).await
+        .map_err(|e| e.to_string())?;
+
+    // Combine the data (you'll need to merge these based on workunit.id)
+    use std::collections::HashMap;
+
+    let mut workunit_data: HashMap<
+        i32,
+        (workunit::Model, Option<task::Model>, Vec<tag::Model>)
+    > = HashMap::new();
+
+    // Process tasks
+    for (workunit, tasks) in workunits_with_tasks {
+        let task = tasks.into_iter().next(); // Should be only one task per workunit
+        workunit_data.insert(workunit.id, (workunit, task, Vec::new()));
+    }
+
+    // Process tags
+    for (workunit, tags) in workunits_with_tags {
+        if let Some(entry) = workunit_data.get_mut(&workunit.id) {
+            entry.2 = tags;
+        }
+    }
+
+    let final_result: Vec<(workunit::Model, Option<task::Model>, Vec<tag::Model>)> = workunit_data
+        .into_values()
+        .collect();
+
+    Ok(final_result)
 }
 
 /// Retrieves a single workunit record by its ID.
@@ -125,10 +163,11 @@ pub async fn get_all_workunits(
 pub async fn get_workunit_by_id(
     app_state: State<'_, AppState>,
     id: i32
-) -> Result<Option<WorkunitModel>, String> {
+) -> Result<Option<workunit::Model>, String> {
     // Acquire a lock on the database connection
     let db = app_state.conn.lock().await;
-    let workunit = Workunit::find_by_id(id) // Changed WorkunitEntity to Workunit
+    let workunit = workunit::Entity
+        ::find_by_id(id) // Changed WorkunitEntity to Workunit
         .one(&*db).await
         .map_err(|e| e.to_string())?;
     Ok(workunit)
@@ -167,18 +206,19 @@ pub async fn update_workunit(
     end_time: Option<String>,
     session_duration: Option<i32>,
     break_duration: Option<i32>
-) -> Result<Option<WorkunitModel>, String> {
+) -> Result<Option<workunit::Model>, String> {
     // Acquire a lock on the database connection
     let db = app_state.conn.lock().await;
 
     // Find the existing workunit
-    let workunit = Workunit::find_by_id(id) // Changed WorkunitEntity to Workunit
+    let workunit = workunit::Entity
+        ::find_by_id(id) // Changed WorkunitEntity to Workunit
         .one(&*db).await
         .map_err(|e| e.to_string())?
         .ok_or_else(|| format!("Workunit with ID {} not found", id))?;
 
     // Convert to ActiveModel to make changes
-    let mut workunit_active_model: WorkunitActiveModel = model_to_active_model(workunit);
+    let mut workunit_active_model: workunit::ActiveModel = model_to_active_model(workunit);
 
     // Update fields if provided
     if let Some(t) = title {
@@ -240,7 +280,8 @@ pub async fn update_workunit(
 pub async fn delete_workunit(app_state: State<'_, AppState>, id: i32) -> Result<(), String> {
     // Acquire a lock on the database connection
     let db = app_state.conn.lock().await;
-    let res = Workunit::delete_by_id(id) // Changed WorkunitEntity to Workunit
+    let res = workunit::Entity
+        ::delete_by_id(id) // Changed WorkunitEntity to Workunit
         .exec(&*db).await
         .map_err(|e| e.to_string())?;
 

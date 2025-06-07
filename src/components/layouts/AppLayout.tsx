@@ -11,7 +11,7 @@ export function AppLayout() {
     if (error) return <div>Error: {error.toString()}</div>;
 
     return (
-        <div className="flex h-screen w-full">
+        <div className="flex h-screen w-full fixed top-0">
             <NeramSidebar />
             <Toaster />
             <main className="flex flex-col text-foreground overflow-y-auto h-full w-full bg-gray-50">

@@ -12,7 +12,7 @@ impl MigrationTrait for Migration {
                 .table(WorkunitTag::Table)
                 .if_not_exists()
                 .col(ColumnDef::new(WorkunitTag::WorkunitId).integer().not_null())
-                .col(ColumnDef::new(WorkunitTag::Tag).integer().not_null())
+                .col(ColumnDef::new(WorkunitTag::Tag).string().not_null())
                 .col(
                     ColumnDef::new(WorkunitTag::CreatedAt)
                         .date_time()

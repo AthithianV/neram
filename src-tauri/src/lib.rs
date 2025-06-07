@@ -9,7 +9,11 @@ use commands::workunit::{
     update_workunit,
     delete_workunit,
 };
-pub use entity::prelude::{ Workunit, WorkunitModel, WorkunitActiveModel, Task };
+
+pub use entity::workunit;
+pub use entity::task;
+pub use entity::tag;
+pub use entity::workunit_tag;
 
 pub use sea_orm::DatabaseConnection;
 use std::sync::Arc;

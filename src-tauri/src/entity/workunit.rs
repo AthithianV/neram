@@ -31,11 +31,25 @@ pub enum Relation {
         to = "super::task::Column::Title"
     )]
     Task,
+
+    #[sea_orm(has_many = "super::workunit_tag::Entity")]
+    WorkunitTags,
 }
 
 impl Related<super::task::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Task.def()
+    }
+}
+
+// Many-to-many relation through workunits_tags
+impl Related<super::tag::Entity> for Entity {
+    fn to() -> RelationDef {
+        super::workunit_tag::Relation::Tag.def()
+    }
+
+    fn via() -> Option<RelationDef> {
+        Some(super::workunit_tag::Relation::Workunit.def().rev())
     }
 }
 

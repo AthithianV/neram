@@ -6,7 +6,7 @@ import { WorkunitSheet } from '@/components/workunit/WorkunitForm';
 import { PlayIcon, PauseIcon, PlusIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Workunit } from '@/schema/WorkunitSchema';
-import { useWorkunit } from '@/hooks/useWorkunit';
+import { useWorkunit, WorkunitWithTaskAndTag } from '@/hooks/useWorkunit';
 
 const Dashboard = () => {
     // const { addWorkunit, setTimer } = useWorkunitStore();
@@ -88,14 +88,25 @@ const Dashboard = () => {
                 <ul className="flex flex-col gap-[1px]">
                     {workunits &&
                         workunits.length > 0 &&
-                        workunits.map((workunit: Workunit) => (
-                            <WorkunitSheet
-                                key={workunit.id}
-                                defaultValue={workunit}
-                            >
-                                <WorkunitCard workunit={workunit} />
-                            </WorkunitSheet>
-                        ))}
+                        workunits.map(
+                            (
+                                workunitWithTaskAndTag: WorkunitWithTaskAndTag,
+                                index: number
+                            ) => (
+                                <WorkunitSheet
+                                    key={index}
+                                    defaultValue={
+                                        workunitWithTaskAndTag.workunit
+                                    }
+                                >
+                                    <WorkunitCard
+                                        workunitWithTaskAndTag={
+                                            workunitWithTaskAndTag
+                                        }
+                                    />
+                                </WorkunitSheet>
+                            )
+                        )}
                 </ul>
             </ScrollArea>
         </div>
