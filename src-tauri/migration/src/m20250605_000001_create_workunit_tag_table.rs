@@ -19,7 +19,7 @@ impl MigrationTrait for Migration {
                             .primary_key(),
                     )
                     .col(
-                        ColumnDef::new(WorkunitTag::TagId)
+                        ColumnDef::new(WorkunitTag::Tag)
                             .integer()
                             .not_null()
                             .primary_key(),
@@ -36,18 +36,24 @@ impl MigrationTrait for Migration {
                             .not_null()
                             .default(Expr::current_timestamp()),
                     )
+                    .primary_key(
+                        Index::create()
+                            .name("pk-workunit_tag")
+                            .col(WorkunitTag::WorkunitId)
+                            .col(WorkunitTag::Tag),
+                    )
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk-workunits-tag-relation_id1")
-                            .from(WorkunitTag::Table, WorkunitTag::TagId)
-                            .to(Tags::Table, Tags::Id)
+                            .from(WorkunitTag::Table, WorkunitTag::Tag)
+                            .to(Tags::Table, Tags::Title)
                             .on_delete(ForeignKeyAction::Cascade)
                             .on_update(ForeignKeyAction::Cascade),
                     )
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk-workunits-tag-relation_id2")
-                            .from(WorkunitTag::Table, WorkunitTag::TagId)
+                            .from(WorkunitTag::Table, WorkunitTag::WorkunitId)
                             .to(Workunits::Table, Workunits::Id)
                             .on_delete(ForeignKeyAction::Cascade)
                             .on_update(ForeignKeyAction::Cascade),
@@ -67,20 +73,20 @@ impl MigrationTrait for Migration {
 #[derive(DeriveIden)]
 enum Workunits {
     Table,
-    Id,
+    Id, 
 }
 
 #[derive(DeriveIden)]
 enum Tags {
     Table,
-    Id,
+    Title,
 }
 
 #[derive(DeriveIden)]
 enum WorkunitTag {
     Table,
     WorkunitId,
-    TagId,
+    Tag,
     CreatedAt,
     UpdatedAt,
 }

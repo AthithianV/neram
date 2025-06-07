@@ -4,8 +4,6 @@ use sea_orm::entity::prelude::*;
 #[sea_orm(table_name = "tasks")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    pub id: i32,
-
     pub title: String,
     pub description: Option<String>,
     pub color: Option<String>,

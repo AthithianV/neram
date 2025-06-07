@@ -8,6 +8,7 @@ pub struct Migration;
 enum Journals {
     Table,
     Id,
+    Title,
     Text,
     Date,
     CreatedAt,
@@ -29,6 +30,7 @@ impl MigrationTrait for Migration {
                             .auto_increment()
                             .primary_key(),
                     )
+                    .col(ColumnDef::new(Journals::Title).string().not_null())
                     .col(ColumnDef::new(Journals::Text).text().not_null())
                     .col(ColumnDef::new(Journals::Date).date_time().not_null())
                     .col(

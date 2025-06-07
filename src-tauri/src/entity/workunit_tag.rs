@@ -7,7 +7,7 @@ pub struct Model {
     pub workunit_id: i32,
 
     #[sea_orm(primary_key, auto_increment = false)]
-    pub tag_id: i32,
+    pub tag: String,
 
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
@@ -24,8 +24,8 @@ pub enum Relation {
 
     #[sea_orm(
         belongs_to = "super::tag::Entity",
-        from = "Column::TagId",
-        to = "super::tag::Column::Id"
+        from = "Column::Tag",
+        to = "super::tag::Column::Title"
     )]
     Tag,
 }

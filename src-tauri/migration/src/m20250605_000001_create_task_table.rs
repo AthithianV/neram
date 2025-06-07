@@ -7,7 +7,6 @@ pub struct Migration;
 #[derive(DeriveIden)]
 enum Tasks {
     Table,
-    Id,
     Title,
     Description,
     Color,
@@ -24,14 +23,7 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Tasks::Table)
                     .if_not_exists()
-                    .col(
-                        ColumnDef::new(Tasks::Id)
-                            .integer()
-                            .not_null()
-                            .auto_increment()
-                            .primary_key(),
-                    )
-                    .col(ColumnDef::new(Tasks::Title).string().not_null())
+                    .col(ColumnDef::new(Tasks::Title).string().not_null().primary_key())
                     .col(ColumnDef::new(Tasks::Description).string().null())
                     .col(ColumnDef::new(Tasks::Color).string().null())
                     .col(

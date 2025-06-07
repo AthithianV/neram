@@ -9,7 +9,7 @@ pub struct Model {
     pub title: Option<String>,
     pub description: Option<String>,
 
-    pub task_id: i32,
+    pub task: String,
     pub date: DateTimeWithTimeZone,
 
     pub start_time: DateTimeWithTimeZone,
@@ -27,8 +27,8 @@ pub struct Model {
 pub enum Relation {
     #[sea_orm(
         belongs_to = "super::task::Entity",
-        from = "Column::TaskId",
-        to = "super::task::Column::Id"
+        from = "Column::Task",
+        to = "super::task::Column::Title"
     )]
     Task,
 }

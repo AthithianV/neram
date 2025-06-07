@@ -30,7 +30,6 @@ impl MigrationTrait for Migration {
                         ColumnDef::new(Pomodaro::Id)
                             .integer()
                             .not_null()
-                            .auto_increment()
                             .primary_key(),
                     )
                     .col(ColumnDef::new(Pomodaro::Duration).double().not_null())
@@ -53,7 +52,32 @@ impl MigrationTrait for Migration {
                     )
                     .to_owned(),
             )
-            .await
+            .await?;
+
+        let db = manager.get_connection();
+
+        db.execute_unprepared(
+            r#"
+            "INSERT INTO `pomodaro` (
+                `id`,
+                `duration`,
+                `session_duration`,
+                `session_count`,
+                `break_duration`,
+                `auto_start`,
+                `sync_with_time_tracking`
+            ) VALUES (
+                1,
+                0,
+                25,
+                5,
+                4,
+                true,
+                true
+            )"#
+        ).await?;
+
+        Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {

@@ -28,7 +28,6 @@ impl MigrationTrait for Migration {
                         ColumnDef::new(Timer::Id)
                             .integer()
                             .not_null()
-                            .auto_increment()
                             .primary_key(),
                     )
                     .col(ColumnDef::new(Timer::IsRunning).boolean().not_null())
@@ -52,7 +51,26 @@ impl MigrationTrait for Migration {
                     )
                     .to_owned(),
             )
-            .await
+            .await?;
+
+        let db = manager.get_connection();
+
+        db.execute_unprepared(
+            r#"
+            "INSERT INTO `timer` (
+                `id`,
+                `is_running`,
+                `type`,
+                `duration`
+            ) VALUES (
+                1,
+                false,
+                'SESSION',
+                0
+            )"#
+        ).await?;
+
+        Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {

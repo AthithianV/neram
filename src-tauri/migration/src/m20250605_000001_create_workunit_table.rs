@@ -21,7 +21,7 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(Workunits::Title).string().null())
                     .col(ColumnDef::new(Workunits::Description).string().null())
-                    .col(ColumnDef::new(Workunits::TaskId).integer().not_null())
+                    .col(ColumnDef::new(Workunits::Task).string().not_null())
                     .col(ColumnDef::new(Workunits::Date).date_time().not_null())
                     .col(ColumnDef::new(Workunits::StartTime).date_time().not_null())
                     .col(ColumnDef::new(Workunits::EndTime).date_time().not_null())
@@ -42,8 +42,8 @@ impl MigrationTrait for Migration {
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk-workunits-task_id")
-                            .from(Workunits::Table, Workunits::TaskId)
-                            .to(Tasks::Table, Tasks::Id)
+                            .from(Workunits::Table, Workunits::Task)
+                            .to(Tasks::Table, Tasks::Title)
                             .on_delete(ForeignKeyAction::Cascade)
                             .on_update(ForeignKeyAction::Cascade),
                     )
@@ -65,7 +65,7 @@ enum Workunits {
     Id,
     Title,
     Description,
-    TaskId,
+    Task,
     Date,
     StartTime,
     EndTime,
@@ -78,5 +78,5 @@ enum Workunits {
 #[derive(DeriveIden)]
 enum Tasks {
     Table,
-    Id,
+    Title,
 }

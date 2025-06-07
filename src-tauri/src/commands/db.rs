@@ -1,5 +1,5 @@
 use sea_orm::Database;
-use std::sync::Arc;
+use std::{sync::Arc, path::Path};
 use tauri::{AppHandle, Manager};
 use tokio::sync::Mutex;
 use super::migrate::setup_db;
@@ -8,10 +8,24 @@ use crate::AppState;
 
 #[tauri::command]
 pub async fn init_db(path: String, app_handle: AppHandle) -> Result<(), String> {
-    let db_url = format!("sqlite://{}/neram.db?mode=rwc", path);
-    let conn = Database::connect(&db_url).await.unwrap();
 
-    setup_db(&db_url);
+    let db_dir = Path::new(&path);
+    if !db_dir.exists() {
+        std::fs::create_dir_all(db_dir).map_err(|e| e.to_string())?;
+    }
+
+    let db_path = Path::new(&path).join("neram.db");
+    let db_exists = db_path.exists();
+    let db_url = format!("sqlite://{}/neram.db?mode=rwc", path);
+    let conn = Database::connect(&db_url).await.map_err(|e| e.to_string())?;
+
+    // Only run migrations if database doesn't exist
+    if !db_exists {
+        setup_db(&db_url).await.map_err(|e| {
+            println!("Error: {}", e);
+            e.to_string()
+        })?;
+    }
 
     app_handle.manage(AppState {
         conn: Arc::new(Mutex::new(conn)),

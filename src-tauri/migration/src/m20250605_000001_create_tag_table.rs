@@ -24,14 +24,7 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Tags::Table)
                     .if_not_exists()
-                    .col(
-                        ColumnDef::new(Tags::Id)
-                            .integer()
-                            .not_null()
-                            .auto_increment()
-                            .primary_key(),
-                    )
-                    .col(ColumnDef::new(Tags::Title).string().not_null())
+                    .col(ColumnDef::new(Tags::Title).string().not_null().primary_key())
                     .col(ColumnDef::new(Tags::Description).string().null())
                     .col(ColumnDef::new(Tags::Color).string().null())
                     .col(

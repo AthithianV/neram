@@ -25,7 +25,6 @@ impl MigrationTrait for Migration {
                         ColumnDef::new(Settings::Id)
                             .integer()
                             .not_null()
-                            .auto_increment()
                             .primary_key(),
                     )
                     .col(
@@ -47,7 +46,22 @@ impl MigrationTrait for Migration {
                     )
                     .to_owned(),
             )
-            .await
+            .await?;
+
+        let db = manager.get_connection();
+
+        db.execute_unprepared(
+            r#"
+            "INSERT INTO `settings` (
+                `id`,
+                `theme`
+            ) VALUES (
+                1,
+                'light'
+            )"#
+        ).await?;
+
+        Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
