@@ -35,8 +35,9 @@ const NeramSidebar = () => {
                                         <SidebarMenuButton
                                             asChild
                                             className={`${
-                                                link.props.to ===
-                                                    pathname.split('/')[1] &&
+                                                pathname.startsWith(
+                                                    link.props.to
+                                                ) &&
                                                 'bg-sidebar-accent font-semibold text-theme hover:text-theme'
                                             }`}
                                         >
@@ -57,7 +58,7 @@ const NeramSidebar = () => {
                                 <SidebarMenuButton
                                     asChild
                                     className={`${
-                                        link.props.to ===
+                                        link.props.to.replace('/', '') ===
                                             pathname.split('/')[1] &&
                                         'bg-sidebar-accent font-semibold text-theme hover:text-theme'
                                     }`}
