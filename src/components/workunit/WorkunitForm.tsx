@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import dayjs from 'dayjs';
-import { CalendarIcon } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
@@ -16,13 +15,6 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
-import { Calendar } from '@/components/ui/calendar';
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from '@/components/ui/popover';
 
 import TimeElement from '@/components/form/TimeElement';
 import DurationElement from '@/components/form/DurationElement';
@@ -36,7 +28,8 @@ import useWorkunitStore from '@/store/WorkunitStore';
 import { Workunit } from '@/schema/WorkunitSchema';
 import { DEFAULT_WORKUNIT_VALUES } from '@/constants/workunit';
 import { useWorkunitById } from '@/hooks/useWorkunit';
-import { useTask } from '@/hooks/useTodo';
+import DatePicker from '../form/DatePicker';
+import TaskPicker from './TaskPicker';
 
 export const WorkunitForm = () => {
     const form = useForm<Workunit>({
@@ -46,7 +39,6 @@ export const WorkunitForm = () => {
 
     const { workunitId } = useParams();
     const { data: workunit } = useWorkunitById(workunitId || '');
-    const { data: tasks } = useTask();
 
     useEffect(() => {
         if (workunit) {
@@ -128,36 +120,10 @@ export const WorkunitForm = () => {
                             <FormItem className="flex-1">
                                 <FormLabel>Task</FormLabel>
                                 <FormControl>
-                                    <Select
-                                        onValueChange={field.onChange}
-                                        defaultValue={field.value}
-                                    >
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Select a Task" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                {tasks &&
-                                                    tasks.map(
-                                                        (option) =>
-                                                            option.title && (
-                                                                <SelectItem
-                                                                    key={
-                                                                        option.title
-                                                                    }
-                                                                    value={
-                                                                        option.title
-                                                                    }
-                                                                >
-                                                                    {
-                                                                        option.title
-                                                                    }
-                                                                </SelectItem>
-                                                            )
-                                                    )}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
+                                    <TaskPicker
+                                        onChange={field.onChange}
+                                        value={field.value}
+                                    />
                                 </FormControl>
                                 <FormMessage className="text-xs" />
                             </FormItem>
@@ -172,49 +138,10 @@ export const WorkunitForm = () => {
                             <FormItem className="flex flex-col flex-1">
                                 <FormLabel>Date</FormLabel>
                                 <FormControl>
-                                    <Popover
-                                        open={calendarOpen}
-                                        onOpenChange={setCalendarOpen}
-                                    >
-                                        <PopoverTrigger asChild>
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                className={cn(
-                                                    'w-full justify-start text-left font-normal',
-                                                    !field.value &&
-                                                        'text-muted-foreground'
-                                                )}
-                                                onClick={() =>
-                                                    setCalendarOpen(true)
-                                                }
-                                            >
-                                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                                {field.value ? (
-                                                    dayjs(field.value).format(
-                                                        'DD/MM/YYYY'
-                                                    )
-                                                ) : (
-                                                    <span>Pick a date</span>
-                                                )}
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent
-                                            className="w-auto p-0"
-                                            align="start"
-                                            side="top"
-                                        >
-                                            <Calendar
-                                                mode="single"
-                                                selected={field.value}
-                                                onSelect={(date) => {
-                                                    if (date)
-                                                        field.onChange(date);
-                                                }}
-                                                initialFocus
-                                            />
-                                        </PopoverContent>
-                                    </Popover>
+                                    <DatePicker
+                                        date={field.value}
+                                        onChange={field.onChange}
+                                    />
                                 </FormControl>
                                 <FormMessage className="text-xs" />
                             </FormItem>
@@ -304,6 +231,7 @@ export const WorkunitForm = () => {
                         className="cursor-pointer"
                         variant={'outline'}
                         onClick={() => {
+                            form.reset();
                             navigate('/dashboard');
                         }}
                     >

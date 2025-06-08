@@ -1,0 +1,51 @@
+import { cn } from '@/lib/utils';
+import { Calendar } from '@/components/ui/calendar';
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/components/ui/popover';
+import { CalendarIcon } from 'lucide-react';
+import { Button } from '../ui/button';
+import dayjs from 'dayjs';
+
+type PropsType = {
+    date: Date;
+    onChange: (date: Date) => void;
+};
+
+const DatePicker = ({ date, onChange }: PropsType) => {
+    return (
+        <Popover>
+            <PopoverTrigger asChild>
+                <Button
+                    type="button"
+                    variant="outline"
+                    className={cn(
+                        'w-full justify-start text-left font-normal',
+                        !date && 'text-muted-foreground'
+                    )}
+                >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date ? (
+                        dayjs(date).format('DD/MM/YYYY')
+                    ) : (
+                        <span>Pick a date</span>
+                    )}
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start" side="top">
+                <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={(date) => {
+                        if (date) onChange(date);
+                    }}
+                    initialFocus
+                />
+            </PopoverContent>
+        </Popover>
+    );
+};
+
+export default DatePicker;
