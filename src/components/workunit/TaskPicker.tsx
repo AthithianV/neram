@@ -23,9 +23,9 @@ const TaskItem = ({ title }: { title: string }) => {
 };
 
 const TaskList = () => {
-    const { data: tasks } = useTask();
+    const { data: tasks = [] } = useTask();
 
-    if (!tasks)
+    if (tasks.length === 0)
         return (
             <SelectContent>
                 <SelectItem value="No tasks found" disabled>

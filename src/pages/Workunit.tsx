@@ -6,6 +6,7 @@ import { useWorkunit, WorkunitWithTaskAndTag } from '@/hooks/useWorkunit';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Separator } from '@/components/ui/separator';
 import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 const Dashboard = () => {
     const { data: workunits, isLoading, error } = useWorkunit();
@@ -45,7 +46,13 @@ const Dashboard = () => {
             <Separator className="mb-0" />
 
             <div className="h-11/12 flex w-full overflow-x-hidden">
-                <ScrollArea className="h-full flex-1">
+                <ScrollArea
+                    className={cn(
+                        'h-full flex-1',
+                        location.pathname !== '/dashboard' && 'max-sm:hidden',
+                        'max-md:w-full'
+                    )}
+                >
                     <ul className="flex flex-col gap-[1px]">
                         {workunits &&
                             workunits.length > 0 &&

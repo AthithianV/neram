@@ -20,10 +20,7 @@ import TimeElement from '@/components/form/TimeElement';
 import DurationElement from '@/components/form/DurationElement';
 import WorkunitSchema from '@/schema/WorkunitSchema';
 import { Textarea } from '@/components/ui/textarea';
-import { SelectGroup, SelectContent } from '@/components/ui/select';
-import { Select, SelectItem, SelectValue } from '@/components/ui/select';
-import { SelectTrigger } from '@/components/ui/select';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import useWorkunitStore from '@/store/WorkunitStore';
 import { Workunit } from '@/schema/WorkunitSchema';
 import { DEFAULT_WORKUNIT_VALUES } from '@/constants/workunit';
@@ -57,7 +54,6 @@ export const WorkunitForm = () => {
     }, [workunit]);
 
     const { addWorkunit } = useWorkunitStore();
-    const [calendarOpen, setCalendarOpen] = useState(false);
 
     const navigate = useNavigate();
 
@@ -71,7 +67,7 @@ export const WorkunitForm = () => {
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-6 px-8 w-[30vw]"
+                className="space-y-6 px-8 max-sm:px-4 w-[30vw] max-md:w-fit"
             >
                 <h1 className="text-lg font-semibold mb-1">
                     {workunit ? 'Edit Work Unit' : 'Add new Work Unit'}
