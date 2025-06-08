@@ -22,7 +22,7 @@ impl MigrationTrait for Migration {
                 .table(Settings::Table)
                 .if_not_exists()
                 .col(ColumnDef::new(Settings::Id).integer().not_null().primary_key())
-                .col(ColumnDef::new(Settings::Theme).string().not_null())
+                .col(ColumnDef::new(Settings::Theme).string().not_null().default("SYSTEM"))
                 .col(
                     ColumnDef::new(Settings::CreatedAt)
                         .date_time()

@@ -10,7 +10,9 @@ enum Tasks {
     Title,
     Description,
     Color,
-    IsDefault,
+    Status,
+    Deadline,
+    Priority,
     CreatedAt,
     UpdatedAt,
 }
@@ -25,7 +27,9 @@ impl MigrationTrait for Migration {
                 .col(ColumnDef::new(Tasks::Title).string().not_null().primary_key())
                 .col(ColumnDef::new(Tasks::Description).string().null())
                 .col(ColumnDef::new(Tasks::Color).string().null())
-                .col(ColumnDef::new(Tasks::IsDefault).boolean().not_null().default(false))
+                .col(ColumnDef::new(Tasks::Status).string().not_null().default("Not Started"))
+                .col(ColumnDef::new(Tasks::Deadline).date_time().not_null())
+                .col(ColumnDef::new(Tasks::Priority).integer().not_null())
                 .col(
                     ColumnDef::new(Tasks::CreatedAt)
                         .date_time()

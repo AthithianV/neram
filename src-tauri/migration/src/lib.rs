@@ -7,7 +7,6 @@ mod m20250605_000001_create_settings_table;
 mod m20250605_000001_create_tag_table;
 mod m20250605_000001_create_task_table;
 mod m20250605_000001_create_timer_table;
-mod m20250605_000001_create_todo_table;
 mod m20250605_000001_create_workunit_table;
 mod m20250605_000001_create_workunit_tag_table;
 
@@ -23,9 +22,8 @@ impl MigratorTrait for Migrator {
             Box::new(m20250605_000001_create_tag_table::Migration),
             Box::new(m20250605_000001_create_task_table::Migration),
             Box::new(m20250605_000001_create_timer_table::Migration),
-            Box::new(m20250605_000001_create_todo_table::Migration),
             Box::new(m20250605_000001_create_workunit_table::Migration),
-            Box::new(m20250605_000001_create_workunit_tag_table::Migration),
+            Box::new(m20250605_000001_create_workunit_tag_table::Migration)
         ]
     }
 }

@@ -1,4 +1,4 @@
-use sea_orm::{ ActiveModelTrait, EntityTrait, QuerySelect, Set, JoinType };
+use sea_orm::{ ActiveModelTrait, EntityTrait, Set, ColumnTrait, QueryFilter };
 use tauri::{ command, State };
 use chrono::{ DateTime, Utc };
 
@@ -6,24 +6,7 @@ use crate::entity::workunit;
 use crate::entity::task;
 use crate::entity::tag;
 
-use crate::entity::workunit_tag;
 use crate::AppState;
-
-fn model_to_active_model(model: workunit::Model) -> workunit::ActiveModel {
-    workunit::ActiveModel {
-        id: Set(model.id),
-        title: Set(model.title),
-        description: Set(model.description),
-        task: Set(model.task),
-        date: Set(model.date),
-        start_time: Set(model.start_time),
-        end_time: Set(model.end_time),
-        session_duration: Set(model.session_duration),
-        break_duration: Set(model.break_duration),
-        created_at: Set(model.created_at),
-        updated_at: Set(model.updated_at),
-    }
-}
 
 /// Creates a new workunit record in the database.
 ///
@@ -218,7 +201,7 @@ pub async fn update_workunit(
         .ok_or_else(|| format!("Workunit with ID {} not found", id))?;
 
     // Convert to ActiveModel to make changes
-    let mut workunit_active_model: workunit::ActiveModel = model_to_active_model(workunit);
+    let mut workunit_active_model: workunit::ActiveModel = workunit.to_active_model();
 
     // Update fields if provided
     if let Some(t) = title {
@@ -290,4 +273,26 @@ pub async fn delete_workunit(app_state: State<'_, AppState>, id: i32) -> Result<
     }
 
     Ok(())
+}
+
+/// Retrieves all workunit records associated with a specific task.
+///
+/// # Arguments
+/// * `app_state` - The Tauri state containing the database connection mutex.
+/// * `task_title` - The title of the task to get workunits for.
+///
+/// # Returns
+/// A `Result` containing a `Vec` of `WorkunitModel` on success, or a `String` error message.
+#[command]
+pub async fn get_workunits_by_task(
+    app_state: State<'_, AppState>,
+    task_title: String
+) -> Result<Vec<workunit::Model>, String> {
+    let db = app_state.conn.lock().await;
+    let workunits = workunit::Entity
+        ::find()
+        .filter(workunit::Column::Task.eq(task_title))
+        .all(&*db).await
+        .map_err(|e| e.to_string())?;
+    Ok(workunits)
 }

@@ -1,4 +1,4 @@
-use sea_orm::entity::prelude::*;
+use sea_orm::{ entity::prelude::*, ActiveValue::Set };
 use serde::{ Deserialize, Serialize };
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize)]
@@ -54,3 +54,22 @@ impl Related<super::tag::Entity> for Entity {
 }
 
 impl ActiveModelBehavior for ActiveModel {}
+
+impl Model {
+    /// Converts a Model to ActiveModel for database operations
+    pub fn to_active_model(self) -> ActiveModel {
+        ActiveModel {
+            id: Set(self.id),
+            title: Set(self.title),
+            description: Set(self.description),
+            task: Set(self.task),
+            date: Set(self.date),
+            start_time: Set(self.start_time),
+            end_time: Set(self.end_time),
+            session_duration: Set(self.session_duration),
+            break_duration: Set(self.break_duration),
+            created_at: Set(self.created_at),
+            updated_at: Set(self.updated_at),
+        }
+    }
+}
