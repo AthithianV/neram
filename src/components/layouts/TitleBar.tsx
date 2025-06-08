@@ -1,6 +1,5 @@
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { Button } from '../ui/button';
-import { Square } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import {
@@ -14,10 +13,26 @@ import Minimize from '../icon/Minimize';
 import RestoreDown from '../icon/RestoreDown';
 import Close from '../icon/Close';
 import RestoreUp from '../icon/RestoreUp';
+import { Link, useLocation } from 'react-router-dom';
+import { capitalize } from '@/lib/textFormatter';
 
 const TitleBar = () => {
     const [isMaximized, setIsMaximized] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+
+    const { pathname } = useLocation();
+
+    const breadcrumbItems = pathname
+        .split('/')
+        .filter((item) => item !== '' && isNaN(Number(item)))
+        .map((item, index): { title: string; path: string } => {
+            return {
+                title: capitalize(item.replace(/-/g, ' ')),
+                path: `${pathname
+                    .split('/')
+                    .slice(0, index + 2)
+                    .join('/')}`,
+            };
+        });
 
     useEffect(() => {
         const setupWindow = async () => {
@@ -69,21 +84,27 @@ const TitleBar = () => {
 
     return (
         <div className="w-full h-full flex flex-col items-center">
-            {error && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 text-xs">
-                    Error: {error}
-                </div>
-            )}
             <div
                 onMouseDown={handleStartDragging}
                 className="w-full flex justify-between items-center h-full"
             >
                 <Breadcrumb className="px-4">
                     <BreadcrumbList>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbLink href="/">Home</BreadcrumbLink>
-                        </BreadcrumbItem>
+                        {breadcrumbItems.map((item, index) => (
+                            <div
+                                key={index}
+                                className="flex items-center gap-2"
+                            >
+                                <BreadcrumbSeparator />
+                                <BreadcrumbItem>
+                                    <Link to={item.path}>
+                                        <BreadcrumbLink>
+                                            {item.title}
+                                        </BreadcrumbLink>
+                                    </Link>
+                                </BreadcrumbItem>
+                            </div>
+                        ))}
                     </BreadcrumbList>
                 </Breadcrumb>
                 <div className="flex items-center h-full">

@@ -10,6 +10,9 @@ enum Settings {
     Table,
     Id,
     Theme,
+    DateFormat,
+    TimeFormat,
+    TimeZone,
     CreatedAt,
     UpdatedAt,
 }
@@ -29,6 +32,9 @@ impl MigrationTrait for Migration {
                         .not_null()
                         .default(Expr::current_timestamp())
                 )
+                .col(ColumnDef::new(Settings::DateFormat).string().not_null().default("DD/MM/YYYY"))
+                .col(ColumnDef::new(Settings::TimeFormat).string().not_null().default("hh:mm:ss A"))
+                .col(ColumnDef::new(Settings::TimeZone).string().not_null().default("SYSTEM"))
                 .col(
                     ColumnDef::new(Settings::UpdatedAt)
                         .date_time()

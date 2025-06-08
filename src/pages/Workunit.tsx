@@ -26,7 +26,7 @@ const Dashboard = () => {
                 <div className="flex gap-2">
                     <Button
                         variant={'default'}
-                        className="flex items-center gap-1"
+                        className="flex items-center gap-1 bg-emerald-500 hover:bg-emerald-600"
                     >
                         <PlayIcon fill="currentColor" className="w-4 h-4" />
                         <span>Start</span>
@@ -34,7 +34,7 @@ const Dashboard = () => {
                     <Link to="/dashboard/add-workunit">
                         <Button
                             variant={'default'}
-                            className="flex items-center gap-1"
+                            className="flex items-center gap-1 bg-blue-500 hover:bg-blue-600"
                         >
                             <PlusIcon fill="currentColor" className="w-4 h-4" />
                             <span>Add Work Unit</span>
@@ -53,7 +53,7 @@ const Dashboard = () => {
                         'max-md:w-full'
                     )}
                 >
-                    <ul className="flex flex-col gap-[1px]">
+                    <ul className="flex flex-col gap-[1px] py-2">
                         {workunits &&
                             workunits.length > 0 &&
                             workunits.map(
@@ -77,7 +77,11 @@ const Dashboard = () => {
                     className="scrollbar-hidden py-4"
                 >
                     <motion.div
-                        initial={{ width: 0, opacity: 0 }}
+                        initial={
+                            location.pathname === '/dashboard'
+                                ? { width: 0, opacity: 0 }
+                                : {}
+                        }
                         animate={{ width: 'auto', opacity: 1 }}
                         transition={{ duration: 0.3 }}
                     >

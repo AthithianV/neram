@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { WorkunitWithTaskAndTag } from '@/hooks/useWorkunit';
 import { useNavigate, useParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 
 interface WorkunitCardProps {
     workunitWithTaskAndTag: WorkunitWithTaskAndTag;
@@ -18,46 +19,51 @@ const WorkunitCard = ({ workunitWithTaskAndTag }: WorkunitCardProps) => {
             className={cn(
                 'flex items-center justify-between',
                 'px-4 py-2 border shadow rounded-md cursor-pointer',
-                'bg-white hover:bg-gray-50',
-                workunit.id === parseInt(workunitId || '0') && 'bg-gray-100'
+                'bg-white',
+                workunit.id === parseInt(workunitId || '0')
+                    ? 'bg-gray-100'
+                    : 'hover:bg-gray-50'
             )}
             onClick={() => {
                 navigate(`update-workunit/${workunit.id}`);
             }}
         >
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 flex-1">
                 <div
                     className="p-2 rounded-md"
                     style={{ backgroundColor: task?.color || '#F3F4F6' }}
                 ></div>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 flex-1">
                     <h3 className="text-md font-semibold">
                         {task?.title || 'Untitled'}
                     </h3>
-                    <ul className="flex flex-wrap gap-2">
-                        {tags && tags.length > 0 ? (
-                            tags.map((tag) => (
-                                <li
-                                    key={tag.title}
-                                    className="text-sm text-gray-500"
-                                >
-                                    <Badge
-                                        style={{
-                                            backgroundColor: tag.color,
-                                        }}
+                    <ScrollArea className="max-w-5/6">
+                        <ul className="flex gap-2">
+                            {tags && tags.length > 0 ? (
+                                tags.map((tag) => (
+                                    <li
+                                        key={tag.title}
+                                        className="text-sm text-gray-500"
                                     >
-                                        {tag.title}
+                                        <Badge
+                                            style={{
+                                                backgroundColor: tag.color,
+                                            }}
+                                        >
+                                            {tag.title}
+                                        </Badge>
+                                    </li>
+                                ))
+                            ) : (
+                                <li className="text-sm text-gray-500 opacity-40">
+                                    <Badge className="bg-gray-200 text-gray-500">
+                                        No tags
                                     </Badge>
                                 </li>
-                            ))
-                        ) : (
-                            <li className="text-sm text-gray-500 opacity-40">
-                                <Badge className="bg-gray-200 text-gray-500">
-                                    No tags
-                                </Badge>
-                            </li>
-                        )}
-                    </ul>
+                            )}
+                        </ul>
+                        <ScrollBar orientation="horizontal" hidden/>
+                    </ScrollArea>
                 </div>
             </div>
             <div>

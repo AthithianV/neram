@@ -33,9 +33,9 @@ export const useWorkunitById = (id: string) => {
     return useQuery({
         queryKey: ['workunit', id],
         queryFn: async () => {
-            console.log(id);
-            const workunit = await invoke('get_workunit_by_id', { id });
-            console.log(workunit);
+            const workunit = await invoke('get_workunit_by_id', {
+                id: parseInt(id, 10),
+            });
             return workunit as WorkunitType;
         },
     });

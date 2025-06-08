@@ -21,7 +21,6 @@ import DurationElement from '@/components/form/DurationElement';
 import WorkunitSchema from '@/schema/WorkunitSchema';
 import { Textarea } from '@/components/ui/textarea';
 import { useEffect } from 'react';
-import useWorkunitStore from '@/store/WorkunitStore';
 import { Workunit } from '@/schema/WorkunitSchema';
 import { DEFAULT_WORKUNIT_VALUES } from '@/constants/workunit';
 import { useWorkunitById } from '@/hooks/useWorkunit';
@@ -53,15 +52,21 @@ export const WorkunitForm = () => {
         }
     }, [workunit]);
 
-    const { addWorkunit } = useWorkunitStore();
-
     const navigate = useNavigate();
 
     function onSubmit(data: z.infer<typeof WorkunitSchema>) {
         toast('Work unit has been Created');
-        addWorkunit(data);
+        console.log(data);
         navigate('/dashboard');
     }
+
+    const handleError = (error: string, field: keyof Workunit) => {
+        if (error) {
+            form.setError(field, { message: error });
+        } else {
+            form.clearErrors(field);
+        }
+    };
 
     return (
         <Form {...form}>
@@ -100,7 +105,10 @@ export const WorkunitForm = () => {
                         <FormItem>
                             <FormLabel>Description</FormLabel>
                             <FormControl>
-                                <Textarea {...field} />
+                                <Textarea
+                                    {...field}
+                                    className="bg-white shadow"
+                                />
                             </FormControl>
                             <FormMessage className="text-xs" />
                         </FormItem>
@@ -145,7 +153,7 @@ export const WorkunitForm = () => {
                     />
                 </div>
 
-                <div className="flex gap-6 w-full max-sm:flex-col">
+                <div className="flex gap-6 w-full max-sm:flex-col items-start">
                     {/* Start Time */}
                     <FormField
                         control={form.control}
@@ -158,6 +166,9 @@ export const WorkunitForm = () => {
                                     setValue={(val) =>
                                         form.setValue('start_time', val)
                                     }
+                                    setError={(error) => {
+                                        handleError(error, 'start_time');
+                                    }}
                                 />
                                 <FormMessage className="text-xs" />
                             </FormItem>
@@ -176,6 +187,9 @@ export const WorkunitForm = () => {
                                     setValue={(val) =>
                                         form.setValue('end_time', val)
                                     }
+                                    setError={(error) =>
+                                        handleError(error, 'end_time')
+                                    }
                                 />
                                 <FormMessage className="text-xs" />
                             </FormItem>
@@ -183,7 +197,7 @@ export const WorkunitForm = () => {
                     />
                 </div>
 
-                <div className="flex gap-6 w-full max-sm:flex-col">
+                <div className="flex gap-6 w-full max-sm:flex-col items-start">
                     {/* Start Time */}
                     <FormField
                         control={form.control}
@@ -195,6 +209,9 @@ export const WorkunitForm = () => {
                                     value={form.getValues('session_duration')}
                                     setValue={(val) =>
                                         form.setValue('session_duration', val)
+                                    }
+                                    setError={(error) =>
+                                        handleError(error, 'session_duration')
                                     }
                                 />
                                 <FormMessage className="text-xs" />
@@ -213,6 +230,9 @@ export const WorkunitForm = () => {
                                     value={form.getValues('break_duration')}
                                     setValue={(val) =>
                                         form.setValue('break_duration', val)
+                                    }
+                                    setError={(error) =>
+                                        handleError(error, 'break_duration')
                                     }
                                 />
                                 <FormMessage className="text-xs" />

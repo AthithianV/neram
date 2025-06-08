@@ -29,7 +29,7 @@ const WorkunitSchema = z
         message: 'End time must be after start time',
         path: ['end_time'],
     })
-    .refine((data) => dayjs(data.end_time).isAfter(dayjs()), {
+    .refine((data) => dayjs(data.end_time).isBefore(dayjs()), {
         message: 'End time must be after current time',
         path: ['end_time'],
     });
