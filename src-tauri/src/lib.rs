@@ -9,6 +9,7 @@ use commands::workunit::{
     update_workunit,
     delete_workunit,
 };
+use commands::task::{ create_task, get_all_tasks, get_task_by_title, update_task, delete_task };
 
 pub use entity::workunit;
 pub use entity::task;
@@ -37,7 +38,12 @@ pub async fn run() {
                 get_all_workunits,
                 get_workunit_by_id,
                 update_workunit,
-                delete_workunit
+                delete_workunit,
+                create_task,
+                get_all_tasks,
+                get_task_by_title,
+                update_task,
+                delete_task
             ]
         )
         .run(tauri::generate_context!())

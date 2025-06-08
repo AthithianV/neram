@@ -1,71 +1,72 @@
 import { formatTime } from '@/lib/time';
 import { Badge } from '@/components/ui/badge';
-import React from 'react';
 import { WorkunitWithTaskAndTag } from '@/hooks/useWorkunit';
+import { useNavigate, useParams } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 
-interface WorkunitCardProps extends React.LiHTMLAttributes<HTMLLIElement> {
+interface WorkunitCardProps {
     workunitWithTaskAndTag: WorkunitWithTaskAndTag;
 }
 
-const WorkunitCard = React.forwardRef<HTMLLIElement, WorkunitCardProps>(
-    ({ workunitWithTaskAndTag, className, children, ...props }, ref) => {
-        if (!workunitWithTaskAndTag) {
-            return null;
-        }
+const WorkunitCard = ({ workunitWithTaskAndTag }: WorkunitCardProps) => {
+    const { workunitId } = useParams();
+    const navigate = useNavigate();
+    const { workunit, task, tags } = workunitWithTaskAndTag;
 
-        const { workunit, task, tags } = workunitWithTaskAndTag;
-
-        return (
-            <li
-                ref={ref}
-                className={`flex items-center justify-between px-4 py-2 border bg-white shadow rounded-md cursor-pointer hover:bg-gray-50 ${
-                    className || ''
-                }`}
-                {...props}
-            >
-                <div className="flex items-center gap-4">
-                    <div
-                        className="p-2 rounded-md"
-                        style={{ backgroundColor: task.color }}
-                    ></div>
-                    <div className="flex flex-col gap-2">
-                        <h3 className="text-md font-semibold">{task.title}</h3>
-                        <ul className="flex flex-wrap gap-2">
-                            {tags && tags.length > 0 ? (
-                                tags.map((tag) => (
-                                    <li
-                                        key={tag.title}
-                                        className="text-sm text-gray-500"
+    return (
+        <li
+            className={cn(
+                'flex items-center justify-between',
+                'px-4 py-2 border shadow rounded-md cursor-pointer',
+                'bg-white hover:bg-gray-50',
+                workunit.id === parseInt(workunitId || '0') && 'bg-gray-100'
+            )}
+            onClick={() => {
+                navigate(`update-workunit/${workunit.id}`);
+            }}
+        >
+            <div className="flex items-center gap-4">
+                <div
+                    className="p-2 rounded-md"
+                    style={{ backgroundColor: task?.color || '#F3F4F6' }}
+                ></div>
+                <div className="flex flex-col gap-2">
+                    <h3 className="text-md font-semibold">
+                        {task?.title || 'Untitled'}
+                    </h3>
+                    <ul className="flex flex-wrap gap-2">
+                        {tags && tags.length > 0 ? (
+                            tags.map((tag) => (
+                                <li
+                                    key={tag.title}
+                                    className="text-sm text-gray-500"
+                                >
+                                    <Badge
+                                        style={{
+                                            backgroundColor: tag.color,
+                                        }}
                                     >
-                                        <Badge
-                                            style={{
-                                                backgroundColor: tag.color,
-                                            }}
-                                        >
-                                            {tag.title}
-                                        </Badge>
-                                    </li>
-                                ))
-                            ) : (
-                                <li className="text-sm text-gray-500 opacity-40">
-                                    <Badge className="bg-gray-200 text-gray-500">
-                                        No tags
+                                        {tag.title}
                                     </Badge>
                                 </li>
-                            )}
-                        </ul>
-                    </div>
+                            ))
+                        ) : (
+                            <li className="text-sm text-gray-500 opacity-40">
+                                <Badge className="bg-gray-200 text-gray-500">
+                                    No tags
+                                </Badge>
+                            </li>
+                        )}
+                    </ul>
                 </div>
-                <div>
-                    <p className="text-sm text-gray-500">
-                        {formatTime(workunit.session_duration)}
-                    </p>
-                </div>
-            </li>
-        );
-    }
-);
-
-WorkunitCard.displayName = 'WorkunitCard';
+            </div>
+            <div>
+                <p className="text-sm text-gray-500">
+                    {formatTime(workunit.session_duration)}
+                </p>
+            </div>
+        </li>
+    );
+};
 
 export default WorkunitCard;

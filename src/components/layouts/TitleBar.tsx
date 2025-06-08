@@ -13,6 +13,7 @@ import {
 import Minimize from '../icon/Minimize';
 import RestoreDown from '../icon/RestoreDown';
 import Close from '../icon/Close';
+import RestoreUp from '../icon/RestoreUp';
 
 const TitleBar = () => {
     const [isMaximized, setIsMaximized] = useState(false);
@@ -100,7 +101,7 @@ const TitleBar = () => {
                         className="px-6 h-full rounded-none"
                         onClick={handleMaximize}
                     >
-                        {isMaximized ? <RestoreDown /> : <Square size={16} />}
+                        {isMaximized ? <RestoreDown /> : <RestoreUp />}
                     </Button>
                     <Button
                         variant="ghost"

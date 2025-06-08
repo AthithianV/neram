@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 import dayjs from 'dayjs';
 import { CalendarIcon } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -31,35 +31,38 @@ import { Textarea } from '@/components/ui/textarea';
 import { SelectGroup, SelectContent } from '@/components/ui/select';
 import { Select, SelectItem, SelectValue } from '@/components/ui/select';
 import { SelectTrigger } from '@/components/ui/select';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import useWorkunitStore from '@/store/WorkunitStore';
 import { Workunit } from '@/schema/WorkunitSchema';
 import { DEFAULT_WORKUNIT_VALUES } from '@/constants/workunit';
+import { useWorkunitById } from '@/hooks/useWorkunit';
+import { useTask } from '@/hooks/useTodo';
 
-const taskOptions = [
-    { title: 'Study', value: 'study' },
-    { title: 'work', value: 'work' },
-];
-
-export const WorkunitForm = ({
-    defaultValues,
-}: {
-    defaultValues?: Workunit;
-}) => {
+export const WorkunitForm = () => {
     const form = useForm<Workunit>({
         resolver: zodResolver(WorkunitSchema),
-        defaultValues: defaultValues
-            ? {
-                  ...defaultValues,
-                  start_time: dayjs(
-                      defaultValues.start_time || new Date()
-                  ).toDate(),
-                  end_time: dayjs(
-                      defaultValues.end_time || new Date()
-                  ).toDate(),
-              }
-            : DEFAULT_WORKUNIT_VALUES,
+        defaultValues: DEFAULT_WORKUNIT_VALUES,
     });
+
+    const { workunitId } = useParams();
+    const { data: workunit } = useWorkunitById(workunitId || '');
+    const { data: tasks } = useTask();
+
+    useEffect(() => {
+        if (workunit) {
+            form.setValue('title', workunit.title || '');
+            form.setValue('description', workunit.description || '');
+            form.setValue('task', workunit.task || '');
+            form.setValue('date', dayjs(workunit.date || '').toDate());
+            form.setValue(
+                'start_time',
+                dayjs(workunit.start_time || '').toDate()
+            );
+            form.setValue('end_time', dayjs(workunit.end_time || '').toDate());
+            form.setValue('session_duration', workunit.session_duration || 0);
+            form.setValue('break_duration', workunit.break_duration || 0);
+        }
+    }, [workunit]);
 
     const { addWorkunit } = useWorkunitStore();
     const [calendarOpen, setCalendarOpen] = useState(false);
@@ -76,13 +79,13 @@ export const WorkunitForm = ({
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-6 px-8 min-w-fit"
+                className="space-y-6 px-8 w-[30vw]"
             >
                 <h1 className="text-lg font-semibold mb-1">
-                    {defaultValues ? 'Edit Work Unit' : 'Add new Work Unit'}
+                    {workunit ? 'Edit Work Unit' : 'Add new Work Unit'}
                 </h1>
                 <p className="text-sm text-muted-foreground mb-6">
-                    {defaultValues
+                    {workunit
                         ? 'Edit a work unit to track your time.'
                         : 'Create a new work unit to track your time.'}
                 </p>
@@ -134,14 +137,24 @@ export const WorkunitForm = ({
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
-                                                {taskOptions.map((option) => (
-                                                    <SelectItem
-                                                        key={option.value}
-                                                        value={option.value}
-                                                    >
-                                                        {option.title}
-                                                    </SelectItem>
-                                                ))}
+                                                {tasks &&
+                                                    tasks.map(
+                                                        (option) =>
+                                                            option.title && (
+                                                                <SelectItem
+                                                                    key={
+                                                                        option.title
+                                                                    }
+                                                                    value={
+                                                                        option.title
+                                                                    }
+                                                                >
+                                                                    {
+                                                                        option.title
+                                                                    }
+                                                                </SelectItem>
+                                                            )
+                                                    )}
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>

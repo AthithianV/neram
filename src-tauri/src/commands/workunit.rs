@@ -1,4 +1,7 @@
-use sea_orm::{ ActiveModelTrait, EntityTrait, Set, ColumnTrait, QueryFilter };
+use serde::{ Serialize, Deserialize };
+use std::collections::HashMap;
+use sea_orm::ConnectionTrait;
+use sea_orm::{ ActiveModelTrait, EntityTrait, Set, ColumnTrait, QueryFilter, Statement };
 use tauri::{ command, State };
 use chrono::{ DateTime, Utc };
 
@@ -7,6 +10,13 @@ use crate::entity::task;
 use crate::entity::tag;
 
 use crate::AppState;
+
+#[derive(Serialize, Deserialize)]
+pub struct WorkunitResponse {
+    pub workunit: workunit::Model,
+    pub task: Option<task::Model>,
+    pub tags: Vec<tag::Model>,
+}
 
 /// Creates a new workunit record in the database.
 ///
@@ -85,51 +95,129 @@ pub async fn create_workunit(
 ///
 /// # Returns
 /// A `Result` containing a `Vec` of `WorkunitModel` on success, or a `String` error message.
+
 #[command]
 pub async fn get_all_workunits(
     app_state: State<'_, AppState>
-) -> Result<Vec<(workunit::Model, Option<task::Model>, Vec<tag::Model>)>, String> {
+) -> Result<Vec<WorkunitResponse>, String> {
     let db = app_state.conn.lock().await;
-    // First get workunits with their tasks
-    let workunits_with_tasks: Vec<(workunit::Model, Vec<task::Model>)> = workunit::Entity
-        ::find()
-        .find_with_related(task::Entity)
-        .all(&*db).await
+
+    let query =
+        r#"
+        SELECT
+            -- Workunit fields
+            workunits.id as w_id,
+            workunits.task as w_task,
+            workunits.date as w_date,
+            workunits.title as w_title,
+            workunits.description as w_description,
+            workunits.start_time as w_start_time,
+            workunits.end_time as w_end_time,
+            workunits.session_duration as w_session_duration,
+            workunits.break_duration as w_break_duration,
+            workunits.created_at as w_created_at,
+            workunits.updated_at as w_updated_at,
+            
+            -- Task fields
+            tasks.title as t_title,
+            tasks.description as t_description,
+            tasks.status as t_status,
+            tasks.color as t_color,
+            tasks.deadline as t_deadline,
+            tasks.priority as t_priority,
+            tasks.created_at as t_created_at,
+            tasks.updated_at as t_updated_at,
+
+            -- Tag fields
+            tags.title as tag_title,
+            tags.color as tag_color,
+            tags.description as tag_description,
+            tags.is_default as tag_is_default,
+            tags.created_at as tag_created_at,
+            tags.updated_at as tag_updated_at
+            
+        FROM workunits
+        LEFT JOIN tasks ON workunits.task = tasks.title
+        LEFT JOIN (
+            SELECT * FROM tags
+            INNER JOIN workunit_tag wt ON wt.tag = tags.title
+        ) as tags ON tags.workunit_id = workunits.id
+        ORDER BY workunits.date ASC, workunits.id ASC
+    "#;
+
+    let rows = db
+        .query_all(Statement::from_sql_and_values(db.get_database_backend(), query, [])).await
         .map_err(|e| e.to_string())?;
 
-    // Then get workunits with their tags
-    let workunits_with_tags: Vec<(workunit::Model, Vec<tag::Model>)> = workunit::Entity
-        ::find()
-        .find_with_related(tag::Entity)
-        .all(&*db).await
-        .map_err(|e| e.to_string())?;
+    // Group data by workunit_id
+    let mut workunit_map: HashMap<i32, WorkunitResponse> = HashMap::new();
 
-    // Combine the data (you'll need to merge these based on workunit.id)
-    use std::collections::HashMap;
+    for row in rows {
+        let workunit_id: i32 = row.try_get_by("w_id").unwrap();
 
-    let mut workunit_data: HashMap<
-        i32,
-        (workunit::Model, Option<task::Model>, Vec<tag::Model>)
-    > = HashMap::new();
+        // Get or create workunit response entry
+        let entry = workunit_map.entry(workunit_id).or_insert_with(|| {
+            // Parse workunit
+            let workunit = workunit::Model {
+                id: row.try_get_by("w_id").unwrap(),
+                task: row.try_get_by("w_task").unwrap(),
+                date: row.try_get_by("w_date").unwrap(),
+                title: row.try_get_by("w_title").unwrap(),
+                description: row.try_get_by("w_description").unwrap(),
+                start_time: row.try_get_by("w_start_time").unwrap(),
+                end_time: row.try_get_by("w_end_time").unwrap(),
+                session_duration: row.try_get_by("w_session_duration").unwrap(),
+                break_duration: row.try_get_by("w_break_duration").unwrap(),
+                created_at: row.try_get_by("w_created_at").unwrap(),
+                updated_at: row.try_get_by("w_updated_at").unwrap(),
+            };
 
-    // Process tasks
-    for (workunit, tasks) in workunits_with_tasks {
-        let task = tasks.into_iter().next(); // Should be only one task per workunit
-        workunit_data.insert(workunit.id, (workunit, task, Vec::new()));
-    }
+            // Parse task (if exists)
+            let task = if row.try_get_by::<String, _>("t_title").is_ok() {
+                Some(task::Model {
+                    title: row.try_get_by("t_title").unwrap(),
+                    description: row.try_get_by("t_description").unwrap(),
+                    status: row.try_get_by("t_status").unwrap(),
+                    color: row.try_get_by("t_color").unwrap(),
+                    deadline: row.try_get_by("t_deadline").unwrap(),
+                    priority: row.try_get_by("t_priority").unwrap(),
+                    created_at: row.try_get_by("t_created_at").unwrap(),
+                    updated_at: row.try_get_by("t_updated_at").unwrap(),
+                })
+            } else {
+                None
+            };
 
-    // Process tags
-    for (workunit, tags) in workunits_with_tags {
-        if let Some(entry) = workunit_data.get_mut(&workunit.id) {
-            entry.2 = tags;
+            WorkunitResponse {
+                workunit,
+                task,
+                tags: Vec::new(),
+            }
+        });
+
+        // Add tag if it exists
+        if row.try_get_by::<String, _>("tag_title").is_ok() {
+            let tag = tag::Model {
+                title: row.try_get_by("tag_title").unwrap(),
+                color: row.try_get_by("tag_color").unwrap(),
+                description: row.try_get_by("tag_description").unwrap(),
+                is_default: row.try_get_by("tag_is_default").unwrap(),
+                created_at: row.try_get_by("tag_created_at").unwrap(),
+                updated_at: row.try_get_by("tag_updated_at").unwrap(),
+            };
+
+            // Avoid duplicate tags
+            if !entry.tags.iter().any(|t| t.title == tag.title) {
+                entry.tags.push(tag);
+            }
         }
     }
 
-    let final_result: Vec<(workunit::Model, Option<task::Model>, Vec<tag::Model>)> = workunit_data
-        .into_values()
-        .collect();
+    // Convert to ordered vector
+    let mut result: Vec<WorkunitResponse> = workunit_map.into_values().collect();
+    result.sort_by(|a, b| a.workunit.date.cmp(&b.workunit.date));
 
-    Ok(final_result)
+    Ok(result)
 }
 
 /// Retrieves a single workunit record by its ID.
@@ -149,10 +237,12 @@ pub async fn get_workunit_by_id(
 ) -> Result<Option<workunit::Model>, String> {
     // Acquire a lock on the database connection
     let db = app_state.conn.lock().await;
+    println!("id: {}", id);
     let workunit = workunit::Entity
         ::find_by_id(id) // Changed WorkunitEntity to Workunit
         .one(&*db).await
         .map_err(|e| e.to_string())?;
+    println!("workunit: {:?}", workunit);
     Ok(workunit)
 }
 

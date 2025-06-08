@@ -19,7 +19,7 @@ const RestoreDown = () => {
                 <title>restore_line</title>
                 <g
                     id="页面-1"
-                    stroke-width="0.00024000000000000003"
+                    strokeWidth="0.00024000000000000003"
                     fill="none"
                     fillRule="evenodd"
                 >

@@ -1,4 +1,4 @@
-use sea_orm::{entity::prelude::*, ActiveValue::Set};
+use sea_orm::{ entity::prelude::*, ActiveValue::Set };
 use serde::{ Deserialize, Serialize };
 
 #[derive(Debug, Clone, EnumIter, DeriveActiveEnum, PartialEq, Eq, Serialize, Deserialize)]
