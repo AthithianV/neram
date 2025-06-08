@@ -15,7 +15,7 @@ import { useLocation } from 'react-router-dom';
 import { SIDEBAR_BODY_LINKS, SIDEBAR_FOOTER_LINKS } from '@/constants/sidebar';
 import { useSidebar } from '@/components/ui/sidebar';
 import NeramLogo from '@/assets/logo.png';
-import Brand from '../Brand';
+import Brand from './Brand';
 import { cn } from '@/lib/utils';
 
 const NeramSidebar = () => {

@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 import dayjs from 'dayjs';
 import { CalendarIcon } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -31,19 +31,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { SelectGroup, SelectContent } from '@/components/ui/select';
 import { Select, SelectItem, SelectValue } from '@/components/ui/select';
 import { SelectTrigger } from '@/components/ui/select';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import useWorkunitStore from '@/store/WorkunitStore';
 import { Workunit } from '@/schema/WorkunitSchema';
-import {
-    Sheet,
-    SheetClose,
-    SheetContent,
-    SheetDescription,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-} from '@/components/ui/sheet';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { DEFAULT_WORKUNIT_VALUES } from '@/constants/workunit';
 
 const taskOptions = [
     { title: 'Study', value: 'study' },
@@ -67,34 +58,34 @@ export const WorkunitForm = ({
                       defaultValues.end_time || new Date()
                   ).toDate(),
               }
-            : {
-                  id: Date.now(),
-                  title: '',
-                  description: '',
-                  task: '',
-                  date: new Date(),
-                  start_time: dayjs(new Date()).subtract(1, 'hour').toDate(),
-                  end_time: dayjs(new Date()).toDate(),
-                  session_duration: 60 * 60,
-                  break_duration: 0,
-                  tags: [],
-              },
+            : DEFAULT_WORKUNIT_VALUES,
     });
 
     const { addWorkunit } = useWorkunitStore();
     const [calendarOpen, setCalendarOpen] = useState(false);
 
+    const navigate = useNavigate();
+
     function onSubmit(data: z.infer<typeof WorkunitSchema>) {
         toast('Work unit has been Created');
         addWorkunit(data);
+        navigate('/dashboard');
     }
 
     return (
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-6 px-8"
+                className="space-y-6 px-8 min-w-fit"
             >
+                <h1 className="text-lg font-semibold mb-1">
+                    {defaultValues ? 'Edit Work Unit' : 'Add new Work Unit'}
+                </h1>
+                <p className="text-sm text-muted-foreground mb-6">
+                    {defaultValues
+                        ? 'Edit a work unit to track your time.'
+                        : 'Create a new work unit to track your time.'}
+                </p>
                 {/* title */}
                 <FormField
                     control={form.control}
@@ -295,52 +286,21 @@ export const WorkunitForm = ({
                 </div>
 
                 <div className="flex justify-center items-center gap-2">
-                    <SheetClose asChild>
-                        <Button
-                            type="button"
-                            className="cursor-pointer"
-                            variant={'outline'}
-                        >
-                            Cancel
-                        </Button>
-                    </SheetClose>
+                    <Button
+                        type="button"
+                        className="cursor-pointer"
+                        variant={'outline'}
+                        onClick={() => {
+                            navigate('/dashboard');
+                        }}
+                    >
+                        Cancel
+                    </Button>
                     <Button type="submit" className="cursor-pointer">
                         Submit
                     </Button>
                 </div>
             </form>
         </Form>
-    );
-};
-
-export const WorkunitSheet = ({
-    defaultValue,
-    children,
-}: {
-    defaultValue?: Workunit;
-    children: React.ReactNode;
-}) => {
-    return (
-        <Sheet modal={false}>
-            <SheetTrigger asChild>{children}</SheetTrigger>
-            <SheetContent
-                onPointerDownOutside={(e) => e.preventDefault()}
-                className="max-lg:w-8/12 max-sm:w-11/12"
-            >
-                <SheetHeader className="px-8">
-                    <SheetTitle>
-                        {defaultValue ? 'Edit Work Unit' : 'Create Work Unit'}
-                    </SheetTitle>
-                    <SheetDescription>
-                        {defaultValue
-                            ? 'Edit a work unit to track your time.'
-                            : 'Create a new work unit to track your time.'}
-                    </SheetDescription>
-                </SheetHeader>
-                <ScrollArea className="h-10/12 max-md:border-t-2 pt-2">
-                    <WorkunitForm defaultValues={defaultValue} />
-                </ScrollArea>
-            </SheetContent>
-        </Sheet>
     );
 };

@@ -34,7 +34,6 @@ export const useWorkunit = () => {
                     };
                 }
             );
-            console.log(workunitsWithTaskAndTags);
             return workunitsWithTaskAndTags as WorkunitWithTaskAndTag[];
         },
     });

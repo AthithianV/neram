@@ -1,6 +1,6 @@
 import { Window } from '@tauri-apps/api/window';
 import { Button } from '../ui/button';
-import { Maximize, Minus, Square, X } from 'lucide-react';
+import { Square } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import {
@@ -10,13 +10,19 @@ import {
     BreadcrumbList,
     BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
+import Minimize from '../icon/Minimize';
+import RestoreDown from '../icon/RestoreDown';
+import Close from '../icon/Close';
 
 const TitleBar = () => {
     const [isMaximized, setIsMaximized] = useState(false);
 
     useEffect(() => {
-        window.isMaximized().then((isMaximized) => {
-            setIsMaximized(isMaximized);
+        window.onResized((event) => {
+            console.log(event);
+            window.isMaximized().then((isMaximized) => {
+                setIsMaximized(isMaximized);
+            });
         });
     }, []);
 
@@ -43,7 +49,7 @@ const TitleBar = () => {
                     className="px-6 h-full rounded-none"
                     onClick={() => window.minimize()}
                 >
-                    <Minus />
+                    <Minimize />
                 </Button>
                 <Button
                     variant="ghost"
@@ -51,11 +57,7 @@ const TitleBar = () => {
                     className="px-6 h-full rounded-none"
                     onClick={() => window.maximize()}
                 >
-                    {isMaximized ? (
-                        <Square size={10} />
-                    ) : (
-                        <Maximize size={10} />
-                    )}
+                    {isMaximized ? <RestoreDown /> : <Square />}
                 </Button>
                 <Button
                     variant="ghost"
@@ -63,7 +65,7 @@ const TitleBar = () => {
                     className="px-6 h-full rounded-none hover:bg-red-500"
                     onClick={() => window.close()}
                 >
-                    <X size={12} />
+                    <Close />
                 </Button>
             </div>
         </div>

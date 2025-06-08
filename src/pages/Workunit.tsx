@@ -1,21 +1,15 @@
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import useWorkunitStore from '@/store/WorkunitStore';
 import WorkunitCard from '@/components/workunit/WorkunitCard';
-import { WorkunitSheet } from '@/components/workunit/WorkunitForm';
-import { PlayIcon, PauseIcon, PlusIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { Workunit } from '@/schema/WorkunitSchema';
+import { PlayIcon, PlusIcon } from 'lucide-react';
 import { useWorkunit, WorkunitWithTaskAndTag } from '@/hooks/useWorkunit';
+import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Separator } from '@/components/ui/separator';
+import { motion } from 'framer-motion';
 
 const Dashboard = () => {
-    // const { addWorkunit, setTimer } = useWorkunitStore();
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
-    const [currentWorkunit, setCurrentWorkunit] = useState<Workunit | null>(
-        null
-    );
     const { data: workunits, isLoading, error } = useWorkunit();
+    const location = useLocation();
 
     if (isLoading) {
         return <div>Loading...</div>;
@@ -25,53 +19,18 @@ const Dashboard = () => {
         return <div>Error: {error.toString()}</div>;
     }
 
-    const handlePlay = () => {
-        // const workunit = {
-        //     id: Date.now(),
-        //     startTime: new Date(),
-        //     endTime: new Date(),
-        //     task: 'Workunit 1',
-        //     date: new Date(),
-        //     session_duration: 0,
-        //     break_duration: 0,
-        //     tags: [],
-        // };
-        // if (isPlaying) {
-        //     setIsPlaying(false);
-        //     if (intervalId) {
-        //         clearInterval(intervalId);
-        //     }
-        // } else {
-        //     addWorkunit(workunit);
-        //     setCurrentWorkunit(workunit);
-        //     setIsPlaying(true);
-        //     const interval = setInterval(() => {
-        //         setTimer(1, workunit.id);
-        //     }, 1000);
-        //     setIntervalId(interval);
-        // }
-    };
-
     return (
-        <div className="flex flex-col gap-4 h-full">
+        <div className="flex flex-col h-full overflow-x-hidden">
             <div className="flex items-center justify-between h-1/12">
                 <div className="flex gap-2">
                     <Button
                         variant={'default'}
                         className="flex items-center gap-1"
-                        onClick={handlePlay}
                     >
-                        {isPlaying ? (
-                            <PauseIcon
-                                fill="currentColor"
-                                className="w-4 h-4"
-                            />
-                        ) : (
-                            <PlayIcon fill="currentColor" className="w-4 h-4" />
-                        )}
+                        <PlayIcon fill="currentColor" className="w-4 h-4" />
                         <span>Start</span>
                     </Button>
-                    <WorkunitSheet>
+                    <Link to="/dashboard/add-workunit">
                         <Button
                             variant={'default'}
                             className="flex items-center gap-1"
@@ -79,36 +38,46 @@ const Dashboard = () => {
                             <PlusIcon fill="currentColor" className="w-4 h-4" />
                             <span>Add Work Unit</span>
                         </Button>
-                    </WorkunitSheet>
+                    </Link>
                 </div>
-                <div></div>
             </div>
 
-            <ScrollArea className="h-11/12 border-t-2 pt-2">
-                <ul className="flex flex-col gap-[1px]">
-                    {workunits &&
-                        workunits.length > 0 &&
-                        workunits.map(
-                            (
-                                workunitWithTaskAndTag: WorkunitWithTaskAndTag,
-                                index: number
-                            ) => (
-                                <WorkunitSheet
-                                    key={index}
-                                    defaultValue={
-                                        workunitWithTaskAndTag.workunit
-                                    }
-                                >
+            <Separator className="mb-0" />
+
+            <div className="h-11/12 flex w-full overflow-x-hidden">
+                <ScrollArea className="h-full flex-1">
+                    <ul className="flex flex-col gap-[1px]">
+                        {workunits &&
+                            workunits.length > 0 &&
+                            workunits.map(
+                                (
+                                    workunitWithTaskAndTag: WorkunitWithTaskAndTag,
+                                    index: number
+                                ) => (
                                     <WorkunitCard
+                                        key={index}
                                         workunitWithTaskAndTag={
                                             workunitWithTaskAndTag
                                         }
                                     />
-                                </WorkunitSheet>
-                            )
-                        )}
-                </ul>
-            </ScrollArea>
+                                )
+                            )}
+                    </ul>
+                </ScrollArea>
+
+                <ScrollArea
+                    key={location.pathname}
+                    className="scrollbar-hidden py-4"
+                >
+                    <motion.div
+                        initial={{ width: 0, opacity: 0 }}
+                        animate={{ width: 'auto', opacity: 1 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <Outlet />
+                    </motion.div>
+                </ScrollArea>
+            </div>
         </div>
     );
 };
