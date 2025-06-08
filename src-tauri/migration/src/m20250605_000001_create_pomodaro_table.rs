@@ -15,8 +15,6 @@ enum Pomodaro {
     BreakDuration,
     AutoStart,
     SyncWithTimeTracking,
-    CreatedAt,
-    UpdatedAt,
 }
 
 #[async_trait::async_trait]
@@ -33,18 +31,6 @@ impl MigrationTrait for Migration {
                 .col(ColumnDef::new(Pomodaro::BreakDuration).double().not_null())
                 .col(ColumnDef::new(Pomodaro::AutoStart).boolean().not_null())
                 .col(ColumnDef::new(Pomodaro::SyncWithTimeTracking).boolean().not_null())
-                .col(
-                    ColumnDef::new(Pomodaro::CreatedAt)
-                        .date_time()
-                        .not_null()
-                        .default(Expr::current_timestamp())
-                )
-                .col(
-                    ColumnDef::new(Pomodaro::UpdatedAt)
-                        .date_time()
-                        .not_null()
-                        .default(Expr::current_timestamp())
-                )
                 .to_owned()
         ).await?;
 

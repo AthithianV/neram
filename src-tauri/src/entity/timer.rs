@@ -19,8 +19,6 @@ pub struct Model {
     pub is_running: bool,
     pub timer_type: TimerType,
     pub duration: f64,
-    pub created_at: DateTimeWithTimeZone,
-    pub updated_at: DateTimeWithTimeZone,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

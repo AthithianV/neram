@@ -22,10 +22,10 @@ import TimeElement from '@/components/form/TimeElement';
 import DurationElement from '@/components/form/DurationElement';
 import WorkunitSchema from '@/schema/WorkunitSchema';
 import { Textarea } from '@/components/ui/textarea';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Workunit } from '@/schema/WorkunitSchema';
 import { DEFAULT_WORKUNIT_VALUES } from '@/constants/workunit';
-import { TagType, useWorkunitById } from '@/hooks/useWorkunit';
+import { useCreateWorkunit, useWorkunitById } from '@/hooks/useWorkunit';
 import DatePicker from '../form/DatePicker';
 import TaskPicker from './TaskPicker';
 import { DEFAULT_TIME_ZONE } from '@/constants/times';
@@ -42,7 +42,8 @@ export const WorkunitForm = () => {
 
     const { workunitId } = useParams();
     const { data: workunit } = useWorkunitById(workunitId || '');
-    const [selectedTags, setSelectedTags] = useState<TagType[]>([]);
+
+    const { mutate: createWorkunit } = useCreateWorkunit();
 
     useEffect(() => {
         if (workunit) {
@@ -69,8 +70,7 @@ export const WorkunitForm = () => {
     const navigate = useNavigate();
 
     function onSubmit(data: z.infer<typeof WorkunitSchema>) {
-        toast('Work unit has been Created');
-        console.log(data);
+        createWorkunit(data);
         navigate('/dashboard');
     }
 

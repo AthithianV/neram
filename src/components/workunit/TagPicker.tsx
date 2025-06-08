@@ -11,7 +11,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Badge } from '../ui/badge';
 import { useTag } from '@/hooks/useTodo';
 import { X, ChevronsUpDown, Check } from 'lucide-react';
@@ -40,6 +40,10 @@ const TagPicker = ({
             return new Set([...prev]);
         });
     };
+
+    useEffect(() => {
+        onChange(Array.from(selectedTags));
+    }, [selectedTags]);
 
     return (
         <div className="relative">
@@ -124,6 +128,9 @@ const SelectedTags = ({
                     key={tag.title}
                     variant="outline"
                     className="cursor-pointer flex items-center gap-1"
+                    style={{
+                        backgroundColor: tag.color || '#ccc',
+                    }}
                     onClick={(e) => {
                         e.preventDefault();
                         handleRemoveTag(tag);

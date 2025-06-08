@@ -8,6 +8,7 @@ use chrono::{ DateTime, Utc };
 use crate::entity::workunit;
 use crate::entity::task;
 use crate::entity::tag;
+use crate::entity::workunit_tag;
 
 use crate::AppState;
 
@@ -40,50 +41,49 @@ pub struct WorkunitResponse {
 #[command]
 pub async fn create_workunit(
     app_state: State<'_, AppState>,
-    title: Option<String>,
-    description: Option<String>,
-    task: String,
-    date: String,
-    start_time: String,
-    end_time: String,
-    session_duration: i32,
-    break_duration: i32
+    tags: Vec<String>,
+    workunit: workunit::Model
 ) -> Result<workunit::Model, String> {
     // Acquire a lock on the database connection
     let db = app_state.conn.lock().await;
 
-    // Parse DateTimeWithTimeZone strings
-    let parsed_date = date
-        .parse::<DateTime<Utc>>()
-        .map_err(|e| format!("Failed to parse date: {}", e))?
-        .fixed_offset();
-    let parsed_start_time = start_time
-        .parse::<DateTime<Utc>>()
-        .map_err(|e| format!("Failed to parse start_time: {}", e))?
-        .fixed_offset();
-    let parsed_end_time = end_time
-        .parse::<DateTime<Utc>>()
-        .map_err(|e| format!("Failed to parse end_time: {}", e))?
-        .fixed_offset();
+    println!("tags: {:?}", tags);
+    println!("workunit: {:?}", workunit);
 
+    // Parse DateTimeWithTimeZone strings
     let now = Utc::now().fixed_offset();
 
     let new_workunit = workunit::ActiveModel {
-        // id is primary key and auto-incremented, so we don't set it here for creation.
         id: Set(Default::default()),
-        title: Set(title),
-        description: Set(description),
-        task: Set(task),
-        date: Set(parsed_date),
-        start_time: Set(parsed_start_time),
-        end_time: Set(parsed_end_time),
-        session_duration: Set(session_duration),
-        break_duration: Set(break_duration),
-        created_at: Set(now),
-        updated_at: Set(now),
+        title: Set(workunit.title),
+        description: Set(workunit.description),
+        task: Set(workunit.task),
+        date: Set(workunit.date),
+        start_time: Set(workunit.start_time),
+        end_time: Set(workunit.end_time),
+        session_duration: Set(workunit.session_duration),
+        break_duration: Set(workunit.break_duration),
+        created_at: Set(Some(now)),
+        updated_at: Set(Some(now)),
     };
 
     let res = new_workunit.insert(&*db).await.map_err(|e| e.to_string())?;
+
+    let workunit_tags_active_models: Vec<workunit_tag::ActiveModel> = tags
+        .iter()
+        .map(|tag| {
+            workunit_tag::ActiveModel {
+                workunit_id: Set(res.id),
+                tag: Set(tag.clone()),
+            }
+        })
+        .collect();
+
+    workunit_tag::Entity
+        ::insert_many(workunit_tags_active_models)
+        .exec(&*db).await
+        .map_err(|e| e.to_string())?;
+
     Ok(res)
 }
 
@@ -332,7 +332,7 @@ pub async fn update_workunit(
     }
 
     // Update updated_at timestamp
-    workunit_active_model.updated_at = Set(Utc::now().fixed_offset());
+    workunit_active_model.updated_at = Set(Some(Utc::now().fixed_offset()));
 
     // Save changes
     let res = workunit_active_model.update(&*db).await.map_err(|e| e.to_string())?;

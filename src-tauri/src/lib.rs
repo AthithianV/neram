@@ -22,10 +22,7 @@ use commands::tag::{
     remove_tag_from_workunit,
 };
 
-pub use entity::workunit;
-pub use entity::task;
-pub use entity::tag;
-pub use entity::workunit_tag;
+pub use entity::*;
 
 pub use sea_orm::DatabaseConnection;
 use std::sync::Arc;

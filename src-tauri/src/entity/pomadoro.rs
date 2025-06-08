@@ -17,8 +17,6 @@ pub struct Model {
     pub auto_start: bool,
     #[sea_orm(column_name = "syncWithTimeTracking")]
     pub sync_with_time_tracking: bool,
-    pub created_at: DateTimeWithTimeZone,
-    pub updated_at: DateTimeWithTimeZone,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

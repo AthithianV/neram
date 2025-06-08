@@ -12,8 +12,6 @@ enum Timer {
     IsRunning,
     Type,
     Duration,
-    CreatedAt,
-    UpdatedAt,
 }
 
 #[async_trait::async_trait]
@@ -28,18 +26,6 @@ impl MigrationTrait for Migration {
                 .col(ColumnDef::new(Timer::IsRunning).boolean().not_null())
                 .col(ColumnDef::new(Timer::Type).string().not_null())
                 .col(ColumnDef::new(Timer::Duration).double().not_null())
-                .col(
-                    ColumnDef::new(Timer::CreatedAt)
-                        .date_time()
-                        .not_null()
-                        .default(Expr::current_timestamp())
-                )
-                .col(
-                    ColumnDef::new(Timer::UpdatedAt)
-                        .date_time()
-                        .not_null()
-                        .default(Expr::current_timestamp())
-                )
                 .to_owned()
         ).await?;
 

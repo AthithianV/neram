@@ -59,8 +59,8 @@ pub async fn create_task(
         priority: Set(priority),
         deadline: Set(parsed_deadline_date),
         color: Set(color),
-        created_at: Set(now),
-        updated_at: Set(now),
+        created_at: Set(Some(now)),
+        updated_at: Set(Some(now)),
     };
 
     let res = new_task.insert(&*db).await.map_err(|e| e.to_string())?;
@@ -160,7 +160,7 @@ pub async fn update_task(
 
     // Update timestamp
     let now = Utc::now().fixed_offset();
-    task_active_model.updated_at = Set(now);
+    task_active_model.updated_at = Set(Some(now));
 
     // Save changes
     let res = task_active_model.update(&*db).await.map_err(|e| e.to_string())?;

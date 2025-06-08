@@ -50,8 +50,8 @@ pub async fn create_tag(
         description: Set(description),
         color: Set(color),
         is_default: Set(is_default),
-        created_at: Set(now),
-        updated_at: Set(now),
+        created_at: Set(Some(now)),
+        updated_at: Set(Some(now)),
     };
 
     let res = new_tag.insert(&*db).await.map_err(|e| e.to_string())?;
@@ -143,7 +143,7 @@ pub async fn update_tag(
     tag_active_model.is_default = Set(is_default);
 
     // Update timestamp
-    tag_active_model.updated_at = Set(Utc::now().fixed_offset());
+    tag_active_model.updated_at = Set(Some(Utc::now().fixed_offset()));
 
     // Save changes
     let res = tag_active_model.update(&*db).await.map_err(|e| e.to_string())?;
@@ -241,8 +241,6 @@ pub async fn add_tag_to_workunit(
     let new_workunit_tag = workunit_tag::ActiveModel {
         workunit_id: Set(workunit_id),
         tag: Set(tag_title),
-        created_at: Set(Utc::now().fixed_offset()),
-        updated_at: Set(Utc::now().fixed_offset()),
     };
 
     new_workunit_tag.insert(&*db).await.map_err(|e| e.to_string())?;

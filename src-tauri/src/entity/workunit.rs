@@ -19,8 +19,8 @@ pub struct Model {
     pub session_duration: i32,
     pub break_duration: i32,
 
-    pub created_at: DateTimeWithTimeZone,
-    pub updated_at: DateTimeWithTimeZone,
+    pub created_at: Option<DateTimeWithTimeZone>,
+    pub updated_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation, Serialize, Deserialize)]

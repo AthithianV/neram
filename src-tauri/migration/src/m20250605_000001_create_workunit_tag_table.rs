@@ -13,18 +13,6 @@ impl MigrationTrait for Migration {
                 .if_not_exists()
                 .col(ColumnDef::new(WorkunitTag::WorkunitId).integer().not_null())
                 .col(ColumnDef::new(WorkunitTag::Tag).string().not_null())
-                .col(
-                    ColumnDef::new(WorkunitTag::CreatedAt)
-                        .date_time()
-                        .not_null()
-                        .default(Expr::current_timestamp())
-                )
-                .col(
-                    ColumnDef::new(WorkunitTag::UpdatedAt)
-                        .date_time()
-                        .not_null()
-                        .default(Expr::current_timestamp())
-                )
                 .primary_key(
                     Index::create()
                         .name("pk-workunit_tag")
@@ -73,6 +61,4 @@ enum WorkunitTag {
     Table,
     WorkunitId,
     Tag,
-    CreatedAt,
-    UpdatedAt,
 }

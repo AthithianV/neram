@@ -24,8 +24,8 @@ pub struct Model {
     pub status: TodosStatus,
     pub deadline: DateTimeWithTimeZone,
     pub priority: i32,
-    pub created_at: DateTimeWithTimeZone,
-    pub updated_at: DateTimeWithTimeZone,
+    pub created_at: Option<DateTimeWithTimeZone>,
+    pub updated_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation, Serialize, Deserialize)]

@@ -1,8 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
 import { Workunit } from '@/schema/WorkunitSchema';
 import { Tag } from '@/schema/TagSchema';
 import { Task } from '@/schema/TaskSchema';
+import { toast } from 'sonner';
 
 type DateType = {
     created_at: string;
@@ -37,6 +38,27 @@ export const useWorkunitById = (id: string) => {
                 id: parseInt(id, 10),
             });
             return workunit as WorkunitType;
+        },
+    });
+};
+
+export const useCreateWorkunit = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (workunit: Workunit) => {
+            console.log(workunit);
+            await invoke('create_workunit', {
+                tags: workunit.tags.map((tag) => tag.title),
+                workunit,
+            });
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['workunits'] });
+            toast.success('Workunit created successfully');
+        },
+        onError: (err) => {
+            console.log(err);
+            toast.error('Failed to create workunit');
         },
     });
 };

@@ -10,8 +10,8 @@ pub struct Model {
     pub color: String,
     pub is_default: bool,
 
-    pub created_at: DateTimeWithTimeZone,
-    pub updated_at: DateTimeWithTimeZone,
+    pub created_at: Option<DateTimeWithTimeZone>,
+    pub updated_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation, Serialize, Deserialize)]

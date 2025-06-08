@@ -13,8 +13,6 @@ enum Settings {
     DateFormat,
     TimeFormat,
     TimeZone,
-    CreatedAt,
-    UpdatedAt,
 }
 
 #[async_trait::async_trait]
@@ -26,21 +24,9 @@ impl MigrationTrait for Migration {
                 .if_not_exists()
                 .col(ColumnDef::new(Settings::Id).integer().not_null().primary_key())
                 .col(ColumnDef::new(Settings::Theme).string().not_null().default("SYSTEM"))
-                .col(
-                    ColumnDef::new(Settings::CreatedAt)
-                        .date_time()
-                        .not_null()
-                        .default(Expr::current_timestamp())
-                )
                 .col(ColumnDef::new(Settings::DateFormat).string().not_null().default("DD/MM/YYYY"))
                 .col(ColumnDef::new(Settings::TimeFormat).string().not_null().default("hh:mm:ss A"))
                 .col(ColumnDef::new(Settings::TimeZone).string().not_null().default("SYSTEM"))
-                .col(
-                    ColumnDef::new(Settings::UpdatedAt)
-                        .date_time()
-                        .not_null()
-                        .default(Expr::current_timestamp())
-                )
                 .to_owned()
         ).await?;
 

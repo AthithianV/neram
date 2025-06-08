@@ -9,9 +9,6 @@ pub struct Model {
 
     #[sea_orm(primary_key, auto_increment = false)]
     pub tag: String,
-
-    pub created_at: DateTimeWithTimeZone,
-    pub updated_at: DateTimeWithTimeZone,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation, Serialize, Deserialize)]

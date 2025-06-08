@@ -18,8 +18,6 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     pub theme: Theme,
-    pub created_at: DateTimeWithTimeZone,
-    pub updated_at: DateTimeWithTimeZone,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

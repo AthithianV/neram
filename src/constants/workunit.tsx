@@ -2,7 +2,7 @@ import { Workunit } from '@/schema/WorkunitSchema';
 import dayjs from 'dayjs';
 
 export const DEFAULT_WORKUNIT_VALUES: Workunit = {
-    id: Date.now(),
+    id: 0,
     title: '',
     description: '',
     task: '',
