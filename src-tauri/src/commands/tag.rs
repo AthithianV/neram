@@ -138,7 +138,6 @@ pub async fn update_tag(
         tag_active_model.description = Set(Some(d));
     }
 
-
     tag_active_model.color = Set(color);
 
     tag_active_model.is_default = Set(is_default);
@@ -160,13 +159,12 @@ pub async fn update_tag(
 /// # Returns
 /// A `Result` indicating success (`()`) or a `String` error message.
 #[command]
-pub async fn delete_tag(app_state: State<'_, AppState>, workunit_id: i32, title: String) -> Result<(), String> {
+pub async fn delete_tag(app_state: State<'_, AppState>, title: String) -> Result<(), String> {
     let db = app_state.conn.lock().await;
 
-    // First delete all workunit_tag relationships
+    // First delete all workunit_tag relationships for this tag
     workunit_tag::Entity
         ::delete_many()
-        .filter(workunit_tag::Column::WorkunitId.eq(workunit_id))
         .filter(workunit_tag::Column::Tag.eq(title.clone()))
         .exec(&*db).await
         .map_err(|e| e.to_string())?;

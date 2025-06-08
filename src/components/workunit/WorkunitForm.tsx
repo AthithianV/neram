@@ -22,13 +22,14 @@ import TimeElement from '@/components/form/TimeElement';
 import DurationElement from '@/components/form/DurationElement';
 import WorkunitSchema from '@/schema/WorkunitSchema';
 import { Textarea } from '@/components/ui/textarea';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Workunit } from '@/schema/WorkunitSchema';
 import { DEFAULT_WORKUNIT_VALUES } from '@/constants/workunit';
-import { useWorkunitById } from '@/hooks/useWorkunit';
+import { TagType, useWorkunitById } from '@/hooks/useWorkunit';
 import DatePicker from '../form/DatePicker';
 import TaskPicker from './TaskPicker';
 import { DEFAULT_TIME_ZONE } from '@/constants/times';
+import TagPicker from './TagPicker';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -41,6 +42,7 @@ export const WorkunitForm = () => {
 
     const { workunitId } = useParams();
     const { data: workunit } = useWorkunitById(workunitId || '');
+    const [selectedTags, setSelectedTags] = useState<TagType[]>([]);
 
     useEffect(() => {
         if (workunit) {
@@ -244,6 +246,22 @@ export const WorkunitForm = () => {
                         )}
                     />
                 </div>
+
+                {/* Tags */}
+                <FormField
+                    control={form.control}
+                    name="tags"
+                    render={({ field }) => (
+                        <FormItem className="flex-1">
+                            <FormLabel>Tags</FormLabel>
+                            <TagPicker
+                                value={field.value}
+                                onChange={field.onChange}
+                            />
+                            <FormMessage className="text-xs" />
+                        </FormItem>
+                    )}
+                />
 
                 <div className="flex justify-center items-center gap-2">
                     <Button

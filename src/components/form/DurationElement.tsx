@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Input } from '../ui/input';
 
 import { secondsToTime, timeToSeconds } from '../../lib/time';
@@ -13,6 +13,10 @@ const DurationElement = ({
     setError: (error: string) => void;
 }) => {
     const [duration, setDuration] = useState(secondsToTime(value));
+
+    useEffect(() => {
+        setDuration(secondsToTime(value));
+    }, [value]);
 
     const handleOnBlur = () => {
         const { isValid, duration: newDuration } = timeToSeconds(duration);

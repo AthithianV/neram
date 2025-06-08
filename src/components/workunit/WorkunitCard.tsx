@@ -47,7 +47,7 @@ const WorkunitCard = ({ workunitWithTaskAndTag }: WorkunitCardProps) => {
                             : {}
                     }
                 ></div>
-                <div className="flex flex-col gap-3 flex-1">
+                <div className="flex flex-col gap-2 flex-1">
                     <h3 className="text-md font-semibold">
                         {task?.title || 'Untitled'}
                     </h3>
