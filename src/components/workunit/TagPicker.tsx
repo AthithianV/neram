@@ -15,86 +15,75 @@ import { useEffect, useState } from 'react';
 import { Badge } from '../ui/badge';
 import { useTag } from '@/hooks/useTodo';
 import { X, ChevronsUpDown, Check } from 'lucide-react';
-import { TagType } from '@/hooks/useWorkunit';
+import {
+    TagType,
+    useAddTagToWorkunit,
+    useRemoveTagFromWorkunit,
+} from '@/hooks/useWorkunit';
 import { Tag } from '@/schema/TagSchema';
 import { Button } from '../ui/button';
 
 const TagPicker = ({
+    workunitId,
     value,
     onChange,
 }: {
+    workunitId: number | undefined;
     value: TagType[] | Tag[];
     onChange: (tags: Tag[]) => void;
 }) => {
     const { data: allTags } = useTag();
 
+    const [openDropdown, setOpenDropdown] = useState(false);
     const [selectedTags, setSelectedTags] = useState<Set<Tag>>(new Set(value));
+    const { mutate: removeTag } = useRemoveTagFromWorkunit();
+    const { mutate: addTag } = useAddTagToWorkunit();
+
+    useEffect(() => {
+        setSelectedTags(new Set(value));
+    }, [value]);
 
     const handleSelectTag = (tag: Tag) => {
         setSelectedTags((prev) => {
             if (prev.has(tag)) {
                 prev.delete(tag);
+                if (workunitId) {
+                    removeTag({ workunitId, tagTitle: tag.title });
+                }
             } else {
                 prev.add(tag);
+                if (workunitId) {
+                    addTag({ workunitId, tagTitle: tag.title });
+                }
             }
             return new Set([...prev]);
         });
     };
 
     useEffect(() => {
-        onChange(Array.from(selectedTags));
-    }, [selectedTags]);
-
-    return (
-        <div className="relative">
-            <InputWrapper
-                selectedTags={selectedTags}
-                handleSelectTag={handleSelectTag}
-            >
-                <CommandList>
-                    <CommandEmpty>No framework found.</CommandEmpty>
-                    <CommandGroup>
-                        {allTags?.map((tag, index) => (
-                            <TagItem
-                                key={index}
-                                tag={tag}
-                                handleSelectTag={handleSelectTag}
-                                isSelected={selectedTags.has(tag)}
-                            />
-                        ))}
-                    </CommandGroup>
-                </CommandList>
-            </InputWrapper>
-        </div>
-    );
-};
-
-const InputWrapper = ({
-    children,
-    selectedTags,
-    handleSelectTag,
-}: {
-    children: React.ReactNode;
-    selectedTags: Set<Tag>;
-    handleSelectTag: (tag: Tag) => void;
-}) => {
-    const [openDropdown, setOpenDropdown] = useState(false);
+        if (!openDropdown) {
+            onChange(Array.from(selectedTags));
+        }
+    }, [openDropdown]);
 
     return (
         <Popover open={openDropdown} onOpenChange={setOpenDropdown}>
             <PopoverTrigger asChild>
-                <Button
+                {/* <Button
                     variant="ghost"
                     role="combobox"
                     aria-expanded={openDropdown}
                     className="w-full justify-between bg-white border-gray-200 shadow-xs h-fit"
-                >
+                > */}
+                <span className="w-full bg-white border border-input rounded-md px-3 py-2 shadow-xs flex items-center justify-between cursor-pointer">
                     <SelectedTags
                         selectedTags={selectedTags}
                         handleRemoveTag={handleSelectTag}
                     />
                     <ChevronsUpDown className="opacity-50" />
-                </Button>
+                </span>
+
+                {/* </Button> */}
             </PopoverTrigger>
             <PopoverContent
                 className="w-full p-0"
@@ -107,7 +96,19 @@ const InputWrapper = ({
                         placeholder="Search framework..."
                         className="h-9"
                     />
-                    {children}
+                    <CommandList>
+                        <CommandEmpty>No Tags found.</CommandEmpty>
+                        <CommandGroup>
+                            {allTags?.map((tag, index) => (
+                                <TagItem
+                                    key={index}
+                                    tag={tag}
+                                    handleSelectTag={handleSelectTag}
+                                    isSelected={selectedTags.has(tag)}
+                                />
+                            ))}
+                        </CommandGroup>
+                    </CommandList>
                 </Command>
             </PopoverContent>
         </Popover>
@@ -123,22 +124,28 @@ const SelectedTags = ({
 }) => {
     return (
         <div className="flex flex-wrap items-center gap-2">
-            {Array.from(selectedTags).map((tag) => (
-                <Badge
-                    key={tag.title}
-                    variant="outline"
-                    className="cursor-pointer flex items-center gap-1"
-                    style={{
-                        backgroundColor: tag.color || '#ccc',
-                    }}
-                    onClick={(e) => {
-                        e.preventDefault();
-                        handleRemoveTag(tag);
-                    }}
-                >
-                    {tag.title}
-                </Badge>
-            ))}
+            {Array.from(selectedTags).length > 0 ? (
+                Array.from(selectedTags).map((tag) => (
+                    <Badge
+                        key={tag.title}
+                        variant="outline"
+                        className="cursor-pointer flex items-center gap-1"
+                        style={{
+                            backgroundColor: tag.color || '#ccc',
+                        }}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            handleRemoveTag(tag);
+                        }}
+                    >
+                        {tag.title}
+                    </Badge>
+                ))
+            ) : (
+                <span className="text-sm text-muted-foreground">
+                    Select tags
+                </span>
+            )}
         </div>
     );
 };

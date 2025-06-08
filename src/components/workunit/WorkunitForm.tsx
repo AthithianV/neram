@@ -25,7 +25,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { useEffect } from 'react';
 import { Workunit } from '@/schema/WorkunitSchema';
 import { DEFAULT_WORKUNIT_VALUES } from '@/constants/workunit';
-import { useCreateWorkunit, useWorkunitById } from '@/hooks/useWorkunit';
+import {
+    useCreateWorkunit,
+    useUpdateWorkunit,
+    useWorkunitById,
+} from '@/hooks/useWorkunit';
 import DatePicker from '../form/DatePicker';
 import TaskPicker from './TaskPicker';
 import { DEFAULT_TIME_ZONE } from '@/constants/times';
@@ -41,12 +45,18 @@ export const WorkunitForm = () => {
     });
 
     const { workunitId } = useParams();
-    const { data: workunit } = useWorkunitById(workunitId || '');
+    const { data: workunitWithTags } = useWorkunitById(workunitId || '');
+    const { workunit, tags } = workunitWithTags || {
+        workunit: undefined,
+        tags: [],
+    };
 
     const { mutate: createWorkunit } = useCreateWorkunit();
+    const { mutate: updateWorkunit } = useUpdateWorkunit();
 
     useEffect(() => {
         if (workunit) {
+            form.setValue('id', workunit.id);
             form.setValue('title', workunit.title || '');
             form.setValue('description', workunit.description || '');
             form.setValue('task', workunit.task);
@@ -64,13 +74,18 @@ export const WorkunitForm = () => {
             );
             form.setValue('session_duration', workunit.session_duration);
             form.setValue('break_duration', workunit.break_duration);
+            form.setValue('tags', tags || []);
         }
     }, [workunit]);
 
     const navigate = useNavigate();
 
     function onSubmit(data: z.infer<typeof WorkunitSchema>) {
-        createWorkunit(data);
+        if (workunit) {
+            updateWorkunit(data);
+        } else {
+            createWorkunit(data);
+        }
         navigate('/dashboard');
     }
 
@@ -255,6 +270,7 @@ export const WorkunitForm = () => {
                         <FormItem className="flex-1">
                             <FormLabel>Tags</FormLabel>
                             <TagPicker
+                                workunitId={workunit?.id}
                                 value={field.value}
                                 onChange={field.onChange}
                             />

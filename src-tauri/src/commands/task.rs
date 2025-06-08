@@ -2,18 +2,16 @@ use sea_orm::QueryOrder;
 use sea_orm::{
     ActiveModelTrait,
     EntityTrait,
-    QuerySelect,
     Set,
-    JoinType,
     ColumnTrait,
     QueryFilter,
+    NotSet,
 };
 use tauri::{ command, State };
 use chrono::{ DateTime, Utc };
 
 use crate::entity::workunit;
 use crate::entity::task;
-use crate::entity::tag;
 use crate::entity::task::TodosStatus;
 
 use crate::AppState;
@@ -37,33 +35,24 @@ use crate::AppState;
 #[command]
 pub async fn create_task(
     app_state: State<'_, AppState>,
-    title: String,
-    description: Option<String>,
-    status: TodosStatus,
-    priority: i32,
-    deadline: String,
-    color: String
+    new_task: task::Model
 ) -> Result<task::Model, String> {
     let db = app_state.conn.lock().await;
 
-    let parsed_deadline_date = deadline
-        .parse::<DateTime<Utc>>()
-        .map_err(|e| format!("Failed to parse date: {}", e))?
-        .fixed_offset();
     let now = Utc::now().fixed_offset();
 
-    let new_task = task::ActiveModel {
-        title: Set(title),
-        description: Set(description),
-        status: Set(status),
-        priority: Set(priority),
-        deadline: Set(parsed_deadline_date),
-        color: Set(color),
+    let new_task_active_model = task::ActiveModel {
+        title: NotSet,
+        description: Set(new_task.description),
+        status: Set(new_task.status),
+        priority: Set(new_task.priority),
+        deadline: Set(new_task.deadline),
+        color: Set(new_task.color),
         created_at: Set(Some(now)),
         updated_at: Set(Some(now)),
     };
 
-    let res = new_task.insert(&*db).await.map_err(|e| e.to_string())?;
+    let res = new_task_active_model.insert(&*db).await.map_err(|e| e.to_string())?;
     Ok(res)
 }
 

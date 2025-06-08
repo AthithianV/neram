@@ -45,18 +45,21 @@ export const timeToSeconds = (
     };
 };
 
-export const getTimeWithTz = (date: Date, time: Date) => {
-    const date_with_tz = dayjs(date).tz('UTC');
+export const getTimeWithTz = (time: Date, date: Date) => {
+    const date_with_tz = dayjs(date)
+        .set('hour', dayjs(time).hour())
+        .set('minute', dayjs(time).minute());
     const time_with_tz = dayjs(
         `${date_with_tz.format('YYYY-MM-DD')} ${dayjs(time).format(
             'hh:mm:ss A'
         )}`
     );
+    time_with_tz.utc();
 
     return time_with_tz.toDate();
 };
 
 export const setTimezone = (date: Date) => {
-    const date_with_tz = dayjs(date).tz('UTC');
+    const date_with_tz = dayjs(date).utc();
     return date_with_tz.toDate();
 };

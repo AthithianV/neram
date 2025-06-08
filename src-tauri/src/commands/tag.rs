@@ -7,6 +7,7 @@ use sea_orm::{
     JoinType,
     ColumnTrait,
     QueryFilter,
+    NotSet,
 };
 use tauri::{ command, State };
 use chrono::{ DateTime, Utc };
@@ -36,25 +37,22 @@ use crate::AppState;
 #[command]
 pub async fn create_tag(
     app_state: State<'_, AppState>,
-    title: String,
-    description: Option<String>,
-    color: String,
-    is_default: bool
+    new_tag: tag::Model
 ) -> Result<tag::Model, String> {
     let db = app_state.conn.lock().await;
 
     let now = Utc::now().fixed_offset();
 
-    let new_tag = tag::ActiveModel {
-        title: Set(title),
-        description: Set(description),
-        color: Set(color),
-        is_default: Set(is_default),
+    let new_tag_active_model = tag::ActiveModel {
+        title: NotSet,
+        description: Set(new_tag.description),
+        color: Set(new_tag.color),
+        is_default: Set(new_tag.is_default),
         created_at: Set(Some(now)),
         updated_at: Set(Some(now)),
     };
 
-    let res = new_tag.insert(&*db).await.map_err(|e| e.to_string())?;
+    let res = new_tag_active_model.insert(&*db).await.map_err(|e| e.to_string())?;
     Ok(res)
 }
 

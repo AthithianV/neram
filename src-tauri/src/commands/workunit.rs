@@ -1,7 +1,7 @@
 use serde::{ Serialize, Deserialize };
 use std::collections::HashMap;
 use sea_orm::ConnectionTrait;
-use sea_orm::{ ActiveModelTrait, EntityTrait, Set, ColumnTrait, QueryFilter, Statement };
+use sea_orm::{ ActiveModelTrait, EntityTrait, Set, ColumnTrait, QueryFilter, Statement, NotSet };
 use tauri::{ command, State };
 use chrono::{ DateTime, Utc };
 
@@ -42,47 +42,49 @@ pub struct WorkunitResponse {
 pub async fn create_workunit(
     app_state: State<'_, AppState>,
     tags: Vec<String>,
-    workunit: workunit::Model
+    new_workunit: workunit::Model
 ) -> Result<workunit::Model, String> {
     // Acquire a lock on the database connection
     let db = app_state.conn.lock().await;
 
     println!("tags: {:?}", tags);
-    println!("workunit: {:?}", workunit);
+    println!("workunit: {:?}", new_workunit);
 
     // Parse DateTimeWithTimeZone strings
     let now = Utc::now().fixed_offset();
 
-    let new_workunit = workunit::ActiveModel {
-        id: Set(Default::default()),
-        title: Set(workunit.title),
-        description: Set(workunit.description),
-        task: Set(workunit.task),
-        date: Set(workunit.date),
-        start_time: Set(workunit.start_time),
-        end_time: Set(workunit.end_time),
-        session_duration: Set(workunit.session_duration),
-        break_duration: Set(workunit.break_duration),
+    let new_workunit_active_model = workunit::ActiveModel {
+        id: NotSet,
+        title: Set(new_workunit.title),
+        description: Set(new_workunit.description),
+        task: Set(new_workunit.task),
+        date: Set(new_workunit.date),
+        start_time: Set(new_workunit.start_time),
+        end_time: Set(new_workunit.end_time),
+        session_duration: Set(new_workunit.session_duration),
+        break_duration: Set(new_workunit.break_duration),
         created_at: Set(Some(now)),
         updated_at: Set(Some(now)),
     };
 
-    let res = new_workunit.insert(&*db).await.map_err(|e| e.to_string())?;
+    let res = new_workunit_active_model.insert(&*db).await.map_err(|e| e.to_string())?;
 
-    let workunit_tags_active_models: Vec<workunit_tag::ActiveModel> = tags
-        .iter()
-        .map(|tag| {
-            workunit_tag::ActiveModel {
-                workunit_id: Set(res.id),
-                tag: Set(tag.clone()),
-            }
-        })
-        .collect();
+    if !tags.is_empty() {
+        let workunit_tags_active_models: Vec<workunit_tag::ActiveModel> = tags
+            .iter()
+            .map(|tag| {
+                workunit_tag::ActiveModel {
+                    workunit_id: Set(res.id),
+                    tag: Set(tag.clone()),
+                }
+            })
+            .collect();
 
-    workunit_tag::Entity
-        ::insert_many(workunit_tags_active_models)
-        .exec(&*db).await
-        .map_err(|e| e.to_string())?;
+        workunit_tag::Entity
+            ::insert_many(workunit_tags_active_models)
+            .exec(&*db).await
+            .map_err(|e| e.to_string())?;
+    }
 
     Ok(res)
 }
@@ -230,20 +232,27 @@ pub async fn get_all_workunits(
 /// # Returns
 /// A `Result` containing an `Option<WorkunitModel>` (Some if found, None if not) on success,
 /// or a `String` error message.
+
 #[command]
 pub async fn get_workunit_by_id(
     app_state: State<'_, AppState>,
     id: i32
-) -> Result<Option<workunit::Model>, String> {
+) -> Result<Option<(workunit::Model, Vec<tag::Model>)>, String> {
     // Acquire a lock on the database connection
     let db = app_state.conn.lock().await;
-    println!("id: {}", id);
+
     let workunit = workunit::Entity
-        ::find_by_id(id) // Changed WorkunitEntity to Workunit
-        .one(&*db).await
+        ::find()
+        .filter(workunit::Column::Id.eq(id))
+        .find_with_related(tag::Entity)
+        .all(&*db).await
         .map_err(|e| e.to_string())?;
-    println!("workunit: {:?}", workunit);
-    Ok(workunit)
+
+    if let Some((workunit, tags)) = workunit.into_iter().next() {
+        Ok(Some((workunit, tags)))
+    } else {
+        Ok(None)
+    }
 }
 
 /// Updates an existing workunit record in the database.
@@ -270,69 +279,34 @@ pub async fn get_workunit_by_id(
 #[allow(clippy::too_many_arguments)] // This is common for update commands
 pub async fn update_workunit(
     app_state: State<'_, AppState>,
-    id: i32,
-    title: Option<String>,
-    description: Option<String>,
-    task: Option<String>,
-    date: Option<String>,
-    start_time: Option<String>,
-    end_time: Option<String>,
-    session_duration: Option<i32>,
-    break_duration: Option<i32>
+    workunit_to_update: workunit::Model,
+    tags: Vec<String>
 ) -> Result<Option<workunit::Model>, String> {
     // Acquire a lock on the database connection
     let db = app_state.conn.lock().await;
 
     // Find the existing workunit
     let workunit = workunit::Entity
-        ::find_by_id(id) // Changed WorkunitEntity to Workunit
+        ::find_by_id(workunit_to_update.id) // Changed WorkunitEntity to Workunit
         .one(&*db).await
         .map_err(|e| e.to_string())?
-        .ok_or_else(|| format!("Workunit with ID {} not found", id))?;
+        .ok_or_else(|| format!("Workunit with ID {} not found", workunit_to_update.id))?;
 
     // Convert to ActiveModel to make changes
     let mut workunit_active_model: workunit::ActiveModel = workunit.to_active_model();
 
     // Update fields if provided
-    if let Some(t) = title {
-        workunit_active_model.title = Set(Some(t));
-    }
-    if let Some(d) = description {
-        workunit_active_model.description = Set(Some(d));
-    }
-    if let Some(t) = task {
-        workunit_active_model.task = Set(t);
-    }
-    if let Some(d) = date {
-        let parsed_date = d
-            .parse::<DateTime<Utc>>()
-            .map_err(|e| format!("Failed to parse date: {}", e))?
-            .fixed_offset();
-        workunit_active_model.date = Set(parsed_date);
-    }
-    if let Some(st) = start_time {
-        let parsed_start_time = st
-            .parse::<DateTime<Utc>>()
-            .map_err(|e| format!("Failed to parse start_time: {}", e))?
-            .fixed_offset();
-        workunit_active_model.start_time = Set(parsed_start_time);
-    }
-    if let Some(et) = end_time {
-        let parsed_end_time = et
-            .parse::<DateTime<Utc>>()
-            .map_err(|e| format!("Failed to parse end_time: {}", e))?
-            .fixed_offset();
-        workunit_active_model.end_time = Set(parsed_end_time);
-    }
-    if let Some(d) = session_duration {
-        workunit_active_model.session_duration = Set(d);
-    }
-    if let Some(b) = break_duration {
-        workunit_active_model.break_duration = Set(b);
-    }
+    workunit_active_model.title = Set(workunit_to_update.title);
+    workunit_active_model.description = Set(workunit_to_update.description);
+    workunit_active_model.task = Set(workunit_to_update.task);
+    workunit_active_model.date = Set(workunit_to_update.date);
+    workunit_active_model.start_time = Set(workunit_to_update.start_time);
+    workunit_active_model.end_time = Set(workunit_to_update.end_time);
+    workunit_active_model.session_duration = Set(workunit_to_update.session_duration);
+    workunit_active_model.break_duration = Set(workunit_to_update.break_duration);
 
     // Update updated_at timestamp
-    workunit_active_model.updated_at = Set(Some(Utc::now().fixed_offset()));
+    workunit_active_model.updated_at = Set(Some(Utc::now().fixed_offset())); // TODO: Check if this is correct
 
     // Save changes
     let res = workunit_active_model.update(&*db).await.map_err(|e| e.to_string())?;
