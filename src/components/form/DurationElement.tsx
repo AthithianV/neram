@@ -1,8 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Input } from '../ui/input';
-import { Button } from '../ui/button';
 
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { secondsToTime, timeToSeconds } from '../../lib/time';
 
 const DurationElement = ({

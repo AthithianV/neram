@@ -97,11 +97,7 @@ const TitleBar = () => {
                             >
                                 <BreadcrumbSeparator />
                                 <BreadcrumbItem>
-                                    <Link to={item.path}>
-                                        <BreadcrumbLink>
-                                            {item.title}
-                                        </BreadcrumbLink>
-                                    </Link>
+                                    <Link to={item.path}>{item.title}</Link>
                                 </BreadcrumbItem>
                             </div>
                         ))}

@@ -3,8 +3,6 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { TaskFormDialog } from '@/components/workunit/TaskForm';
-import { TagFormDialog } from '@/components/workunit/TagForm';
 
 const tasks = [
     { id: 1, title: 'Study', description: 'Description 1', color: '#121063' },
@@ -89,7 +87,7 @@ const TaskTag = () => {
                 <ItemListCard
                     items={tasks}
                     type="tasks"
-                    FormDialog={TaskFormDialog}
+                    FormDialog={<div>Task</div>}
                 />
             </TabsContent>
 
@@ -97,7 +95,7 @@ const TaskTag = () => {
                 <ItemListCard
                     items={tags}
                     type="tags"
-                    FormDialog={TagFormDialog}
+                    FormDialog={<div>Tag</div>}
                 />
             </TabsContent>
         </Tabs>

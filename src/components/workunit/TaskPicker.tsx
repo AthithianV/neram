@@ -46,7 +46,7 @@ const TaskList = () => {
 
 const TaskPicker = ({ onChange, value }: PropsType) => {
     return (
-        <Select onValueChange={onChange} defaultValue={value}>
+        <Select onValueChange={onChange} value={value}>
             <SelectTrigger className="w-full bg-white shadow">
                 <SelectValue placeholder="Select a Task" />
             </SelectTrigger>

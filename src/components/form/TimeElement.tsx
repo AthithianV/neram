@@ -3,7 +3,7 @@ import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
 import { Input } from '../ui/input';
 import { DEFAULT_TIME_ZONE } from '../../constants/times';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export interface TimeElementProps {
     value: Date;
@@ -15,13 +15,15 @@ const TimeElement = ({ value, setValue, setError }: TimeElementProps) => {
     dayjs.extend(utc);
     dayjs.extend(timezone);
 
-    const [time, setTime] = useState<string>(
-        dayjs(value).tz(DEFAULT_TIME_ZONE).format('hh:mm A')
-    );
+    const [time, setTime] = useState<string>(dayjs(value).format('hh:mm A'));
 
     const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTime(e.target.value);
     };
+
+    useEffect(() => {
+        setTime(dayjs(value).format('hh:mm A'));
+    }, [value]);
 
     const handleOnBlur = () => {
         const newValue = dayjs(

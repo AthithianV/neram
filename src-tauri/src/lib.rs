@@ -10,6 +10,17 @@ use commands::workunit::{
     delete_workunit,
 };
 use commands::task::{ create_task, get_all_tasks, get_task_by_title, update_task, delete_task };
+use commands::tag::{
+    create_tag,
+    get_all_tags,
+    get_tag_by_title,
+    update_tag,
+    delete_tag,
+    get_default_tags,
+    // get_tags_by_workunit,
+    add_tag_to_workunit,
+    remove_tag_from_workunit,
+};
 
 pub use entity::workunit;
 pub use entity::task;
@@ -43,7 +54,16 @@ pub async fn run() {
                 get_all_tasks,
                 get_task_by_title,
                 update_task,
-                delete_task
+                delete_task,
+                create_tag,
+                get_all_tags,
+                get_tag_by_title,
+                update_tag,
+                delete_tag,
+                get_default_tags,
+                // get_tags_by_workunit,
+                add_tag_to_workunit,
+                remove_tag_from_workunit
             ]
         )
         .run(tauri::generate_context!())

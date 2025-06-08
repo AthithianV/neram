@@ -4,6 +4,8 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 import dayjs from 'dayjs';
 import { useNavigate, useParams } from 'react-router-dom';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -26,6 +28,10 @@ import { DEFAULT_WORKUNIT_VALUES } from '@/constants/workunit';
 import { useWorkunitById } from '@/hooks/useWorkunit';
 import DatePicker from '../form/DatePicker';
 import TaskPicker from './TaskPicker';
+import { DEFAULT_TIME_ZONE } from '@/constants/times';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export const WorkunitForm = () => {
     const form = useForm<Workunit>({
@@ -40,15 +46,21 @@ export const WorkunitForm = () => {
         if (workunit) {
             form.setValue('title', workunit.title || '');
             form.setValue('description', workunit.description || '');
-            form.setValue('task', workunit.task || '');
-            form.setValue('date', dayjs(workunit.date || '').toDate());
+            form.setValue('task', workunit.task);
+            form.setValue(
+                'date',
+                dayjs(workunit.date).tz(DEFAULT_TIME_ZONE).toDate()
+            );
             form.setValue(
                 'start_time',
-                dayjs(workunit.start_time || '').toDate()
+                dayjs(workunit.start_time).tz(DEFAULT_TIME_ZONE).toDate()
             );
-            form.setValue('end_time', dayjs(workunit.end_time || '').toDate());
-            form.setValue('session_duration', workunit.session_duration || 0);
-            form.setValue('break_duration', workunit.break_duration || 0);
+            form.setValue(
+                'end_time',
+                dayjs(workunit.end_time).tz(DEFAULT_TIME_ZONE).toDate()
+            );
+            form.setValue('session_duration', workunit.session_duration);
+            form.setValue('break_duration', workunit.break_duration);
         }
     }, [workunit]);
 
@@ -158,14 +170,12 @@ export const WorkunitForm = () => {
                     <FormField
                         control={form.control}
                         name="start_time"
-                        render={() => (
+                        render={({ field }) => (
                             <FormItem className="flex-1">
                                 <FormLabel>Start Time</FormLabel>
                                 <TimeElement
-                                    value={form.getValues('start_time')}
-                                    setValue={(val) =>
-                                        form.setValue('start_time', val)
-                                    }
+                                    value={field.value}
+                                    setValue={(val) => field.onChange(val)}
                                     setError={(error) => {
                                         handleError(error, 'start_time');
                                     }}
@@ -179,14 +189,12 @@ export const WorkunitForm = () => {
                     <FormField
                         control={form.control}
                         name="end_time"
-                        render={() => (
+                        render={({ field }) => (
                             <FormItem className="flex-1">
                                 <FormLabel>End Time</FormLabel>
                                 <TimeElement
-                                    value={form.getValues('end_time')}
-                                    setValue={(val) =>
-                                        form.setValue('end_time', val)
-                                    }
+                                    value={field.value}
+                                    setValue={(val) => field.onChange(val)}
                                     setError={(error) =>
                                         handleError(error, 'end_time')
                                     }
@@ -202,14 +210,12 @@ export const WorkunitForm = () => {
                     <FormField
                         control={form.control}
                         name="session_duration"
-                        render={() => (
+                        render={({ field }) => (
                             <FormItem className="flex-1">
                                 <FormLabel>Duration</FormLabel>
                                 <DurationElement
-                                    value={form.getValues('session_duration')}
-                                    setValue={(val) =>
-                                        form.setValue('session_duration', val)
-                                    }
+                                    value={field.value}
+                                    setValue={(val) => field.onChange(val)}
                                     setError={(error) =>
                                         handleError(error, 'session_duration')
                                     }
@@ -223,14 +229,12 @@ export const WorkunitForm = () => {
                     <FormField
                         control={form.control}
                         name="break_duration"
-                        render={() => (
+                        render={({ field }) => (
                             <FormItem className="flex-1">
                                 <FormLabel>Break</FormLabel>
                                 <DurationElement
-                                    value={form.getValues('break_duration')}
-                                    setValue={(val) =>
-                                        form.setValue('break_duration', val)
-                                    }
+                                    value={field.value}
+                                    setValue={(val) => field.onChange(val)}
                                     setError={(error) =>
                                         handleError(error, 'break_duration')
                                     }

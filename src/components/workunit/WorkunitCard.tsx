@@ -4,6 +4,7 @@ import { WorkunitWithTaskAndTag } from '@/hooks/useWorkunit';
 import { useNavigate, useParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
+import { useState } from 'react';
 
 interface WorkunitCardProps {
     workunitWithTaskAndTag: WorkunitWithTaskAndTag;
@@ -13,12 +14,17 @@ const WorkunitCard = ({ workunitWithTaskAndTag }: WorkunitCardProps) => {
     const { workunitId } = useParams();
     const navigate = useNavigate();
     const { workunit, task, tags } = workunitWithTaskAndTag;
+    const [isHovered, setIsHovered] = useState(false);
+
+    if (!task) {
+        return null;
+    }
 
     return (
         <li
             className={cn(
                 'flex items-center justify-between',
-                'px-4 py-2 border shadow rounded-md cursor-pointer',
+                'p-3 border shadow rounded-md cursor-pointer',
                 'bg-white',
                 workunit.id === parseInt(workunitId || '0')
                     ? 'bg-gray-100'
@@ -27,13 +33,21 @@ const WorkunitCard = ({ workunitWithTaskAndTag }: WorkunitCardProps) => {
             onClick={() => {
                 navigate(`update-workunit/${workunit.id}`);
             }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
         >
             <div className="flex items-center gap-4 flex-1">
                 <div
-                    className="p-2 rounded-md"
-                    style={{ backgroundColor: task?.color || '#F3F4F6' }}
+                    className={cn('p-1 rounded-md bg-gray-50', 'h-12')}
+                    style={
+                        isHovered || workunit.id === parseInt(workunitId || '0')
+                            ? {
+                                  backgroundColor: task.color,
+                              }
+                            : {}
+                    }
                 ></div>
-                <div className="flex flex-col gap-2 flex-1">
+                <div className="flex flex-col gap-3 flex-1">
                     <h3 className="text-md font-semibold">
                         {task?.title || 'Untitled'}
                     </h3>
@@ -62,7 +76,7 @@ const WorkunitCard = ({ workunitWithTaskAndTag }: WorkunitCardProps) => {
                                 </li>
                             )}
                         </ul>
-                        <ScrollBar orientation="horizontal" hidden/>
+                        <ScrollBar orientation="horizontal" hidden />
                     </ScrollArea>
                 </div>
             </div>

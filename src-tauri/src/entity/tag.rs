@@ -1,4 +1,4 @@
-use sea_orm::entity::prelude::*;
+use sea_orm::{entity::prelude::*, ActiveModelTrait, Set};
 use serde::{ Deserialize, Serialize };
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize)]
@@ -7,7 +7,7 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub title: String,
     pub description: Option<String>,
-    pub color: Option<String>,
+    pub color: String,
     pub is_default: bool,
 
     pub created_at: DateTimeWithTimeZone,
@@ -32,3 +32,17 @@ impl Related<super::workunit::Entity> for Entity {
 }
 
 impl ActiveModelBehavior for ActiveModel {}
+
+impl Model {
+    /// Converts a Model to ActiveModel for database operations
+    pub fn to_active_model(self) -> ActiveModel {
+        ActiveModel {
+            title: Set(self.title),
+            description: Set(self.description),
+            color: Set(self.color),
+            is_default: Set(self.is_default),
+            created_at: Set(self.created_at),
+            updated_at: Set(self.updated_at),
+        }
+    }   
+}

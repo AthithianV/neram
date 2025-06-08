@@ -160,7 +160,6 @@ pub async fn update_task(
 
     // Update timestamp
     let now = Utc::now().fixed_offset();
-    task_active_model.created_at = Set(now);
     task_active_model.updated_at = Set(now);
 
     // Save changes

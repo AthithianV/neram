@@ -1,5 +1,9 @@
 import { z } from 'zod';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import { setTimezone, getTimeWithTz } from '../lib/time';
+
+dayjs.extend(utc);
 
 const WorkunitSchema = z
     .object({
@@ -32,6 +36,18 @@ const WorkunitSchema = z
     .refine((data) => dayjs(data.end_time).isBefore(dayjs()), {
         message: 'End time must be after current time',
         path: ['end_time'],
+    })
+    .refine((data) => dayjs(data.start_time).isBefore(dayjs(data.end_time)), {
+        message: 'Start time must be before end time',
+        path: ['start_time'],
+    })
+    .transform((data) => {
+        return {
+            ...data,
+            start_time: getTimeWithTz(data.start_time, data.date),
+            end_time: getTimeWithTz(data.end_time, data.date),
+            date: setTimezone(data.date),
+        };
     });
 
 export type Workunit = z.infer<typeof WorkunitSchema>;
