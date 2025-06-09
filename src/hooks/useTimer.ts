@@ -2,14 +2,20 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
 import { toast } from 'sonner';
 
+type TimerType = 'Session' | 'Break' | 'Pomodaro';
+
+type TimerResponse = {
+    time: number;
+    timer_type: TimerType;
+    is_running: boolean;
+};
+
 export const useTimer = () => {
     return useQuery({
         queryKey: ['timer'],
         queryFn: async () => {
-            const [time, timerType, isRunning] = (await invoke(
-                'get_elapsed_time'
-            )) as [number, 'session' | 'break' | 'pomodaro', boolean];
-            return { time, timerType, isRunning };
+            const data = await invoke<TimerResponse>('get_elapsed_time');
+            return data;
         },
         refetchInterval: 1000,
     });
@@ -18,7 +24,7 @@ export const useTimer = () => {
 export const useStartTimer = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (timerType: 'session' | 'break' | 'pomodaro') =>
+        mutationFn: (timerType: TimerType) =>
             invoke('start_timer', { timerType }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['timer'] });
