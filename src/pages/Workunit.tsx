@@ -7,6 +7,7 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Separator } from '@/components/ui/separator';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import Controls from '@/components/workunit/Controls';
 
 const Dashboard = () => {
     const { data: workunits, isLoading, error } = useWorkunit();
@@ -21,34 +22,17 @@ const Dashboard = () => {
     }
 
     return (
-        <div className="flex flex-col h-full overflow-x-hidden">
-            <div className="flex items-center justify-between h-1/12">
-                <div className="flex gap-2">
-                    <Button
-                        variant={'default'}
-                        className="flex items-center gap-1 bg-emerald-500 hover:bg-emerald-600"
-                    >
-                        <PlayIcon fill="currentColor" className="w-4 h-4" />
-                        <span>Start</span>
-                    </Button>
-                    <Link to="/dashboard/add-workunit">
-                        <Button
-                            variant={'default'}
-                            className="flex items-center gap-1 bg-blue-500 hover:bg-blue-600"
-                        >
-                            <PlusIcon fill="currentColor" className="w-4 h-4" />
-                            <span>Add Work Unit</span>
-                        </Button>
-                    </Link>
+        <div className="flex h-full">
+            <div className="h-full flex flex-col flex-1">
+                <div className="flex items-center justify-between h-1/12">
+                    <Controls />
                 </div>
-            </div>
 
-            <Separator className="mb-0" />
+                <Separator className="mb-0" />
 
-            <div className="h-11/12 flex w-full overflow-x-hidden">
                 <ScrollArea
                     className={cn(
-                        'h-full flex-1',
+                        'h-11/12',
                         location.pathname !== '/dashboard' && 'max-sm:hidden',
                         'max-md:w-full'
                     )}
@@ -71,24 +55,21 @@ const Dashboard = () => {
                             )}
                     </ul>
                 </ScrollArea>
-
-                <ScrollArea
-                    key={location.pathname}
-                    className="scrollbar-hidden py-4"
-                >
-                    <motion.div
-                        initial={
-                            location.pathname === '/dashboard'
-                                ? { width: 0, opacity: 0 }
-                                : {}
-                        }
-                        animate={{ width: 'auto', opacity: 1 }}
-                        transition={{ duration: 0.3 }}
-                    >
-                        <Outlet />
-                    </motion.div>
-                </ScrollArea>
             </div>
+
+            <ScrollArea key={location.pathname} className=" py-4">
+                <motion.div
+                    initial={
+                        location.pathname === '/dashboard'
+                            ? { width: 0, opacity: 0 }
+                            : {}
+                    }
+                    animate={{ width: 'auto', opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                >
+                    <Outlet />
+                </motion.div>
+            </ScrollArea>
         </div>
     );
 };

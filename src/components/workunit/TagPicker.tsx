@@ -14,14 +14,13 @@ import {
 import { useEffect, useState } from 'react';
 import { Badge } from '../ui/badge';
 import { useTag } from '@/hooks/useTodo';
-import { X, ChevronsUpDown, Check } from 'lucide-react';
+import { ChevronsUpDown, Check } from 'lucide-react';
 import {
     TagType,
     useAddTagToWorkunit,
     useRemoveTagFromWorkunit,
 } from '@/hooks/useWorkunit';
 import { Tag } from '@/schema/TagSchema';
-import { Button } from '../ui/button';
 
 const TagPicker = ({
     workunitId,
@@ -67,51 +66,53 @@ const TagPicker = ({
     }, [openDropdown]);
 
     return (
-        <Popover open={openDropdown} onOpenChange={setOpenDropdown}>
-            <PopoverTrigger asChild>
-                {/* <Button
+        <div className="flex gap-2">
+            <SelectedTags
+                selectedTags={selectedTags}
+                handleRemoveTag={handleSelectTag}
+            />
+            <Popover open={openDropdown} onOpenChange={setOpenDropdown}>
+                <PopoverTrigger asChild>
+                    {/* <Button
                     variant="ghost"
                     role="combobox"
                     aria-expanded={openDropdown}
                     className="w-full justify-between bg-white border-gray-200 shadow-xs h-fit"
                 > */}
-                <span className="w-full bg-white border border-input rounded-md px-3 py-2 shadow-xs flex items-center justify-between cursor-pointer">
-                    <SelectedTags
-                        selectedTags={selectedTags}
-                        handleRemoveTag={handleSelectTag}
-                    />
-                    <ChevronsUpDown className="opacity-50" />
-                </span>
+                    <span className="w-fit bg-white border border-input rounded-md px-3 py-2 shadow-xs flex items-center justify-between cursor-pointer">
+                        <ChevronsUpDown className="opacity-50" />
+                    </span>
 
-                {/* </Button> */}
-            </PopoverTrigger>
-            <PopoverContent
-                className="w-full p-0"
-                align="start"
-                side="top"
-                sideOffset={10}
-            >
-                <Command>
-                    <CommandInput
-                        placeholder="Search framework..."
-                        className="h-9"
-                    />
-                    <CommandList>
-                        <CommandEmpty>No Tags found.</CommandEmpty>
-                        <CommandGroup>
-                            {allTags?.map((tag, index) => (
-                                <TagItem
-                                    key={index}
-                                    tag={tag}
-                                    handleSelectTag={handleSelectTag}
-                                    isSelected={selectedTags.has(tag)}
-                                />
-                            ))}
-                        </CommandGroup>
-                    </CommandList>
-                </Command>
-            </PopoverContent>
-        </Popover>
+                    {/* </Button> */}
+                </PopoverTrigger>
+                <PopoverContent
+                    className="w-full p-0"
+                    align="end"
+                    side="top"
+                    sideOffset={10}
+                >
+                    <Command>
+                        <CommandInput
+                            placeholder="Search framework..."
+                            className="h-9"
+                        />
+                        <CommandList>
+                            <CommandEmpty>No Tags found.</CommandEmpty>
+                            <CommandGroup>
+                                {allTags?.map((tag, index) => (
+                                    <TagItem
+                                        key={index}
+                                        tag={tag}
+                                        handleSelectTag={handleSelectTag}
+                                        isSelected={selectedTags.has(tag)}
+                                    />
+                                ))}
+                            </CommandGroup>
+                        </CommandList>
+                    </Command>
+                </PopoverContent>
+            </Popover>
+        </div>
     );
 };
 
@@ -123,7 +124,7 @@ const SelectedTags = ({
     handleRemoveTag: (tag: Tag) => void;
 }) => {
     return (
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 bg-white border p-2 rounded-md flex-1">
             {Array.from(selectedTags).length > 0 ? (
                 Array.from(selectedTags).map((tag) => (
                     <Badge

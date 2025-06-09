@@ -1,9 +1,4 @@
 import dayjs from 'dayjs';
-import timezone from 'dayjs/plugin/timezone';
-import utc from 'dayjs/plugin/utc';
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
 
 export const formatTime = (time: number) => {
     return `${Math.floor(time / 3600)
@@ -45,21 +40,11 @@ export const timeToSeconds = (
     };
 };
 
-export const getTimeWithTz = (time: Date, date: Date) => {
+export const setTime = (time: Date, date: Date) => {
     const date_with_tz = dayjs(date)
         .set('hour', dayjs(time).hour())
-        .set('minute', dayjs(time).minute());
-    const time_with_tz = dayjs(
-        `${date_with_tz.format('YYYY-MM-DD')} ${dayjs(time).format(
-            'hh:mm:ss A'
-        )}`
-    );
-    time_with_tz.utc();
+        .set('minute', dayjs(time).minute())
+        .set('second', dayjs(time).second());
 
-    return time_with_tz.toDate();
-};
-
-export const setTimezone = (date: Date) => {
-    const date_with_tz = dayjs(date).utc();
     return date_with_tz.toDate();
 };

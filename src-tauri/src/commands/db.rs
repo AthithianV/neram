@@ -1,7 +1,7 @@
 use super::migrate::setup_db;
 use sea_orm::Database;
-use std::{path::Path, sync::Arc};
-use tauri::{AppHandle, Manager};
+use std::{ path::Path, sync::Arc };
+use tauri::{ AppHandle, Manager };
 use tokio::sync::Mutex;
 
 use crate::AppState;
@@ -16,16 +16,11 @@ pub async fn init_db(path: String, app_handle: AppHandle) -> Result<(), String> 
     let db_path = Path::new(&path).join("neram.db");
     let db_exists = db_path.exists();
     let db_url = format!("sqlite://{}/neram.db?mode=rwc", path);
-    let conn = Database::connect(&db_url)
-        .await
-        .map_err(|e| e.to_string())?;
+    let conn = Database::connect(&db_url).await.map_err(|e| e.to_string())?;
 
     // Only run migrations if database doesn't exist
     if !db_exists {
-        setup_db(&db_url).await.map_err(|e| {
-            println!("Error: {}", e);
-            e.to_string()
-        })?;
+        setup_db(&db_url).await.map_err(|e| { e.to_string() })?;
     }
 
     app_handle.manage(AppState {

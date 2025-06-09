@@ -144,7 +144,7 @@ pub async fn get_all_workunits(
             SELECT * FROM tags
             INNER JOIN workunit_tag wt ON wt.tag = tags.title
         ) as tags ON tags.workunit_id = workunits.id
-        ORDER BY workunits.date ASC, workunits.id ASC
+        ORDER BY workunits.date DESC, workunits.created_at DESC
     "#;
 
     let rows = db

@@ -1,10 +1,7 @@
 import { z } from 'zod';
 import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import { setTimezone, getTimeWithTz } from '../lib/time';
+import { setTime } from '../lib/time';
 import TagSchema from './TagSchema';
-
-dayjs.extend(utc);
 
 const WorkunitSchema = z
     .object({
@@ -39,9 +36,8 @@ const WorkunitSchema = z
     .transform((data) => {
         return {
             ...data,
-            start_time: getTimeWithTz(data.start_time, data.date),
-            end_time: getTimeWithTz(data.end_time, data.date),
-            date: setTimezone(data.date),
+            start_time: setTime(data.start_time, data.date),
+            end_time: setTime(data.end_time, data.date),
         };
     });
 

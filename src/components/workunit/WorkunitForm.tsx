@@ -1,11 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import { z } from 'zod';
-import dayjs from 'dayjs';
 import { useNavigate, useParams } from 'react-router-dom';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -32,11 +28,7 @@ import {
 } from '@/hooks/useWorkunit';
 import DatePicker from '../form/DatePicker';
 import TaskPicker from './TaskPicker';
-import { DEFAULT_TIME_ZONE } from '@/constants/times';
 import TagPicker from './TagPicker';
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
 
 export const WorkunitForm = () => {
     const form = useForm<Workunit>({
@@ -60,18 +52,12 @@ export const WorkunitForm = () => {
             form.setValue('title', workunit.title || '');
             form.setValue('description', workunit.description || '');
             form.setValue('task', workunit.task);
-            form.setValue(
-                'date',
-                dayjs(workunit.date).tz(DEFAULT_TIME_ZONE).toDate()
-            );
+            form.setValue('date', workunit.date);
             form.setValue(
                 'start_time',
-                dayjs(workunit.start_time).tz(DEFAULT_TIME_ZONE).toDate()
+                workunit.start_time
             );
-            form.setValue(
-                'end_time',
-                dayjs(workunit.end_time).tz(DEFAULT_TIME_ZONE).toDate()
-            );
+            form.setValue('end_time', workunit.end_time);
             form.setValue('session_duration', workunit.session_duration);
             form.setValue('break_duration', workunit.break_duration);
             form.setValue('tags', tags || []);
