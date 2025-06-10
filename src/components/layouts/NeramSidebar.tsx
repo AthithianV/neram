@@ -80,8 +80,8 @@ const Header = () => {
     return (
         <SidebarHeader
             className={cn(
-                'h-[6%] bg-white',
-                open ? 'border-b-2 border-gray-100' : 'mb-4'
+                'title-bar-height bg-white',
+                open ? 'border-b-2 border-gray-100' : ''
             )}
         >
             <SidebarMenu>

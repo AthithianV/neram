@@ -18,10 +18,10 @@ export function AppLayout() {
             <NeramSidebar />
             <Toaster />
             <main className="flex flex-col text-foreground overflow-y-auto h-full w-full bg-gray-50">
-                <div className="h-[6%] bg-white border-b-2 border-gray-100">
+                <div className="title-bar-height bg-white border-b-2 border-gray-100">
                     <TitleBar />
                 </div>
-                <div className="h-[94%] w-full p-4">
+                <div className="main-content-height w-full p-4">
                     <Outlet />
                 </div>
             </main>

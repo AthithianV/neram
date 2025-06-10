@@ -1,17 +1,12 @@
 import { Pause, Play, PlusIcon, Square } from 'lucide-react';
 import { Button } from '../ui/button';
-import { useStartTimer, useStopTimer, useTimer } from '@/hooks/useTImer';
+import { useStartTimer, useStopTimer, useTimer } from '@/hooks/useTimer';
 import { Link } from 'react-router-dom';
-import { useEffect } from 'react';
 
 const Controls = () => {
-    const { data: timer, error } = useTimer();
+    const { data: timer } = useTimer();
     const { mutate: startTimer } = useStartTimer();
     const { mutate: stopTimer } = useStopTimer();
-
-    useEffect(() => {
-        console.log(timer);
-    }, [timer]);
 
     if (!timer) return null;
 
@@ -25,7 +20,7 @@ const Controls = () => {
                 >
                     <Pause fill="currentColor" className="w-4 h-4" />
                     <span>Pause</span>
-                </Button>
+                </Button>  
             ) : (
                 <Button
                     variant={'default'}

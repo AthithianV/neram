@@ -1,9 +1,7 @@
-import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import WorkunitCard from '@/components/workunit/WorkunitCard';
-import { PlayIcon, PlusIcon } from 'lucide-react';
 import { useWorkunit, WorkunitWithTaskAndTag } from '@/hooks/useWorkunit';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { Separator } from '@/components/ui/separator';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -57,7 +55,7 @@ const Dashboard = () => {
                 </ScrollArea>
             </div>
 
-            <ScrollArea key={location.pathname} className=" py-4">
+            <ScrollArea key={location.pathname} className=" py-4" >
                 <motion.div
                     initial={
                         location.pathname === '/dashboard'

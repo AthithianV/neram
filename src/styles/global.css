@@ -4,6 +4,19 @@
 
 @custom-variant dark (&:is(.dark *));
 
+:root {
+    --title-bar-height: 3rem;
+    --main-content-height: calc(100vh - 3rem);
+}
+
+.title-bar-height {
+    height: var(--title-bar-height);
+}
+
+.main-content-height {
+    height: var(--main-content-height);
+}
+
 /* Targeting WebKit-based browsers */
 .custom-scrollbar::-webkit-scrollbar {
     width: 4px; /* for vertical scroll */
