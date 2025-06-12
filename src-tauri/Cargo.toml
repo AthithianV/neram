@@ -1,7 +1,7 @@
 [package]
-name = "neram"
+name = "Neram"
 version = "0.1.0"
-description = "Neram - a Productivity app for Time Logging, Pomodaro, Managing To Do list, Journaling and Analysing Time"
+description = "Neram - a Productivity app for Time Logging, Pomodaro, Managing To Do list, and Analysing Time"
 authors = ["Athithian"]
 edition = "2021"
 

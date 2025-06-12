@@ -3,6 +3,22 @@
 version = 4
 
 [[package]]
+name = "Neram"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "migration",
+ "sea-orm",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-fs",
+ "tauri-plugin-opener",
+ "tokio",
+]
+
+[[package]]
 name = "addr2line"
 version = "0.24.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2639,22 +2655,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ee6cda3051665f1fb8d9e08fc35c96d5a244fb1be711a03b71118828afc9a873"
 dependencies = [
  "jni-sys",
-]
-
-[[package]]
-name = "neram"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "migration",
- "sea-orm",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "tauri-plugin-fs",
- "tauri-plugin-opener",
- "tokio",
 ]
 
 [[package]]
