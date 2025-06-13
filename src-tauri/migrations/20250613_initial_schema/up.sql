@@ -48,13 +48,17 @@ CREATE TABLE IF NOT EXISTS projects (
   )
 );
 
+INSERT INTO projects 
+(title, description, color, status, created_at, deleted_at) 
+VALUES("General", "Project to add any General Tasks", "222222", CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
 -- Create tasks table
 CREATE TABLE IF NOT EXISTS tasks (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   title TEXT NOT NULL,
   description TEXT,
   color TEXT,
-  project_id INTEGER,
+  project_id INTEGER NOT NULL,
   status TEXT DEFAULT 'Planning', -- Planning, In Progress, Completed, Cancelled, 'On Hold'
   priority TEXT DEFAULT 'Low', -- Low, Medium, High, Urgent
   deadline TEXT,

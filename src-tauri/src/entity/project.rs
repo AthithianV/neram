@@ -26,11 +26,11 @@ pub struct ProjectModel {
     pub client_name: Option<String>,
     pub status: ProjectStatus,
 
-    pub is_billable: bool,
-    pub billing_type: BillingType,
-    pub hourly_rate: u32,
-    pub fixed_rate: u32,
-    pub currency: String,
+    pub is_billable: Option<bool>,
+    pub billing_type: Option<BillingType>,
+    pub hourly_rate: Option<u32>,
+    pub fixed_rate: Option<u32>,
+    pub currency: Option<String>,
     
     pub deadline: Option<NaiveDateTime>,
     pub started_at: Option<NaiveDateTime>,
