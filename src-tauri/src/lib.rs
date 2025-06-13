@@ -1,3 +1,4 @@
+mod db;
 mod commands;
 mod entity;
 
@@ -8,14 +9,15 @@ use commands::tag::*;
 use commands::timer::*;
 
 pub use entity::*;
+pub use db::*;
+use sqlx::{Pool, Sqlite};
 
-pub use sea_orm::DatabaseConnection;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
 #[derive(Clone)]
 struct AppState {
-    conn: Arc<Mutex<DatabaseConnection>>,
+    conn: Arc<Mutex<Pool<Sqlite>>>
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

@@ -43,6 +43,7 @@ impl MigrationTrait for Migration {
                         .default(Expr::current_timestamp())
                 )
                 .to_owned()
+
         ).await
     }
 
