@@ -1,11 +1,10 @@
 mod db;
 mod commands;
-mod entity;
+
 // use commands::workunit::*;
 // use commands::task::*;
 // use commands::tag::*;
 use commands::timer::*;
-pub use entity::*;
 pub use db::*;
 use sqlx::{Pool, Sqlite};
 
@@ -27,7 +26,7 @@ pub async fn run() {
         .invoke_handler(
             tauri::generate_handler![
                 // Initialize DB and manage state by adding connection pool to App State
-                migrate::init_db,
+                lib::init_db,
 
                 // Workunit commands
                 // create_workunit,
