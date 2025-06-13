@@ -1,6 +1,6 @@
 use sqlx::{migrate::Migrator, SqlitePool};
 
-static MIGRATOR: Migrator = sqlx::migrate!("./migrations").embed();
+static MIGRATOR: Migrator = sqlx::migrate!("./migrations");
 
 use std::{ path::Path, sync::Arc };
 use tauri::{ AppHandle, Manager };

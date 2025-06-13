@@ -1,7 +1,6 @@
-pub mod workunit;
+pub mod session;
 pub mod task;
 pub mod tag;
-pub mod workunit_tag;
-pub mod journal;
-pub mod pomadoro;
+pub mod pomadoro_settings;
 pub mod settings;
+pub mod project;

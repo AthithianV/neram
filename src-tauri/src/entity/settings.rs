@@ -1,25 +1,16 @@
-use sea_orm::entity::prelude::*;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, EnumIter, DeriveActiveEnum, PartialEq, Eq)]
-#[sea_orm(rs_type = "String", db_type = "Text")]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Theme {
-    #[sea_orm(string_value = "DARK")]
     Dark,
-    #[sea_orm(string_value = "LIGHT")]
     Light,
-    #[sea_orm(string_value = "SYSTEM")]
     System,
 }
 
 // settings
-#[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
-#[sea_orm(table_name = "settings")]
-pub struct Model {
-    #[sea_orm(primary_key)]
-    pub id: i32,
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SettingsModel {
     pub theme: Theme,
+    pub date_format: String,
+    time_format: String
 }
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
-impl ActiveModelBehavior for ActiveModel {}

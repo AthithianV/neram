@@ -1,59 +1,36 @@
-use sea_orm::{ entity::prelude::*, ActiveValue::Set };
 use serde::{ Deserialize, Serialize };
+use chrono::NaiveDateTime;
 
-#[derive(Debug, Clone, EnumIter, DeriveActiveEnum, PartialEq, Eq, Serialize, Deserialize)]
-#[sea_orm(rs_type = "String", db_type = "Text")]
-pub enum TodosStatus {
-    #[sea_orm(string_value = "Not Started")]
-    NotStarted,
-    #[sea_orm(string_value = "Planning")]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum TaskStatus {
     Planning,
-    #[sea_orm(string_value = "In Progress")]
     InProgress,
-    #[sea_orm(string_value = "Completed")]
     Completed,
+    Cancelled,
+    OnHold
 }
 
-#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize)]
-#[sea_orm(table_name = "tasks")]
-pub struct Model {
-    #[sea_orm(primary_key)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum PriorityType{
+    Low,
+    Medium,
+    High,
+    Urgent
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct TaskModel {
+    pub id: i32,
     pub title: String,
     pub description: Option<String>,
     pub color: String,
-    pub status: TodosStatus,
-    pub deadline: DateTimeWithTimeZone,
-    pub priority: i32,
-    pub created_at: Option<DateTimeWithTimeZone>,
-    pub updated_at: Option<DateTimeWithTimeZone>,
-}
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation, Serialize, Deserialize)]
-pub enum Relation {
-    #[sea_orm(has_many = "super::workunit::Entity")]
-    Workunit,
-}
-
-impl Related<super::workunit::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Workunit.def()
-    }
-}
-
-impl ActiveModelBehavior for ActiveModel {}
-
-impl Model {
-    /// Converts a Model to ActiveModel for database operations
-    pub fn to_active_model(self) -> ActiveModel {
-        ActiveModel {
-            title: Set(self.title),
-            description: Set(self.description),
-            status: Set(self.status),
-            deadline: Set(self.deadline),
-            color: Set(self.color),
-            priority: Set(self.priority),
-            created_at: Set(self.created_at),
-            updated_at: Set(self.updated_at),
-        }
-    }
+    pub status: TaskStatus,
+    pub project_id: i32,
+    pub priority: PriorityType,
+    pub deadline: Option<NaiveDateTime>,
+    pub started_at: Option<NaiveDateTime>,
+    pub completed_at: Option<NaiveDateTime>,
+    pub estimated_time: Option<u64>,
+    pub created_at: Option<NaiveDateTime>,
+    pub updated_at: Option<NaiveDateTime>,
 }

@@ -16,30 +16,34 @@ CREATE TABLE IF NOT EXISTS projects (
   title TEXT NOT NULL,
   description TEXT,
   color TEXT,
+
   client_name TEXT,
-  start_date TEXT,
+  status TEXT DEFAULT 'Active', -- 'Active', 'Completed', 'On Hold', 'Cancelled'
+
+  started_at TEXT,
   deadline TEXT,
   completed_at TEXT,
-  isBillable BOOLEAN,
-  billingType TEXT, -- 'Hourly' or 'Fixed'
-  hourlyRate INTEGER,
-  fixedRate INTEGER,
+
+  is_billable BOOLEAN,
+  billing_type TEXT, -- 'Hourly' or 'Fixed'
+  hourly_rate INTEGER,
+  fixed_rate INTEGER,
   currency TEXT,
-  status TEXT DEFAULT 'Active',
+
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
   CHECK (
     -- If isBillable is true, billingType must not be null
-    (isBillable IS NOT 1) OR (billingType IS NOT NULL)
+    (is_billable IS NOT 1) OR (billing_type IS NOT NULL)
   ),
 
   CHECK (
     -- If billingType is 'Hourly', hourlyRate must exist, fixedRate must be null
     -- If billingType is 'Fixed', fixedRate must exist, hourlyRate must be null
-    (billingType IS NULL) OR (
-      (billingType = 'Hourly' AND hourlyRate IS NOT NULL AND fixedRate IS NULL) OR
-      (billingType = 'Fixed' AND fixedRate IS NOT NULL AND hourlyRate IS NULL)
+    (billing_type IS NULL) OR (
+      (billing_type = 'Hourly' AND hourly_rate IS NOT NULL AND fixed_rate IS NULL) OR
+      (billing_type = 'Fixed' AND fixed_rate IS NOT NULL AND hourly_rate IS NULL)
     )
   )
 );
@@ -51,12 +55,12 @@ CREATE TABLE IF NOT EXISTS tasks (
   description TEXT,
   color TEXT,
   project_id INTEGER,
-  status TEXT DEFAULT 'Planning', -- Planning, In Progress, Completed, Cancelled
+  status TEXT DEFAULT 'Planning', -- Planning, In Progress, Completed, Cancelled, 'On Hold'
   priority TEXT DEFAULT 'Low', -- Low, Medium, High, Urgent
   deadline TEXT,
-  start_date TEXT NOT NULL,
-  estimated_time INTEGER,
+  started_at TEXT NOT NULL,
   completed_at TEXT,
+  estimated_time INTEGER,
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (project_id) REFERENCES projects(id) ON UPDATE CASCADE ON DELETE CASCADE
@@ -108,11 +112,11 @@ CREATE TABLE IF NOT EXISTS tasks_tags (
 -- Pomodoro settings table
 CREATE TABLE IF NOT EXISTS pomodoro_settings (
   duration INTEGER,
-  sessionDuration INTEGER,
-  sessionCount INTEGER,
-  breakDuration INTEGER,
-  autoStart BOOLEAN,
-  syncWithTimeTracking BOOLEAN
+  session_duration INTEGER,
+  session_count INTEGER,
+  break_duration INTEGER,
+  auto_start BOOLEAN,
+  sync_with_time_tracking BOOLEAN
 );
 
 -- Settings table
