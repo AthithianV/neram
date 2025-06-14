@@ -15,7 +15,7 @@ use crate::AppState;
 /// # Returns
 /// A `Result` containing the created `TaskModel` on success, or a `String` error message.
 #[command]
-pub async fn create_Task(
+pub async fn create_task(
     app_state: State<'_, AppState>,
     new_task: TaskModel,
     tag_ids: Vec<u32>
@@ -37,7 +37,7 @@ pub async fn create_Task(
 /// A `Result` containing a `Vec` of `TaskModel` on success, or a `String` error message.
 
 #[command]
-pub async fn get_all_Tasks(app_state: State<'_, AppState>) -> Result<Vec<TaskModel>, String> {
+pub async fn get_all_tasks(app_state: State<'_, AppState>) -> Result<Vec<TaskModel>, String> {
     let pool = app_state.conn.lock().await;
 
     let task_repository = TaskRepository::new(&pool);
