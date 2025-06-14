@@ -1,204 +1,144 @@
-// use sea_orm::QueryOrder;
-// use sea_orm::{
-//     ActiveModelTrait,
-//     EntityTrait,
-//     Set,
-//     ColumnTrait,
-//     QueryFilter,
-//     NotSet,
-// };
-// use tauri::{ command, State };
-// use chrono::{ DateTime, Utc };
+use tauri::{ command, State };
 
-// use crate::entity::workunit;
-// use crate::entity::task;
-// use crate::entity::task::TodosStatus;
+use crate::repository::task::TaskRepository;
+use crate::models::task::{ TaskModel };
+use crate::AppState;
 
-// use crate::AppState;
+/// Creates a new Task record in the database.
+///
+/// This command takes details for a new Task and inserts it into the 'Tasks' table.
+///
+/// # Arguments
+/// new_Task `TaskModel`
+/// tag_ids `Vec<i32>`
+///
+/// # Returns
+/// A `Result` containing the created `TaskModel` on success, or a `String` error message.
+#[command]
+pub async fn create_Task(
+    app_state: State<'_, AppState>,
+    new_task: TaskModel,
+    tag_ids: Vec<u32>
+) -> Result<(), String> {
+    // Acquire a lock on the database connection
+    let pool = app_state.conn.lock().await;
 
-// // TASK OPERATIONS
+    let task_repository = TaskRepository::new(&pool);
+    task_repository.create(&new_task, tag_ids).await.map_err(|e| e.to_string())
+}
 
-// /// Creates a new task record in the database.
-// ///
-// /// This command takes details for a new task and inserts it into the 'tasks' table.
-// /// `created_at` and `updated_at` fields are automatically set to the current UTC time.
-// ///
-// /// # Arguments
-// /// * `app_state` - The Tauri state containing the database connection mutex.
-// /// * `title` - The title of the task.
-// /// * `description` - Optional description of the task.
-// /// * `status` - The status of the task (e.g., "pending", "in_progress", "completed").
-// /// * `priority` - Optional priority level of the task.
-// ///
-// /// # Returns
-// /// A `Result` containing the created `TaskModel` on success, or a `String` error message.
-// #[command]
-// pub async fn create_task(
-//     app_state: State<'_, AppState>,
-//     new_task: task::Model
-// ) -> Result<task::Model, String> {
-//     let db = app_state.conn.lock().await;
+/// Retrieves all Task records from the database.
+/// It acquires a lock on the database connection to perform the operation.
+///
+/// # Arguments
+/// * `app_state` - The Tauri state containing the database connection mutex.
+///
+/// # Returns
+/// A `Result` containing a `Vec` of `TaskModel` on success, or a `String` error message.
 
-//     let now = Utc::now().fixed_offset();
+#[command]
+pub async fn get_all_Tasks(app_state: State<'_, AppState>) -> Result<Vec<TaskModel>, String> {
+    let pool = app_state.conn.lock().await;
 
-//     let new_task_active_model = task::ActiveModel {
-//         title: NotSet,
-//         description: Set(new_task.description),
-//         status: Set(new_task.status),
-//         priority: Set(new_task.priority),
-//         deadline: Set(new_task.deadline),
-//         color: Set(new_task.color),
-//         created_at: Set(Some(now)),
-//         updated_at: Set(Some(now)),
-//     };
+    let task_repository = TaskRepository::new(&pool);
+    task_repository.find_all().await.map_err(|e| e.to_string())
+}
 
-//     let res = new_task_active_model.insert(&*db).await.map_err(|e| e.to_string())?;
-//     Ok(res)
-// }
+/// Retrieves a single Task record by its ID.
+/// It acquires a lock on the database connection to perform the operation.
+///
+/// # Arguments
+/// * `app_state` - The Tauri state containing the database connection mutex.
+/// * `id` - The ID of the Task to retrieve.
+///
+/// # Returns
+/// A `Result` containing an `Option<TaskModel>` (Some if found, None if not) on success,
+/// or a `String` error message.
 
-// /// Retrieves all task records from the database.
-// ///
-// /// # Arguments
-// /// * `app_state` - The Tauri state containing the database connection mutex.
-// ///
-// /// # Returns
-// /// A `Result` containing a `Vec` of `TaskModel` on success, or a `String` error message.
-// #[command]
-// pub async fn get_all_tasks(app_state: State<'_, AppState>) -> Result<Vec<task::Model>, String> {
-//     let db = app_state.conn.lock().await;
-//     let tasks = task::Entity
-//         ::find()
-//         .order_by_asc(task::Column::Priority)
-//         .all(&*db).await
-//         .map_err(|e| e.to_string())?;
-//     Ok(tasks)
-// }
+#[command]
+pub async fn get_task_by_id(
+    app_state: State<'_, AppState>,
+    id: u32
+) -> Result<Option<TaskModel>, String> {
+    // Acquire a lock on the database connection
+    let pool = app_state.conn.lock().await;
 
-// /// Retrieves a single task record by its ID.
-// ///
-// /// # Arguments
-// /// * `app_state` - The Tauri state containing the database connection mutex.
-// /// * `id` - The ID of the task to retrieve.
-// ///
-// /// # Returns
-// /// A `Result` containing an `Option<TaskModel>` on success, or a `String` error message.
-// #[command]
-// pub async fn get_task_by_title(
-//     app_state: State<'_, AppState>,
-//     title: String
-// ) -> Result<Option<task::Model>, String> {
-//     let db = app_state.conn.lock().await;
-//     let task = task::Entity
-//         ::find()
-//         .filter(task::Column::Title.eq(title))
-//         .one(&*db).await
-//         .map_err(|e| e.to_string())?;
-//     Ok(task)
-// }
+    let task_repository = TaskRepository::new(&pool);
+    task_repository.find_by_id(id).await.map_err(|e| e.to_string())
+}
 
-// /// Updates an existing task record in the database.
-// ///
-// /// All fields except ID are optional to allow partial updates.
-// /// `updated_at` field is automatically set to the current UTC time.
-// ///
-// /// # Arguments
-// /// * `app_state` - The Tauri state containing the database connection mutex.
-// /// * `id` - The ID of the task to update.
-// /// * `title` - Optional new title.
-// /// * `description` - Optional new description.
-// /// * `status` - Optional new status.
-// /// * `priority` - Optional new priority.
-// ///
-// /// # Returns
-// /// A `Result` containing the updated `TaskModel` on success, or a `String` error message.
-// #[command]
-// pub async fn update_task(
-//     app_state: State<'_, AppState>,
-//     title: String,
-//     description: Option<String>,
-//     status: TodosStatus,
-//     priority: i32,
-//     deadline: String,
-//     color: String
-// ) -> Result<Option<task::Model>, String> {
-//     let db = app_state.conn.lock().await;
+/// Updates an existing Task record in the database.
+///
+/// All fields are optional to allow partial updates. Only provided fields will be updated.
+/// `updated_at` field is automatically set to the current UTC time.
+/// It acquires a lock on the database connection to perform the operation.
+///
+/// # Arguments
+/// * `app_state` - The Tauri state containing the database connection mutex.
+///
+/// # Returns
+/// A `Result` containing the updated `TaskModel` on success, or a `String` error message.
+#[command]
+#[allow(clippy::too_many_arguments)] // This is common for update commands
+pub async fn update_task(
+    app_state: State<'_, AppState>,
+    task_to_update: TaskModel
+) -> Result<(), String> {
+    let pool = app_state.conn.lock().await;
 
-//     // Find the existing task
-//     let task = task::Entity
-//         ::find()
-//         .filter(task::Column::Title.eq(title.clone()))
-//         .one(&*db).await
-//         .map_err(|e| e.to_string())?
-//         .ok_or_else(|| format!("Task with title {} not found", title.clone()))?;
+    let task_repository = TaskRepository::new(&pool);
+    task_repository.update(&task_to_update).await.map_err(|e| e.to_string())
+}
 
-//     // Convert to ActiveModel to make changes
-//     let mut task_active_model = task.to_active_model();
+/// Deletes a Task record by its ID.
+/// It acquires a lock on the database connection to perform the operation.
+///
+/// # Arguments
+/// * `app_state` - The Tauri state containing the database connection mutex.
+/// * `id` - The ID of the Task to delete.
+///
+/// # Returns
+/// A `Result` indicating success (`()`) or a `String` error message.
+#[command]
+pub async fn delete_task(app_state: State<'_, AppState>, id: u32) -> Result<(), String> {
+    let pool = app_state.conn.lock().await;
 
-//     let parsed_deadline_date = deadline
-//         .parse::<DateTime<Utc>>()
-//         .map_err(|e| format!("Failed to parse date: {}", e))?
-//         .fixed_offset();
+    let task_repository = TaskRepository::new(&pool);
+    task_repository.delete(id).await.map_err(|e| e.to_string())
+}
 
-//     // Update fields if provided
-//     task_active_model.title = Set(title);
-//     task_active_model.description = Set(description);
-//     task_active_model.status = Set(status);
-//     task_active_model.priority = Set(priority);
-//     task_active_model.deadline = Set(parsed_deadline_date);
-//     task_active_model.color = Set(color);
+/// Add Tag to Task
+///
+/// # Arguments
+/// * `app_state` - The Tauri state containing the database connection mutex.
+/// * `Task_id` - Id of the sesssion
+/// * `tag_id` - Id of the task
+#[command]
+pub async fn add_tag_to_task(
+    app_state: State<'_, AppState>,
+    task_id: u32,
+    tag_id: u32
+) -> Result<(), String> {
+    let pool = app_state.conn.lock().await;
 
-//     // Update timestamp
-//     let now = Utc::now().fixed_offset();
-//     task_active_model.updated_at = Set(Some(now));
+    let task_repository = TaskRepository::new(&pool);
+    task_repository.add_tag_to_task(task_id, tag_id).await.map_err(|e| e.to_string())
+}
 
-//     // Save changes
-//     let res = task_active_model.update(&*db).await.map_err(|e| e.to_string())?;
-//     Ok(Some(res))
-// }
+/// Remove Tag from Task
+///
+/// # Arguments
+/// * `app_state` - The Tauri state containing the database connection mutex.
+/// * `Task_id` - Id of the sesssion
+/// * `tag_id` - Id of the task
+#[command]
+pub async fn remove_tag_from_task(
+    app_state: State<'_, AppState>,
+    task_id: u32,
+    tag_id: u32
+) -> Result<(), String> {
+    let pool = app_state.conn.lock().await;
 
-// /// Deletes a task record by its ID.
-// ///
-// /// # Arguments
-// /// * `app_state` - The Tauri state containing the database connection mutex.
-// /// * `id` - The ID of the task to delete.
-// ///
-// /// # Returns
-// /// A `Result` indicating success (`()`) or a `String` error message.
-// #[command]
-// pub async fn delete_task(app_state: State<'_, AppState>, title: String) -> Result<(), String> {
-//     let db = app_state.conn.lock().await;
-//     task::Entity
-//         ::delete_many()
-//         .filter(task::Column::Title.eq(title.clone()))
-//         .exec(&*db).await
-//         .map_err(|e| e.to_string())?;
-
-//     Ok(())
-// }
-
-// /// Calculates the total session duration for all workunits associated with a specific task.
-// ///
-// /// # Arguments
-// /// * `app_state` - The Tauri state containing the database connection mutex.
-// /// * `task_title` - The title of the task to calculate total duration for.
-// ///
-// /// # Returns
-// /// A `Result` containing the total duration in minutes as `i32`, or a `String` error message.
-// #[command]
-// pub async fn get_total_duration_by_task(
-//     app_state: State<'_, AppState>,
-//     task_title: String
-// ) -> Result<i32, String> {
-//     let db = app_state.conn.lock().await;
-//     let workunits = workunit::Entity
-//         ::find()
-//         .filter(workunit::Column::Task.eq(task_title))
-//         .all(&*db).await
-//         .map_err(|e| e.to_string())?;
-
-//     let total_duration: i32 = workunits
-//         .iter()
-//         .map(|w| w.session_duration)
-//         .sum();
-//     Ok(total_duration)
-// }
+    let task_repository = TaskRepository::new(&pool);
+    task_repository.remove_tag_from_task(task_id, tag_id).await.map_err(|e| e.to_string())
+}

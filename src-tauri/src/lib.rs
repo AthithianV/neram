@@ -2,7 +2,7 @@ mod db;
 mod commands;
 
 use commands::session::*;
-// use commands::task::*;
+use commands::task::*;
 // use commands::tag::*;
 use commands::timer::*;
 pub use db::*;
@@ -38,11 +38,13 @@ pub async fn run() {
                 remove_tag_from_session,
 
                 // // Task commands
-                // create_task,
-                // get_all_tasks,
-                // get_task_by_title,
-                // update_task,
-                // delete_task,
+                create_task,
+                get_all_tasks,
+                get_task_by_id,
+                update_task,
+                delete_task,
+                add_tag_to_task,
+                remove_tag_from_task,
 
                 // // Tag commands
                 // create_tag,
