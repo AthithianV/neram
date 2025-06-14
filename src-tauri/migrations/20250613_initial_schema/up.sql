@@ -115,13 +115,16 @@ CREATE TABLE IF NOT EXISTS tasks_tags (
 
 -- Pomodoro settings table
 CREATE TABLE IF NOT EXISTS pomodoro_settings (
-  duration INTEGER,
   session_duration INTEGER,
   session_count INTEGER,
   break_duration INTEGER,
   auto_start BOOLEAN,
   sync_with_time_tracking BOOLEAN
 );
+
+INSERT INTO pomodoro_settings 
+(session_duration, session_count, break_duration, auto_start, sync_with_time_tracking)
+(1500, 3, 300, true, true);
 
 -- Settings table
 CREATE TABLE IF NOT EXISTS settings (

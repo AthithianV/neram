@@ -21,11 +21,14 @@ pub struct SessionModel {
     pub updated_at: Option<NaiveDateTime>,
 }
 
-pub struct Related{
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Related {
+    pub id: u32,
     pub title: String,
-    pub color: String
+    pub color: String,
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct SessioWithRelation {
     pub id: u32,
     pub title: Option<String>,
@@ -41,7 +44,4 @@ pub struct SessioWithRelation {
 
     pub session_duration_sec: i64,
     pub break_duration_sec: i64,
-
 }
-
-
