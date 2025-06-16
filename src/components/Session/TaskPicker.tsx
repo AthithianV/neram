@@ -8,8 +8,8 @@ import {
 } from '../ui/select';
 
 type PropsType = {
-    onChange: (task: string) => void;
-    value: string;
+    onChange: (task: number) => void;
+    value: number;
 };
 
 const TaskItem = ({ title }: { title: string }) => {
@@ -46,7 +46,10 @@ const TaskList = () => {
 
 const TaskPicker = ({ onChange, value }: PropsType) => {
     return (
-        <Select onValueChange={onChange} value={value}>
+        <Select
+            onValueChange={(value) => onChange(parseInt(value))}
+            value={value.toString()}
+        >
             <SelectTrigger className="w-full bg-white shadow">
                 <SelectValue placeholder="Select a Task" />
             </SelectTrigger>

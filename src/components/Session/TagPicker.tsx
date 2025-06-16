@@ -28,8 +28,8 @@ const TagPicker = ({
     onChange,
 }: {
     sessionId: number | undefined;
-    value: number[] | Tag[];
-    onChange: (tags: number[]) => void;
+    value: Tag[];
+    onChange: (tags: Tag[]) => void;
 }) => {
     const { data: allTags } = useTag();
 
@@ -39,7 +39,9 @@ const TagPicker = ({
     const { mutate: addTag } = useAddTagToSession();
 
     useEffect(() => {
-        setSelectedTags(new Set(value.map((tag) => tag.id)));
+        if (value) {
+            setSelectedTags(new Set(value));
+        }
     }, [value]);
 
     const handleSelectTag = (tag: Tag) => {
@@ -47,12 +49,12 @@ const TagPicker = ({
             if (prev.has(tag)) {
                 prev.delete(tag);
                 if (sessionId) {
-                    removeTag({ sessionId, tagTitle: tag.title });
+                    removeTag({ sessionId, tagId: tag.id });
                 }
             } else {
                 prev.add(tag);
                 if (sessionId) {
-                    addTag({ sessionId, tagTitle: tag.title });
+                    addTag({ sessionId, tagId: tag.id });
                 }
             }
             return new Set([...prev]);
@@ -61,7 +63,7 @@ const TagPicker = ({
 
     useEffect(() => {
         if (!openDropdown) {
-            onChange(Array.from(selectedTags).map((tag) => tag.id));
+            onChange(Array.from(selectedTags));
         }
     }, [openDropdown]);
 

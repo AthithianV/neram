@@ -53,7 +53,7 @@ export const useCreateSession = () => {
     return useMutation({
         mutationFn: async (newSession: Session) => {
             await invoke('create_session', {
-                tags: newSession.tags.map((tag) => tag.title),
+                tags: newSession.tags.map((tag) => tag.id),
                 newSession,
             });
         },
@@ -74,7 +74,7 @@ export const useUpdateSession = () => {
         mutationFn: async (sessionToUpdate: Session) => {
             await invoke('update_session', {
                 sessionToUpdate,
-                tags: sessionToUpdate.tags.map((tag) => tag.title),
+                tags: sessionToUpdate.tags.map((tag) => tag.id),
             });
         },
         onSuccess: () => {
@@ -110,14 +110,14 @@ export const useRemoveTagFromSession = () => {
     return useMutation({
         mutationFn: async ({
             sessionId,
-            tagTitle,
+            tagId,
         }: {
             sessionId: number;
-            tagTitle: string;
+            tagId: number;
         }) => {
             await invoke('remove_tag_from_session', {
                 sessionId,
-                tagTitle,
+                tagId,
             });
             queryClient.invalidateQueries({
                 queryKey: ['session', sessionId.toString()],
@@ -134,14 +134,14 @@ export const useAddTagToSession = () => {
     return useMutation({
         mutationFn: async ({
             sessionId,
-            tagTitle,
+            tagId,
         }: {
             sessionId: number;
-            tagTitle: string;
+            tagId: number;
         }) => {
             await invoke('add_tag_to_session', {
                 sessionId,
-                tagTitle,
+                tagId,
             });
             queryClient.invalidateQueries({
                 queryKey: ['session', sessionId.toString()],

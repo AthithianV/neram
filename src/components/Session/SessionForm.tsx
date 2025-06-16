@@ -50,7 +50,8 @@ export const SessionForm = () => {
             form.setValue('id', session.id);
             form.setValue('title', session.title || '');
             form.setValue('description', session.description || '');
-            form.setValue('task', session.task);
+            form.setValue('task_id', session.task_id);
+            form.setValue('project_id', session.project_id);
             form.setValue('date', session.date);
             form.setValue('start_time', session.start_time);
             form.setValue('end_time', session.end_time);
@@ -130,7 +131,7 @@ export const SessionForm = () => {
                     {/* Task */}
                     <FormField
                         control={form.control}
-                        name="task"
+                        name="task_id"
                         render={({ field }) => (
                             <FormItem className="flex-1">
                                 <FormLabel>Task</FormLabel>

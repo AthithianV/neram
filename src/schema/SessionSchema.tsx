@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import dayjs from 'dayjs';
 import { setTime } from '../lib/time';
+import TagSchema from './TagSchema';
 
 const SessionSchema = z
     .object({
@@ -14,7 +15,7 @@ const SessionSchema = z
         end_time: z.date(),
         session_duration: z.number(),
         break_duration: z.number(),
-        tags: z.array(z.number()),
+        tags: z.array(TagSchema),
     })
     .refine((data) => dayjs(data.end_time).isAfter(dayjs(data.start_time)), {
         message: 'End time must be after start time',
