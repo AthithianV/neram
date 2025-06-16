@@ -13,20 +13,20 @@ import Pomodoro from './pages/Pomodaro.tsx';
 import CloudSync from './pages/CloudSync.tsx';
 import Settings from './pages/Settings.tsx';
 import Todo from './pages/Todo.tsx';
-import Workunit from './pages/Workunit.tsx';
+import Dashboard from './pages/Dashboard.tsx';
 import TaskTag from './pages/TaskTag.tsx';
-import { WorkunitForm } from './components/workunit/WorkunitForm.tsx';
+import { SessionForm } from './components/Session/SessionForm.tsx';
 
 export default function App() {
     return (
         <Routes>
             <Route element={<AppLayout />}>
                 <Route path="/" element={<Navigate to="/dashboard" />} />
-                <Route path="dashboard" element={<Workunit />}>
-                    <Route path="add-workunit" element={<WorkunitForm />} />
+                <Route path="dashboard" element={<Dashboard />}>
+                    <Route path="add-session" element={<SessionForm />} />
                     <Route
-                        path="update-workunit/:workunitId"
-                        element={<WorkunitForm />}
+                        path="update-session/:sessionId"
+                        element={<SessionForm />}
                     />
                 </Route>
                 <Route path="task-tag" element={<TaskTag />} />

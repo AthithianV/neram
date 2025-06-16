@@ -1,20 +1,20 @@
 import { z } from 'zod';
 import dayjs from 'dayjs';
 import { setTime } from '../lib/time';
-import TagSchema from './TagSchema';
 
-const WorkunitSchema = z
+const SessionSchema = z
     .object({
         id: z.number(),
         title: z.string().optional(),
         description: z.string().optional(),
-        task: z.string().min(1, 'Task is required'),
+        task_id: z.number(),
+        project_id: z.number(),
         date: z.date(),
         start_time: z.date(),
         end_time: z.date(),
         session_duration: z.number(),
         break_duration: z.number(),
-        tags: z.array(TagSchema),
+        tags: z.array(z.number()),
     })
     .refine((data) => dayjs(data.end_time).isAfter(dayjs(data.start_time)), {
         message: 'End time must be after start time',
@@ -41,6 +41,6 @@ const WorkunitSchema = z
         };
     });
 
-export type Workunit = z.infer<typeof WorkunitSchema>;
+export type Session = z.infer<typeof SessionSchema>;
 
-export default WorkunitSchema;
+export default SessionSchema;

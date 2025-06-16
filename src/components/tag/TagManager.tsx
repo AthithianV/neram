@@ -19,7 +19,7 @@ import {
     useUpdateTag,
     useDeleteTag,
 } from '@/hooks/useTodo';
-import { TagType } from '@/hooks/useWorkunit';
+import { TagType } from '@/hooks/useSession';
 import { Edit2, Trash2, Plus } from 'lucide-react';
 
 const TagManager = () => {

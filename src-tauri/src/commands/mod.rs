@@ -1,4 +1,4 @@
-pub mod migrate;
+pub mod project;
 pub mod session;
 pub mod task;
 pub mod tag;

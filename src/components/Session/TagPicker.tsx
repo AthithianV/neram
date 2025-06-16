@@ -17,42 +17,42 @@ import { useTag } from '@/hooks/useTodo';
 import { ChevronsUpDown, Check } from 'lucide-react';
 import {
     TagType,
-    useAddTagToWorkunit,
-    useRemoveTagFromWorkunit,
-} from '@/hooks/useWorkunit';
+    useAddTagToSession,
+    useRemoveTagFromSession,
+} from '@/hooks/useSession';
 import { Tag } from '@/schema/TagSchema';
 
 const TagPicker = ({
-    workunitId,
+    sessionId,
     value,
     onChange,
 }: {
-    workunitId: number | undefined;
-    value: TagType[] | Tag[];
-    onChange: (tags: Tag[]) => void;
+    sessionId: number | undefined;
+    value: number[] | Tag[];
+    onChange: (tags: number[]) => void;
 }) => {
     const { data: allTags } = useTag();
 
     const [openDropdown, setOpenDropdown] = useState(false);
-    const [selectedTags, setSelectedTags] = useState<Set<Tag>>(new Set(value));
-    const { mutate: removeTag } = useRemoveTagFromWorkunit();
-    const { mutate: addTag } = useAddTagToWorkunit();
+    const [selectedTags, setSelectedTags] = useState<Set<Tag>>(new Set([]));
+    const { mutate: removeTag } = useRemoveTagFromSession();
+    const { mutate: addTag } = useAddTagToSession();
 
     useEffect(() => {
-        setSelectedTags(new Set(value));
+        setSelectedTags(new Set(value.map((tag) => tag.id)));
     }, [value]);
 
     const handleSelectTag = (tag: Tag) => {
         setSelectedTags((prev) => {
             if (prev.has(tag)) {
                 prev.delete(tag);
-                if (workunitId) {
-                    removeTag({ workunitId, tagTitle: tag.title });
+                if (sessionId) {
+                    removeTag({ sessionId, tagTitle: tag.title });
                 }
             } else {
                 prev.add(tag);
-                if (workunitId) {
-                    addTag({ workunitId, tagTitle: tag.title });
+                if (sessionId) {
+                    addTag({ sessionId, tagTitle: tag.title });
                 }
             }
             return new Set([...prev]);
@@ -61,7 +61,7 @@ const TagPicker = ({
 
     useEffect(() => {
         if (!openDropdown) {
-            onChange(Array.from(selectedTags));
+            onChange(Array.from(selectedTags).map((tag) => tag.id));
         }
     }, [openDropdown]);
 

@@ -3,7 +3,8 @@ mod commands;
 
 use commands::session::*;
 use commands::task::*;
-// use commands::tag::*;
+use commands::project::*;
+use commands::tag::*;
 use commands::timer::*;
 pub use db::*;
 use sqlx::{ Pool, Sqlite };
@@ -46,14 +47,23 @@ pub async fn run() {
                 add_tag_to_task,
                 remove_tag_from_task,
 
+                // Project commands
+                create_project,
+                get_all_projects,
+                get_project_by_id,
+                update_project,
+                delete_project,
+                add_tag_to_project,
+                remove_tag_from_project,
+
                 // // Tag commands
-                // create_tag,
-                // get_all_tags,
-                // get_tag_by_title,
-                // update_tag,
-                // delete_tag,
+                create_tag,
+                get_all_tags,
+                get_tag_by_id,
+                update_tag,
+                delete_tag,
                 // get_default_tags,
-                // // get_tags_by_session,
+                // get_tags_by_session,
                 // add_tag_to_session,
                 // remove_tag_from_session,
 

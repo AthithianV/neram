@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
-import { TagType, TaskType } from '@/hooks/useWorkunit';
+import { TagType, TaskType } from '@/hooks/useSession';
 
 export const useTask = () => {
     return useQuery({

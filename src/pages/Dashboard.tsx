@@ -1,14 +1,15 @@
 import { ScrollArea } from '@/components/ui/scroll-area';
-import WorkunitCard from '@/components/workunit/WorkunitCard';
-import { useWorkunit, WorkunitWithTaskAndTag } from '@/hooks/useWorkunit';
+import WorkunitCard from '@/components/Session/SessionCard';
+import { useSession, SessionWithTaskAndTag } from '@/hooks/useSession';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Separator } from '@/components/ui/separator';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import Controls from '@/components/workunit/Controls';
+import Controls from '@/components/Session/Controls';
+import SessionCard from '@/components/Session/SessionCard';
 
 const Dashboard = () => {
-    const { data: workunits, isLoading, error } = useWorkunit();
+    const { data: sessions, isLoading, error } = useSession();
     const location = useLocation();
 
     if (isLoading) {
@@ -36,17 +37,17 @@ const Dashboard = () => {
                     )}
                 >
                     <ul className="flex flex-col gap-[1px] py-2">
-                        {workunits &&
-                            workunits.length > 0 &&
-                            workunits.map(
+                        {sessions &&
+                            sessions.length > 0 &&
+                            sessions.map(
                                 (
-                                    workunitWithTaskAndTag: WorkunitWithTaskAndTag,
+                                    sessionWithTaskAndTag: SessionWithTaskAndTag,
                                     index: number
                                 ) => (
-                                    <WorkunitCard
+                                    <SessionCard
                                         key={index}
-                                        workunitWithTaskAndTag={
-                                            workunitWithTaskAndTag
+                                        sessionWithTaskAndTag={
+                                            sessionWithTaskAndTag
                                         }
                                     />
                                 )
@@ -55,7 +56,7 @@ const Dashboard = () => {
                 </ScrollArea>
             </div>
 
-            <ScrollArea key={location.pathname} className=" py-4" >
+            <ScrollArea key={location.pathname} className=" py-4">
                 <motion.div
                     initial={
                         location.pathname === '/dashboard'

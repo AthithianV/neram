@@ -1,7 +1,7 @@
-import { Workunit } from '@/schema/WorkunitSchema';
+import { Session } from '@/schema/SessionSchema';
 import dayjs from 'dayjs';
 
-export const DEFAULT_WORKUNIT_VALUES: Workunit = {
+export const DEFAULT_SESSION_VALUES: Session = {
     id: 0,
     title: '',
     description: '',

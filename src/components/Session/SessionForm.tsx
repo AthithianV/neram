@@ -16,66 +16,62 @@ import { Input } from '@/components/ui/input';
 
 import TimeElement from '@/components/form/TimeElement';
 import DurationElement from '@/components/form/DurationElement';
-import WorkunitSchema from '@/schema/WorkunitSchema';
 import { Textarea } from '@/components/ui/textarea';
 import { useEffect } from 'react';
-import { Workunit } from '@/schema/WorkunitSchema';
-import { DEFAULT_WORKUNIT_VALUES } from '@/constants/workunit';
+import SessionSchema, { Session } from '@/schema/SessionSchema';
+import { DEFAULT_SESSION_VALUES } from '@/constants/session';
 import {
-    useCreateWorkunit,
-    useUpdateWorkunit,
-    useWorkunitById,
-} from '@/hooks/useWorkunit';
+    useCreateSession,
+    useUpdateSession,
+    useSessionById,
+} from '@/hooks/useSession';
 import DatePicker from '../form/DatePicker';
 import TaskPicker from './TaskPicker';
 import TagPicker from './TagPicker';
 
-export const WorkunitForm = () => {
-    const form = useForm<Workunit>({
-        resolver: zodResolver(WorkunitSchema),
-        defaultValues: DEFAULT_WORKUNIT_VALUES,
+export const SessionForm = () => {
+    const form = useForm<Session>({
+        resolver: zodResolver(SessionSchema),
+        defaultValues: DEFAULT_SESSION_VALUES,
     });
 
-    const { workunitId } = useParams();
-    const { data: workunitWithTags } = useWorkunitById(workunitId || '');
-    const { workunit, tags } = workunitWithTags || {
-        workunit: undefined,
+    const { sessionId } = useParams();
+    const { data: sessionWithTags } = useSessionById(sessionId || '');
+    const { session, tags } = sessionWithTags || {
+        session: undefined,
         tags: [],
     };
 
-    const { mutate: createWorkunit } = useCreateWorkunit();
-    const { mutate: updateWorkunit } = useUpdateWorkunit();
+    const { mutate: createSession } = useCreateSession();
+    const { mutate: updateSession } = useUpdateSession();
 
     useEffect(() => {
-        if (workunit) {
-            form.setValue('id', workunit.id);
-            form.setValue('title', workunit.title || '');
-            form.setValue('description', workunit.description || '');
-            form.setValue('task', workunit.task);
-            form.setValue('date', workunit.date);
-            form.setValue(
-                'start_time',
-                workunit.start_time
-            );
-            form.setValue('end_time', workunit.end_time);
-            form.setValue('session_duration', workunit.session_duration);
-            form.setValue('break_duration', workunit.break_duration);
+        if (session) {
+            form.setValue('id', session.id);
+            form.setValue('title', session.title || '');
+            form.setValue('description', session.description || '');
+            form.setValue('task', session.task);
+            form.setValue('date', session.date);
+            form.setValue('start_time', session.start_time);
+            form.setValue('end_time', session.end_time);
+            form.setValue('session_duration', session.session_duration);
+            form.setValue('break_duration', session.break_duration);
             form.setValue('tags', tags || []);
         }
-    }, [workunit]);
+    }, [session]);
 
     const navigate = useNavigate();
 
-    function onSubmit(data: z.infer<typeof WorkunitSchema>) {
-        if (workunit) {
-            updateWorkunit(data);
+    function onSubmit(data: z.infer<typeof SessionSchema>) {
+        if (session) {
+            updateSession(data);
         } else {
-            createWorkunit(data);
+            createSession(data);
         }
         navigate('/dashboard');
     }
 
-    const handleError = (error: string, field: keyof Workunit) => {
+    const handleError = (error: string, field: keyof Session) => {
         if (error) {
             form.setError(field, { message: error });
         } else {
@@ -90,10 +86,10 @@ export const WorkunitForm = () => {
                 className="space-y-6 px-8 max-sm:px-4 w-[30vw] max-md:w-fit"
             >
                 <h1 className="text-lg font-semibold mb-1">
-                    {workunit ? 'Edit Work Unit' : 'Add new Work Unit'}
+                    {session ? 'Edit Session' : 'Add new Session'}
                 </h1>
                 <p className="text-sm text-muted-foreground mb-6">
-                    {workunit
+                    {session
                         ? 'Edit a work unit to track your time.'
                         : 'Create a new work unit to track your time.'}
                 </p>
@@ -256,7 +252,7 @@ export const WorkunitForm = () => {
                         <FormItem className="flex-1">
                             <FormLabel>Tags</FormLabel>
                             <TagPicker
-                                workunitId={workunit?.id}
+                                sessionId={session?.id}
                                 value={field.value}
                                 onChange={field.onChange}
                             />

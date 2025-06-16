@@ -1,6 +1,6 @@
 import { formatTime } from '@/lib/time';
 import { Badge } from '@/components/ui/badge';
-import { useDeleteWorkunit, WorkunitWithTaskAndTag } from '@/hooks/useWorkunit';
+import { SessionWithTaskAndTag, useDeleteSession } from '@/hooks/useSession';
 import { useNavigate, useParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
@@ -19,17 +19,17 @@ import {
     AlertDialogAction,
 } from '../ui/alert-dialog';
 
-interface WorkunitCardProps {
-    workunitWithTaskAndTag: WorkunitWithTaskAndTag;
+interface SessionCardProps {
+    sessionWithTaskAndTag: SessionWithTaskAndTag;
 }
 
-const WorkunitCard = ({ workunitWithTaskAndTag }: WorkunitCardProps) => {
-    const { workunitId } = useParams();
+const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
+    const { sessionId } = useParams();
     const navigate = useNavigate();
-    const { workunit, task, tags } = workunitWithTaskAndTag;
+    const { session, task, tags } = sessionWithTaskAndTag;
     const [isHovered, setIsHovered] = useState(false);
-    const { mutateAsync: deleteWorkunit, isPending: isDeleting } =
-        useDeleteWorkunit();
+    const { mutateAsync: deleteSession, isPending: isDeleting } =
+        useDeleteSession();
     if (!task) {
         return null;
     }
@@ -40,12 +40,12 @@ const WorkunitCard = ({ workunitWithTaskAndTag }: WorkunitCardProps) => {
                 'flex items-center justify-between',
                 'p-3 border shadow rounded-md cursor-pointer',
                 'bg-white',
-                workunit.id === parseInt(workunitId || '0')
+                session.id === parseInt(sessionId || '0')
                     ? 'bg-gray-100'
                     : 'hover:bg-gray-50'
             )}
             onClick={() => {
-                navigate(`update-workunit/${workunit.id}`);
+                navigate(`update-session/${session.id}`);
             }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -54,7 +54,7 @@ const WorkunitCard = ({ workunitWithTaskAndTag }: WorkunitCardProps) => {
                 <div
                     className={cn('p-1 rounded-md bg-gray-50', 'h-12')}
                     style={
-                        isHovered || workunit.id === parseInt(workunitId || '0')
+                        isHovered || session.id === parseInt(sessionId || '0')
                             ? {
                                   backgroundColor: task.color,
                               }
@@ -96,7 +96,7 @@ const WorkunitCard = ({ workunitWithTaskAndTag }: WorkunitCardProps) => {
             </div>
             <div className="flex items-center gap-2">
                 <p className="text-sm text-gray-500">
-                    {formatTime(workunit.session_duration)}
+                    {formatTime(session.session_duration)}
                 </p>
 
                 {isHovered && (
@@ -110,18 +110,18 @@ const WorkunitCard = ({ workunitWithTaskAndTag }: WorkunitCardProps) => {
                             <AlertDialogHeader>
                                 <AlertDialogTitle>
                                     Are you sure you want to delete this
-                                    workunit?
+                                    session?
                                 </AlertDialogTitle>
                                 <AlertDialogDescription>
                                     This action cannot be undone. This will
-                                    permanently delete this workunit.
+                                    permanently delete this session.
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                                 <AlertDialogAction
                                     onClick={async () => {
-                                        await deleteWorkunit(workunit.id);
+                                        await deleteSession(session.id);
                                     }}
                                     disabled={isDeleting}
                                     className="bg-red-500 hover:bg-red-600"
@@ -141,4 +141,4 @@ const WorkunitCard = ({ workunitWithTaskAndTag }: WorkunitCardProps) => {
     );
 };
 
-export default WorkunitCard;
+export default SessionCard;
