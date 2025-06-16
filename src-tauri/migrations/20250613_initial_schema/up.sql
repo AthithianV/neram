@@ -49,8 +49,8 @@ CREATE TABLE IF NOT EXISTS projects (
 );
 
 INSERT INTO projects 
-(title, description, color, status, created_at, deleted_at) 
-VALUES("General", "Project to add any General Tasks", "222222", CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+(title, description, color, status, created_at, updated_at) 
+VALUES("General", "Project to add any General Tasks", "222222", "Active", CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- Create tasks table
 CREATE TABLE IF NOT EXISTS tasks (
@@ -124,7 +124,7 @@ CREATE TABLE IF NOT EXISTS pomodoro_settings (
 
 INSERT INTO pomodoro_settings 
 (session_duration, session_count, break_duration, auto_start, sync_with_time_tracking)
-(1500, 3, 300, true, true);
+VALUES (1500, 3, 300, true, true);
 
 -- Settings table
 CREATE TABLE IF NOT EXISTS settings (

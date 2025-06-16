@@ -13,11 +13,12 @@
         "windows": [
             {
                 "title": "neram",
-                "width": 800,
-                "height": 600,
                 "label": "main",
                 "decorations": false,
-                "titleBarStyle": "Overlay"
+                "titleBarStyle": "Overlay",
+                "maximized": true,
+                "width": 1200,
+                "height": 800
             }
         ],
         "security": {

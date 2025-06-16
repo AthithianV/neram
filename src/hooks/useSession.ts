@@ -1,23 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
 import { Session } from '@/schema/SessionSchema';
-import { Tag } from '@/schema/TagSchema';
-import { Task } from '@/schema/TaskSchema';
 import { toast } from 'sonner';
 
-type DateType = {
-    created_at: string;
-    updated_at: string;
+type Related = {
+    id: number;
+    title: string;
+    color: string;
 };
 
-export type SessionType = Session & DateType;
-export type TaskType = Task & DateType;
-export type TagType = Tag & DateType;
-
-export type SessionWithTaskAndTag = {
-    session: SessionType;
-    task: TaskType;
-    tags: TagType[];
+export type SessionType = Session & {
+    task: Related;
+    project: Related;
+    tags: Related[];
 };
 
 export const useSession = () => {
@@ -25,7 +20,7 @@ export const useSession = () => {
         queryKey: ['sessions'],
         queryFn: async () => {
             const sessions = await invoke('get_all_sessions');
-            return sessions as SessionWithTaskAndTag[];
+            return sessions as SessionType[];
         },
     });
 };
@@ -37,13 +32,7 @@ export const useSessionById = (id: string) => {
             const sessionWithTags = await invoke('get_session_by_id', {
                 id: parseInt(id, 10),
             });
-            return {
-                session: (sessionWithTags as any)[0] as SessionType,
-                tags: (sessionWithTags as any)[1] as
-                    | TagType[]
-                    | undefined
-                    | null,
-            };
+            return sessionWithTags as SessionType;
         },
     });
 };
@@ -53,7 +42,6 @@ export const useCreateSession = () => {
     return useMutation({
         mutationFn: async (newSession: Session) => {
             await invoke('create_session', {
-                tags: newSession.tags.map((tag) => tag.id),
                 newSession,
             });
         },

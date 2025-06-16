@@ -13,10 +13,9 @@ import {
 } from '@/components/ui/popover';
 import { useEffect, useState } from 'react';
 import { Badge } from '../ui/badge';
-import { useTag } from '@/hooks/useTodo';
+import { useTag } from '@/hooks/useTag';
 import { ChevronsUpDown, Check } from 'lucide-react';
 import {
-    TagType,
     useAddTagToSession,
     useRemoveTagFromSession,
 } from '@/hooks/useSession';
@@ -158,7 +157,7 @@ const TagItem = ({
     handleSelectTag,
     isSelected,
 }: {
-    tag: TagType;
+    tag: Tag;
     handleSelectTag: (tag: Tag) => void;
     isSelected: boolean;
 }) => {

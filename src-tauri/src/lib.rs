@@ -1,6 +1,7 @@
 mod db;
 mod commands;
 
+use db::lib::init_db;
 use commands::session::*;
 use commands::task::*;
 use commands::project::*;
@@ -27,7 +28,7 @@ pub async fn run() {
         .invoke_handler(
             tauri::generate_handler![
                 // Initialize DB and manage state by adding connection pool to App State
-                lib::init_db,
+                init_db,
 
                 // session commands
                 create_session,

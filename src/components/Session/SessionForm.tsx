@@ -36,11 +36,7 @@ export const SessionForm = () => {
     });
 
     const { sessionId } = useParams();
-    const { data: sessionWithTags } = useSessionById(sessionId || '');
-    const { session, tags } = sessionWithTags || {
-        session: undefined,
-        tags: [],
-    };
+    const { data: session } = useSessionById(sessionId || '');
 
     const { mutate: createSession } = useCreateSession();
     const { mutate: updateSession } = useUpdateSession();
@@ -57,7 +53,7 @@ export const SessionForm = () => {
             form.setValue('end_time', session.end_time);
             form.setValue('session_duration', session.session_duration);
             form.setValue('break_duration', session.break_duration);
-            form.setValue('tags', tags || []);
+            form.setValue('tags', session.tags || []);
         }
     }, [session]);
 

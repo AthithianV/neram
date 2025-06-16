@@ -18,7 +18,7 @@ import {
     useCreateTag,
     useUpdateTag,
     useDeleteTag,
-} from '@/hooks/useTodo';
+} from '@/hooks/useTask';
 import { TagType } from '@/hooks/useSession';
 import { Edit2, Trash2, Plus } from 'lucide-react';
 
