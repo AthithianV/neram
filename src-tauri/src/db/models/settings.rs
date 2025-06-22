@@ -1,16 +1,19 @@
-use serde::{Deserialize, Serialize};
+use sea_orm::entity::prelude::*;
+use serde::{ Deserialize, Serialize };
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum Theme {
     Dark,
     Light,
     System,
 }
 
-// settings
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct SettingsModel {
-    pub theme: Theme,
-    pub date_format: String,
-    time_format: String
+#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize)]
+#[sea_orm(table_name = "settings")]
+pub struct Model {
+    pub theme: Option<String>,
+    pub date_format: Option<String>,
+    pub time_format: Option<String>,
 }
+
+impl ActiveModelBehavior for ActiveModel {}

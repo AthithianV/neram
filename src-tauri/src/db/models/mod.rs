@@ -4,3 +4,6 @@ pub mod tag;
 pub mod pomadoro_settings;
 pub mod settings;
 pub mod project;
+pub mod sessions_tags;
+pub mod projects_tags;
+pub mod tasks_tags;
