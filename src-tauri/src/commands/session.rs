@@ -1,7 +1,7 @@
 use tauri::{ command, State };
 
 use crate::repository::session::SessionRepository;
-use crate::models::session::{ SessioWithRelation, SessionModel };
+use crate::models::session::{ SessionWithRelation, SessionModel };
 use crate::AppState;
 
 /// Creates a new session record in the database.
@@ -115,8 +115,8 @@ pub async fn delete_session(app_state: State<'_, AppState>, id: i32) -> Result<(
 #[command]
 pub async fn add_tag_to_session(
     app_state: State<'_, AppState>,
-    session_id: u32,
-    tag_id: u32
+    session_id: i32,
+    tag_id: i32
 ) -> Result<(), String> {
     let pool = app_state.conn.lock().await;
 
@@ -133,8 +133,8 @@ pub async fn add_tag_to_session(
 #[command]
 pub async fn remove_tag_from_session(
     app_state: State<'_, AppState>,
-    session_id: u32,
-    tag_id: u32
+    session_id: i32,
+    tag_id: i32
 ) -> Result<(), String> {
     let pool = app_state.conn.lock().await;
 

@@ -1,6 +1,8 @@
 use sea_orm::entity::prelude::*;
 use serde::{ Deserialize, Serialize };
 
+pub type TaskModel = Model;
+
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize)]
 #[sea_orm(table_name = "tasks")]
 pub struct Model {
@@ -27,29 +29,7 @@ pub enum Relation {
         from = "Column::ProjectId",
         to = "super::project::Column::Id"
     )]
-    Project,
-    #[sea_orm(has_many = "super::session::Entity")]
-    Session,
-    #[sea_orm(has_many = "super::tag::Entity")]
-    Tag,
-}
-
-impl Related<super::project::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Project.def()
-    }
-}
-
-impl Related<super::session::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Session.def()
-    }
-}
-
-impl Related<super::tag::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Tag.def()
-    }
+    Project
 }
 
 impl ActiveModelBehavior for ActiveModel {}

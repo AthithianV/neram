@@ -115,8 +115,8 @@ pub async fn delete_task(app_state: State<'_, AppState>, id: i32) -> Result<(), 
 #[command]
 pub async fn add_tag_to_task(
     app_state: State<'_, AppState>,
-    task_id: u32,
-    tag_id: u32
+    task_id: i32,
+    tag_id: i32
 ) -> Result<(), String> {
     let pool = app_state.conn.lock().await;
 
@@ -133,8 +133,8 @@ pub async fn add_tag_to_task(
 #[command]
 pub async fn remove_tag_from_task(
     app_state: State<'_, AppState>,
-    task_id: u32,
-    tag_id: u32
+    task_id: i32,
+    tag_id: i32
 ) -> Result<(), String> {
     let pool = app_state.conn.lock().await;
 

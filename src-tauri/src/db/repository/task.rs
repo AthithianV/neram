@@ -66,4 +66,23 @@ impl<'a> TaskRepository<'a> {
         let result = Task::delete_by_id(id).exec(self.db).await?;
         Ok(result)
     }
+
+    pub async fn add_tag_to_task(&self, task_id: i32, tag_id: i32) -> Result<(), DbErr> {
+        let active_model = crate::models::tasks_tags::ActiveModel {
+            task_id: Set(task_id),
+            tag_id: Set(tag_id),
+        };
+
+        active_model.insert(self.db).await?;
+        Ok(())
+    }
+
+    pub async fn remove_tag_from_task(&self, task_id: i32, tag_id: i32) -> Result<(), DbErr> {
+        let result = crate::models::tasks_tags::Entity
+            ::delete_many()
+            .filter(crate::models::tasks_tags::Column::TaskId.eq(task_id))
+            .filter(crate::models::tasks_tags::Column::TagId.eq(tag_id))
+            .exec(self.db).await?;
+        Ok(())
+    }
 }

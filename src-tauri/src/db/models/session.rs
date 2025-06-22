@@ -1,6 +1,9 @@
 use sea_orm::entity::prelude::*;
 use serde::{ Deserialize, Serialize };
 
+pub type SessionModel = Model;
+pub type SessionWithRelation = SessionWithRelationStruct;
+
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize)]
 #[sea_orm(table_name = "sessions")]
 pub struct Model {
@@ -20,40 +23,7 @@ pub struct Model {
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
-    #[sea_orm(
-        belongs_to = "super::project::Entity",
-        from = "Column::ProjectId",
-        to = "super::project::Column::Id"
-    )]
-    Project,
-    #[sea_orm(
-        belongs_to = "super::task::Entity",
-        from = "Column::TaskId",
-        to = "super::task::Column::Id"
-    )]
-    Task,
-    #[sea_orm(has_many = "super::tag::Entity")]
-    Tag,
-}
-
-impl Related<super::project::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Project.def()
-    }
-}
-
-impl Related<super::task::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Task.def()
-    }
-}
-
-impl Related<super::tag::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Tag.def()
-    }
-}
+pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}
 
@@ -66,7 +36,7 @@ pub struct Related {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct SessionWithRelation {
+pub struct SessionWithRelationStruct {
     pub id: i32,
     pub title: Option<String>,
     pub description: Option<String>,

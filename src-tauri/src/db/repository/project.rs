@@ -76,4 +76,23 @@ impl<'a> ProjectRepository<'a> {
         let result = Project::delete_by_id(id).exec(self.db).await?;
         Ok(result)
     }
+
+    pub async fn add_tag_to_project(&self, project_id: i32, tag_id: i32) -> Result<(), DbErr> {
+        let active_model = crate::models::projects_tags::ActiveModel {
+            project_id: Set(project_id),
+            tag_id: Set(tag_id),
+        };
+
+        active_model.insert(self.db).await?;
+        Ok(())
+    }
+
+    pub async fn remove_tag_from_project(&self, project_id: i32, tag_id: i32) -> Result<(), DbErr> {
+        let result = crate::models::projects_tags::Entity
+            ::delete_many()
+            .filter(crate::models::projects_tags::Column::ProjectId.eq(project_id))
+            .filter(crate::models::projects_tags::Column::TagId.eq(tag_id))
+            .exec(self.db).await?;
+        Ok(())
+    }
 }

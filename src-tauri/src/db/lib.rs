@@ -27,13 +27,37 @@ pub async fn init_db(path: String, app_handle: AppHandle) -> Result<(), String> 
         format!("Failed to connect to database: {}", e)
     )?;
 
-    // Run migrations
-    println!("Running SeaORM migrations...");
-    match Migrator::up(&db, None).await {
-        Ok(_) => println!("SeaORM migrations completed successfully"),
-        Err(e) => {
-            println!("Migration error: {:?}", e);
-            return Err(format!("Migration failed: {}", e));
+    // Only run migrations if database doesn't exist or has pending migrations
+    if !db_exists {
+        println!("New database detected, running initial migrations...");
+        match Migrator::up(&db, None).await {
+            Ok(_) => println!("Initial migrations completed successfully"),
+            Err(e) => {
+                println!("Migration error: {:?}", e);
+                return Err(format!("Migration failed: {}", e));
+            }
+        }
+    } else {
+        // Check if there are pending migrations
+        match Migrator::get_pending_migrations(&db).await {
+            Ok(pending) => {
+                if !pending.is_empty() {
+                    println!("Found {} pending migrations, running them...", pending.len());
+                    match Migrator::up(&db, None).await {
+                        Ok(_) => println!("Pending migrations completed successfully"),
+                        Err(e) => {
+                            println!("Migration error: {:?}", e);
+                            return Err(format!("Migration failed: {}", e));
+                        }
+                    }
+                } else {
+                    println!("Database is up to date, no migrations needed");
+                }
+            }
+            Err(e) => {
+                println!("Error checking pending migrations: {:?}", e);
+                return Err(format!("Failed to check pending migrations: {}", e));
+            }
         }
     }
 
