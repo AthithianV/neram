@@ -9,22 +9,20 @@ use crate::AppState;
 /// This command takes details for a new Task and inserts it into the 'Tasks' table.
 ///
 /// # Arguments
-/// new_Task `TaskModel`
-/// tag_ids `Vec<i32>`
+/// new_task `TaskModel`
 ///
 /// # Returns
 /// A `Result` containing the created `TaskModel` on success, or a `String` error message.
 #[command]
 pub async fn create_task(
     app_state: State<'_, AppState>,
-    new_task: TaskModel,
-    tag_ids: Vec<u32>
-) -> Result<(), String> {
+    new_task: TaskModel
+) -> Result<TaskModel, String> {
     // Acquire a lock on the database connection
-    let pool = app_state.conn.lock().await;
+    let db = app_state.conn.lock().await;
 
-    let task_repository = TaskRepository::new(&pool);
-    task_repository.create(&new_task, tag_ids).await.map_err(|e| e.to_string())
+    let task_repository = TaskRepository::new(&db);
+    task_repository.create(&new_task).await.map_err(|e| e.to_string())
 }
 
 /// Retrieves all Task records from the database.
@@ -38,9 +36,9 @@ pub async fn create_task(
 
 #[command]
 pub async fn get_all_tasks(app_state: State<'_, AppState>) -> Result<Vec<TaskModel>, String> {
-    let pool = app_state.conn.lock().await;
+    let db = app_state.conn.lock().await;
 
-    let task_repository = TaskRepository::new(&pool);
+    let task_repository = TaskRepository::new(&db);
     task_repository.find_all().await.map_err(|e| e.to_string())
 }
 
@@ -58,12 +56,12 @@ pub async fn get_all_tasks(app_state: State<'_, AppState>) -> Result<Vec<TaskMod
 #[command]
 pub async fn get_task_by_id(
     app_state: State<'_, AppState>,
-    id: u32
+    id: i32
 ) -> Result<Option<TaskModel>, String> {
     // Acquire a lock on the database connection
-    let pool = app_state.conn.lock().await;
+    let db = app_state.conn.lock().await;
 
-    let task_repository = TaskRepository::new(&pool);
+    let task_repository = TaskRepository::new(&db);
     task_repository.find_by_id(id).await.map_err(|e| e.to_string())
 }
 
@@ -75,18 +73,18 @@ pub async fn get_task_by_id(
 ///
 /// # Arguments
 /// * `app_state` - The Tauri state containing the database connection mutex.
+/// * `task_to_update` - The task model to update.
 ///
 /// # Returns
 /// A `Result` containing the updated `TaskModel` on success, or a `String` error message.
 #[command]
-#[allow(clippy::too_many_arguments)] // This is common for update commands
 pub async fn update_task(
     app_state: State<'_, AppState>,
     task_to_update: TaskModel
-) -> Result<(), String> {
-    let pool = app_state.conn.lock().await;
+) -> Result<TaskModel, String> {
+    let db = app_state.conn.lock().await;
 
-    let task_repository = TaskRepository::new(&pool);
+    let task_repository = TaskRepository::new(&db);
     task_repository.update(&task_to_update).await.map_err(|e| e.to_string())
 }
 
@@ -100,11 +98,12 @@ pub async fn update_task(
 /// # Returns
 /// A `Result` indicating success (`()`) or a `String` error message.
 #[command]
-pub async fn delete_task(app_state: State<'_, AppState>, id: u32) -> Result<(), String> {
-    let pool = app_state.conn.lock().await;
+pub async fn delete_task(app_state: State<'_, AppState>, id: i32) -> Result<(), String> {
+    let db = app_state.conn.lock().await;
 
-    let task_repository = TaskRepository::new(&pool);
-    task_repository.delete(id).await.map_err(|e| e.to_string())
+    let task_repository = TaskRepository::new(&db);
+    task_repository.delete(id).await.map_err(|e| e.to_string())?;
+    Ok(())
 }
 
 /// Add Tag to Task

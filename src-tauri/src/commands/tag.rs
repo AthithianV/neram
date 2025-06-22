@@ -9,17 +9,19 @@ use crate::AppState;
 /// This command takes details for a new Tag and inserts it into the 'Tags' table.
 ///
 /// # Arguments
-/// new_Tag `TagModel`
-/// tag_ids `Vec<i32>`
+/// new_tag `TagModel`
 ///
 /// # Returns
 /// A `Result` containing the created `TagModel` on success, or a `String` error message.
 #[command]
-pub async fn create_tag(app_state: State<'_, AppState>, new_tag: TagModel) -> Result<(), String> {
+pub async fn create_tag(
+    app_state: State<'_, AppState>,
+    new_tag: TagModel
+) -> Result<TagModel, String> {
     // Acquire a lock on the database connection
-    let pool = app_state.conn.lock().await;
+    let db = app_state.conn.lock().await;
 
-    let tag_repository = TagRepository::new(&pool);
+    let tag_repository = TagRepository::new(&db);
     tag_repository.create(&new_tag).await.map_err(|e| e.to_string())
 }
 
@@ -34,9 +36,9 @@ pub async fn create_tag(app_state: State<'_, AppState>, new_tag: TagModel) -> Re
 
 #[command]
 pub async fn get_all_tags(app_state: State<'_, AppState>) -> Result<Vec<TagModel>, String> {
-    let pool = app_state.conn.lock().await;
+    let db = app_state.conn.lock().await;
 
-    let tag_repository = TagRepository::new(&pool);
+    let tag_repository = TagRepository::new(&db);
     tag_repository.find_all().await.map_err(|e| e.to_string())
 }
 
@@ -54,12 +56,12 @@ pub async fn get_all_tags(app_state: State<'_, AppState>) -> Result<Vec<TagModel
 #[command]
 pub async fn get_tag_by_id(
     app_state: State<'_, AppState>,
-    id: u32
+    id: i32
 ) -> Result<Option<TagModel>, String> {
     // Acquire a lock on the database connection
-    let pool = app_state.conn.lock().await;
+    let db = app_state.conn.lock().await;
 
-    let tag_repository = TagRepository::new(&pool);
+    let tag_repository = TagRepository::new(&db);
     tag_repository.find_by_id(id).await.map_err(|e| e.to_string())
 }
 
@@ -71,18 +73,18 @@ pub async fn get_tag_by_id(
 ///
 /// # Arguments
 /// * `app_state` - The Tauri state containing the database connection mutex.
+/// * `tag_to_update` - The tag model to update.
 ///
 /// # Returns
 /// A `Result` containing the updated `TagModel` on success, or a `String` error message.
 #[command]
-#[allow(clippy::too_many_arguments)] // This is common for update commands
 pub async fn update_tag(
     app_state: State<'_, AppState>,
     tag_to_update: TagModel
-) -> Result<(), String> {
-    let pool = app_state.conn.lock().await;
+) -> Result<TagModel, String> {
+    let db = app_state.conn.lock().await;
 
-    let tag_repository = TagRepository::new(&pool);
+    let tag_repository = TagRepository::new(&db);
     tag_repository.update(&tag_to_update).await.map_err(|e| e.to_string())
 }
 
@@ -96,9 +98,10 @@ pub async fn update_tag(
 /// # Returns
 /// A `Result` indicating success (`()`) or a `String` error message.
 #[command]
-pub async fn delete_tag(app_state: State<'_, AppState>, id: u32) -> Result<(), String> {
-    let pool = app_state.conn.lock().await;
+pub async fn delete_tag(app_state: State<'_, AppState>, id: i32) -> Result<(), String> {
+    let db = app_state.conn.lock().await;
 
-    let tag_repository = TagRepository::new(&pool);
-    tag_repository.delete(id).await.map_err(|e| e.to_string())
+    let tag_repository = TagRepository::new(&db);
+    tag_repository.delete(id).await.map_err(|e| e.to_string())?;
+    Ok(())
 }

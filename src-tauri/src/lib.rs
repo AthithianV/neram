@@ -8,14 +8,14 @@ use commands::project::*;
 use commands::tag::*;
 use commands::timer::*;
 pub use db::*;
-use sqlx::{ Pool, Sqlite };
 
+pub use sea_orm::DatabaseConnection;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
 #[derive(Clone)]
 struct AppState {
-    conn: Arc<Mutex<Pool<Sqlite>>>,
+    conn: Arc<Mutex<DatabaseConnection>>,
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -36,8 +36,6 @@ pub async fn run() {
                 get_session_by_id,
                 update_session,
                 delete_session,
-                add_tag_to_session,
-                remove_tag_from_session,
 
                 // // Task commands
                 create_task,
@@ -45,8 +43,6 @@ pub async fn run() {
                 get_task_by_id,
                 update_task,
                 delete_task,
-                add_tag_to_task,
-                remove_tag_from_task,
 
                 // Project commands
                 create_project,
@@ -54,8 +50,6 @@ pub async fn run() {
                 get_project_by_id,
                 update_project,
                 delete_project,
-                add_tag_to_project,
-                remove_tag_from_project,
 
                 // // Tag commands
                 create_tag,
@@ -63,10 +57,6 @@ pub async fn run() {
                 get_tag_by_id,
                 update_tag,
                 delete_tag,
-                // get_default_tags,
-                // get_tags_by_session,
-                // add_tag_to_session,
-                // remove_tag_from_session,
 
                 // Timer commands
                 start_timer,

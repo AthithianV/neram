@@ -9,22 +9,20 @@ use crate::AppState;
 /// This command takes details for a new Project and inserts it into the 'Projects' table.
 ///
 /// # Arguments
-/// new_Project `ProjectModel`
-/// tag_ids `Vec<i32>`
+/// new_project `ProjectModel`
 ///
 /// # Returns
 /// A `Result` containing the created `ProjectModel` on success, or a `String` error message.
 #[command]
 pub async fn create_project(
     app_state: State<'_, AppState>,
-    new_project: ProjectModel,
-    tag_ids: Vec<u32>
-) -> Result<(), String> {
+    new_project: ProjectModel
+) -> Result<ProjectModel, String> {
     // Acquire a lock on the database connection
-    let pool = app_state.conn.lock().await;
+    let db = app_state.conn.lock().await;
 
-    let project_repository = ProjectRepository::new(&pool);
-    project_repository.create(&new_project, tag_ids).await.map_err(|e| e.to_string())
+    let project_repository = ProjectRepository::new(&db);
+    project_repository.create(&new_project).await.map_err(|e| e.to_string())
 }
 
 /// Retrieves all Project records from the database.
@@ -38,13 +36,13 @@ pub async fn create_project(
 
 #[command]
 pub async fn get_all_projects(app_state: State<'_, AppState>) -> Result<Vec<ProjectModel>, String> {
-    let pool = app_state.conn.lock().await;
+    let db = app_state.conn.lock().await;
 
-    let project_repository = ProjectRepository::new(&pool);
+    let project_repository = ProjectRepository::new(&db);
     project_repository.find_all().await.map_err(|e| e.to_string())
 }
 
-/// Retrieves a single Tag record by its ID.
+/// Retrieves a single Project record by its ID.
 /// It acquires a lock on the database connection to perform the operation.
 ///
 /// # Arguments
@@ -58,12 +56,12 @@ pub async fn get_all_projects(app_state: State<'_, AppState>) -> Result<Vec<Proj
 #[command]
 pub async fn get_project_by_id(
     app_state: State<'_, AppState>,
-    id: u32
+    id: i32
 ) -> Result<Option<ProjectModel>, String> {
     // Acquire a lock on the database connection
-    let pool = app_state.conn.lock().await;
+    let db = app_state.conn.lock().await;
 
-    let project_repository = ProjectRepository::new(&pool);
+    let project_repository = ProjectRepository::new(&db);
     project_repository.find_by_id(id).await.map_err(|e| e.to_string())
 }
 
@@ -75,18 +73,18 @@ pub async fn get_project_by_id(
 ///
 /// # Arguments
 /// * `app_state` - The Tauri state containing the database connection mutex.
+/// * `project_to_update` - The project model to update.
 ///
 /// # Returns
 /// A `Result` containing the updated `ProjectModel` on success, or a `String` error message.
 #[command]
-#[allow(clippy::too_many_arguments)] // This is common for update commands
 pub async fn update_project(
     app_state: State<'_, AppState>,
     project_to_update: ProjectModel
-) -> Result<(), String> {
-    let pool = app_state.conn.lock().await;
+) -> Result<ProjectModel, String> {
+    let db = app_state.conn.lock().await;
 
-    let project_repository = ProjectRepository::new(&pool);
+    let project_repository = ProjectRepository::new(&db);
     project_repository.update(&project_to_update).await.map_err(|e| e.to_string())
 }
 
@@ -100,11 +98,12 @@ pub async fn update_project(
 /// # Returns
 /// A `Result` indicating success (`()`) or a `String` error message.
 #[command]
-pub async fn delete_project(app_state: State<'_, AppState>, id: u32) -> Result<(), String> {
-    let pool = app_state.conn.lock().await;
+pub async fn delete_project(app_state: State<'_, AppState>, id: i32) -> Result<(), String> {
+    let db = app_state.conn.lock().await;
 
-    let project_repository = ProjectRepository::new(&pool);
-    project_repository.delete(id).await.map_err(|e| e.to_string())
+    let project_repository = ProjectRepository::new(&db);
+    project_repository.delete(id).await.map_err(|e| e.to_string())?;
+    Ok(())
 }
 
 /// Add Tag to Project

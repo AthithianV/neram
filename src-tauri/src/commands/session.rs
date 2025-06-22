@@ -10,21 +10,19 @@ use crate::AppState;
 ///
 /// # Arguments
 /// new_session `SessionModel`
-/// tag_ids `Vec<i32>`
 ///
 /// # Returns
 /// A `Result` containing the created `SessionModel` on success, or a `String` error message.
 #[command]
 pub async fn create_session(
     app_state: State<'_, AppState>,
-    new_session: SessionModel,
-    tag_ids: Vec<u32>
-) -> Result<(), String> {
+    new_session: SessionModel
+) -> Result<SessionModel, String> {
     // Acquire a lock on the database connection
-    let pool = app_state.conn.lock().await;
+    let db = app_state.conn.lock().await;
 
-    let session_repository = SessionRepository::new(&pool);
-    session_repository.create(&new_session, tag_ids).await.map_err(|e| e.to_string())
+    let session_repository = SessionRepository::new(&db);
+    session_repository.create(&new_session).await.map_err(|e| e.to_string())
 }
 
 /// Retrieves all session records from the database.
@@ -34,15 +32,13 @@ pub async fn create_session(
 /// * `app_state` - The Tauri state containing the database connection mutex.
 ///
 /// # Returns
-/// A `Result` containing a `Vec` of `SessionWithRelation` on success, or a `String` error message.
+/// A `Result` containing a `Vec` of `SessionModel` on success, or a `String` error message.
 
 #[command]
-pub async fn get_all_sessions(
-    app_state: State<'_, AppState>
-) -> Result<Vec<SessioWithRelation>, String> {
-    let pool = app_state.conn.lock().await;
+pub async fn get_all_sessions(app_state: State<'_, AppState>) -> Result<Vec<SessionModel>, String> {
+    let db = app_state.conn.lock().await;
 
-    let session_repository = SessionRepository::new(&pool);
+    let session_repository = SessionRepository::new(&db);
     session_repository.find_all().await.map_err(|e| e.to_string())
 }
 
@@ -54,18 +50,18 @@ pub async fn get_all_sessions(
 /// * `id` - The ID of the session to retrieve.
 ///
 /// # Returns
-/// A `Result` containing an `Option<sessionModel>` (Some if found, None if not) on success,
+/// A `Result` containing an `Option<SessionModel>` (Some if found, None if not) on success,
 /// or a `String` error message.
 
 #[command]
 pub async fn get_session_by_id(
     app_state: State<'_, AppState>,
-    id: u32
-) -> Result<Option<SessioWithRelation>, String> {
+    id: i32
+) -> Result<Option<SessionModel>, String> {
     // Acquire a lock on the database connection
-    let pool = app_state.conn.lock().await;
+    let db = app_state.conn.lock().await;
 
-    let session_repository = SessionRepository::new(&pool);
+    let session_repository = SessionRepository::new(&db);
     session_repository.find_by_id(id).await.map_err(|e| e.to_string())
 }
 
@@ -77,27 +73,18 @@ pub async fn get_session_by_id(
 ///
 /// # Arguments
 /// * `app_state` - The Tauri state containing the database connection mutex.
-/// * `id` - The ID of the session to update.
-/// * `title` - Optional new title.
-/// * `description` - Optional new description.
-/// * `task` - Optional new task.
-/// * `date` - Optional new date (ISO 8601 string).
-/// * `start_time` - Optional new start time (ISO 8601 string).
-/// * `end_time` - Optional new end time (ISO 8601 string).
-/// * `duration` - Optional new duration.
-/// * `break_time` - Optional new break time.
+/// * `session_to_update` - The session model to update.
 ///
 /// # Returns
-/// A `Result` containing the updated `sessionModel` on success, or a `String` error message.
+/// A `Result` containing the updated `SessionModel` on success, or a `String` error message.
 #[command]
-#[allow(clippy::too_many_arguments)] // This is common for update commands
 pub async fn update_session(
     app_state: State<'_, AppState>,
     session_to_update: SessionModel
-) -> Result<(), String> {
-    let pool = app_state.conn.lock().await;
+) -> Result<SessionModel, String> {
+    let db = app_state.conn.lock().await;
 
-    let session_repository = SessionRepository::new(&pool);
+    let session_repository = SessionRepository::new(&db);
     session_repository.update(&session_to_update).await.map_err(|e| e.to_string())
 }
 
@@ -111,11 +98,12 @@ pub async fn update_session(
 /// # Returns
 /// A `Result` indicating success (`()`) or a `String` error message.
 #[command]
-pub async fn delete_session(app_state: State<'_, AppState>, id: u32) -> Result<(), String> {
-    let pool = app_state.conn.lock().await;
+pub async fn delete_session(app_state: State<'_, AppState>, id: i32) -> Result<(), String> {
+    let db = app_state.conn.lock().await;
 
-    let session_repository = SessionRepository::new(&pool);
-    session_repository.delete(id).await.map_err(|e| e.to_string())
+    let session_repository = SessionRepository::new(&db);
+    session_repository.delete(id).await.map_err(|e| e.to_string())?;
+    Ok(())
 }
 
 /// Add Tag to session

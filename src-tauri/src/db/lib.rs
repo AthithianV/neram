@@ -1,5 +1,5 @@
-use sqlx::{ migrate::Migrator, SqlitePool };
-
+use sea_orm::{ Database, DatabaseConnection };
+use migration::{ Migrator, MigratorTrait };
 use std::{ path::Path, sync::Arc };
 use tauri::{ AppHandle, Manager };
 use tokio::sync::Mutex;
@@ -23,40 +23,23 @@ pub async fn init_db(path: String, app_handle: AppHandle) -> Result<(), String> 
     let db_url = format!("sqlite://{}/neram.db?mode=rwc", path);
     println!("Connecting to database with URL: {}", db_url);
 
-    let pool = SqlitePool::connect(&db_url).await.expect("Failed to connect to SQLite");
+    let db: DatabaseConnection = Database::connect(&db_url).await.map_err(|e|
+        format!("Failed to connect to database: {}", e)
+    )?;
 
-    // Add this before creating the migrator
-    println!("Current working directory: {:?}", std::env::current_dir());
-    println!("Checking if ./migrations exists: {}", Path::new("./migrations").exists());
-
-    // List contents of current directory
-    if let Ok(entries) = std::fs::read_dir(".") {
-        println!("Current directory contents:");
-        for entry in entries {
-            if let Ok(entry) = entry {
-                println!("  {:?}", entry.path());
-            }
+    // Run migrations
+    println!("Running SeaORM migrations...");
+    match Migrator::up(&db, None).await {
+        Ok(_) => println!("SeaORM migrations completed successfully"),
+        Err(e) => {
+            println!("Migration error: {:?}", e);
+            return Err(format!("Migration failed: {}", e));
         }
-    }
-
-    // Only run migrations if database doesn't exist
-    if !db_exists {
-        println!("Database doesn't exist, running migrations...");
-        let migrator = Migrator::new(Path::new("./migrations")).await.unwrap();
-        match migrator.run(&pool).await {
-            Ok(_) => println!("Migrations completed successfully"),
-            Err(e) => {
-                println!("Migration error: {:?}", e);
-                return Err(e.to_string());
-            }
-        }
-    } else {
-        println!("Database exists, skipping migrations");
     }
 
     println!("Setting up app state with database connection");
     app_handle.manage(AppState {
-        conn: Arc::new(Mutex::new(pool)),
+        conn: Arc::new(Mutex::new(db)),
     });
 
     println!("Database initialization completed");
