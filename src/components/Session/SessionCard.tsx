@@ -1,6 +1,6 @@
 import { formatTime } from '@/lib/time';
 import { Badge } from '@/components/ui/badge';
-import { SessionWithTaskAndTag, useDeleteSession } from '@/hooks/useSession';
+import { SessionType, useDeleteSession } from '@/hooks/useSession';
 import { useNavigate, useParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
@@ -20,19 +20,17 @@ import {
 } from '../ui/alert-dialog';
 
 interface SessionCardProps {
-    sessionWithTaskAndTag: SessionWithTaskAndTag;
+    sessionWithTaskAndTag: SessionType;
 }
 
 const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
     const { sessionId } = useParams();
     const navigate = useNavigate();
-    const { session, task, tags } = sessionWithTaskAndTag;
+    const { id, title, project, tags, session_duration } =
+        sessionWithTaskAndTag;
     const [isHovered, setIsHovered] = useState(false);
     const { mutateAsync: deleteSession, isPending: isDeleting } =
         useDeleteSession();
-    if (!task) {
-        return null;
-    }
 
     return (
         <li
@@ -40,12 +38,12 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
                 'flex items-center justify-between',
                 'p-3 border shadow rounded-md cursor-pointer',
                 'bg-white',
-                session.id === parseInt(sessionId || '0')
+                id === parseInt(sessionId || '0')
                     ? 'bg-gray-100'
                     : 'hover:bg-gray-50'
             )}
             onClick={() => {
-                navigate(`update-session/${session.id}`);
+                navigate(`update-session/${id}`);
             }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -54,16 +52,16 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
                 <div
                     className={cn('p-1 rounded-md bg-gray-50', 'h-12')}
                     style={
-                        isHovered || session.id === parseInt(sessionId || '0')
+                        isHovered || id === parseInt(sessionId || '0')
                             ? {
-                                  backgroundColor: task.color,
+                                  backgroundColor: project.color,
                               }
                             : {}
                     }
                 ></div>
                 <div className="flex flex-col gap-2 flex-1">
                     <h3 className="text-md font-semibold">
-                        {task?.title || 'Untitled'}
+                        {title || 'Untitled'}
                     </h3>
                     <ScrollArea className="max-w-5/6">
                         <ul className="flex gap-2">
@@ -96,7 +94,7 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
             </div>
             <div className="flex items-center gap-2">
                 <p className="text-sm text-gray-500">
-                    {formatTime(session.session_duration)}
+                    {formatTime(session_duration)}
                 </p>
 
                 {isHovered && (
@@ -121,7 +119,7 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                                 <AlertDialogAction
                                     onClick={async () => {
-                                        await deleteSession(session.id);
+                                        await deleteSession(id);
                                     }}
                                     disabled={isDeleting}
                                     className="bg-red-500 hover:bg-red-600"

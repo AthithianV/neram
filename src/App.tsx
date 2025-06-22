@@ -15,7 +15,7 @@ import Settings from './pages/Settings.tsx';
 import Todo from './pages/Todo.tsx';
 import Dashboard from './pages/Dashboard.tsx';
 import TaskTag from './pages/TaskTag.tsx';
-import { SessionForm } from './components/session/SessionForm.tsx';
+import { SessionForm } from './components/Session/SessionForm.tsx';
 
 export default function App() {
     return (

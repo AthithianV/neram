@@ -25,9 +25,10 @@ import {
     useUpdateSession,
     useSessionById,
 } from '@/hooks/useSession';
-import DatePicker from '../form/DatePicker';
-import TaskPicker from './TaskPicker';
-import TagPicker from './TagPicker';
+import DatePicker from '@/components/form/DatePicker';
+import TaskPicker from '@/components/Session/TaskPicker';
+import ProjectPicker from '@/components/Session/ProjectPicker';
+import TagPicker from '@/components/Session/TagPicker';
 
 export const SessionForm = () => {
     const form = useForm<Session>({
@@ -124,6 +125,24 @@ export const SessionForm = () => {
                 />
 
                 <div className="flex gap-6 w-full max-sm:flex-col">
+                    {/* Project */}
+                    <FormField
+                        control={form.control}
+                        name="project_id"
+                        render={({ field }) => (
+                            <FormItem className="flex-1">
+                                <FormLabel>Project</FormLabel>
+                                <FormControl>
+                                    <ProjectPicker
+                                        onChange={field.onChange}
+                                        value={field.value}
+                                    />
+                                </FormControl>
+                                <FormMessage className="text-xs" />
+                            </FormItem>
+                        )}
+                    />
+
                     {/* Task */}
                     <FormField
                         control={form.control}
@@ -141,25 +160,25 @@ export const SessionForm = () => {
                             </FormItem>
                         )}
                     />
-
-                    {/* Date */}
-                    <FormField
-                        control={form.control}
-                        name="date"
-                        render={({ field }) => (
-                            <FormItem className="flex flex-col flex-1">
-                                <FormLabel>Date</FormLabel>
-                                <FormControl>
-                                    <DatePicker
-                                        date={field.value}
-                                        onChange={field.onChange}
-                                    />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                            </FormItem>
-                        )}
-                    />
                 </div>
+
+                {/* Date */}
+                <FormField
+                    control={form.control}
+                    name="date"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Date</FormLabel>
+                            <FormControl>
+                                <DatePicker
+                                    date={field.value}
+                                    onChange={field.onChange}
+                                />
+                            </FormControl>
+                            <FormMessage className="text-xs" />
+                        </FormItem>
+                    )}
+                />
 
                 <div className="flex gap-6 w-full max-sm:flex-col items-start">
                     {/* Start Time */}

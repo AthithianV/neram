@@ -20,7 +20,7 @@ const Controls = () => {
                 >
                     <Pause fill="currentColor" className="w-4 h-4" />
                     <span>Pause</span>
-                </Button>  
+                </Button>
             ) : (
                 <Button
                     variant={'default'}
@@ -45,13 +45,13 @@ const Controls = () => {
 
             {timer.timer_type === 'Session' && timer.time}
 
-            <Link to="/dashboard/add-workunit">
+            <Link to="/dashboard/add-session">
                 <Button
                     variant={'default'}
                     className="flex items-center gap-1 bg-blue-500 hover:bg-blue-600 "
                 >
                     <PlusIcon fill="currentColor" className="w-4 h-4" />
-                    <span>Add Work Unit</span>
+                    <span>Add Session</span>
                 </Button>
             </Link>
         </div>

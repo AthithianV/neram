@@ -48,7 +48,7 @@ const TaskPicker = ({ onChange, value }: PropsType) => {
     return (
         <Select
             onValueChange={(value) => onChange(parseInt(value))}
-            value={value.toString()}
+            value={value ? value.toString() : ''}
         >
             <SelectTrigger className="w-full bg-white shadow">
                 <SelectValue placeholder="Select a Task" />

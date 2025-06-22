@@ -1,12 +1,11 @@
 import { ScrollArea } from '@/components/ui/scroll-area';
-import WorkunitCard from '@/components/session/SessionCard';
-import { useSession, SessionWithTaskAndTag } from '@/hooks/useSession';
+import { useSession, SessionType } from '@/hooks/useSession';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Separator } from '@/components/ui/separator';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import Controls from '@/components/session/Controls';
-import SessionCard from '@/components/session/SessionCard';
+import Controls from '@/components/Session/Controls';
+import SessionCard from '@/components/Session/SessionCard';
 
 const Dashboard = () => {
     const { data: sessions, isLoading, error } = useSession();
@@ -41,7 +40,7 @@ const Dashboard = () => {
                             sessions.length > 0 &&
                             sessions.map(
                                 (
-                                    sessionWithTaskAndTag: SessionWithTaskAndTag,
+                                    sessionWithTaskAndTag: SessionType,
                                     index: number
                                 ) => (
                                     <SessionCard
