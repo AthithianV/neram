@@ -1,13 +1,57 @@
-use serde::{Deserialize, Serialize};
+use sea_orm::*;
+use crate::models::pomadoro_settings::{
+    Entity as PomodoroSettings,
+    Model as PomodoroSettingsModel,
+    ActiveModel as PomodoroSettingsActiveModel,
+};
 
+pub struct PomodoroSettingsRepository<'a> {
+    db: &'a DatabaseConnection,
+}
 
-// pomodaro
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct PomodoroSettingsModel {
-    pub duration: f64,
-    pub session_duration: f64,
-    pub session_count: i32,
-    pub break_duration: f64,
-    pub auto_start: bool,
-    pub sync_with_time_tracking: bool,
+impl<'a> PomodoroSettingsRepository<'a> {
+    pub fn new(db: &'a DatabaseConnection) -> Self {
+        Self { db }
+    }
+
+    pub async fn get_settings(&self) -> Result<Option<PomodoroSettingsModel>, DbErr> {
+        let settings = PomodoroSettings::find().one(self.db).await?;
+        Ok(settings)
+    }
+
+    pub async fn update_settings(
+        &self,
+        settings: &PomodoroSettingsModel
+    ) -> Result<PomodoroSettingsModel, DbErr> {
+        // Since there's no primary key, we'll update the first record or create one
+        let existing = PomodoroSettings::find().one(self.db).await?;
+
+        if let Some(existing) = existing {
+            // Update existing settings
+            let active_model = PomodoroSettingsActiveModel {
+                session_duration: Set(settings.session_duration),
+                session_count: Set(settings.session_count),
+                break_duration: Set(settings.break_duration),
+                auto_start: Set(settings.auto_start),
+                sync_with_time_tracking: Set(settings.sync_with_time_tracking),
+                ..Default::default()
+            };
+
+            let model = active_model.update(self.db).await?;
+            Ok(model)
+        } else {
+            // Create new settings
+            let active_model = PomodoroSettingsActiveModel {
+                session_duration: Set(settings.session_duration),
+                session_count: Set(settings.session_count),
+                break_duration: Set(settings.break_duration),
+                auto_start: Set(settings.auto_start),
+                sync_with_time_tracking: Set(settings.sync_with_time_tracking),
+                ..Default::default()
+            };
+
+            let model = active_model.insert(self.db).await?;
+            Ok(model)
+        }
+    }
 }

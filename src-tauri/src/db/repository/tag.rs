@@ -1,119 +1,55 @@
-use sqlx::{ Result, Row, SqlitePool };
-use crate::models::tag::{ TagModel };
+use sea_orm::*;
+use crate::models::tag::{ Entity as Tag, Model as TagModel, ActiveModel as TagActiveModel };
 
 pub struct TagRepository<'a> {
-    pool: &'a SqlitePool,
+    db: &'a DatabaseConnection,
 }
 
 impl<'a> TagRepository<'a> {
-    pub fn new(pool: &'a SqlitePool) -> Self {
-        Self { pool }
+    pub fn new(db: &'a DatabaseConnection) -> Self {
+        Self { db }
     }
 
-    pub async fn create(&self, tag: &TagModel) -> Result<()> {
-        let query =
-            r#"
-            INSERT INTO tags (
-                title, 
-                description, 
-                color, 
-                
-                created_at,
-                updated_at
-            )
-            VALUES ($1, $2, $3, NOW(), NOW())
-        "#;
-
-        sqlx
-            ::query(query)
-            .bind(tag.title.clone())
-            .bind(tag.description.clone())
-            .bind(tag.color.clone())
-            .execute(self.pool).await?;
-
-        Ok(())
-    }
-
-    pub async fn find_by_id(&self, id: u32) -> Result<Option<TagModel>> {
-        let query =
-            r#"
-                SELECT *
-                FROM tags
-                WHERE tags.id = ?
-            "#;
-
-        let row_opt = sqlx::query(query).bind(id).fetch_optional(self.pool).await?;
-
-        let Some(row) = row_opt else {
-            return Ok(None);
+    pub async fn create(&self, tag: &TagModel) -> Result<TagModel, DbErr> {
+        let active_model = TagActiveModel {
+            title: Set(tag.title.clone()),
+            description: Set(tag.description.clone()),
+            color: Set(tag.color.clone()),
+            created_at: Set("CURRENT_TIMESTAMP".to_string()),
+            updated_at: Set("CURRENT_TIMESTAMP".to_string()),
+            ..Default::default()
         };
 
-        let tag = TagModel {
-            id: row.get("id"),
-            title: row.get("title"),
-            description: row.get("description"),
-            color: row.get("color"),
-            created_at: row.get("created_at"),
-            updated_at: row.get("updated_at"),
-        };
-
-        Ok(Some(tag))
+        let model = active_model.insert(self.db).await?;
+        Ok(model)
     }
 
-    pub async fn find_all(&self) -> Result<Vec<TagModel>> {
-        let query = r#"
-                SELECT
-                FROM tags
-            "#;
+    pub async fn find_by_id(&self, id: i32) -> Result<Option<TagModel>, DbErr> {
+        let tag = Tag::find_by_id(id).one(self.db).await?;
+        Ok(tag)
+    }
 
-        let rows = sqlx::query(query).fetch_all(self.pool).await?;
-
-        let tags = rows
-            .iter()
-            .map(|row| {
-                TagModel {
-                    id: row.get("id"),
-                    title: row.get("title"),
-                    description: row.get("description"),
-                    color: row.get("color"),
-                    created_at: row.get("created_at"),
-                    updated_at: row.get("updated_at"),
-                }
-            })
-            .collect();
-
+    pub async fn find_all(&self) -> Result<Vec<TagModel>, DbErr> {
+        let tags = Tag::find().all(self.db).await?;
         Ok(tags)
     }
 
-    pub async fn update(&self, tag: &TagModel) -> Result<()> {
-        let update_query =
-            r#"
-            UPDATE tags 
-            SET 
-                title = $1, 
-                description = $2, 
-                color = $3, 
-                updated_at = NOW()
-            WHERE
-                tags.id = $4
-        "#;
+    pub async fn update(&self, tag: &TagModel) -> Result<TagModel, DbErr> {
+        let active_model = TagActiveModel {
+            id: Set(tag.id),
+            title: Set(tag.title.clone()),
+            description: Set(tag.description.clone()),
+            color: Set(tag.color.clone()),
+            updated_at: Set("CURRENT_TIMESTAMP".to_string()),
+            ..Default::default()
+        };
 
-        sqlx
-            ::query(update_query)
-            .bind(tag.title.clone())
-            .bind(tag.description.clone())
-            .bind(tag.color.clone())
-            .bind(tag.id)
-            .execute(self.pool).await?;
-
-        Ok(())
+        let model = active_model.update(self.db).await?;
+        Ok(model)
     }
 
-    pub async fn delete(&self, id: u32) -> Result<()> {
-        let query = r#"
-            DELETE FROM tags WHERE id = ?;
-        "#;
-        sqlx::query(query).bind(id).execute(self.pool).await?;
-        Ok(())
+    pub async fn delete(&self, id: i32) -> Result<DeleteResult, DbErr> {
+        let result = Tag::delete_by_id(id).exec(self.db).await?;
+        Ok(result)
     }
 }
