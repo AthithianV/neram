@@ -8,11 +8,9 @@ pub struct Migration;
 #[derive(DeriveIden)]
 enum Settings {
     Table,
-    Id,
     Theme,
     DateFormat,
     TimeFormat,
-    TimeZone,
 }
 
 #[async_trait::async_trait]
@@ -22,21 +20,11 @@ impl MigrationTrait for Migration {
             Table::create()
                 .table(Settings::Table)
                 .if_not_exists()
-                .col(ColumnDef::new(Settings::Id).integer().not_null().primary_key())
-                .col(ColumnDef::new(Settings::Theme).string().not_null().default("SYSTEM"))
-                .col(ColumnDef::new(Settings::DateFormat).string().not_null().default("DD/MM/YYYY"))
-                .col(ColumnDef::new(Settings::TimeFormat).string().not_null().default("hh:mm:ss A"))
-                .col(ColumnDef::new(Settings::TimeZone).string().not_null().default("SYSTEM"))
+                .col(ColumnDef::new(Settings::Theme).string().null())
+                .col(ColumnDef::new(Settings::DateFormat).string().null())
+                .col(ColumnDef::new(Settings::TimeFormat).string().null())
                 .to_owned()
         ).await?;
-
-        let db = manager.get_connection();
-        let stmt = Statement::from_sql_and_values(
-            manager.get_database_backend(),
-            r#"INSERT INTO `settings` (`id`, `theme`) VALUES (?, ?)"#,
-            [(1).into(), "light".into()]
-        );
-        db.execute(stmt).await?;
 
         Ok(())
     }

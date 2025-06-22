@@ -7,10 +7,10 @@ pub struct Migration;
 #[derive(DeriveIden)]
 enum Tags {
     Table,
+    Id,
     Title,
     Description,
     Color,
-    IsDefault,
     CreatedAt,
     UpdatedAt,
 }
@@ -22,21 +22,15 @@ impl MigrationTrait for Migration {
             Table::create()
                 .table(Tags::Table)
                 .if_not_exists()
-                .col(ColumnDef::new(Tags::Title).string().not_null().primary_key())
+                .col(ColumnDef::new(Tags::Id).integer().not_null().auto_increment().primary_key())
+                .col(ColumnDef::new(Tags::Title).string().not_null())
                 .col(ColumnDef::new(Tags::Description).string().null())
                 .col(ColumnDef::new(Tags::Color).string().null())
-                .col(ColumnDef::new(Tags::IsDefault).boolean().not_null().default(false))
                 .col(
-                    ColumnDef::new(Tags::CreatedAt)
-                        .date_time()
-                        .not_null()
-                        .default(Expr::current_timestamp())
+                    ColumnDef::new(Tags::CreatedAt).string().not_null().default("CURRENT_TIMESTAMP")
                 )
                 .col(
-                    ColumnDef::new(Tags::UpdatedAt)
-                        .date_time()
-                        .not_null()
-                        .default(Expr::current_timestamp())
+                    ColumnDef::new(Tags::UpdatedAt).string().not_null().default("CURRENT_TIMESTAMP")
                 )
                 .to_owned()
         ).await

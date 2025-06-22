@@ -7,14 +7,25 @@ pub struct Migration;
 #[derive(DeriveIden)]
 enum Tasks {
     Table,
+    Id,
     Title,
     Description,
     Color,
+    ProjectId,
     Status,
-    Deadline,
     Priority,
+    Deadline,
+    StartedAt,
+    CompletedAt,
+    EstimatedTime,
     CreatedAt,
     UpdatedAt,
+}
+
+#[derive(DeriveIden)]
+enum Projects {
+    Table,
+    Id,
 }
 
 #[async_trait::async_trait]
@@ -24,26 +35,38 @@ impl MigrationTrait for Migration {
             Table::create()
                 .table(Tasks::Table)
                 .if_not_exists()
-                .col(ColumnDef::new(Tasks::Title).string().not_null().primary_key())
+                .col(ColumnDef::new(Tasks::Id).integer().not_null().auto_increment().primary_key())
+                .col(ColumnDef::new(Tasks::Title).string().not_null())
                 .col(ColumnDef::new(Tasks::Description).string().null())
-                .col(ColumnDef::new(Tasks::Color).string().not_null().default("#F3F4F6"))
-                .col(ColumnDef::new(Tasks::Status).string().not_null().default("Not Started"))
-                .col(ColumnDef::new(Tasks::Deadline).date_time().not_null())
-                .col(ColumnDef::new(Tasks::Priority).integer().not_null().default(1))
+                .col(ColumnDef::new(Tasks::Color).string().null())
+                .col(ColumnDef::new(Tasks::ProjectId).integer().not_null())
+                .col(ColumnDef::new(Tasks::Status).string().not_null().default("Planning"))
+                .col(ColumnDef::new(Tasks::Priority).string().not_null().default("Low"))
+                .col(ColumnDef::new(Tasks::Deadline).string().null())
+                .col(ColumnDef::new(Tasks::StartedAt).string().not_null())
+                .col(ColumnDef::new(Tasks::CompletedAt).string().null())
+                .col(ColumnDef::new(Tasks::EstimatedTime).integer().null())
                 .col(
                     ColumnDef::new(Tasks::CreatedAt)
-                        .date_time()
+                        .string()
                         .not_null()
-                        .default(Expr::current_timestamp())
+                        .default("CURRENT_TIMESTAMP")
                 )
                 .col(
                     ColumnDef::new(Tasks::UpdatedAt)
-                        .date_time()
+                        .string()
                         .not_null()
-                        .default(Expr::current_timestamp())
+                        .default("CURRENT_TIMESTAMP")
+                )
+                .foreign_key(
+                    ForeignKey::create()
+                        .name("fk_tasks_project_id")
+                        .from(Tasks::Table, Tasks::ProjectId)
+                        .to(Projects::Table, Projects::Id)
+                        .on_delete(ForeignKeyAction::Cascade)
+                        .on_update(ForeignKeyAction::Cascade)
                 )
                 .to_owned()
-
         ).await
     }
 
