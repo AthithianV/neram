@@ -26,7 +26,7 @@ interface SessionCardProps {
 const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
     const { sessionId } = useParams();
     const navigate = useNavigate();
-    const { id, title, project, tags, session_duration } =
+    const { id, title, project, tags, session_duration_sec } =
         sessionWithTaskAndTag;
     const [isHovered, setIsHovered] = useState(false);
     const { mutateAsync: deleteSession, isPending: isDeleting } =
@@ -54,7 +54,7 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
                     style={
                         isHovered || id === parseInt(sessionId || '0')
                             ? {
-                                  backgroundColor: project.color,
+                                    backgroundColor: project.color,
                               }
                             : {}
                     }
@@ -94,7 +94,7 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
             </div>
             <div className="flex items-center gap-2">
                 <p className="text-sm text-gray-500">
-                    {formatTime(session_duration)}
+                    {formatTime(session_duration_sec)}
                 </p>
 
                 {isHovered && (

@@ -1,7 +1,7 @@
 use tauri::{ command, State };
 
 use crate::repository::session::SessionRepository;
-use crate::models::session::{ SessionWithRelation, SessionModel };
+use crate::models::session::{ SessionWithRelation, SessionModel, SessionWithRelationStruct };
 use crate::AppState;
 
 /// Creates a new session record in the database.
@@ -35,7 +35,9 @@ pub async fn create_session(
 /// A `Result` containing a `Vec` of `SessionModel` on success, or a `String` error message.
 
 #[command]
-pub async fn get_all_sessions(app_state: State<'_, AppState>) -> Result<Vec<SessionModel>, String> {
+pub async fn get_all_sessions(
+    app_state: State<'_, AppState>
+) -> Result<Vec<SessionWithRelationStruct>, String> {
     let db = app_state.conn.lock().await;
 
     let session_repository = SessionRepository::new(&db);

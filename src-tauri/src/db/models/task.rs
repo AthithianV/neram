@@ -1,5 +1,6 @@
 use sea_orm::entity::prelude::*;
 use serde::{ Deserialize, Serialize };
+use crate::models::session;
 
 pub type TaskModel = Model;
 

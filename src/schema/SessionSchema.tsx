@@ -13,7 +13,7 @@ const SessionSchema = z
         date: z.date(),
         start_time: z.date(),
         end_time: z.date(),
-        session_duration: z.number(),
+        session_duration_sec: z.number(),
         break_duration: z.number(),
         tags: z.array(TagSchema),
     })

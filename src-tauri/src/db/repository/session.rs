@@ -1,10 +1,16 @@
 use sea_orm::*;
-use crate::models::session::{
-    Entity as Session,
-    Model as SessionModel,
-    ActiveModel as SessionActiveModel,
-    Related,
-    SessionWithRelation,
+use crate::models::{
+    project::Entity as Project,
+    session::{
+        ActiveModel as SessionActiveModel,
+        Entity as Session,
+        Model as SessionModel,
+        ProjectInfo,
+        SessionWithRelationStruct,
+        TaskInfo,
+    },
+    tag::Entity as Tag,
+    task::Entity as Task,
 };
 
 pub struct SessionRepository<'a> {
@@ -41,9 +47,62 @@ impl<'a> SessionRepository<'a> {
         Ok(session)
     }
 
-    pub async fn find_all(&self) -> Result<Vec<SessionModel>, DbErr> {
-        let sessions = Session::find().all(self.db).await?;
-        Ok(sessions)
+    // pub async fn find_all(&self) -> Result<Vec<SessionModel>, DbErr> {
+    //     let sessions = Session::find().all(self.db).await?;
+    //     Ok(sessions)
+    // }
+
+    pub async fn find_all(&self) -> Result<Vec<SessionWithRelationStruct>, DbErr> {
+        let sessions = Session::find()
+            .find_also_related(Task)
+            .find_also_related(Project)
+            .all(self.db).await?;
+
+        let mut results = Vec::new();
+
+        for (session_model, task_opt, project_opt) in sessions {
+            // Load related tags for this session
+            // let tag_models = session_model
+            //     .find_linked(TagViaSessionTags) // <-- Make sure you define the `Link`
+            //     .all(self.db).await?;
+
+            let task = task_opt.map(|t| TaskInfo {
+                id: t.id,
+                title: t.title,
+                color: t.color.unwrap(),
+            });
+
+            let project = project_opt.map(|p| ProjectInfo {
+                id: p.id,
+                title: p.title,
+                color: p.color.unwrap(),
+            });
+
+            // let tags = tag_
+            //     .into_iter()
+            //     .map(|tag| Related {
+            //         id: tag.id,
+            //         title: tag.title,
+            //         color: tag.color.unwrap_or_default(),
+            //     })
+            //     .collect();
+
+            results.push(SessionWithRelationStruct {
+                id: session_model.id,
+                title: session_model.title,
+                description: session_model.description,
+                tags: Vec::new(),
+                date: session_model.date,
+                start_time: session_model.start_time,
+                end_time: session_model.end_time,
+                session_duration_sec: session_model.session_duration_sec,
+                break_duration_sec: session_model.break_duration_sec,
+                task: task.unwrap(),
+                project: project.unwrap(),
+            });
+        }
+
+        Ok(results)
     }
 
     pub async fn update(&self, session: &SessionModel) -> Result<SessionModel, DbErr> {

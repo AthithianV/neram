@@ -1,9 +1,0 @@
-DROP TABLE IF EXISTS settings;
-DROP TABLE IF EXISTS pomodoro_settings;
-DROP TABLE IF EXISTS tasks_tags;
-DROP TABLE IF EXISTS projects_tags;
-DROP TABLE IF EXISTS sessions_tags;
-DROP TABLE IF EXISTS sessions;
-DROP TABLE IF EXISTS tasks;
-DROP TABLE IF EXISTS projects;
-DROP TABLE IF EXISTS tags;

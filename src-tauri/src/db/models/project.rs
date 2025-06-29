@@ -1,4 +1,5 @@
 use sea_orm::entity::prelude::*;
+use crate::models::session;
 use serde::{ Deserialize, Serialize };
 
 pub type ProjectModel = Model;
