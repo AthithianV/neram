@@ -1,10 +1,10 @@
 import {
     Settings,
     Tag,
-    NotebookPen,
     RotateCcw,
     BarChart,
     LayoutDashboard,
+    Calendar,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -13,13 +13,13 @@ export const SIDEBAR_BODY_LINKS = [
         <LayoutDashboard size={18} />
         <span>Dashboard</span>
     </Link>,
-    <Link to="/task-tag" key="task-tag" className="flex items-center gap-2">
-        <Tag size={18} />
-        <span>Task/Tag</span>
+    <Link to="/session" key="session" className="flex items-center gap-2">
+        <Calendar size={18} />
+        <span>Session</span>
     </Link>,
-    <Link to="/todos" key="todos" className="flex items-center gap-2">
-        <NotebookPen size={18} />
-        <span>Todos</span>
+    <Link to="/project" key="project" className="flex items-center gap-2">
+        <Tag size={18} />
+        <span>Project</span>
     </Link>,
     <Link to="/analytics" key="analytics" className="flex items-center gap-2">
         <BarChart size={18} />
