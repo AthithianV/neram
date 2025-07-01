@@ -52,13 +52,15 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
                 <div
                     className={cn('p-1 rounded-md bg-gray-50', 'h-12')}
                     style={
-                        {
-                            backgroundColor: project.color,
-                        }
+                        isHovered || id === parseInt(sessionId || '0')
+                            ? {
+                                  backgroundColor: project.color,
+                              }
+                            : {}
                     }
                 ></div>
                 <div className="flex flex-col gap-2 flex-1">
-                    <h3 className="text-sm font-semibold">
+                    <h3 className="text-md font-semibold">
                         {title || 'Untitled'}
                     </h3>
                     <ScrollArea className="max-w-5/6">
@@ -67,12 +69,13 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
                                 tags.map((tag) => (
                                     <li
                                         key={tag.title}
-                                        className="text-xs text-gray-500"
+                                        className="text-gray-500"
                                     >
                                         <Badge
                                             style={{
                                                 backgroundColor: tag.color,
                                             }}
+                                            className="text-[0.5rem] px-2 rounded-sm"
                                         >
                                             {tag.title}
                                         </Badge>

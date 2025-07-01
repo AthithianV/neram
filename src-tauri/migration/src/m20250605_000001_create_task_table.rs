@@ -49,13 +49,13 @@ impl MigrationTrait for Migration {
                     ColumnDef::new(Tasks::CreatedAt)
                         .string()
                         .not_null()
-                        .default("CURRENT_TIMESTAMP")
+                        .default(Expr::cust("CURRENT_TIMESTAMP"))
                 )
                 .col(
                     ColumnDef::new(Tasks::UpdatedAt)
                         .string()
                         .not_null()
-                        .default("CURRENT_TIMESTAMP")
+                        .default(Expr::cust("CURRENT_TIMESTAMP"))
                 )
                 .foreign_key(
                     ForeignKey::create()

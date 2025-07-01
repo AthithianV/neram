@@ -52,13 +52,13 @@ impl MigrationTrait for Migration {
                     ColumnDef::new(Projects::CreatedAt)
                         .string()
                         .not_null()
-                        .default("CURRENT_TIMESTAMP")
+                        .default(Expr::cust("CURRENT_TIMESTAMP"))
                 )
                 .col(
                     ColumnDef::new(Projects::UpdatedAt)
                         .string()
                         .not_null()
-                        .default("CURRENT_TIMESTAMP")
+                        .default(Expr::cust("CURRENT_TIMESTAMP"))
                 )
                 .to_owned()
         ).await?;

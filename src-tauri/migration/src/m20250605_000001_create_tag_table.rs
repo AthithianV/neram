@@ -26,10 +26,10 @@ impl MigrationTrait for Migration {
                 .col(ColumnDef::new(Tags::Description).string().null())
                 .col(ColumnDef::new(Tags::Color).string().null())
                 .col(
-                    ColumnDef::new(Tags::CreatedAt).string().not_null().default("CURRENT_TIMESTAMP")
+                    ColumnDef::new(Tags::CreatedAt).string().not_null().default(Expr::cust("CURRENT_TIMESTAMP"))
                 )
                 .col(
-                    ColumnDef::new(Tags::UpdatedAt).string().not_null().default("CURRENT_TIMESTAMP")
+                    ColumnDef::new(Tags::UpdatedAt).string().not_null().default(Expr::cust("CURRENT_TIMESTAMP"))
                 )
                 .to_owned()
         ).await

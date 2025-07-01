@@ -69,6 +69,7 @@ impl<'a> SessionRepository<'a> {
 
         for session in sessions {
             let (session_model, task_model, project_model) = session;
+
             let tags = session_model.find_related(Tag).all(self.db).await?;
             let full_session = FullSessionModel::from((
                 session_model,

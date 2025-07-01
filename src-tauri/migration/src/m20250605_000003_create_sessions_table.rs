@@ -47,7 +47,7 @@ impl MigrationTrait for Migration {
                 .col(ColumnDef::new(Sessions::ProjectId).integer().not_null())
                 .col(ColumnDef::new(Sessions::TaskId).integer().not_null())
                 .col(
-                    ColumnDef::new(Sessions::Date).string().not_null().default("CURRENT_TIMESTAMP")
+                    ColumnDef::new(Sessions::Date).string().not_null().default(Expr::cust("CURRENT_TIMESTAMP"))
                 )
                 .col(ColumnDef::new(Sessions::StartTime).string().not_null())
                 .col(ColumnDef::new(Sessions::EndTime).string().null())
@@ -57,13 +57,13 @@ impl MigrationTrait for Migration {
                     ColumnDef::new(Sessions::CreatedAt)
                         .string()
                         .not_null()
-                        .default("CURRENT_TIMESTAMP")
+                        .default(Expr::cust("CURRENT_TIMESTAMP"))
                 )
                 .col(
                     ColumnDef::new(Sessions::UpdatedAt)
                         .string()
                         .not_null()
-                        .default("CURRENT_TIMESTAMP")
+                        .default(Expr::cust("CURRENT_TIMESTAMP"))
                 )
                 .foreign_key(
                     ForeignKey::create()
