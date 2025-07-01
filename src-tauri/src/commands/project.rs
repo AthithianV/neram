@@ -37,12 +37,12 @@ pub async fn create_project(
 /// A `Result` containing a `Vec` of `ProjectModel` on success, or a `String` error message.
 
 // #[command]
-// pub async fn get_all_projects(app_state: State<'_, AppState>) -> Result<Vec<ProjectModel>, String> {
-//     let db = app_state.conn.lock().await;
+pub async fn get_all_projects(app_state: State<'_, AppState>) -> Result<Vec<ProjectModel>, String> {
+    let db = app_state.conn.lock().await;
 
-//     let project_repository = ProjectRepository::new(&db);
-//     project_repository.find_all().await.map_err(|e| e.to_string())
-// }
+    let project_repository = ProjectRepository::new(&db);
+    project_repository.find_all().await.map_err(|e| e.to_string())
+}
 
 /// Retrieves a single Project record by its ID.
 /// It acquires a lock on the database connection to perform the operation.

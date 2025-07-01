@@ -3,12 +3,10 @@ use ::entity::{
     projects::Entity as Project,
     sessions::{ ActiveModel as SessionActiveModel, Entity as Session, Model as SessionModel },
     tasks::Entity as Task,
+    tags::Entity as Tag,
     sessions_tags::{ Entity as SessionTags, ActiveModel as SessionTagsActiveModel },
 };
-use crate::{
-    models::session::{ CreateSessionModel, Extra, FullSessionModel },
-    time::{ parse_time, parse_time_with_option },
-};
+use crate::{ models::session::{ CreateSessionModel, FullSessionModel } };
 
 pub struct SessionRepository<'a> {
     db: &'a DatabaseConnection,
@@ -45,40 +43,20 @@ impl<'a> SessionRepository<'a> {
             .find_also_related(Project)
             .one(self.db).await?;
 
-        // let (session, task, project) = session.map(|f| (f.0, f.1, f.2));
+        if let Some((session_model, task_model, project_model)) = session {
+            // 🔄 Query tags separately
+            let tags = session_model.find_related(Tag).all(self.db).await?;
 
-        let result = match session {
-            Some(s) => {
-                let (session_model, task_opt, project_opt) = s;
-                let task = task_opt.unwrap();
-                let project = project_opt.unwrap();
-                let current_session = FullSessionModel {
-                    id: session_model.id,
-                    title: session_model.title,
-                    description: session_model.description,
-                    tags: Vec::new(),
-                    date: parse_time(session_model.date),
-                    start_time: parse_time(session_model.start_time),
-                    end_time: parse_time_with_option(session_model.end_time),
-                    session_duration_sec: session_model.session_duration_sec,
-                    break_duration_sec: session_model.break_duration_sec,
-                    task: Extra {
-                        id: task.id,
-                        title: task.title,
-                        color: task.color.unwrap(),
-                    },
-                    project: Extra {
-                        id: project.id,
-                        title: project.title,
-                        color: project.color.unwrap(),
-                    },
-                };
-                Some(current_session)
-            }
-            None => None,
-        };
-
-        Ok(result)
+            let full_model = FullSessionModel::from((
+                session_model,
+                task_model,
+                project_model,
+                tags,
+            ));
+            Ok(Some(full_model))
+        } else {
+            Ok(None)
+        }
     }
 
     pub async fn find_all(&self) -> Result<Vec<FullSessionModel>, DbErr> {
@@ -89,46 +67,16 @@ impl<'a> SessionRepository<'a> {
 
         let mut results = Vec::new();
 
-        for (session_model, task_opt, project_opt) in sessions {
-            // Load related tags for this session
-            // let tag_models = session_model
-            //     .find_linked(TagViaSessionTags) // <-- Make sure you define the `Link`
-            //     .all(self.db).await?;
-
-            let task = task_opt.map(|t| Extra {
-                id: t.id,
-                title: t.title,
-                color: t.color.unwrap(),
-            });
-
-            let project = project_opt.map(|p| Extra {
-                id: p.id,
-                title: p.title,
-                color: p.color.unwrap(),
-            });
-
-            // let tags = tag_
-            //     .into_iter()
-            //     .map(|tag| Related {
-            //         id: tag.id,
-            //         title: tag.title,
-            //         color: tag.color.unwrap_or_default(),
-            //     })
-            //     .collect();
-
-            results.push(FullSessionModel {
-                id: session_model.id,
-                title: session_model.title,
-                description: session_model.description,
-                tags: Vec::new(),
-                date: parse_time(session_model.date),
-                start_time: parse_time(session_model.start_time),
-                end_time: parse_time_with_option(session_model.end_time),
-                session_duration_sec: session_model.session_duration_sec,
-                break_duration_sec: session_model.break_duration_sec,
-                task: task.unwrap(),
-                project: project.unwrap(),
-            });
+        for session in sessions {
+            let (session_model, task_model, project_model) = session;
+            let tags = session_model.find_related(Tag).all(self.db).await?;
+            let full_session = FullSessionModel::from((
+                session_model,
+                task_model,
+                project_model,
+                tags,
+            ));
+            results.push(full_session);
         }
 
         Ok(results)
