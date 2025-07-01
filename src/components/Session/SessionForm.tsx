@@ -26,9 +26,9 @@ import {
     useSessionById,
 } from '@/hooks/useSession';
 import DatePicker from '@/components/form/DatePicker';
-import TaskPicker from '@/components/Session/TaskPicker';
-import ProjectPicker from '@/components/Session/ProjectPicker';
-import TagPicker from '@/components/Session/TagPicker';
+import TaskPicker from '@/components/session/TaskPicker';
+import ProjectPicker from '@/components/session/ProjectPicker';
+import TagPicker from '@/components/session/TagPicker';
 
 export const SessionForm = () => {
     const form = useForm<Session>({

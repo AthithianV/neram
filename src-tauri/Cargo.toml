@@ -39,3 +39,4 @@ sea-orm = { version = "1.1.12", features = ["sqlx-sqlite", "macros", "runtime-to
 
 # Migration
 migration = { path = "migration" }
+entity = { path = "entity" }

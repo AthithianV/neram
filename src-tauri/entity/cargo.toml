@@ -1,0 +1,9 @@
+[package]
+name = "entity"
+version = "0.1.0"
+description = "Neram - a Productivity app for Time Logging, Pomodaro, Managing To Do list, and Analysing Time"
+edition = "2021"
+
+
+[dependencies]
+sea-orm = { version = "1.1.12", features = ["sqlx-sqlite", "macros", "runtime-tokio-native-tls"] }

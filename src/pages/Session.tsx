@@ -4,8 +4,8 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { Separator } from '@/components/ui/separator';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import Controls from '@/components/Session/Controls';
-import SessionCard from '@/components/Session/SessionCard';
+import Controls from '@/components/session/Controls';
+import SessionCard from '@/components/session/SessionCard';
 import { useEffect } from 'react';
 
 const Session = () => {

@@ -1,13 +1,7 @@
-use sea_orm::entity::prelude::*;
-use crate::models::session;
 use serde::{ Deserialize, Serialize };
 
-pub type ProjectModel = Model;
-
-#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize)]
-#[sea_orm(table_name = "projects")]
-pub struct Model {
-    #[sea_orm(primary_key)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct ProjectModel {
     pub id: i32,
     pub title: String,
     pub description: Option<String>,
@@ -26,7 +20,26 @@ pub struct Model {
     pub updated_at: String,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct CreateProjectModel {
+    pub title: String,
+    pub description: Option<String>,
+    pub color: Option<String>,
+    pub client_name: Option<String>,
+    pub status: String,
+    pub started_at: Option<String>,
+    pub deadline: Option<String>,
+    pub completed_at: Option<String>,
+    pub is_billable: Option<bool>,
+    pub billing_type: Option<String>,
+    pub hourly_rate: Option<i32>,
+    pub fixed_rate: Option<i32>,
+    pub currency: Option<String>,
+}
 
-impl ActiveModelBehavior for ActiveModel {}
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MinimalProjectModel {
+    pub id: i32,
+    pub title: String,
+    pub color: Option<String>,
+}

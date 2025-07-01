@@ -1,5 +1,4 @@
 use sea_orm_migration::prelude::*;
-use sea_query::Expr;
 use sea_orm::Statement;
 
 #[derive(DeriveMigrationName)]
@@ -8,6 +7,7 @@ pub struct Migration;
 #[derive(DeriveIden)]
 enum PomodoroSettings {
     Table,
+    Id,
     SessionDuration,
     SessionCount,
     BreakDuration,
@@ -22,6 +22,13 @@ impl MigrationTrait for Migration {
             Table::create()
                 .table(PomodoroSettings::Table)
                 .if_not_exists()
+                .col(
+                    ColumnDef::new(PomodoroSettings::Id)
+                        .integer()
+                        .not_null()
+                        .auto_increment()
+                        .primary_key()
+                )
                 .col(ColumnDef::new(PomodoroSettings::SessionDuration).integer().null())
                 .col(ColumnDef::new(PomodoroSettings::SessionCount).integer().null())
                 .col(ColumnDef::new(PomodoroSettings::BreakDuration).integer().null())

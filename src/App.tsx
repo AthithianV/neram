@@ -15,8 +15,8 @@ import Settings from './pages/Settings.tsx';
 import Session from './pages/Session.tsx';
 import Project from './pages/Project.tsx';
 import Dashboard from './pages/Dashboard.tsx';
-import { SessionForm } from './components/Session/SessionForm.tsx';
-import Kanban from './components/Project/Kanban.tsx';
+import { SessionForm } from './components/session/SessionForm.tsx';
+import Kanban from './components/project/Kanban.tsx';
 
 export default function App() {
     return (

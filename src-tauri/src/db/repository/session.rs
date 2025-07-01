@@ -1,12 +1,12 @@
 use sea_orm::*;
-use crate::models::{
+use entity::{
     project::Entity as Project,
     session::{
         ActiveModel as SessionActiveModel,
         Entity as Session,
         Model as SessionModel,
         ProjectInfo,
-        SessionWithRelationStruct,
+        SessionWithRelation,
         TaskInfo,
     },
     tag::Entity as Tag,
@@ -52,7 +52,7 @@ impl<'a> SessionRepository<'a> {
     //     Ok(sessions)
     // }
 
-    pub async fn find_all(&self) -> Result<Vec<SessionWithRelationStruct>, DbErr> {
+    pub async fn find_all(&self) -> Result<Vec<SessionWithRelation>, DbErr> {
         let sessions = Session::find()
             .find_also_related(Task)
             .find_also_related(Project)
@@ -87,7 +87,7 @@ impl<'a> SessionRepository<'a> {
             //     })
             //     .collect();
 
-            results.push(SessionWithRelationStruct {
+            results.push(SessionWithRelation {
                 id: session_model.id,
                 title: session_model.title,
                 description: session_model.description,
