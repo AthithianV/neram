@@ -1,10 +1,10 @@
 use sea_orm::*;
-use crate::models::settings::{
+use ::entity::settings::{
     Entity as Settings,
     Model as SettingsModel,
     ActiveModel as SettingsActiveModel,
-    Theme,
 };
+use crate::models::settings::Theme;
 
 pub struct SettingsRepository<'a> {
     db: &'a DatabaseConnection,

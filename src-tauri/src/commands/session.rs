@@ -1,7 +1,8 @@
 use tauri::{ command, State };
 
+use crate::commands::session;
 use crate::repository::session::SessionRepository;
-use crate::models::session::{ SessionWithRelation, SessionModel };
+use crate::models::session::{ FullSessionModel, CreateSessionModel };
 use crate::AppState;
 
 /// Creates a new session record in the database.
@@ -16,13 +17,14 @@ use crate::AppState;
 #[command]
 pub async fn create_session(
     app_state: State<'_, AppState>,
-    new_session: SessionModel
-) -> Result<SessionModel, String> {
+    new_session: CreateSessionModel
+) -> Result<(), String> {
     // Acquire a lock on the database connection
     let db = app_state.conn.lock().await;
 
     let session_repository = SessionRepository::new(&db);
-    session_repository.create(&new_session).await.map_err(|e| e.to_string())
+    session_repository.create(&new_session).await.map_err(|e| e.to_string());
+    Ok(())
 }
 
 /// Retrieves all session records from the database.
@@ -37,7 +39,7 @@ pub async fn create_session(
 #[command]
 pub async fn get_all_sessions(
     app_state: State<'_, AppState>
-) -> Result<Vec<SessionWithRelation>, String> {
+) -> Result<Vec<FullSessionModel>, String> {
     let db = app_state.conn.lock().await;
 
     let session_repository = SessionRepository::new(&db);
@@ -59,7 +61,7 @@ pub async fn get_all_sessions(
 pub async fn get_session_by_id(
     app_state: State<'_, AppState>,
     id: i32
-) -> Result<Option<SessionModel>, String> {
+) -> Result<Option<FullSessionModel>, String> {
     // Acquire a lock on the database connection
     let db = app_state.conn.lock().await;
 
@@ -82,12 +84,14 @@ pub async fn get_session_by_id(
 #[command]
 pub async fn update_session(
     app_state: State<'_, AppState>,
-    session_to_update: SessionModel
-) -> Result<SessionModel, String> {
+    session_to_update: CreateSessionModel,
+    session_id: i32
+) -> Result<(), String> {
     let db = app_state.conn.lock().await;
 
     let session_repository = SessionRepository::new(&db);
-    session_repository.update(&session_to_update).await.map_err(|e| e.to_string())
+    session_repository.update(&session_to_update, session_id).await.map_err(|e| e.to_string());
+    Ok(())
 }
 
 /// Deletes a session record by its ID.

@@ -1,5 +1,6 @@
 use sea_orm::*;
-use crate::models::task::{ Entity as Task, Model as TaskModel, ActiveModel as TaskActiveModel };
+use ::entity::tasks::{ Entity as Task, Model as TaskModel, ActiveModel as TaskActiveModel };
+use ::entity::tasks_tags::{ Entity as TaskTags, ActiveModel as TaskTagsActiveModel };
 
 pub struct TaskRepository<'a> {
     db: &'a DatabaseConnection,
@@ -68,7 +69,7 @@ impl<'a> TaskRepository<'a> {
     }
 
     pub async fn add_tag_to_task(&self, task_id: i32, tag_id: i32) -> Result<(), DbErr> {
-        let active_model = crate::models::tasks_tags::ActiveModel {
+        let active_model = TaskTagsActiveModel {
             task_id: Set(task_id),
             tag_id: Set(tag_id),
         };
@@ -78,10 +79,10 @@ impl<'a> TaskRepository<'a> {
     }
 
     pub async fn remove_tag_from_task(&self, task_id: i32, tag_id: i32) -> Result<(), DbErr> {
-        let result = crate::models::tasks_tags::Entity
+        let result = <TaskTags as EntityTrait>
             ::delete_many()
-            .filter(crate::models::tasks_tags::Column::TaskId.eq(task_id))
-            .filter(crate::models::tasks_tags::Column::TagId.eq(tag_id))
+            .filter(<TaskTags as EntityTrait>::Column::TaskId.eq(task_id))
+            .filter(<TaskTags as EntityTrait>::Column::TagId.eq(tag_id))
             .exec(self.db).await?;
         Ok(())
     }

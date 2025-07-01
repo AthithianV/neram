@@ -1,5 +1,5 @@
 use sea_orm::*;
-use crate::models::tag::{ Entity as Tag, Model as TagModel, ActiveModel as TagActiveModel };
+use ::entity::tags::{ Entity as Tag, Model as TagModel, ActiveModel as TagActiveModel };
 
 pub struct TagRepository<'a> {
     db: &'a DatabaseConnection,

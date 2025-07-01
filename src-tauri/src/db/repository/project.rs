@@ -1,9 +1,12 @@
 use sea_orm::*;
-use crate::models::project::{
+use sea_orm::{ EntityTrait, ColumnTrait, QueryFilter };
+use ::entity::projects::{
     Entity as Project,
     Model as ProjectModel,
     ActiveModel as ProjectActiveModel,
 };
+use ::entity::projects_tags::{ Entity as ProjectsTags, ActiveModel as ProjectsTagsActiveModel };
+use crate::models::project::CreateProjectModel;
 
 pub struct ProjectRepository<'a> {
     db: &'a DatabaseConnection,
@@ -14,7 +17,7 @@ impl<'a> ProjectRepository<'a> {
         Self { db }
     }
 
-    pub async fn create(&self, project: &ProjectModel) -> Result<ProjectModel, DbErr> {
+    pub async fn create(&self, project: &CreateProjectModel) -> Result<ProjectModel, DbErr> {
         let active_model = ProjectActiveModel {
             title: Set(project.title.clone()),
             description: Set(project.description.clone()),
@@ -78,7 +81,7 @@ impl<'a> ProjectRepository<'a> {
     }
 
     pub async fn add_tag_to_project(&self, project_id: i32, tag_id: i32) -> Result<(), DbErr> {
-        let active_model = crate::models::projects_tags::ActiveModel {
+        let active_model = ProjectsTagsActiveModel {
             project_id: Set(project_id),
             tag_id: Set(tag_id),
         };
@@ -88,10 +91,10 @@ impl<'a> ProjectRepository<'a> {
     }
 
     pub async fn remove_tag_from_project(&self, project_id: i32, tag_id: i32) -> Result<(), DbErr> {
-        let result = crate::models::projects_tags::Entity
+        let result = <ProjectsTags as EntityTrait>
             ::delete_many()
-            .filter(crate::models::projects_tags::Column::ProjectId.eq(project_id))
-            .filter(crate::models::projects_tags::Column::TagId.eq(tag_id))
+            .filter(<ProjectsTags as EntityTrait>::Column::ProjectId.eq(project_id))
+            .filter(<ProjectsTags as EntityTrait>::Column::TagId.eq(tag_id))
             .exec(self.db).await?;
         Ok(())
     }

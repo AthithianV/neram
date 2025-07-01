@@ -1,7 +1,8 @@
 use tauri::{ command, State };
 
 use crate::repository::project::ProjectRepository;
-use crate::models::project::{ ProjectModel };
+use crate::models::project::{ CreateProjectModel };
+use ::entity::projects::{ Model as ProjectModel };
 use crate::AppState;
 
 /// Creates a new Project record in the database.
@@ -16,13 +17,14 @@ use crate::AppState;
 #[command]
 pub async fn create_project(
     app_state: State<'_, AppState>,
-    new_project: ProjectModel
-) -> Result<ProjectModel, String> {
+    new_project: CreateProjectModel
+) -> Result<(), String> {
     // Acquire a lock on the database connection
     let db = app_state.conn.lock().await;
 
     let project_repository = ProjectRepository::new(&db);
-    project_repository.create(&new_project).await.map_err(|e| e.to_string())
+    project_repository.create(&new_project).await.map_err(|e| e.to_string());
+    Ok(())
 }
 
 /// Retrieves all Project records from the database.
@@ -34,13 +36,13 @@ pub async fn create_project(
 /// # Returns
 /// A `Result` containing a `Vec` of `ProjectModel` on success, or a `String` error message.
 
-#[command]
-pub async fn get_all_projects(app_state: State<'_, AppState>) -> Result<Vec<ProjectModel>, String> {
-    let db = app_state.conn.lock().await;
+// #[command]
+// pub async fn get_all_projects(app_state: State<'_, AppState>) -> Result<Vec<ProjectModel>, String> {
+//     let db = app_state.conn.lock().await;
 
-    let project_repository = ProjectRepository::new(&db);
-    project_repository.find_all().await.map_err(|e| e.to_string())
-}
+//     let project_repository = ProjectRepository::new(&db);
+//     project_repository.find_all().await.map_err(|e| e.to_string())
+// }
 
 /// Retrieves a single Project record by its ID.
 /// It acquires a lock on the database connection to perform the operation.
@@ -53,17 +55,17 @@ pub async fn get_all_projects(app_state: State<'_, AppState>) -> Result<Vec<Proj
 /// A `Result` containing an `Option<ProjectModel>` (Some if found, None if not) on success,
 /// or a `String` error message.
 
-#[command]
-pub async fn get_project_by_id(
-    app_state: State<'_, AppState>,
-    id: i32
-) -> Result<Option<ProjectModel>, String> {
-    // Acquire a lock on the database connection
-    let db = app_state.conn.lock().await;
+// #[command]
+// pub async fn get_project_by_id(
+//     app_state: State<'_, AppState>,
+//     id: i32
+// ) -> Result<Option<ProjectModel>, String> {
+//     // Acquire a lock on the database connection
+//     let db = app_state.conn.lock().await;
 
-    let project_repository = ProjectRepository::new(&db);
-    project_repository.find_by_id(id).await.map_err(|e| e.to_string())
-}
+//     let project_repository = ProjectRepository::new(&db);
+//     project_repository.find_by_id(id).await.map_err(|e| e.to_string())
+// }
 
 /// Updates an existing Project record in the database.
 ///
@@ -77,16 +79,16 @@ pub async fn get_project_by_id(
 ///
 /// # Returns
 /// A `Result` containing the updated `ProjectModel` on success, or a `String` error message.
-#[command]
-pub async fn update_project(
-    app_state: State<'_, AppState>,
-    project_to_update: ProjectModel
-) -> Result<ProjectModel, String> {
-    let db = app_state.conn.lock().await;
+// #[command]
+// pub async fn update_project(
+//     app_state: State<'_, AppState>,
+//     project_to_update: ProjectModel
+// ) -> Result<ProjectModel, String> {
+//     let db = app_state.conn.lock().await;
 
-    let project_repository = ProjectRepository::new(&db);
-    project_repository.update(&project_to_update).await.map_err(|e| e.to_string())
-}
+//     let project_repository = ProjectRepository::new(&db);
+//     project_repository.update(&project_to_update).await.map_err(|e| e.to_string())
+// }
 
 /// Deletes a Project record by its ID.
 /// It acquires a lock on the database connection to perform the operation.

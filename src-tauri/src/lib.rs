@@ -1,5 +1,6 @@
 mod db;
 mod commands;
+mod utils;
 
 use db::lib::init_db;
 use commands::session::*;
@@ -8,6 +9,7 @@ use commands::project::*;
 use commands::tag::*;
 use commands::timer::*;
 pub use db::*;
+pub use utils::*;
 
 pub use sea_orm::DatabaseConnection;
 use std::sync::Arc;
@@ -38,25 +40,25 @@ pub async fn run() {
                 delete_session,
 
                 // // Task commands
-                create_task,
-                get_all_tasks,
-                get_task_by_id,
-                update_task,
-                delete_task,
+                // create_task,
+                // get_all_tasks,
+                // get_task_by_id,
+                // update_task,
+                // delete_task,
 
                 // Project commands
                 create_project,
-                get_all_projects,
-                get_project_by_id,
-                update_project,
+                // get_all_projects,
+                // get_project_by_id,
+                // update_project,
                 delete_project,
 
                 // // Tag commands
-                create_tag,
-                get_all_tags,
-                get_tag_by_id,
-                update_tag,
-                delete_tag,
+                // create_tag,
+                // get_all_tags,
+                // get_tag_by_id,
+                // update_tag,
+                // delete_tag,
 
                 // Timer commands
                 start_timer,

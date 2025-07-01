@@ -1,5 +1,5 @@
 use sea_orm::*;
-use crate::models::pomadoro_settings::{
+use ::entity::pomodoro_settings::{
     Entity as PomodoroSettings,
     Model as PomodoroSettingsModel,
     ActiveModel as PomodoroSettingsActiveModel,
