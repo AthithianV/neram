@@ -6,7 +6,7 @@ use ::entity::projects::{
     ActiveModel as ProjectActiveModel,
 };
 use ::entity::projects_tags::{ Entity as ProjectsTags, ActiveModel as ProjectsTagsActiveModel };
-use crate::models::project::CreateProjectModel;
+use crate::models::project::{CreateProjectModel, MinimalProjectModel};
 
 pub struct ProjectRepository<'a> {
     db: &'a DatabaseConnection,
@@ -46,9 +46,14 @@ impl<'a> ProjectRepository<'a> {
         Ok(project)
     }
 
-    pub async fn find_all(&self) -> Result<Vec<ProjectModel>, DbErr> {
+    pub async fn find_all(&self) -> Result<Vec<MinimalProjectModel>, DbErr> {
         let projects = Project::find().all(self.db).await?;
-        Ok(projects)
+        let minimal_projects = projects.into_iter().map(|project| MinimalProjectModel {
+            id: project.id,
+            title: project.title,
+            color: project.color,
+        }).collect();
+        Ok(minimal_projects)
     }
 
     pub async fn update(&self, project: &ProjectModel) -> Result<ProjectModel, DbErr> {

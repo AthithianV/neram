@@ -1,4 +1,4 @@
-import { useTask } from '@/hooks/useTask';
+import { MiniTask, useTask } from '@/hooks/useTask';
 import {
     Select,
     SelectContent,
@@ -6,54 +6,57 @@ import {
     SelectTrigger,
     SelectValue,
 } from '../ui/select';
+import { useEffect, useState } from 'react';
 
 type PropsType = {
     onChange: (task: number) => void;
     value: number;
 };
 
-const TaskItem = ({ title }: { title: string }) => {
-    if (!title) return <></>;
-
-    return (
-        <SelectItem key={title} value={title}>
-            {title}
-        </SelectItem>
-    );
-};
-
-const TaskList = () => {
-    const { data: tasks = [] } = useTask();
-
-    if (tasks.length === 0)
-        return (
-            <SelectContent>
-                <SelectItem value="No tasks found" disabled>
-                    No tasks found
-                </SelectItem>
-            </SelectContent>
-        );
-
-    return (
-        <SelectContent className="max-h-[200px] overflow-y-auto">
-            {tasks.map((task) => {
-                if (!task.title) return <></>;
-                return <TaskItem key={task.title} title={task.title} />;
-            })}
-        </SelectContent>
-    );
-};
-
 const TaskPicker = ({ onChange, value }: PropsType) => {
+    const { data: tasks = [] } = useTask();
+    const [selectedTask, setSelectedTask] = useState<MiniTask>();
+
+    useEffect(() => {
+        const task = tasks.find(({ id }) => id === value);
+        setSelectedTask(task);
+    }, [value]);
+
     return (
         <Select
             onValueChange={(value) => onChange(parseInt(value))}
-            value={value ? value.toString() : ''}
+            value={selectedTask?.id.toString()}
         >
-            <SelectTrigger className="w-full bg-white shadow">
+            <SelectTrigger className="w-full bg-white shadow overflow-hidden">
                 <SelectValue placeholder="Select a Task" />
             </SelectTrigger>
-            <TaskList />
+            {tasks.length === 0 ? (
+                <SelectContent>
+                    <SelectItem value="No tasks found" disabled>
+                        No tasks found
+                    </SelectItem>
+                </SelectContent>
+            ) : (
+                <SelectContent className="max-h-[200px] max-w-[400px] overflow-y-auto">
+                    {tasks.map(({ title, id, color }) => (
+                        <SelectItem
+                            key={title}
+                            value={id.toString()}
+                            className="w-full"
+                        >
+                            <div className="flex items-center gap-2">
+                                <span
+                                    className="p-2 rounded-full"
+                                    style={{ background: color }}
+                                ></span>
+                                <span className="max-w-[90%] block overflow-hidden text-ellipsis whitespace-nowrap ">
+                                    {title}
+                                </span>
+                            </div>
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            )}
         </Select>
     );
 };

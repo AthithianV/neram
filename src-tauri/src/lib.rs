@@ -38,24 +38,26 @@ pub async fn run() {
                 get_session_by_id,
                 update_session,
                 delete_session,
+                add_tag_to_session,
+                remove_tag_from_session,
 
                 // // Task commands
                 // create_task,
-                // get_all_tasks,
+                get_all_tasks,
                 // get_task_by_id,
                 // update_task,
                 // delete_task,
 
                 // Project commands
                 create_project,
-                // get_all_projects,
+                get_all_projects,
                 // get_project_by_id,
                 // update_project,
                 delete_project,
 
                 // // Tag commands
                 // create_tag,
-                // get_all_tags,
+                get_all_tags,
                 // get_tag_by_id,
                 // update_tag,
                 // delete_tag,

@@ -1,7 +1,7 @@
 use tauri::{ command, State };
 
 use crate::repository::task::TaskRepository;
-use crate::models::task::{ TaskModel };
+use crate::models::task::{ MiniTask, TaskModel };
 use crate::AppState;
 
 // /// Creates a new Task record in the database.
@@ -34,13 +34,13 @@ use crate::AppState;
 // /// # Returns
 // /// A `Result` containing a `Vec` of `TaskModel` on success, or a `String` error message.
 
-// #[command]
-// pub async fn get_all_tasks(app_state: State<'_, AppState>) -> Result<Vec<TaskModel>, String> {
-//     let db = app_state.conn.lock().await;
+#[command]
+pub async fn get_all_tasks(app_state: State<'_, AppState>) -> Result<Vec<MiniTask>, String> {
+    let db = app_state.conn.lock().await;
 
-//     let task_repository = TaskRepository::new(&db);
-//     task_repository.find_all().await.map_err(|e| e.to_string())
-// }
+    let task_repository = TaskRepository::new(&db);
+    task_repository.find_all().await.map_err(|e| e.to_string())
+}
 
 // /// Retrieves a single Task record by its ID.
 // /// It acquires a lock on the database connection to perform the operation.

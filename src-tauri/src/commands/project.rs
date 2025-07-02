@@ -1,7 +1,7 @@
 use tauri::{ command, State };
 
 use crate::repository::project::ProjectRepository;
-use crate::models::project::{ CreateProjectModel };
+use crate::models::project::{ CreateProjectModel, MinimalProjectModel };
 use ::entity::projects::{ Model as ProjectModel };
 use crate::AppState;
 
@@ -36,8 +36,8 @@ pub async fn create_project(
 /// # Returns
 /// A `Result` containing a `Vec` of `ProjectModel` on success, or a `String` error message.
 
-// #[command]
-pub async fn get_all_projects(app_state: State<'_, AppState>) -> Result<Vec<ProjectModel>, String> {
+#[command]
+pub async fn get_all_projects(app_state: State<'_, AppState>) -> Result<Vec<MinimalProjectModel>, String> {
     let db = app_state.conn.lock().await;
 
     let project_repository = ProjectRepository::new(&db);

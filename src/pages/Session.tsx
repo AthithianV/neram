@@ -6,15 +6,10 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import Controls from '@/components/session/Controls';
 import SessionCard from '@/components/session/SessionCard';
-import { useEffect } from 'react';
 
 const Session = () => {
     const { data: sessions, isLoading, error } = useSession();
     const location = useLocation();
-
-    useEffect(() => {
-        console.log(sessions);
-    }, [sessions]);
 
     if (isLoading) {
         return <div>Loading...</div>;

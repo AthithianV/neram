@@ -1,4 +1,5 @@
 use serde::{ Deserialize, Serialize };
+use ::entity::projects;
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ProjectModel {
@@ -42,4 +43,14 @@ pub struct MinimalProjectModel {
     pub id: i32,
     pub title: String,
     pub color: Option<String>,
+}
+
+impl From<projects::Model> for MinimalProjectModel {
+    fn from(project: projects::Model) -> Self {
+        Self {
+            id: project.id,
+            title: project.title,
+            color: project.color,
+        }
+    }
 }

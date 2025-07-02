@@ -27,64 +27,59 @@ const TagPicker = ({
     onChange,
 }: {
     sessionId: number | undefined;
-    value: Tag[];
-    onChange: (tags: Tag[]) => void;
+    value: number[];
+    onChange: (tags: number[]) => void;
 }) => {
     const { data: allTags } = useTag();
 
     const [openDropdown, setOpenDropdown] = useState(false);
-    const [selectedTags, setSelectedTags] = useState<Set<Tag>>(new Set([]));
+    const [selectedTags, setSelectedTags] = useState<Map<number, Tag>>(
+        new Map()
+    );
     const { mutate: removeTag } = useRemoveTagFromSession();
     const { mutate: addTag } = useAddTagToSession();
 
     useEffect(() => {
-        if (value) {
-            setSelectedTags(new Set(value));
+        if (value && allTags) {
+            setSelectedTags(
+                new Map(
+                    allTags
+                        .filter((tag) => value.includes(tag.id))
+                        .map((tag) => [tag.id, tag])
+                )
+            );
         }
-    }, [value]);
+    }, [value, allTags]);
 
     const handleSelectTag = (tag: Tag) => {
         setSelectedTags((prev) => {
-            if (prev.has(tag)) {
-                prev.delete(tag);
+            if (prev.has(tag.id)) {
+                prev.delete(tag.id);
                 if (sessionId) {
                     removeTag({ sessionId, tagId: tag.id });
                 }
             } else {
-                prev.add(tag);
+                prev.set(tag.id, tag);
                 if (sessionId) {
                     addTag({ sessionId, tagId: tag.id });
                 }
             }
-            return new Set([...prev]);
+            onChange(Array.from(prev.keys()));
+            return new Map([...prev]);
         });
     };
-
-    useEffect(() => {
-        if (!openDropdown) {
-            onChange(Array.from(selectedTags));
-        }
-    }, [openDropdown]);
 
     return (
         <div className="flex gap-2">
             <SelectedTags
-                selectedTags={selectedTags}
+                selectedTags={Array.from(selectedTags.values())}
                 handleRemoveTag={handleSelectTag}
             />
             <Popover open={openDropdown} onOpenChange={setOpenDropdown}>
                 <PopoverTrigger asChild>
-                    {/* <Button
-                    variant="ghost"
-                    role="combobox"
-                    aria-expanded={openDropdown}
-                    className="w-full justify-between bg-white border-gray-200 shadow-xs h-fit"
-                > */}
                     <span className="w-fit bg-white border border-input rounded-md px-3 py-2 shadow-xs flex items-center justify-between cursor-pointer">
                         <ChevronsUpDown className="opacity-50" />
                     </span>
-
-                    {/* </Button> */}
                 </PopoverTrigger>
                 <PopoverContent
                     className="w-full p-0"
@@ -100,13 +95,24 @@ const TagPicker = ({
                         <CommandList>
                             <CommandEmpty>No Tags found.</CommandEmpty>
                             <CommandGroup>
-                                {allTags?.map((tag, index) => (
-                                    <TagItem
-                                        key={index}
-                                        tag={tag}
-                                        handleSelectTag={handleSelectTag}
-                                        isSelected={selectedTags.has(tag)}
-                                    />
+                                {allTags?.map((tag) => (
+                                    <CommandItem
+                                        key={tag.title}
+                                        value={tag.title}
+                                        onSelect={() => handleSelectTag(tag)}
+                                    >
+                                        <div
+                                            className="p-2 rounded-full"
+                                            style={{
+                                                backgroundColor:
+                                                    tag.color || '#ccc',
+                                            }}
+                                        ></div>
+                                        {tag.title}
+                                        {selectedTags.has(tag.id) && (
+                                            <Check className="ml-auto" />
+                                        )}
+                                    </CommandItem>
                                 ))}
                             </CommandGroup>
                         </CommandList>
@@ -121,7 +127,7 @@ const SelectedTags = ({
     selectedTags,
     handleRemoveTag,
 }: {
-    selectedTags: Set<Tag>;
+    selectedTags: Tag[];
     handleRemoveTag: (tag: Tag) => void;
 }) => {
     return (
@@ -149,33 +155,6 @@ const SelectedTags = ({
                 </span>
             )}
         </div>
-    );
-};
-
-const TagItem = ({
-    tag,
-    handleSelectTag,
-    isSelected,
-}: {
-    tag: Tag;
-    handleSelectTag: (tag: Tag) => void;
-    isSelected: boolean;
-}) => {
-    return (
-        <CommandItem
-            key={tag.title}
-            value={tag.title}
-            onSelect={() => handleSelectTag(tag)}
-        >
-            <div
-                className="p-2 rounded-full"
-                style={{
-                    backgroundColor: tag.color || '#ccc',
-                }}
-            ></div>
-            {tag.title}
-            {isSelected && <Check className="ml-auto" />}
-        </CommandItem>
     );
 };
 

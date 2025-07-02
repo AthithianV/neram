@@ -1,4 +1,4 @@
-import { useProject } from '@/hooks/useProject';
+import { MinimalProject, useProject } from '@/hooks/useProject';
 import {
     Select,
     SelectContent,
@@ -6,56 +6,58 @@ import {
     SelectTrigger,
     SelectValue,
 } from '../ui/select';
+import { useEffect, useState } from 'react';
 
 type PropsType = {
     onChange: (project: number) => void;
     value: number;
 };
 
-const ProjectItem = ({ title }: { title: string }) => {
-    if (!title) return <></>;
-
-    return (
-        <SelectItem key={title} value={title}>
-            {title}
-        </SelectItem>
-    );
-};
-
-const ProjectList = () => {
-    const { data: projects = [] } = useProject();
-
-    if (projects.length === 0)
-        return (
-            <SelectContent>
-                <SelectItem value="No projects found" disabled>
-                    No projects found
-                </SelectItem>
-            </SelectContent>
-        );
-
-    return (
-        <SelectContent className="max-h-[200px] overflow-y-auto">
-            {projects.map((project) => {
-                if (!project.title) return <></>;
-                return (
-                    <ProjectItem key={project.title} title={project.title} />
-                );
-            })}
-        </SelectContent>
-    );
-};
-
 const ProjectPicker = ({ onChange, value }: PropsType) => {
+    const { data: projects = [] } = useProject();
+    const [selectedProject, setSelectedProject] = useState<MinimalProject>();
+
+    useEffect(() => {
+        if (value) {
+            setSelectedProject(projects.find(({ id }) => id === value));
+        }
+    }, [value]);
+
     return (
         <Select
             onValueChange={(value) => onChange(parseInt(value))}
-            value={value ? value.toString() : ''}
+            value={selectedProject?.id.toString()}
         >
-            <SelectTrigger className="w-full bg-white shadow">
+            <SelectTrigger className="w-full bg-white shadow overflow-hidden">
                 <SelectValue placeholder="Select a Project" />
             </SelectTrigger>
-            <ProjectList />
+            {projects.length > 0 ? (
+                <SelectContent className="max-h-[200px] overflow-y-auto">
+                    {projects.map(({ title, id, color }) => (
+                        <SelectItem
+                            key={title}
+                            value={id.toString()}
+                            className="w-full"
+                        >
+                            <div className="flex items-center gap-2">
+                                <span
+                                    className="p-2 rounded-full"
+                                    style={{ background: color }}
+                                ></span>
+                                <span className="max-w-[90%] block overflow-hidden text-ellipsis whitespace-nowrap ">
+                                    {title}
+                                </span>
+                            </div>
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            ) : (
+                <SelectContent>
+                    <SelectItem value="No projects found" disabled>
+                        No projects found
+                    </SelectItem>
+                </SelectContent>
+            )}
         </Select>
     );
 };

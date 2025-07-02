@@ -45,7 +45,7 @@ const Controls = () => {
 
             {timer.timer_type === 'Session' && timer.time}
 
-            <Link to="/dashboard/add-session">
+            <Link to="/session/add-session">
                 <Button
                     variant={'default'}
                     className="flex items-center gap-1 bg-blue-500 hover:bg-blue-600 "

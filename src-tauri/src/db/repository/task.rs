@@ -2,6 +2,8 @@ use sea_orm::*;
 use ::entity::tasks::{ Entity as Task, Model as TaskModel, ActiveModel as TaskActiveModel };
 use ::entity::tasks_tags::{ Entity as TaskTags, ActiveModel as TaskTagsActiveModel };
 
+use crate::models::task::MiniTask;
+
 pub struct TaskRepository<'a> {
     db: &'a DatabaseConnection,
 }
@@ -37,9 +39,17 @@ impl<'a> TaskRepository<'a> {
         Ok(task)
     }
 
-    pub async fn find_all(&self) -> Result<Vec<TaskModel>, DbErr> {
+    pub async fn find_all(&self) -> Result<Vec<MiniTask>, DbErr> {
         let tasks = Task::find().all(self.db).await?;
-        Ok(tasks)
+        let minimal_tasks = tasks
+            .into_iter()
+            .map(|task| MiniTask {
+                id: task.id,
+                title: task.title,
+                color: task.color,
+            })
+            .collect();
+        Ok(minimal_tasks)
     }
 
     pub async fn update(&self, task: &TaskModel) -> Result<TaskModel, DbErr> {

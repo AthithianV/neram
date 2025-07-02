@@ -1,6 +1,8 @@
 use sea_orm::*;
 use ::entity::tags::{ Entity as Tag, Model as TagModel, ActiveModel as TagActiveModel };
 
+use crate::models::tag::MiniTag;
+
 pub struct TagRepository<'a> {
     db: &'a DatabaseConnection,
 }
@@ -29,9 +31,17 @@ impl<'a> TagRepository<'a> {
         Ok(tag)
     }
 
-    pub async fn find_all(&self) -> Result<Vec<TagModel>, DbErr> {
+    pub async fn find_all(&self) -> Result<Vec<MiniTag>, DbErr> {
         let tags = Tag::find().all(self.db).await?;
-        Ok(tags)
+        let minimal_tags = tags
+            .into_iter()
+            .map(|tag| MiniTag {
+                id: tag.id,
+                title: tag.title,
+                color: tag.color,
+            })
+            .collect();
+        Ok(minimal_tags)
     }
 
     pub async fn update(&self, tag: &TagModel) -> Result<TagModel, DbErr> {

@@ -36,7 +36,7 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
         <li
             className={cn(
                 'flex items-center justify-between',
-                'p-3 border shadow rounded-md cursor-pointer',
+                'py-3 pe-3 my-1 border shadow rounded-md cursor-pointer',
                 'bg-white',
                 id === parseInt(sessionId || '0')
                     ? 'bg-gray-100'
@@ -50,13 +50,14 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
         >
             <div className="flex items-center gap-4 flex-1">
                 <div
-                    className={cn('p-1 rounded-md bg-gray-50', 'h-12')}
+                    className={cn('px-[0.2rem] rounded-e-md bg-gray-50', 'h-14')}
                     style={
-                        isHovered || id === parseInt(sessionId || '0')
-                            ? {
-                                  backgroundColor: project.color,
-                              }
-                            : {}
+                        // isHovered || id === parseInt(sessionId || '0')
+                        // ?
+                        {
+                            backgroundColor: project.color,
+                        }
+                        // : {}
                     }
                 ></div>
                 <div className="flex flex-col gap-2 flex-1">
@@ -75,7 +76,7 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
                                             style={{
                                                 backgroundColor: tag.color,
                                             }}
-                                            className="text-[0.5rem] px-2 rounded-sm"
+                                            className="text-[0.6rem] px-2 rounded-[0.3rem]"
                                         >
                                             {tag.title}
                                         </Badge>

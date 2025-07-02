@@ -29,6 +29,7 @@ import DatePicker from '@/components/form/DatePicker';
 import TaskPicker from '@/components/session/TaskPicker';
 import ProjectPicker from '@/components/session/ProjectPicker';
 import TagPicker from '@/components/session/TagPicker';
+import dayjs from 'dayjs';
 
 export const SessionForm = () => {
     const form = useForm<Session>({
@@ -44,29 +45,47 @@ export const SessionForm = () => {
 
     useEffect(() => {
         if (session) {
-            form.setValue('id', session.id);
             form.setValue('title', session.title || '');
             form.setValue('description', session.description || '');
-            form.setValue('task_id', session.task_id);
-            form.setValue('project_id', session.project_id);
-            form.setValue('date', session.date);
-            form.setValue('start_time', session.start_time);
-            form.setValue('end_time', session.end_time);
-            form.setValue('session_duration', session.session_duration);
-            form.setValue('break_duration', session.break_duration);
-            form.setValue('tags', session.tags || []);
+            form.setValue('task_id', session.task.id);
+            form.setValue('project_id', session.project.id);
+            form.setValue('date', dayjs(session.date).toDate());
+            form.setValue('start_time', dayjs(session.start_time).toDate());
+            form.setValue('end_time', dayjs(session.end_time).toDate());
+            form.setValue('session_duration_sec', session.session_duration_sec);
+            form.setValue('break_duration_sec', session.break_duration_sec);
+            form.setValue('tags', session.tags.map((tag) => tag.id) || []);
         }
     }, [session]);
 
     const navigate = useNavigate();
 
     function onSubmit(data: z.infer<typeof SessionSchema>) {
-        if (session) {
-            updateSession(data);
+        if (session && session.id) {
+            updateSession({
+                sessionToUpdate: {
+                    ...data,
+                    date: dayjs(data.date).format('YYYY-MM-DDTHH:mm:ss'),
+                    start_time: dayjs(data.start_time).format(
+                        'YYYY-MM-DDTHH:mm:ss'
+                    ),
+                    end_time: dayjs(data.end_time).format(
+                        'YYYY-MM-DDTHH:mm:ss'
+                    ),
+                },
+                sessionId: session.id,
+            });
         } else {
-            createSession(data);
+            createSession({
+                ...data,
+                date: dayjs(data.date).format('YYYY-MM-DDTHH:mm:ss'),
+                start_time: dayjs(data.start_time).format(
+                    'YYYY-MM-DDTHH:mm:ss'
+                ),
+                end_time: dayjs(data.end_time).format('YYYY-MM-DDTHH:mm:ss'),
+            });
         }
-        navigate('/dashboard');
+        // navigate('/session');
     }
 
     const handleError = (error: string, field: keyof Session) => {
@@ -224,7 +243,7 @@ export const SessionForm = () => {
                     {/* Start Time */}
                     <FormField
                         control={form.control}
-                        name="session_duration"
+                        name="session_duration_sec"
                         render={({ field }) => (
                             <FormItem className="flex-1">
                                 <FormLabel>Duration</FormLabel>
@@ -232,7 +251,10 @@ export const SessionForm = () => {
                                     value={field.value}
                                     setValue={(val) => field.onChange(val)}
                                     setError={(error) =>
-                                        handleError(error, 'session_duration')
+                                        handleError(
+                                            error,
+                                            'session_duration_sec'
+                                        )
                                     }
                                 />
                                 <FormMessage className="text-xs" />
@@ -243,7 +265,7 @@ export const SessionForm = () => {
                     {/* Break */}
                     <FormField
                         control={form.control}
-                        name="break_duration"
+                        name="break_duration_sec"
                         render={({ field }) => (
                             <FormItem className="flex-1">
                                 <FormLabel>Break</FormLabel>
@@ -251,7 +273,7 @@ export const SessionForm = () => {
                                     value={field.value}
                                     setValue={(val) => field.onChange(val)}
                                     setError={(error) =>
-                                        handleError(error, 'break_duration')
+                                        handleError(error, 'break_duration_sec')
                                     }
                                 />
                                 <FormMessage className="text-xs" />

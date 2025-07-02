@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
-import { Session } from '@/schema/SessionSchema';
+import { CreateSessionType, Session } from '@/schema/SessionSchema';
 import { toast } from 'sonner';
+import dayjs from 'dayjs';
 
 type Related = {
     id: number;
@@ -9,7 +10,7 @@ type Related = {
     color: string;
 };
 
-export type SessionType = Session & {
+export type SessionType = Omit<Session, 'project_id' | 'task_id' | 'tags'> & {
     task: Related;
     project: Related;
     tags: Related[];
@@ -40,10 +41,8 @@ export const useSessionById = (id: string) => {
 export const useCreateSession = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (newSession: Session) => {
-            await invoke('create_session', {
-                newSession,
-            });
+        mutationFn: async (newSession: CreateSessionType) => {
+            await invoke('create_session', { newSession });
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['sessions'] });
@@ -59,11 +58,11 @@ export const useCreateSession = () => {
 export const useUpdateSession = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (sessionToUpdate: Session) => {
-            await invoke('update_session', {
-                sessionToUpdate,
-                tags: sessionToUpdate.tags.map((tag) => tag.id),
-            });
+        mutationFn: async (data: {
+            sessionToUpdate: CreateSessionType;
+            sessionId: number;
+        }) => {
+            await invoke('update_session', data);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['sessions'] });

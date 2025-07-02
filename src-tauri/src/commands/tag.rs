@@ -1,8 +1,8 @@
-// use tauri::{ command, State };
+use tauri::{ command, State };
 
-// use crate::repository::tag::TagRepository;
-// use crate::models::tag::{ TagModel };
-// use crate::AppState;
+use crate::repository::tag::TagRepository;
+use crate::models::tag::{ MiniTag };
+use crate::AppState;
 
 // /// Creates a new Tag record in the database.
 // ///
@@ -34,13 +34,13 @@
 // /// # Returns
 // /// A `Result` containing a `Vec` of `TagModel` on success, or a `String` error message.
 
-// #[command]
-// pub async fn get_all_tags(app_state: State<'_, AppState>) -> Result<Vec<TagModel>, String> {
-//     let db = app_state.conn.lock().await;
+#[command]
+pub async fn get_all_tags(app_state: State<'_, AppState>) -> Result<Vec<MiniTag>, String> {
+    let db = app_state.conn.lock().await;
 
-//     let tag_repository = TagRepository::new(&db);
-//     tag_repository.find_all().await.map_err(|e| e.to_string())
-// }
+    let tag_repository = TagRepository::new(&db);
+    tag_repository.find_all().await.map_err(|e| e.to_string())
+}
 
 // /// Retrieves a single Tag record by its ID.
 // /// It acquires a lock on the database connection to perform the operation.

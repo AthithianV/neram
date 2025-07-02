@@ -1,13 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
-import { Task } from '@/schema/TaskSchema';
+
+export interface MiniTask {
+    id: number;
+    title: string;
+    color: string;
+}
 
 export const useTask = () => {
     return useQuery({
         queryKey: ['tasks'],
         queryFn: async () => {
             const data = await invoke('get_all_tasks');
-            return data as Task[];
+            return data as MiniTask[];
         },
     });
 };

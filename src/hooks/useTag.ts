@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
 import { Tag } from '@/schema/TagSchema';
-
 export const useTag = () => {
     return useQuery({
         queryKey: ['tags'],

@@ -1,6 +1,5 @@
 use tauri::{ command, State };
 
-use crate::commands::session;
 use crate::repository::session::SessionRepository;
 use crate::models::session::{ FullSessionModel, CreateSessionModel };
 use crate::AppState;
@@ -23,7 +22,7 @@ pub async fn create_session(
     let db = app_state.conn.lock().await;
 
     let session_repository = SessionRepository::new(&db);
-    session_repository.create(&new_session).await.map_err(|e| e.to_string());
+    let _ = session_repository.create(&new_session).await.map_err(|e| e.to_string());
     Ok(())
 }
 
@@ -35,7 +34,6 @@ pub async fn create_session(
 ///
 /// # Returns
 /// A `Result` containing a `Vec` of `SessionModel` on success, or a `String` error message.
-
 #[command]
 pub async fn get_all_sessions(
     app_state: State<'_, AppState>
@@ -90,7 +88,7 @@ pub async fn update_session(
     let db = app_state.conn.lock().await;
 
     let session_repository = SessionRepository::new(&db);
-    session_repository.update(&session_to_update, session_id).await.map_err(|e| e.to_string());
+    let _ = session_repository.update(&session_to_update, session_id).await.map_err(|e| e.to_string());
     Ok(())
 }
 
