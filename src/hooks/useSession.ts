@@ -2,7 +2,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
 import { CreateSessionType, Session } from '@/schema/SessionSchema';
 import { toast } from 'sonner';
-import dayjs from 'dayjs';
 
 type Related = {
     id: number;

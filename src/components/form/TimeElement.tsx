@@ -3,8 +3,8 @@ import { Input } from '../ui/input';
 import { useEffect, useState } from 'react';
 
 export interface TimeElementProps {
-    value: Date;
-    setValue: (val: Date) => void;
+    value: string;
+    setValue: (val: string) => void;
     setError: (error: string) => void;
 }
 
@@ -26,7 +26,7 @@ const TimeElement = ({ value, setValue, setError }: TimeElementProps) => {
         );
         if (newValue.isValid()) {
             setError('');
-            setValue(newValue.toDate());
+            setValue(newValue.format('hh:mm A'));
         } else {
             setError('Invalid time format');
         }

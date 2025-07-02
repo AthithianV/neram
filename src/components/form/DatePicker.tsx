@@ -9,22 +9,14 @@ import { CalendarIcon } from 'lucide-react';
 import dayjs from 'dayjs';
 
 type PropsType = {
-    date: Date;
-    onChange: (date: Date) => void;
+    date: string;
+    onChange: (date: string) => void;
 };
 
 const DatePicker = ({ date, onChange }: PropsType) => {
     return (
         <Popover>
             <PopoverTrigger asChild>
-                {/* <Button
-                    type="button"
-                    variant="outline"
-                    className={cn(
-                        'w-full justify-start text-left font-normal',
-                        !date && 'text-muted-foreground'
-                    )}
-                > */}
                 <span
                     className={cn(
                         'w-full text-sm font-normal bg-white',
@@ -40,14 +32,13 @@ const DatePicker = ({ date, onChange }: PropsType) => {
                         <span>Pick a date</span>
                     )}
                 </span>
-                {/* </Button> */}
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start" side="top">
                 <Calendar
                     mode="single"
-                    selected={date}
+                    selected={dayjs(date).toDate()}
                     onSelect={(date) => {
-                        if (date) onChange(date);
+                        if (date) onChange(dayjs(date).format('DD/MM/YYYY'));
                     }}
                     initialFocus
                 />

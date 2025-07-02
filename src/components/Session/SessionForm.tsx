@@ -49,9 +49,9 @@ export const SessionForm = () => {
             form.setValue('description', session.description || '');
             form.setValue('task_id', session.task.id);
             form.setValue('project_id', session.project.id);
-            form.setValue('date', dayjs(session.date).toDate());
-            form.setValue('start_time', dayjs(session.start_time).toDate());
-            form.setValue('end_time', dayjs(session.end_time).toDate());
+            form.setValue('date', session.date);
+            form.setValue('start_time', session.start_time);
+            form.setValue('end_time', session.end_time);
             form.setValue('session_duration_sec', session.session_duration_sec);
             form.setValue('break_duration_sec', session.break_duration_sec);
             form.setValue('tags', session.tags.map((tag) => tag.id) || []);
@@ -63,27 +63,11 @@ export const SessionForm = () => {
     function onSubmit(data: z.infer<typeof SessionSchema>) {
         if (session && session.id) {
             updateSession({
-                sessionToUpdate: {
-                    ...data,
-                    date: dayjs(data.date).format('YYYY-MM-DDTHH:mm:ss'),
-                    start_time: dayjs(data.start_time).format(
-                        'YYYY-MM-DDTHH:mm:ss'
-                    ),
-                    end_time: dayjs(data.end_time).format(
-                        'YYYY-MM-DDTHH:mm:ss'
-                    ),
-                },
+                sessionToUpdate: data,
                 sessionId: session.id,
             });
         } else {
-            createSession({
-                ...data,
-                date: dayjs(data.date).format('YYYY-MM-DDTHH:mm:ss'),
-                start_time: dayjs(data.start_time).format(
-                    'YYYY-MM-DDTHH:mm:ss'
-                ),
-                end_time: dayjs(data.end_time).format('YYYY-MM-DDTHH:mm:ss'),
-            });
+            createSession(data);
         }
         // navigate('/session');
     }

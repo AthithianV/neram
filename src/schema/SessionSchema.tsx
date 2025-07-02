@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import dayjs from 'dayjs';
-import { setTime } from '../lib/time';
 
 const SessionSchema = z
     .object({
@@ -8,9 +7,9 @@ const SessionSchema = z
         description: z.string().optional(),
         task_id: z.number(),
         project_id: z.number(),
-        date: z.date(),
-        start_time: z.date(),
-        end_time: z.date(),
+        date: z.string(),
+        start_time: z.string(),
+        end_time: z.string(),
         session_duration_sec: z.number(),
         break_duration_sec: z.number(),
         tags: z.array(z.number()),
@@ -31,13 +30,6 @@ const SessionSchema = z
     .refine((data) => dayjs(data.start_time).isBefore(dayjs(data.end_time)), {
         message: 'Start time must be before end time',
         path: ['start_time'],
-    })
-    .transform((data) => {
-        return {
-            ...data,
-            start_time: setTime(data.start_time, data.date),
-            end_time: setTime(data.end_time, data.date),
-        };
     });
 
 export type Session = z.infer<typeof SessionSchema> & { id?: number };
