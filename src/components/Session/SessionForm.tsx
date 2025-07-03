@@ -29,7 +29,6 @@ import DatePicker from '@/components/form/DatePicker';
 import TaskPicker from '@/components/session/TaskPicker';
 import ProjectPicker from '@/components/session/ProjectPicker';
 import TagPicker from '@/components/session/TagPicker';
-import dayjs from 'dayjs';
 
 export const SessionForm = () => {
     const form = useForm<Session>({
@@ -69,7 +68,8 @@ export const SessionForm = () => {
         } else {
             createSession(data);
         }
-        // navigate('/session');
+        navigate('/session');
+        form.reset();
     }
 
     const handleError = (error: string, field: keyof Session) => {
