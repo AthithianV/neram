@@ -36,6 +36,8 @@ const TimeElement = ({ value, setValue, setError, date }: TimeElementProps) => {
                 `${setDate} ${e.target.value}`,
                 `${DB_DATE_FORMAT} ${TIME_FORMAT}`
             ).toString();
+            console.log(toDBTime(result));
+
             setValue(toDBTime(result));
         }
     };
@@ -45,7 +47,7 @@ const TimeElement = ({ value, setValue, setError, date }: TimeElementProps) => {
             value={time}
             onChange={handleTimeChange}
             onBlur={handleTimeValue}
-            className="text-center"
+            className="text-center bg-white"
         />
     );
 };

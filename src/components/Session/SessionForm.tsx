@@ -198,9 +198,11 @@ export const SessionForm = () => {
                                     value={field.value}
                                     setValue={field.onChange}
                                     setError={(message) =>
-                                        form.setError('start_time', {
-                                            message,
-                                        })
+                                        message
+                                            ? form.setError('start_time', {
+                                                  message,
+                                              })
+                                            : form.clearErrors('start_time')
                                     }
                                     date={form.getValues('date')}
                                 />
@@ -220,9 +222,11 @@ export const SessionForm = () => {
                                     value={field.value}
                                     setValue={field.onChange}
                                     setError={(message) =>
-                                        form.setError('end_time', {
-                                            message,
-                                        })
+                                        message
+                                            ? form.setError('end_time', {
+                                                  message,
+                                              })
+                                            : form.clearErrors('end_time')
                                     }
                                     date={form.getValues('date')}
                                 />
@@ -244,9 +248,16 @@ export const SessionForm = () => {
                                     value={field.value}
                                     setValue={field.onChange}
                                     setError={(message) =>
-                                        form.setError('session_duration_sec', {
-                                            message,
-                                        })
+                                        message
+                                            ? form.setError(
+                                                  'session_duration_sec',
+                                                  {
+                                                      message,
+                                                  }
+                                              )
+                                            : form.clearErrors(
+                                                  'session_duration_sec'
+                                              )
                                     }
                                 />
                                 <FormMessage className="text-xs" />
@@ -265,9 +276,16 @@ export const SessionForm = () => {
                                     value={field.value}
                                     setValue={field.onChange}
                                     setError={(message) =>
-                                        form.setError('session_duration_sec', {
-                                            message,
-                                        })
+                                        message
+                                            ? form.setError(
+                                                  'break_duration_sec',
+                                                  {
+                                                      message,
+                                                  }
+                                              )
+                                            : form.clearErrors(
+                                                  'break_duration_sec'
+                                              )
                                     }
                                 />
                                 <FormMessage className="text-xs" />

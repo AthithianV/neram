@@ -7,6 +7,7 @@ import {
 } from '@/components/ui/popover';
 import { CalendarIcon } from 'lucide-react';
 import dayjs from 'dayjs';
+import { toDBTime } from '@/lib/time';
 
 type PropsType = {
     date: string;
@@ -40,9 +41,11 @@ const DatePicker = ({ date, onChange }: PropsType) => {
                     onSelect={(date) => {
                         date &&
                             onChange(
-                                dayjs(date)
-                                    .startOf('day')
-                                    .format('YYYY-MM-DD HH:mm:ss')
+                                toDBTime(
+                                    dayjs(date)
+                                        .startOf('day')
+                                        .format('YYYY-MM-DD HH:mm:ss')
+                                )
                             );
                     }}
                     initialFocus

@@ -1,4 +1,3 @@
-import { toDBTime } from '@/lib/time';
 import { Session } from '@/schema/SessionSchema';
 import dayjs from 'dayjs';
 
@@ -13,9 +12,11 @@ export const DEFAULT_SESSION_VALUES: Session = {
     description: '',
     task_id: 0,
     project_id: 1,
-    date: toDBTime(dayjs().toString()),
-    start_time: toDBTime(dayjs(new Date()).subtract(1, 'hours').toString()),
-    end_time: toDBTime(dayjs().toString()),
+    date: dayjs().format(`${DB_DATE_FORMAT}T${DB_TIME_FORMAT}`),
+    start_time: dayjs(new Date())
+        .subtract(1, 'hours')
+        .format(`${DB_DATE_FORMAT}T${DB_TIME_FORMAT}`),
+    end_time: dayjs().format(`${DB_DATE_FORMAT}T${DB_TIME_FORMAT}`),
     session_duration_sec: 60 * 60,
     break_duration_sec: 0,
     tags: [],

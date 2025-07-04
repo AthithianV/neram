@@ -10,5 +10,5 @@ export const formatDuration = (seconds: number) => {
 };
 
 export const toDBTime = (time: string) => {
-    return dayjs(time).format(`${DB_DATE_FORMAT} ${DB_TIME_FORMAT}`);
+    return dayjs(time).format(`${DB_DATE_FORMAT}T${DB_TIME_FORMAT}`);
 };
