@@ -14,12 +14,14 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
-import TimeElement from '@/components/form/TimeElement';
-import DurationElement from '@/components/form/DurationElement';
 import { Textarea } from '@/components/ui/textarea';
 import { useEffect } from 'react';
 import SessionSchema, { Session } from '@/schema/SessionSchema';
-import { DEFAULT_SESSION_VALUES } from '@/constants/session';
+import {
+    DB_DATE_FORMAT,
+    DEFAULT_SESSION_VALUES,
+    TIME_FORMAT,
+} from '@/constants/session';
 import {
     useCreateSession,
     useUpdateSession,
@@ -30,11 +32,19 @@ import TaskPicker from '@/components/session/TaskPicker';
 import ProjectPicker from '@/components/session/ProjectPicker';
 import TagPicker from '@/components/session/TagPicker';
 
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import { toDBTime } from '@/lib/time';
+import DurationElement from '../form/DurationElement';
+import TimeElement from '../form/TimeElement';
+
 export const SessionForm = () => {
     const form = useForm<Session>({
         resolver: zodResolver(SessionSchema),
         defaultValues: DEFAULT_SESSION_VALUES,
     });
+
+    dayjs.extend(customParseFormat);
 
     const { sessionId } = useParams();
     const { data: session } = useSessionById(sessionId || '');
@@ -48,9 +58,9 @@ export const SessionForm = () => {
             form.setValue('description', session.description || '');
             form.setValue('task_id', session.task.id);
             form.setValue('project_id', session.project.id);
-            form.setValue('date', session.date);
-            form.setValue('start_time', session.start_time);
-            form.setValue('end_time', session.end_time);
+            form.setValue('date', toDBTime(session.date));
+            form.setValue('start_time', toDBTime(session.start_time));
+            form.setValue('end_time', toDBTime(session.end_time));
             form.setValue('session_duration_sec', session.session_duration_sec);
             form.setValue('break_duration_sec', session.break_duration_sec);
             form.setValue('tags', session.tags.map((tag) => tag.id) || []);
@@ -60,6 +70,7 @@ export const SessionForm = () => {
     const navigate = useNavigate();
 
     function onSubmit(data: z.infer<typeof SessionSchema>) {
+        console.log(data);
         if (session && session.id) {
             updateSession({
                 sessionToUpdate: data,
@@ -71,14 +82,6 @@ export const SessionForm = () => {
         navigate('/session');
         form.reset();
     }
-
-    const handleError = (error: string, field: keyof Session) => {
-        if (error) {
-            form.setError(field, { message: error });
-        } else {
-            form.clearErrors(field);
-        }
-    };
 
     return (
         <Form {...form}>
@@ -193,10 +196,13 @@ export const SessionForm = () => {
                                 <FormLabel>Start Time</FormLabel>
                                 <TimeElement
                                     value={field.value}
-                                    setValue={(val) => field.onChange(val)}
-                                    setError={(error) => {
-                                        handleError(error, 'start_time');
-                                    }}
+                                    setValue={field.onChange}
+                                    setError={(message) =>
+                                        form.setError('start_time', {
+                                            message,
+                                        })
+                                    }
+                                    date={form.getValues('date')}
                                 />
                                 <FormMessage className="text-xs" />
                             </FormItem>
@@ -212,10 +218,13 @@ export const SessionForm = () => {
                                 <FormLabel>End Time</FormLabel>
                                 <TimeElement
                                     value={field.value}
-                                    setValue={(val) => field.onChange(val)}
-                                    setError={(error) =>
-                                        handleError(error, 'end_time')
+                                    setValue={field.onChange}
+                                    setError={(message) =>
+                                        form.setError('end_time', {
+                                            message,
+                                        })
                                     }
+                                    date={form.getValues('date')}
                                 />
                                 <FormMessage className="text-xs" />
                             </FormItem>
@@ -233,12 +242,11 @@ export const SessionForm = () => {
                                 <FormLabel>Duration</FormLabel>
                                 <DurationElement
                                     value={field.value}
-                                    setValue={(val) => field.onChange(val)}
-                                    setError={(error) =>
-                                        handleError(
-                                            error,
-                                            'session_duration_sec'
-                                        )
+                                    setValue={field.onChange}
+                                    setError={(message) =>
+                                        form.setError('session_duration_sec', {
+                                            message,
+                                        })
                                     }
                                 />
                                 <FormMessage className="text-xs" />
@@ -255,9 +263,11 @@ export const SessionForm = () => {
                                 <FormLabel>Break</FormLabel>
                                 <DurationElement
                                     value={field.value}
-                                    setValue={(val) => field.onChange(val)}
-                                    setError={(error) =>
-                                        handleError(error, 'break_duration_sec')
+                                    setValue={field.onChange}
+                                    setError={(message) =>
+                                        form.setError('session_duration_sec', {
+                                            message,
+                                        })
                                     }
                                 />
                                 <FormMessage className="text-xs" />
@@ -290,7 +300,7 @@ export const SessionForm = () => {
                         variant={'outline'}
                         onClick={() => {
                             form.reset();
-                            navigate('/dashboard');
+                            navigate('/session');
                         }}
                     >
                         Cancel

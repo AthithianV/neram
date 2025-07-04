@@ -89,7 +89,7 @@ const TagPicker = ({
                 >
                     <Command>
                         <CommandInput
-                            placeholder="Search framework..."
+                            placeholder="Search Tags..."
                             className="h-9"
                         />
                         <CommandList>

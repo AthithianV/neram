@@ -38,7 +38,12 @@ const DatePicker = ({ date, onChange }: PropsType) => {
                     mode="single"
                     selected={dayjs(date).toDate()}
                     onSelect={(date) => {
-                        if (date) onChange(dayjs(date).format('DD/MM/YYYY'));
+                        date &&
+                            onChange(
+                                dayjs(date)
+                                    .startOf('day')
+                                    .format('YYYY-MM-DD HH:mm:ss')
+                            );
                     }}
                     initialFocus
                 />

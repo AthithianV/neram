@@ -35,7 +35,7 @@ const Session = () => {
                         'max-md:w-full'
                     )}
                 >
-                    <ul className="flex flex-col gap-[1px] py-2">
+                    <ul className="flex flex-col py-2">
                         {sessions &&
                             sessions.length > 0 &&
                             sessions.map(
@@ -55,7 +55,7 @@ const Session = () => {
                 </ScrollArea>
             </div>
 
-            <ScrollArea key={location.pathname} className=" py-4">
+            <ScrollArea key={location.pathname}>
                 <motion.div
                     initial={
                         location.pathname === '/dashboard'

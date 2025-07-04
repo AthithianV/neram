@@ -1,4 +1,4 @@
-import { formatTime } from '@/lib/time';
+import { formatDuration } from '@/lib/time';
 import { Badge } from '@/components/ui/badge';
 import { SessionType, useDeleteSession } from '@/hooks/useSession';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -36,10 +36,10 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
         <li
             className={cn(
                 'flex items-center justify-between',
-                'py-3 pe-3 my-1 border shadow rounded-md cursor-pointer',
+                'py-3 pe-3 border shadow rounded-md cursor-pointer',
                 'bg-white',
                 id === parseInt(sessionId || '0')
-                    ? 'bg-gray-100'
+                    ? 'bg-blue-300'
                     : 'hover:bg-gray-50'
             )}
             onClick={() => {
@@ -50,7 +50,10 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
         >
             <div className="flex items-center gap-4 flex-1">
                 <div
-                    className={cn('px-[0.2rem] rounded-e-md bg-gray-50', 'h-14')}
+                    className={cn(
+                        'px-[0.2rem] rounded-e-md bg-gray-50',
+                        'h-14'
+                    )}
                     style={
                         // isHovered || id === parseInt(sessionId || '0')
                         // ?
@@ -96,7 +99,7 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
             </div>
             <div className="flex items-center gap-2">
                 <p className="text-sm text-gray-500">
-                    {formatTime(session_duration_sec)}
+                    {formatDuration(session_duration_sec)}
                 </p>
 
                 {isHovered && (
@@ -121,7 +124,8 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                                 <AlertDialogAction
                                     onClick={async () => {
-                                        await deleteSession(id);
+                                        id && (await deleteSession(id));
+                                        navigate('/session');
                                     }}
                                     disabled={isDeleting}
                                     className="bg-red-500 hover:bg-red-600"
