@@ -17,11 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useEffect } from 'react';
 import SessionSchema, { Session } from '@/schema/SessionSchema';
-import {
-    DB_DATE_FORMAT,
-    DEFAULT_SESSION_VALUES,
-    TIME_FORMAT,
-} from '@/constants/session';
+import { DEFAULT_SESSION_VALUES } from '@/constants/session';
 import {
     useCreateSession,
     useUpdateSession,
