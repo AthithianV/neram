@@ -18,9 +18,9 @@ import {
     useCreateTag,
     useUpdateTag,
     useDeleteTag,
-} from '@/hooks/useTask';
-import { TagType } from '@/hooks/useSession';
+} from '@/hooks/useTag';
 import { Edit2, Trash2, Plus } from 'lucide-react';
+import { Tag } from '@/schema/TagSchema';
 
 const TagManager = () => {
     const { data: tags, isLoading } = useTag();
@@ -30,7 +30,7 @@ const TagManager = () => {
 
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-    const [selectedTag, setSelectedTag] = useState<TagType | null>(null);
+    const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
 
     const [formData, setFormData] = useState({
         title: '',
@@ -63,11 +63,11 @@ const TagManager = () => {
                     setIsCreateDialogOpen(false);
                     resetForm();
                 },
-            }
+            },
         );
     };
 
-    const handleEdit = (tag: TagType) => {
+    const handleEdit = (tag: Tag) => {
         if (!tag.title) return;
 
         setSelectedTag(tag);
@@ -75,7 +75,7 @@ const TagManager = () => {
             title: tag.title,
             description: tag.description || '',
             color: tag.color || '#3b82f6',
-            is_default: tag.is_default || false,
+            is_default: false,
         });
         setIsEditDialogOpen(true);
     };
@@ -96,14 +96,14 @@ const TagManager = () => {
                     resetForm();
                     setSelectedTag(null);
                 },
-            }
+            },
         );
     };
 
     const handleDelete = (tagTitle: string) => {
         if (
             window.confirm(
-                `Are you sure you want to delete the tag "${tagTitle}"?`
+                `Are you sure you want to delete the tag "${tagTitle}"?`,
             )
         ) {
             deleteTag.mutate(tagTitle);
@@ -213,7 +213,7 @@ const TagManager = () => {
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {tags?.map((tag: TagType) => (
+                {tags?.map((tag: Tag) => (
                     <Card key={tag.title} className="relative">
                         <CardHeader className="pb-2">
                             <div className="flex items-center justify-between">
@@ -226,14 +226,14 @@ const TagManager = () => {
                                         }}
                                     />
                                     {tag.title || 'Untitled'}
-                                    {tag.is_default && (
-                                        <Badge
-                                            variant="secondary"
-                                            className="text-xs"
-                                        >
-                                            Default
-                                        </Badge>
-                                    )}
+                                    {/* {tag.is_default && ( */}
+                                    <Badge
+                                        variant="secondary"
+                                        className="text-xs"
+                                    >
+                                        Default
+                                    </Badge>
+                                    {/* )} */}
                                 </CardTitle>
                                 <div className="flex gap-1">
                                     <Button

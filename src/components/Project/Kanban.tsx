@@ -22,32 +22,36 @@ const Kanban = () => {
 
     const columns: KanbanColumn[] = useMemo(
         () => [
-            {
-                id: 'todo',
-                title: 'To Do',
-                color: 'bg-blue-50 border-blue-200',
-                tasks: tasks.filter((task) => task.status === 'todo'),
-            },
-            {
-                id: 'in_progress',
-                title: 'In Progress',
-                color: 'bg-yellow-50 border-yellow-200',
-                tasks: tasks.filter((task) => task.status === 'in_progress'),
-            },
-            {
-                id: 'review',
-                title: 'Review',
-                color: 'bg-purple-50 border-purple-200',
-                tasks: tasks.filter((task) => task.status === 'review'),
-            },
-            {
-                id: 'done',
-                title: 'Done',
-                color: 'bg-green-50 border-green-200',
-                tasks: tasks.filter((task) => task.status === 'done'),
-            },
+            // {
+            //     id: 'todo',
+            //     title: 'To Do',
+            //     color: 'bg-blue-50 border-blue-200',
+            //     tasks: tasks
+            //     // .filter((task) => task.status === 'todo'),
+            // },
+            // {
+            //     id: 'in_progress',
+            //     title: 'In Progress',
+            //     color: 'bg-yellow-50 border-yellow-200',
+            //     tasks: tasks
+            //     // .filter((task) => task.status === 'in_progress'),
+            // },
+            // {
+            //     id: 'review',
+            //     title: 'Review',
+            //     color: 'bg-purple-50 border-purple-200',
+            //     tasks: tasks
+            //     // .filter((task) => task.status === 'review'),
+            // },
+            // {
+            //     id: 'done',
+            //     title: 'Done',
+            //     color: 'bg-green-50 border-green-200',
+            //     tasks: tasks
+            //     // .filter((task) => task.status === 'done'),
+            // },
         ],
-        [tasks]
+        [tasks],
     );
 
     const handleDragStart = (e: React.DragEvent, task: Task) => {
@@ -139,7 +143,7 @@ const Kanban = () => {
                                     draggedTask.status !== column.id &&
                                     'border-blue-300 bg-blue-50',
                                 'shadow-sm',
-                                column.color
+                                column.color,
                             )}
                             onDragOver={handleDragOver}
                             onDrop={(e) => handleDrop(e, column.id)}
@@ -165,7 +169,7 @@ const Kanban = () => {
                                         className={cn(
                                             'cursor-move transition-all hover:shadow-md',
                                             draggedTask?.id === task.id &&
-                                                'opacity-50'
+                                                'opacity-50',
                                         )}
                                         draggable
                                         onDragStart={(e) =>
@@ -182,8 +186,8 @@ const Kanban = () => {
                                                         className={cn(
                                                             'w-2 h-2 rounded-full',
                                                             getPriorityColor(
-                                                                task.priority
-                                                            )
+                                                                task.priority,
+                                                            ),
                                                         )}
                                                     />
                                                 </div>
@@ -204,7 +208,7 @@ const Kanban = () => {
                                                     </span>
                                                     <span className="font-medium">
                                                         {getProjectName(
-                                                            task.project_id
+                                                            task.project_id,
                                                         )}
                                                     </span>
                                                 </div>
@@ -218,14 +222,14 @@ const Kanban = () => {
                                                             className={cn(
                                                                 'font-medium',
                                                                 new Date(
-                                                                    task.deadline
+                                                                    task.deadline,
                                                                 ) <
                                                                     new Date() &&
-                                                                    'text-red-500'
+                                                                    'text-red-500',
                                                             )}
                                                         >
                                                             {formatDate(
-                                                                task.deadline
+                                                                task.deadline,
                                                             )}
                                                         </span>
                                                     </div>
@@ -263,7 +267,7 @@ const Kanban = () => {
                                                             <span className="text-xs text-muted-foreground">
                                                                 Started:{' '}
                                                                 {formatDate(
-                                                                    task.started_at
+                                                                    task.started_at,
                                                                 )}
                                                             </span>
                                                         )}

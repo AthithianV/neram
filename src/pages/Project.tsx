@@ -6,15 +6,15 @@ import { cn } from '@/lib/utils';
 import { Outlet, useNavigate } from 'react-router-dom';
 
 const Project = () => {
-    const { data: projects, isLoading, error } = useProject();
+    const { data: projects } = useProject();
     const navigate = useNavigate();
     const [currentProject, setCurrentProject] = useState<ProjectType | null>(
-        null
+        null,
     );
 
     useEffect(() => {
         if (projects) {
-            setCurrentProject(projects[0]);
+            setCurrentProject(null);
         }
     }, [projects]);
 
@@ -30,7 +30,7 @@ const Project = () => {
                                 currentProject?.id === project.id
                                     ? 'bg-white border-b-2'
                                     : ''
-                            }`
+                            }`,
                         )}
                         style={{
                             borderColor: project.color,
