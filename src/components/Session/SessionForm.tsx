@@ -34,7 +34,7 @@ import { toDBTime } from '@/lib/time';
 import DurationElement from '../form/DurationElement';
 import TimeElement from '../form/TimeElement';
 
-export const SessionForm = () => {
+const SessionForm = () => {
     const form = useForm<Session>({
         resolver: zodResolver(SessionSchema),
         defaultValues: DEFAULT_SESSION_VALUES,
@@ -249,10 +249,10 @@ export const SessionForm = () => {
                                                   'session_duration_sec',
                                                   {
                                                       message,
-                                                  }
+                                                  },
                                               )
                                             : form.clearErrors(
-                                                  'session_duration_sec'
+                                                  'session_duration_sec',
                                               )
                                     }
                                 />
@@ -277,10 +277,10 @@ export const SessionForm = () => {
                                                   'break_duration_sec',
                                                   {
                                                       message,
-                                                  }
+                                                  },
                                               )
                                             : form.clearErrors(
-                                                  'break_duration_sec'
+                                                  'break_duration_sec',
                                               )
                                     }
                                 />
@@ -327,3 +327,5 @@ export const SessionForm = () => {
         </Form>
     );
 };
+
+export default SessionForm;
