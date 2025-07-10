@@ -1,4 +1,4 @@
-import { MiniTask, useTask } from '@/hooks/useTask';
+import { useTask } from '@/hooks/useTask';
 import {
     Select,
     SelectContent,
@@ -6,7 +6,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from '../ui/select';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useSessionStore } from '@/store/session';
 
 type PropsType = {
     onChange: (task: number) => void;
@@ -15,11 +16,11 @@ type PropsType = {
 
 const TaskPicker = ({ onChange, value }: PropsType) => {
     const { data: tasks = [] } = useTask();
-    const [selectedTask, setSelectedTask] = useState<MiniTask>();
+    const { selectedTask, setSelectedTask } = useSessionStore();
 
     useEffect(() => {
         const task = tasks.find(({ id }) => id === value);
-        setSelectedTask(task);
+        setSelectedTask(task ?? null);
     }, [value]);
 
     return (

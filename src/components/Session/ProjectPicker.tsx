@@ -7,6 +7,7 @@ import {
     SelectValue,
 } from '../ui/select';
 import { useEffect, useState } from 'react';
+import { useSessionStore } from '@/store/session';
 
 type PropsType = {
     onChange: (project: number) => void;
@@ -15,11 +16,11 @@ type PropsType = {
 
 const ProjectPicker = ({ onChange, value }: PropsType) => {
     const { data: projects = [] } = useProject();
-    const [selectedProject, setSelectedProject] = useState<MinimalProject>();
+    const { setSelectedProject, selectedProject } = useSessionStore();
 
     useEffect(() => {
         if (value) {
-            setSelectedProject(projects.find(({ id }) => id === value));
+            setSelectedProject(projects.find(({ id }) => id === value) ?? null);
         }
     }, [value]);
 

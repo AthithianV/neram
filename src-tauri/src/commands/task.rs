@@ -35,11 +35,18 @@ use crate::AppState;
 // /// A `Result` containing a `Vec` of `TaskModel` on success, or a `String` error message.
 
 #[command]
-pub async fn get_all_tasks(app_state: State<'_, AppState>) -> Result<Vec<MiniTask>, String> {
+pub async fn get_all_tasks(
+    app_state: State<'_, AppState>,
+    project_id: Option<i32>
+) -> Result<Vec<MiniTask>, String> {
     let db = app_state.conn.lock().await;
 
     let task_repository = TaskRepository::new(&db);
-    task_repository.find_all().await.map_err(|e| e.to_string())
+    if let Some(project_id) = project_id {
+        task_repository.find_all_by_project_id(project_id).await.map_err(|e| e.to_string())
+    } else {
+        task_repository.find_all().await.map_err(|e| e.to_string())
+    }
 }
 
 // /// Retrieves a single Task record by its ID.

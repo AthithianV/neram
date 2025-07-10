@@ -15,7 +15,7 @@ import {
 import { Input } from '@/components/ui/input';
 
 import { Textarea } from '@/components/ui/textarea';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import SessionSchema, { Session } from '@/schema/SessionSchema';
 import { DEFAULT_SESSION_VALUES } from '@/constants/session';
 import {
@@ -39,6 +39,7 @@ const SessionForm = () => {
         resolver: zodResolver(SessionSchema),
         defaultValues: DEFAULT_SESSION_VALUES,
     });
+    const [selectedProject, setSelectedProject] = useState<number>();
 
     dayjs.extend(customParseFormat);
 
@@ -66,7 +67,6 @@ const SessionForm = () => {
     const navigate = useNavigate();
 
     function onSubmit(data: z.infer<typeof SessionSchema>) {
-        console.log(data);
         if (session && session.id) {
             updateSession({
                 sessionToUpdate: data,
@@ -138,6 +138,7 @@ const SessionForm = () => {
                                     <ProjectPicker
                                         onChange={field.onChange}
                                         value={field.value}
+                                        setSelectedProject={setSelectedProject}
                                     />
                                 </FormControl>
                                 <FormMessage className="text-xs" />
@@ -156,6 +157,7 @@ const SessionForm = () => {
                                     <TaskPicker
                                         onChange={field.onChange}
                                         value={field.value}
+                                        projectId={selectedProject}
                                     />
                                 </FormControl>
                                 <FormMessage className="text-xs" />
