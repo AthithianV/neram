@@ -40,7 +40,7 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
                 'bg-white',
                 id === parseInt(sessionId || '0')
                     ? 'bg-blue-300'
-                    : 'hover:bg-gray-50'
+                    : 'hover:bg-gray-50',
             )}
             onClick={() => {
                 navigate(`update-session/${id}`);
@@ -52,16 +52,11 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
                 <div
                     className={cn(
                         'px-[0.2rem] rounded-e-md bg-gray-50',
-                        'h-14'
+                        'h-14',
                     )}
-                    style={
-                        // isHovered || id === parseInt(sessionId || '0')
-                        // ?
-                        {
-                            backgroundColor: project.color,
-                        }
-                        // : {}
-                    }
+                    style={{
+                        backgroundColor: project.color,
+                    }}
                 ></div>
                 <div className="flex flex-col gap-2 flex-1">
                     <h3 className="text-md font-semibold">
@@ -71,10 +66,7 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
                         <ul className="flex gap-2">
                             {tags && tags.length > 0 ? (
                                 tags.map((tag) => (
-                                    <li
-                                        key={tag.title}
-                                        className="text-gray-500"
-                                    >
+                                    <li key={tag.title}>
                                         <Badge
                                             style={{
                                                 backgroundColor: tag.color,

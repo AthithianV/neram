@@ -6,27 +6,22 @@ import {
     SelectTrigger,
     SelectValue,
 } from '../ui/select';
-import { useEffect } from 'react';
-import { useSessionStore } from '@/store/session';
 
 type PropsType = {
     onChange: (task: number) => void;
     value: number;
+    projectId: number;
 };
 
-const TaskPicker = ({ onChange, value }: PropsType) => {
-    const { data: tasks = [] } = useTask();
-    const { selectedTask, setSelectedTask } = useSessionStore();
+const TaskPicker = ({ onChange, value, projectId }: PropsType) => {
+    const { data: tasks = [] } = useTask(projectId);
 
-    useEffect(() => {
-        const task = tasks.find(({ id }) => id === value);
-        setSelectedTask(task ?? null);
-    }, [value]);
+    const selected = tasks.find((t) => t.id === value);
 
     return (
         <Select
             onValueChange={(value) => onChange(parseInt(value))}
-            value={selectedTask?.id.toString()}
+            value={selected?.id?.toString() ?? ''}
         >
             <SelectTrigger className="w-full bg-white shadow overflow-hidden">
                 <SelectValue placeholder="Select a Task" />

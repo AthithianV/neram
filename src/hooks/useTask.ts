@@ -1,4 +1,3 @@
-import { useSessionStore } from '@/store/session';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
 
@@ -8,17 +7,18 @@ export interface MiniTask {
     color: string;
 }
 
-export const useTask = () => {
-    const { selectedProject } = useSessionStore();
+export const useTask = (projectId: number) => {
     return useQuery({
-        queryKey: ['tasks', selectedProject],
+        queryKey: ['tasks', projectId],
         queryFn: async () => {
+            console.log(projectId);
+
             const data = await invoke('get_all_tasks', {
-                projectId: selectedProject?.id,
+                projectId,
             });
             return data as MiniTask[];
         },
-        enabled: !!selectedProject,
+        enabled: !!projectId,
     });
 };
 

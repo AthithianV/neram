@@ -16,18 +16,21 @@ const SessionSchema = z
     })
     .refine(
         (data) => {
-            console.log(data.end_time);
-            console.log(data.start_time);
-
-            console.log(dayjs(data.end_time).format('YYYY-MM-DD HH:mm:ss'));
-            console.log(dayjs(data.start_time).format('YYYY-MM-DD HH:mm:ss'));
-
+            return dayjs(data.date).isBefore(dayjs());
+        },
+        {
+            message: 'Date Must not be in Future',
+            path: ['date'],
+        },
+    )
+    .refine(
+        (data) => {
             return dayjs(data.end_time).isAfter(dayjs(data.start_time));
         },
         {
             message: 'End time must be after start time',
             path: ['end_time'],
-        }
+        },
     )
     .refine(
         (data) => {
@@ -36,7 +39,7 @@ const SessionSchema = z
         {
             message: 'End time must be before current time',
             path: ['end_time'],
-        }
+        },
     );
 
 export type Session = z.infer<typeof SessionSchema> & { id?: number };

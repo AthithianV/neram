@@ -6,8 +6,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '../ui/select';
-import { useEffect, useState } from 'react';
-import { useSessionStore } from '@/store/session';
 
 type PropsType = {
     onChange: (project: number) => void;
@@ -16,18 +14,11 @@ type PropsType = {
 
 const ProjectPicker = ({ onChange, value }: PropsType) => {
     const { data: projects = [] } = useProject();
-    const { setSelectedProject, selectedProject } = useSessionStore();
-
-    useEffect(() => {
-        if (value) {
-            setSelectedProject(projects.find(({ id }) => id === value) ?? null);
-        }
-    }, [value]);
-
+    const selected = projects.find((p) => p.id === value);
     return (
         <Select
             onValueChange={(value) => onChange(parseInt(value))}
-            value={selectedProject?.id.toString()}
+            value={selected?.id?.toString() ?? ''}
         >
             <SelectTrigger className="w-full bg-white shadow overflow-hidden">
                 <SelectValue placeholder="Select a Project" />
