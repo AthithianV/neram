@@ -12,13 +12,27 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useProject } from '@/hooks/useProject';
+import { useCreateSession } from '@/hooks/useSession';
 import { useTask } from '@/hooks/useTask';
+import dayjs from 'dayjs';
 import { Play } from 'lucide-react';
 
 const StartButton = () => {
     const { data: projects } = useProject();
+    const { mutate: createSession } = useCreateSession();
 
-    const startTimer = (projectId: number, taskId: number) => {};
+    const startTimer = async (projectId: number, taskId: number) => {
+        await createSession({
+            title: 'UNTITLED',
+            project_id: projectId,
+            task_id: taskId,
+            date: dayjs().startOf('day').format('YYYY-MM-DD HH:mm:ss'),
+            start_time: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+            session_duration_sec: 0,
+            break_duration_sec: 0,
+            tags: [],
+        });
+    };
 
     return (
         <DropdownMenu>

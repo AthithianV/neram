@@ -59,6 +59,6 @@ export type Session = z.infer<typeof SessionSchema> & { id?: number };
 export type CreateSessionType = Omit<
     Session,
     'date' | 'start_time' | 'end_time'
-> & { date: string; start_time: string; end_time: string };
+> & { date: string; start_time: string; end_time?: string };
 
 export default SessionSchema;

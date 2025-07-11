@@ -41,6 +41,8 @@ export const useCreateSession = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (newSession: CreateSessionType) => {
+            console.log(newSession);
+
             await invoke('create_session', { newSession });
         },
         onSuccess: () => {
@@ -48,6 +50,7 @@ export const useCreateSession = () => {
             toast.success('Session created successfully');
         },
         onError: (err) => {
+            console.error(err);
             toast.error('Failed to create session');
         },
     });
