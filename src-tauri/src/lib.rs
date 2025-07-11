@@ -18,6 +18,7 @@ use tokio::sync::Mutex;
 #[derive(Clone)]
 struct AppState {
     conn: Arc<Mutex<DatabaseConnection>>,
+    timer: Arc<Mutex<TimerState>>,
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

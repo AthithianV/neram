@@ -4,7 +4,7 @@ use std::{ path::Path, sync::Arc };
 use tauri::{ AppHandle, Manager };
 use tokio::sync::Mutex;
 
-use crate::AppState;
+use crate::{ commands::timer::TimerState, AppState };
 
 #[tauri::command]
 pub async fn init_db(path: String, app_handle: AppHandle) -> Result<(), String> {
@@ -64,6 +64,7 @@ pub async fn init_db(path: String, app_handle: AppHandle) -> Result<(), String> 
     println!("Setting up app state with database connection");
     app_handle.manage(AppState {
         conn: Arc::new(Mutex::new(db)),
+        timer: Arc::new(Mutex::new(TimerState::default())),
     });
 
     println!("Database initialization completed");

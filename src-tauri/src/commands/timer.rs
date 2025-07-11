@@ -2,8 +2,12 @@ use serde::{ Deserialize, Serialize };
 use std::time::{ Duration, Instant };
 use tauri::State;
 use tokio::sync::Mutex;
+use sea_orm::*;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+use crate::AppState;
+use ::entity::sessions::{ Entity as Session, ActiveModel as SessionActiveModel };
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum TimerType {
     Session,
     Break,
@@ -35,11 +39,11 @@ impl Default for TimerState {
 // Tauri commands that share the same state
 #[tauri::command]
 pub async fn start_timer(
-    state: State<'_, Mutex<TimerState>>,
+    state: State<'_, AppState>,
     timer_type: TimerType,
     session_id: Option<i32>
 ) -> Result<(), String> {
-    let mut timer = state.lock().await;
+    let mut timer = state.timer.lock().await;
     timer.start_time = Some(Instant::now());
     timer.is_running = true;
     timer.timer_type = timer_type;
@@ -48,8 +52,61 @@ pub async fn start_timer(
 }
 
 #[tauri::command]
-pub async fn stop_timer(state: State<'_, Mutex<TimerState>>) -> Result<u64, String> {
-    let mut timer = state.lock().await;
+pub async fn pause_timer(
+    state: State<'_, AppState>,
+    session_id: Option<i32>
+) -> Result<(), String> {
+    let mut timer = state.timer.lock().await;
+    let db = state.conn.lock().await;
+
+    let time_elapsed = if let Some(start) = timer.start_time {
+        start.elapsed()
+    } else {
+        Duration::from_secs(0)
+    };
+
+    let timer_type = timer.timer_type.clone();
+    let is_running = timer.is_running;
+    let session_id = timer.session_id;
+
+    // If timer is Session, then Update Session Duration or Break Duration in DB.
+    if let Some(id) = session_id {
+        let model_opt = Session::find_by_id(id)
+            .one(&*db).await
+            .map_err(|e| e.to_string())?;
+
+        let mut active_session: SessionActiveModel = match model_opt {
+            Some(m) => m.into(),
+            None => {
+                return Err(format!("Session {id} not found"));
+            }
+        };
+
+        match timer_type {
+            TimerType::Session => {
+                active_session.session_duration_sec = Set(time_elapsed.as_secs() as i32);
+            }
+            TimerType::Break => {
+                active_session.break_duration_sec = Set(time_elapsed.as_secs() as i32);
+            }
+            _ => {}
+        }
+
+        active_session.update(&*db).await.map_err(|e| e.to_string())?;
+    }
+
+    timer.start_time = Some(Instant::now());
+    timer.is_running = true;
+    timer.timer_type = TimerType::Break;
+    timer.session_id = session_id;
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn stop_timer(state: State<'_, AppState>) -> Result<u64, String> {
+    let mut timer = state.timer.lock().await;
+
     if let Some(start) = timer.start_time {
         timer.total_elapsed += start.elapsed();
         timer.start_time = None;
@@ -70,10 +127,9 @@ pub struct TimerResponse {
 }
 
 #[tauri::command]
-pub async fn get_elapsed_time(
-    state: State<'_, Mutex<TimerState>>
-) -> Result<TimerResponse, String> {
-    let timer = state.lock().await;
+pub async fn get_elapsed_time(state: State<'_, AppState>) -> Result<TimerResponse, String> {
+    let timer = state.timer.lock().await;
+
     let current_session = if let Some(start) = timer.start_time {
         start.elapsed()
     } else {
@@ -83,6 +139,7 @@ pub async fn get_elapsed_time(
     let timer_type = timer.timer_type.clone();
     let is_running = timer.is_running;
     let session_id = timer.session_id;
+
     Ok(TimerResponse {
         time,
         timer_type,
@@ -92,8 +149,8 @@ pub async fn get_elapsed_time(
 }
 
 #[tauri::command]
-pub async fn reset_timer(state: State<'_, Mutex<TimerState>>) -> Result<(), String> {
-    let mut timer = state.lock().await;
+pub async fn reset_timer(state: State<'_, AppState>) -> Result<(), String> {
+    let mut timer = state.timer.lock().await;
     *timer = TimerState::default();
     Ok(())
 }

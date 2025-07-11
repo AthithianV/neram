@@ -17,7 +17,12 @@ const Controls = () => {
                 <Button
                     variant={'default'}
                     className="flex items-center gap-1 bg-yellow-500 hover:bg-yellow-600"
-                    onClick={() => startTimer('Break')}
+                    onClick={() =>
+                        startTimer({
+                            timerType: 'Break',
+                            sessionId: timer.session_id,
+                        })
+                    }
                 >
                     <Pause fill="currentColor" className="w-4 h-4" />
                     <span>Pause</span>
