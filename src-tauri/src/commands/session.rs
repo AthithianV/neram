@@ -17,15 +17,15 @@ use crate::AppState;
 pub async fn create_session(
     app_state: State<'_, AppState>,
     new_session: CreateSessionModel
-) -> Result<(), String> {
+) -> Result<i32, String> {
     let db = app_state.conn.lock().await;
 
     let session_repository = SessionRepository::new(&db);
-    let _ = session_repository.create(&new_session).await.map_err(|e| {
+    let session = session_repository.create(&new_session).await.map_err(|e| {
         println!("Error creating session: {:?}", e);
         e.to_string()
     });
-    Ok(())
+    Ok(session.unwrap().id)
 }
 
 /// Retrieves all session records from the database.

@@ -1,7 +1,12 @@
 use sea_orm::*;
 use ::entity::{
     projects::Entity as Project,
-    sessions::{ ActiveModel as SessionActiveModel, Entity as Session, Model as SessionModel },
+    sessions::{
+        ActiveModel as SessionActiveModel,
+        Entity as Session,
+        Model as SessionModel,
+        Column as SessionColumn,
+    },
     tasks::Entity as Task,
     tags::Entity as Tag,
     sessions_tags::{ Entity as SessionTags, ActiveModel as SessionTagsActiveModel },
@@ -63,6 +68,8 @@ impl<'a> SessionRepository<'a> {
         let sessions = Session::find()
             .find_also_related(Task)
             .find_also_related(Project)
+            .order_by_desc(SessionColumn::Date)
+            .order_by_desc(SessionColumn::StartTime)
             .all(self.db).await?;
 
         let mut results = Vec::new();

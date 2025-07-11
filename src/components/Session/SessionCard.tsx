@@ -18,6 +18,7 @@ import {
     AlertDialogCancel,
     AlertDialogAction,
 } from '../ui/alert-dialog';
+import { useTimer } from '@/hooks/useTimer';
 
 interface SessionCardProps {
     sessionWithTaskAndTag: SessionType;
@@ -31,6 +32,8 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
     const [isHovered, setIsHovered] = useState(false);
     const { mutateAsync: deleteSession, isPending: isDeleting } =
         useDeleteSession();
+
+    const {data: timer} = useTimer();
 
     return (
         <li

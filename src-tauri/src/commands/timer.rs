@@ -17,6 +17,7 @@ pub struct TimerState {
     pub total_elapsed: Duration,
     pub is_running: bool,
     pub timer_type: TimerType,
+    pub session_id: Option<i32>,
 }
 
 impl Default for TimerState {
@@ -26,6 +27,7 @@ impl Default for TimerState {
             total_elapsed: Duration::from_secs(0),
             is_running: false,
             timer_type: TimerType::Session,
+            session_id: None,
         }
     }
 }
@@ -34,12 +36,14 @@ impl Default for TimerState {
 #[tauri::command]
 pub async fn start_timer(
     state: State<'_, Mutex<TimerState>>,
-    timer_type: TimerType
+    timer_type: TimerType,
+    session_id: Option<i32>
 ) -> Result<(), String> {
     let mut timer = state.lock().await;
     timer.start_time = Some(Instant::now());
     timer.is_running = true;
     timer.timer_type = timer_type;
+    timer.session_id = session_id;
     Ok(())
 }
 
@@ -50,6 +54,7 @@ pub async fn stop_timer(state: State<'_, Mutex<TimerState>>) -> Result<u64, Stri
         timer.total_elapsed += start.elapsed();
         timer.start_time = None;
         timer.is_running = false;
+        timer.session_id = None;
         Ok(timer.total_elapsed.as_secs())
     } else {
         Err("Timer not running".to_string())
@@ -61,10 +66,13 @@ pub struct TimerResponse {
     pub time: u64,
     pub timer_type: TimerType,
     pub is_running: bool,
+    pub session_id: Option<i32>,
 }
 
 #[tauri::command]
-pub async fn get_elapsed_time(state: State<'_, Mutex<TimerState>>) -> Result<TimerResponse, String> {
+pub async fn get_elapsed_time(
+    state: State<'_, Mutex<TimerState>>
+) -> Result<TimerResponse, String> {
     let timer = state.lock().await;
     let current_session = if let Some(start) = timer.start_time {
         start.elapsed()
@@ -74,10 +82,12 @@ pub async fn get_elapsed_time(state: State<'_, Mutex<TimerState>>) -> Result<Tim
     let time = (timer.total_elapsed + current_session).as_secs();
     let timer_type = timer.timer_type.clone();
     let is_running = timer.is_running;
+    let session_id = timer.session_id;
     Ok(TimerResponse {
         time,
         timer_type,
         is_running,
+        session_id,
     })
 }
 

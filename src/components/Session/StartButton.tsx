@@ -14,6 +14,7 @@ import {
 import { MinimalProject, useProject } from '@/hooks/useProject';
 import { useCreateSession } from '@/hooks/useSession';
 import { useTask } from '@/hooks/useTask';
+import { useStartTimer } from '@/hooks/useTimer';
 import dayjs from 'dayjs';
 import { Play } from 'lucide-react';
 
@@ -52,12 +53,13 @@ const StartButton = () => {
 
 const TaskList = ({ project }: { project: MinimalProject }) => {
     const { data: tasksForProject, isLoading } = useTask(project.id);
-    const { mutate: createSession } = useCreateSession();
+    const { mutateAsync: createSession } = useCreateSession();
+    const { mutateAsync: startTimer } = useStartTimer();
 
     if (isLoading) return <DropdownMenuItem>Loading...</DropdownMenuItem>;
 
-    const startTimer = async (projectId: number, taskId: number) => {
-        createSession({
+    const handleStart = async (projectId: number, taskId: number) => {
+        const id = await createSession({
             title: 'UNTITLED',
             project_id: projectId,
             task_id: taskId,
@@ -67,6 +69,7 @@ const TaskList = ({ project }: { project: MinimalProject }) => {
             break_duration_sec: 0,
             tags: [],
         });
+        await startTimer({ timerType: 'Session', sessionId: id });
     };
 
     return (
@@ -78,7 +81,7 @@ const TaskList = ({ project }: { project: MinimalProject }) => {
                         tasksForProject.map((task) => (
                             <DropdownMenuItem
                                 key={task.id}
-                                onClick={() => startTimer(project.id, task.id)}
+                                onClick={() => handleStart(project.id, task.id)}
                             >
                                 {task.title}
                             </DropdownMenuItem>

@@ -41,11 +41,12 @@ export const useCreateSession = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (newSession: CreateSessionType) => {
-            console.log(JSON.stringify(newSession));
-
-            await invoke('create_session', { newSession });
+            const id = await invoke('create_session', { newSession });
+            return id as number;
         },
-        onSuccess: () => {
+        onSuccess: (id) => {
+            console.log(id);
+
             queryClient.invalidateQueries({ queryKey: ['sessions'] });
             toast.success('Session created successfully');
         },
@@ -69,7 +70,7 @@ export const useUpdateSession = () => {
             queryClient.invalidateQueries({ queryKey: ['sessions'] });
             toast.success('Session updated successfully');
         },
-        onError: (err) => {
+        onError: () => {
             toast.error('Failed to update session');
         },
     });
@@ -85,7 +86,7 @@ export const useDeleteSession = () => {
             queryClient.invalidateQueries({ queryKey: ['sessions'] });
             toast.success('Session deleted successfully');
         },
-        onError: (err) => {
+        onError: () => {
             toast.error('Failed to delete session');
         },
     });
