@@ -1,7 +1,8 @@
-import { Pause, Play, PlusIcon, Square } from 'lucide-react';
+import { Pause, PlusIcon, Square } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useStartTimer, useStopTimer, useTimer } from '@/hooks/useTimer';
 import { Link } from 'react-router-dom';
+import StartButton from './StartButton';
 
 const Controls = () => {
     const { data: timer } = useTimer();
@@ -22,14 +23,7 @@ const Controls = () => {
                     <span>Pause</span>
                 </Button>
             ) : (
-                <Button
-                    variant={'default'}
-                    className="flex items-center gap-1 bg-emerald-500 hover:bg-emerald-600"
-                    onClick={() => startTimer('Session')}
-                >
-                    <Play fill="currentColor" className="w-4 h-4" />
-                    <span>Start</span>
-                </Button>
+                <StartButton />
             )}
 
             {timer.is_running && timer.timer_type === 'Session' && (

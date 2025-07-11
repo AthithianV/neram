@@ -11,8 +11,6 @@ export const useTask = (projectId: number) => {
     return useQuery({
         queryKey: ['tasks', projectId],
         queryFn: async () => {
-            console.log(projectId);
-
             const data = await invoke('get_all_tasks', {
                 projectId,
             });

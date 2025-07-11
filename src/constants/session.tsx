@@ -21,5 +21,3 @@ export const DEFAULT_SESSION_VALUES: Session = {
     break_duration_sec: 0,
     tags: [],
 };
-
-console.log(DEFAULT_SESSION_VALUES);

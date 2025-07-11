@@ -48,7 +48,6 @@ export const useCreateSession = () => {
             toast.success('Session created successfully');
         },
         onError: (err) => {
-            console.log(err);
             toast.error('Failed to create session');
         },
     });
@@ -68,7 +67,6 @@ export const useUpdateSession = () => {
             toast.success('Session updated successfully');
         },
         onError: (err) => {
-            console.log(err);
             toast.error('Failed to update session');
         },
     });
@@ -85,7 +83,6 @@ export const useDeleteSession = () => {
             toast.success('Session deleted successfully');
         },
         onError: (err) => {
-            console.log(err);
             toast.error('Failed to delete session');
         },
     });
