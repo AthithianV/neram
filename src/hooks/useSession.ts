@@ -41,7 +41,7 @@ export const useCreateSession = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (newSession: CreateSessionType) => {
-            console.log(newSession);
+            console.log(JSON.stringify(newSession));
 
             await invoke('create_session', { newSession });
         },
