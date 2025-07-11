@@ -44,7 +44,7 @@ const DurationElement = ({
             value={fieldValue}
             onChange={(e) => setFieldValue(e.target.value)}
             onBlur={(e) => handleDurations(e.target.value)}
-            className="text-center"
+            className="text-center bg-white"
         />
     );
 };

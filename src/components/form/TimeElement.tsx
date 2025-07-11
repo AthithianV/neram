@@ -34,10 +34,8 @@ const TimeElement = ({ value, setValue, setError, date }: TimeElementProps) => {
 
             const result = dayjs(
                 `${setDate} ${e.target.value}`,
-                `${DB_DATE_FORMAT} ${TIME_FORMAT}`
+                `${DB_DATE_FORMAT} ${TIME_FORMAT}`,
             ).toString();
-            console.log(toDBTime(result));
-
             setValue(toDBTime(result));
         }
     };

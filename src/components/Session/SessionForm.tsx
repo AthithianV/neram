@@ -63,6 +63,32 @@ const SessionForm = () => {
         }
     }, [session]);
 
+    useEffect(() => {
+        const breakDuration = form.getValues('break_duration_sec') ?? 0;
+        const startTime = dayjs(form.getValues('start_time'));
+        const endTime = dayjs(form.getValues('end_time'));
+
+        if (startTime && endTime) {
+            const duration = endTime.diff(startTime, 'second');
+            if (duration < breakDuration) {
+                form.setError('break_duration_sec', {
+                    message:
+                        'Break duration must be less than session duration',
+                });
+                return; 
+            }
+            form.setValue('session_duration_sec', duration - breakDuration);
+        }
+    }, [
+        form.watch('break_duration_sec'),
+        form.watch('start_time'),
+        form.watch('end_time'),
+    ]);
+
+    useEffect(() => {
+        form.clearErrors();
+    }, [form.watch()]);
+
     const navigate = useNavigate();
 
     function onSubmit(data: z.infer<typeof SessionSchema>) {

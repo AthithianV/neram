@@ -34,6 +34,24 @@ const SessionSchema = z
     )
     .refine(
         (data) => {
+            console.log(
+                dayjs(data.end_time).diff(dayjs(data.start_time), 'second'),
+            );
+            console.log(data.session_duration_sec + data.break_duration_sec);
+
+            return (
+                dayjs(data.end_time).diff(dayjs(data.start_time), 'second') ===
+                data.session_duration_sec + data.break_duration_sec
+            );
+        },
+        {
+            message:
+                'Difference of start and end time must be equal to session duration + break duration',
+            path: ['session_duration_sec'],
+        },
+    )
+    .refine(
+        (data) => {
             return dayjs(dayjs()).isAfter(data.end_time);
         },
         {
