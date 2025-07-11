@@ -33,6 +33,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { toDBTime } from '@/lib/time';
 import DurationElement from '../form/DurationElement';
 import TimeElement from '../form/TimeElement';
+import { useTimer } from '@/hooks/useTimer';
 
 const SessionForm = () => {
     const form = useForm<Session>({
@@ -44,6 +45,7 @@ const SessionForm = () => {
 
     const { sessionId } = useParams();
     const { data: session } = useSessionById(sessionId || '');
+    const { data: timer } = useTimer();
 
     const { mutate: createSession } = useCreateSession();
     const { mutate: updateSession } = useUpdateSession();
@@ -75,7 +77,7 @@ const SessionForm = () => {
                     message:
                         'Break duration must be less than session duration',
                 });
-                return; 
+                return;
             }
             form.setValue('session_duration_sec', duration - breakDuration);
         }
@@ -234,87 +236,91 @@ const SessionForm = () => {
                     />
 
                     {/* End Time */}
-                    <FormField
-                        control={form.control}
-                        name="end_time"
-                        render={({ field }) => (
-                            <FormItem className="flex-1">
-                                <FormLabel>End Time</FormLabel>
-                                <TimeElement
-                                    value={field.value}
-                                    setValue={field.onChange}
-                                    setError={(message) =>
-                                        message
-                                            ? form.setError('end_time', {
-                                                  message,
-                                              })
-                                            : form.clearErrors('end_time')
-                                    }
-                                    date={form.getValues('date')}
-                                />
-                                <FormMessage className="text-xs" />
-                            </FormItem>
-                        )}
-                    />
+                    {session && session.id !== timer?.session_id && (
+                        <FormField
+                            control={form.control}
+                            name="end_time"
+                            render={({ field }) => (
+                                <FormItem className="flex-1">
+                                    <FormLabel>End Time</FormLabel>
+                                    <TimeElement
+                                        value={field.value}
+                                        setValue={field.onChange}
+                                        setError={(message) =>
+                                            message
+                                                ? form.setError('end_time', {
+                                                      message,
+                                                  })
+                                                : form.clearErrors('end_time')
+                                        }
+                                        date={form.getValues('date')}
+                                    />
+                                    <FormMessage className="text-xs" />
+                                </FormItem>
+                            )}
+                        />
+                    )}
                 </div>
 
-                <div className="flex gap-6 w-full max-sm:flex-col items-start">
-                    {/* Start Time */}
-                    <FormField
-                        control={form.control}
-                        name="session_duration_sec"
-                        render={({ field }) => (
-                            <FormItem className="flex-1">
-                                <FormLabel>Duration</FormLabel>
-                                <DurationElement
-                                    value={field.value}
-                                    setValue={field.onChange}
-                                    setError={(message) =>
-                                        message
-                                            ? form.setError(
-                                                  'session_duration_sec',
-                                                  {
-                                                      message,
-                                                  },
-                                              )
-                                            : form.clearErrors(
-                                                  'session_duration_sec',
-                                              )
-                                    }
-                                />
-                                <FormMessage className="text-xs" />
-                            </FormItem>
-                        )}
-                    />
+                {session && session.id !== timer?.session_id && (
+                    <div className="flex gap-6 w-full max-sm:flex-col items-start">
+                        {/* Start Time */}
+                        <FormField
+                            control={form.control}
+                            name="session_duration_sec"
+                            render={({ field }) => (
+                                <FormItem className="flex-1">
+                                    <FormLabel>Duration</FormLabel>
+                                    <DurationElement
+                                        value={field.value}
+                                        setValue={field.onChange}
+                                        setError={(message) =>
+                                            message
+                                                ? form.setError(
+                                                      'session_duration_sec',
+                                                      {
+                                                          message,
+                                                      },
+                                                  )
+                                                : form.clearErrors(
+                                                      'session_duration_sec',
+                                                  )
+                                        }
+                                    />
+                                    <FormMessage className="text-xs" />
+                                </FormItem>
+                            )}
+                        />
 
-                    {/* Break */}
-                    <FormField
-                        control={form.control}
-                        name="break_duration_sec"
-                        render={({ field }) => (
-                            <FormItem className="flex-1">
-                                <FormLabel>Break</FormLabel>
-                                <DurationElement
-                                    value={field.value}
-                                    setValue={field.onChange}
-                                    setError={(message) =>
-                                        message
-                                            ? form.setError(
-                                                  'break_duration_sec',
-                                                  {
-                                                      message,
-                                                  },
-                                              )
-                                            : form.clearErrors(
-                                                  'break_duration_sec',
-                                              )
-                                    }
-                                />
-                                <FormMessage className="text-xs" />
-                            </FormItem>
-                        )}
-                    />
-                </div>
+                        {/* Break */}
+                        <FormField
+                            control={form.control}
+                            name="break_duration_sec"
+                            render={({ field }) => (
+                                <FormItem className="flex-1">
+                                    <FormLabel>Break</FormLabel>
+                                    <DurationElement
+                                        value={field.value}
+                                        setValue={field.onChange}
+                                        setError={(message) =>
+                                            message
+                                                ? form.setError(
+                                                      'break_duration_sec',
+                                                      {
+                                                          message,
+                                                      },
+                                                  )
+                                                : form.clearErrors(
+                                                      'break_duration_sec',
+                                                  )
+                                        }
+                                    />
+                                    <FormMessage className="text-xs" />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                )}
 
                 {/* Tags */}
                 <FormField

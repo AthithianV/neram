@@ -8,6 +8,7 @@ type TimerResponse = {
     time: number;
     timer_type: TimerType;
     is_running: boolean;
+    session_id?: number;
 };
 
 export const useTimer = () => {

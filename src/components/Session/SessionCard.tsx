@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 import { useState } from 'react';
-import { Loader2, Trash } from 'lucide-react';
+import { Loader2, LoaderCircle, Trash } from 'lucide-react';
 import { Button } from '../ui/button';
 import {
     AlertDialog,
@@ -33,7 +33,7 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
     const { mutateAsync: deleteSession, isPending: isDeleting } =
         useDeleteSession();
 
-    const {data: timer} = useTimer();
+    const { data: timer } = useTimer();
 
     return (
         <li
@@ -94,10 +94,14 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
             </div>
             <div className="flex items-center gap-2">
                 <p className="text-sm text-gray-500">
-                    {formatDuration(session_duration_sec)}
+                    {formatDuration(
+                        timer && timer.session_id === id
+                            ? timer.time
+                            : session_duration_sec,
+                    )}
                 </p>
 
-                {isHovered && (
+                {isHovered && timer && timer.session_id !== id && (
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
                             <Button variant="outline">
@@ -134,6 +138,10 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
                             </AlertDialogFooter>
                         </AlertDialogContent>
                     </AlertDialog>
+                )}
+
+                {timer && timer.is_running && timer.session_id === id && (
+                    <LoaderCircle className="animate-spin" />
                 )}
             </div>
         </li>
