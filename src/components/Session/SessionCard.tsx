@@ -104,7 +104,11 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
                 {isHovered && timer && timer.session_id !== id && (
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
-                            <Button variant="outline">
+                            <Button
+                                variant="outline"
+                                onClick={(e) => e.stopPropagation()}
+                                className="cursor-pointer"
+                            >
                                 <Trash className="w-4 h-4 text-red-500" />
                             </Button>
                         </AlertDialogTrigger>
@@ -120,14 +124,20 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogCancel
+                                    className="cursor-pointer"
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    Cancel
+                                </AlertDialogCancel>
                                 <AlertDialogAction
-                                    onClick={async () => {
+                                    onClick={async (e) => {
+                                        e.stopPropagation();
                                         id && (await deleteSession(id));
                                         navigate('/session');
                                     }}
                                     disabled={isDeleting}
-                                    className="bg-red-500 hover:bg-red-600"
+                                    className="bg-red-500 hover:bg-red-600 cursor-pointer"
                                 >
                                     {isDeleting ? (
                                         <Loader2 className="w-4 h-4 animate-spin" />

@@ -11,7 +11,7 @@ use ::entity::{
     tags::Entity as Tag,
     sessions_tags::{ Entity as SessionTags, ActiveModel as SessionTagsActiveModel },
 };
-use crate::{ models::session::{ CreateSessionModel, FullSessionModel } };
+use crate::models::session::{ CreateSessionModel, FullSessionModel, UpdateSessionModel };
 
 pub struct SessionRepository<'a> {
     db: &'a DatabaseConnection,
@@ -92,26 +92,53 @@ impl<'a> SessionRepository<'a> {
 
     pub async fn update(
         &self,
-        session_to_update: &CreateSessionModel,
+        session_to_update: &UpdateSessionModel,
         session_id: i32
     ) -> Result<(), DbErr> {
         let session = Session::find_by_id(session_id).one(self.db).await?;
         let mut session: SessionActiveModel = session.unwrap().into();
 
-        let end_time = match session_to_update.end_time {
-            Some(et) => Some(et.clone().to_string()),
-            None => None,
-        };
+        if let Some(ref title) = session_to_update.title {
+            session.title = Set(Some(title.clone()));
+        }
 
-        session.title = Set(session_to_update.title.clone());
-        session.description = Set(session_to_update.description.clone());
-        session.project_id = Set(session_to_update.project_id);
-        session.task_id = Set(session_to_update.task_id);
-        session.date = Set(session_to_update.date.clone().to_string());
-        session.start_time = Set(session_to_update.start_time.clone().to_string());
-        session.end_time = Set(end_time);
-        session.session_duration_sec = Set(session_to_update.session_duration_sec);
-        session.break_duration_sec = Set(session_to_update.break_duration_sec);
+        if let Some(ref description) = session_to_update.description {
+            session.description = Set(Some(description.clone()));
+        }
+
+        if let Some(project_id) = session_to_update.project_id {
+            session.project_id = Set(project_id);
+        }
+
+        if let Some(task_id) = session_to_update.task_id {
+            session.task_id = Set(task_id);
+        }
+
+        if let Some(ref date) = session_to_update.date {
+            session.date = Set(date.clone().to_string());
+        }
+
+        if let Some(ref start_time) = session_to_update.start_time {
+            session.start_time = Set(start_time.clone().to_string());
+        }
+
+        if let Some(ref end_time) = session_to_update.end_time {
+            if let Some(end_time) = end_time {
+                session.end_time = Set(Some(end_time.clone().to_string()));
+            } else {
+                session.end_time = Set(None);
+            }
+        }
+
+        if let Some(session_duration_sec) = session_to_update.session_duration_sec {
+            session.session_duration_sec = Set(session_duration_sec);
+        }
+
+        if let Some(break_duration_sec) = session_to_update.break_duration_sec {
+            session.break_duration_sec = Set(break_duration_sec);
+        }
+
+        // Always update the timestamp
         session.updated_at = Set("CURRENT_TIMESTAMP".to_string());
 
         session.update(self.db).await?;
