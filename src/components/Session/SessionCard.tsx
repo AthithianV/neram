@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 import { useState } from 'react';
-import { Loader2, LoaderCircle, Trash } from 'lucide-react';
+import { Clock9, Coffee, Loader2, Trash } from 'lucide-react';
 import { Button } from '../ui/button';
 import {
     AlertDialog,
@@ -96,7 +96,7 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
                 <p className="text-sm text-gray-500">
                     {formatDuration(
                         timer && timer.session_id === id
-                            ? timer.time
+                            ? timer.session_time_elapsed
                             : session_duration_sec,
                     )}
                 </p>
@@ -150,9 +150,9 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
                     </AlertDialog>
                 )}
 
-                {timer && timer.is_running && timer.session_id === id && (
-                    <LoaderCircle className="animate-spin" />
-                )}
+                {timer &&
+                    timer.session_id === id &&
+                    (timer.is_session ? <Clock9 /> : <Coffee />)}
             </div>
         </li>
     );

@@ -15,6 +15,18 @@ export type SessionType = Omit<Session, 'project_id' | 'task_id' | 'tags'> & {
     tags: Related[];
 };
 
+export type UpdateSessionType = {
+    title?: string;
+    description?: string;
+    task_id?: number;
+    project_id?: number;
+    date?: string;
+    start_time?: string;
+    end_time?: string;
+    session_duration_sec?: number;
+    break_duration_sec?: number;
+};
+
 export const useSession = () => {
     return useQuery({
         queryKey: ['sessions'],
@@ -61,7 +73,7 @@ export const useUpdateSession = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (data: {
-            sessionToUpdate: CreateSessionType;
+            sessionToUpdate: UpdateSessionType;
             sessionId: number;
         }) => {
             await invoke('update_session', data);

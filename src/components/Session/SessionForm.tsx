@@ -58,7 +58,14 @@ const SessionForm = () => {
             form.setValue('project_id', session.project.id);
             form.setValue('date', toDBTime(session.date));
             form.setValue('start_time', toDBTime(session.start_time));
-            form.setValue('end_time', toDBTime(session.end_time));
+            form.setValue(
+                'end_time',
+                session.id === timer?.session_id
+                    ? undefined
+                    : session.end_time
+                      ? toDBTime(session.end_time)
+                      : undefined,
+            );
             form.setValue('session_duration_sec', session.session_duration_sec);
             form.setValue('break_duration_sec', session.break_duration_sec);
             form.setValue('tags', session.tags.map((tag) => tag.id) || []);
@@ -96,7 +103,14 @@ const SessionForm = () => {
     function onSubmit(data: z.infer<typeof SessionSchema>) {
         if (session && session.id) {
             updateSession({
-                sessionToUpdate: data,
+                sessionToUpdate:
+                    session.id === timer?.session_id
+                        ? {
+                              ...data,
+                              session_duration_sec: timer?.session_time_elapsed,
+                              break_duration_sec: timer?.break_time_elapsed,
+                          }
+                        : data,
                 sessionId: session.id,
             });
         } else {

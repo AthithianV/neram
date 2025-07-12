@@ -9,7 +9,7 @@ const SessionSchema = z
         project_id: z.number(),
         date: z.string(),
         start_time: z.string(),
-        end_time: z.string(),
+        end_time: z.string().optional(),
         session_duration_sec: z.number(),
         break_duration_sec: z.number(),
         tags: z.array(z.number()),

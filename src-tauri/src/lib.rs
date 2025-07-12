@@ -67,7 +67,8 @@ pub async fn run() {
                 start_timer,
                 stop_timer,
                 get_elapsed_time,
-                reset_timer
+                pause_timer,
+                resume_timer
             ]
         )
         .run(tauri::generate_context!())

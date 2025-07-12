@@ -4,24 +4,29 @@ use tauri::State;
 
 use crate::AppState;
 
-// Define your timer state
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TimerState {
+    #[serde(skip)]
     pub session_start_time: Option<Instant>,
-    pub session_time_elased: i32,
+    pub session_time_elapsed: i32,
+    #[serde(skip)]
     pub break_start_time: Option<Instant>,
-    pub break_time_elased: i32,
+    pub break_time_elapsed: i32,
     pub session_id: Option<i32>,
+    pub is_session: bool,
+    pub is_break: bool,
 }
 
 impl Default for TimerState {
     fn default() -> Self {
         Self {
             session_start_time: None,
-            session_time_elased: 0,
+            session_time_elapsed: 0,
             break_start_time: None,
-            break_time_elased: 0,
+            break_time_elapsed: 0,
             session_id: None,
+            is_session: false,
+            is_break: false,
         }
     }
 }
@@ -39,6 +44,8 @@ pub async fn start_timer(
     let mut timer = state.timer.lock().await;
     timer.session_start_time = Some(Instant::now());
     timer.session_id = session_id;
+    timer.is_session = true;
+
     Ok(())
 }
 
@@ -48,10 +55,13 @@ pub async fn pause_timer(state: State<'_, AppState>) -> Result<(), String> {
 
     if let Some(session_start_timer) = timer.session_start_time {
         let time_elapsed = session_start_timer.elapsed();
-        timer.session_time_elased = timer.session_time_elased + (time_elapsed.as_secs() as i32);
-        timer.session_start_time = None;
-        timer.break_start_time = Some(Instant::now());
+        timer.session_time_elapsed = timer.session_time_elapsed + (time_elapsed.as_secs() as i32);
     }
+
+    timer.session_start_time = None;
+    timer.break_start_time = Some(Instant::now());
+    timer.is_session = false;
+    timer.is_break = true;
 
     Ok(())
 }
@@ -60,12 +70,15 @@ pub async fn pause_timer(state: State<'_, AppState>) -> Result<(), String> {
 pub async fn resume_timer(state: State<'_, AppState>) -> Result<(), String> {
     let mut timer = state.timer.lock().await;
 
-    if let Some(session_break_start) = timer.break_start_time {
-        let time_elapsed = session_break_start.elapsed();
-        timer.break_time_elased = timer.break_time_elased + (time_elapsed.as_secs() as i32);
-        timer.break_start_time = None;
-        timer.session_start_time = Some(Instant::now());
+    if let Some(break_start_time) = timer.break_start_time {
+        let time_elapsed = break_start_time.elapsed();
+        timer.break_time_elapsed = timer.break_time_elapsed + (time_elapsed.as_secs() as i32);
     }
+
+    timer.break_start_time = None;
+    timer.session_start_time = Some(Instant::now());
+    timer.is_session = true;
+    timer.is_break = false;
 
     Ok(())
 }
@@ -79,27 +92,32 @@ pub async fn stop_timer(state: State<'_, AppState>) -> Result<(), String> {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TimerResponse {
-    pub session_time_elased: i32,
-    pub break_time_elased: i32,
+    pub session_time_elapsed: i32,
+    pub break_time_elapsed: i32,
     pub session_id: Option<i32>,
+    pub is_session: bool,
+    pub is_break: bool,
 }
 
 #[tauri::command]
 pub async fn get_elapsed_time(state: State<'_, AppState>) -> Result<TimerResponse, String> {
-    let mut timer = state.timer.lock().await;
+    let timer = state.timer.lock().await;
 
-    if let Some(session_start_timer) = timer.session_start_time {
-        let time_elapsed = session_start_timer.elapsed();
-        timer.session_time_elased = timer.session_time_elased + (time_elapsed.as_secs() as i32);
-    }
+    let current_session_time_elapsed = match timer.session_start_time {
+        Some(start) => timer.session_time_elapsed + start.elapsed().as_secs() as i32,
+        None => timer.session_time_elapsed,
+    };
 
-    if let Some(break_start_time) = timer.break_start_time {
-        let time_elapsed = break_start_time.elapsed();
-        timer.break_time_elased = timer.break_time_elased + (time_elapsed.as_secs() as i32);
-    }
+    let current_break_time_elapsed = match timer.break_start_time {
+        Some(start) => timer.break_time_elapsed + start.elapsed().as_secs() as i32,
+        None => timer.break_time_elapsed,
+    };
+
     Ok(TimerResponse {
-        session_time_elased: timer.session_time_elased,
-        break_time_elased: timer.break_time_elased,
+        session_time_elapsed: current_session_time_elapsed,
+        break_time_elapsed: current_break_time_elapsed,
         session_id: timer.session_id,
+        is_session: timer.is_session,
+        is_break: timer.is_break,
     })
 }

@@ -1,7 +1,7 @@
 use tauri::{ command, State };
 
 use crate::repository::session::SessionRepository;
-use crate::models::session::{ FullSessionModel, CreateSessionModel };
+use crate::models::session::{ CreateSessionModel, FullSessionModel, UpdateSessionModel };
 use crate::AppState;
 
 /// Creates a new session record in the database.
@@ -83,7 +83,7 @@ pub async fn get_session_by_id(
 #[command]
 pub async fn update_session(
     app_state: State<'_, AppState>,
-    session_to_update: CreateSessionModel,
+    session_to_update: UpdateSessionModel,
     session_id: i32
 ) -> Result<(), String> {
     let db = app_state.conn.lock().await;

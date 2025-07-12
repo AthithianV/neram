@@ -69,7 +69,7 @@ const TaskList = ({ project }: { project: MinimalProject }) => {
             break_duration_sec: 0,
             tags: [],
         });
-        await startTimer({ timerType: 'Session', sessionId: id });
+        await startTimer({ sessionId: id });
     };
 
     return (
