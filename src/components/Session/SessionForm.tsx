@@ -250,7 +250,7 @@ const SessionForm = () => {
                     />
 
                     {/* End Time */}
-                    {session && session.id !== timer?.session_id && (
+                    {/* {session && session.id !== timer?.session_id && ( */}
                         <FormField
                             control={form.control}
                             name="end_time"
@@ -273,10 +273,10 @@ const SessionForm = () => {
                                 </FormItem>
                             )}
                         />
-                    )}
+                    {/* )} */}
                 </div>
 
-                {session && session.id !== timer?.session_id && (
+                {/* {session && session.id !== timer?.session_id && ( */}
                     <div className="flex gap-6 w-full max-sm:flex-col items-start">
                         {/* Start Time */}
                         <FormField
@@ -334,7 +334,7 @@ const SessionForm = () => {
                             )}
                         />
                     </div>
-                )}
+                {/* )} */}
 
                 {/* Tags */}
                 <FormField

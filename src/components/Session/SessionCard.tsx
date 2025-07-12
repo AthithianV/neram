@@ -152,7 +152,11 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
 
                 {timer &&
                     timer.session_id === id &&
-                    (timer.is_session ? <Clock9 /> : <Coffee />)}
+                    (timer.is_session ? (
+                        <Clock9 className="h-4 text-blue-400" />
+                    ) : (
+                        <Coffee className="h-4 text-blue-500" />
+                    ))}
             </div>
         </li>
     );

@@ -46,11 +46,17 @@ const Controls = () => {
 
     const handleStop = async () => {
         if (timer.session_id) {
+            console.log({
+                session_duration_sec: timer.session_time_elapsed,
+                break_duration_sec: timer.break_time_elapsed,
+                end_time: dayjs().format('YYYY-MM-DDTHH:mm:ss'),
+            });
+
             await updateSession({
                 sessionToUpdate: {
                     session_duration_sec: timer.session_time_elapsed,
                     break_duration_sec: timer.break_time_elapsed,
-                    end_time: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+                    end_time: dayjs().format('YYYY-MM-DDTHH:mm:ss'),
                 },
                 sessionId: timer.session_id,
             });
