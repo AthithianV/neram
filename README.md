@@ -88,13 +88,27 @@
 
 # To-Dos
 
+## Session
+
 [] Must Allow use to add or Update Session without project or Task.
+[] Active session showing wrong duration on Form.
+[] On Closing App, Timer must be Stopped.
+
+## Project
+
 [] Complete all CRUD methods for Project.
 [] Finish the Add New Project and Update Project Form.
 [] Complete all CRUD methods for Task.
 [] Finish add and Update Task form.
 [] Complete all CRUD methods for Tags.
 [] Finish add and Update Tags form.
+
+# Future Works
+
+## Session
+
+[] Filter Session based on Project, Task, Tags.
+[] Group Session based on Date, week, Month, Year.
 
 # Colors
 
