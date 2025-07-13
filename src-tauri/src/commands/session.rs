@@ -166,10 +166,19 @@ pub async fn check_session_collision(
 ) -> Result<bool, String> {
     let pool = app_state.conn.lock().await;
 
-    let new_start = NaiveTime::parse_from_str(&start_time, "%Y-%m-%dT%H:%M:%S").unwrap();
-    let new_end = end_time.map(|time|
-        NaiveTime::parse_from_str(&time, "%Y-%m-%dY%H:%M:%S").unwrap()
-    );
+    let new_start = NaiveTime::parse_from_str(&start_time, "%Y-%m-%dT%H:%M:%S").map_err(|e|
+        format!("Invalid start_time: {}", e)
+    )?;
+
+    let new_end = match end_time {
+        Some(time_str) =>
+            Some(
+                NaiveTime::parse_from_str(&time_str, "%Y-%m-%dT%H:%M:%S").map_err(|e|
+                    format!("Invalid end_time: {}", e)
+                )?
+            ),
+        None => None,
+    };
 
     let session_repository = SessionRepository::new(&pool);
     session_repository.collides_on_day(new_start, new_end).await.map_err(|e| e.to_string())

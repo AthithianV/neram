@@ -21,7 +21,11 @@ import {
     CreateSession,
     UpdateSession,
 } from '@/schema/SessionSchema';
-import { DEFAULT_SESSION_VALUES } from '@/constants/session';
+import {
+    DB_DATE_FORMAT,
+    DEFAULT_SESSION_VALUES,
+    TIME_FORMAT,
+} from '@/constants/session';
 import {
     useCreateSession,
     useUpdateSession,
@@ -32,13 +36,12 @@ import TaskPicker from '@/components/session/TaskPicker';
 import ProjectPicker from '@/components/session/ProjectPicker';
 import TagPicker from '@/components/session/TagPicker';
 
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { toDBTime } from '@/lib/time';
 import DurationElement from '../form/DurationElement';
 import TimeElement from '../form/TimeElement';
 import { useTimer } from '@/hooks/useTimer';
 import { useSessionCollision } from '@/hooks/useSession';
-import { toast } from 'sonner';
 
 const SessionForm = () => {
     const { sessionId } = useParams();
@@ -110,6 +113,29 @@ const SessionForm = () => {
         form.watch('start_time'),
         form.watch('end_time'),
     ]);
+
+    useEffect(() => {
+        const date = form.getValues('date');
+        const startTime = dayjs(form.getValues('start_time'));
+
+        let newStartTime = dayjs(date)
+            .hour(startTime.hour())
+            .minute(startTime.minute())
+            .second(startTime.second())
+            .format(DB_DATE_FORMAT + ' ' + TIME_FORMAT);
+        form.setValue('start_time', newStartTime);
+
+        let endTime = dayjs(form.getValues('end_time'));
+        if (endTime.isValid()) {
+            endTime = dayjs(endTime);
+            let newEndTime = dayjs(date)
+                .hour(endTime.hour())
+                .minute(endTime.minute())
+                .second(endTime.second())
+                .format(DB_DATE_FORMAT + ' ' + TIME_FORMAT);
+            form.setValue('end_time', newEndTime);
+        }
+    }, [form.watch('date')]);
 
     useEffect(() => {
         form.clearErrors();
