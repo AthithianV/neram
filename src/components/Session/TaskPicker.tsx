@@ -1,4 +1,4 @@
-import { MiniTask, useTask } from '@/hooks/useTask';
+import { useTask } from '@/hooks/useTask';
 import {
     Select,
     SelectContent,

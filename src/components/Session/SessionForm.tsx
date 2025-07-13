@@ -21,12 +21,7 @@ import {
     CreateSession,
     UpdateSession,
 } from '@/schema/SessionSchema';
-import {
-    DB_DATE_FORMAT,
-    DB_TIME_FORMAT,
-    DEFAULT_SESSION_VALUES,
-    TIME_FORMAT,
-} from '@/constants/session';
+import { DEFAULT_SESSION_VALUES } from '@/constants/session';
 import {
     useCreateSession,
     useUpdateSession,
@@ -44,7 +39,6 @@ import TimeElement from '../form/TimeElement';
 import { useTimer } from '@/hooks/useTimer';
 import { useSessionCollision } from '@/hooks/useSession';
 import { toast } from 'sonner';
-import { Bug } from 'lucide-react';
 
 const SessionForm = () => {
     const { sessionId } = useParams();

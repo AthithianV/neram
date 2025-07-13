@@ -15,7 +15,8 @@ interface KanbanColumn {
 }
 
 const Kanban = () => {
-    const { data: tasks = [], isLoading } = useTask();
+    // const { data: tasks = [], isLoading } = useTask();
+    let tasks: any[] = [];
     const { data: projects = [] } = useProject();
     const updateTask = useUpdateTask();
     const [draggedTask, setDraggedTask] = useState<Task | null>(null);
@@ -115,13 +116,13 @@ const Kanban = () => {
         }).format(date);
     };
 
-    if (isLoading) {
-        return (
-            <div className="flex items-center justify-center h-64">
-                <div className="text-muted-foreground">Loading tasks...</div>
-            </div>
-        );
-    }
+    // if (isLoading) {
+    //     return (
+    //         <div className="flex items-center justify-center h-64">
+    //             <div className="text-muted-foreground">Loading tasks...</div>
+    //         </div>
+    //     );
+    // }
 
     return (
         <div className="h-[98%] overflow-hidden py-2">
