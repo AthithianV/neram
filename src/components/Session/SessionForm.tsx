@@ -36,7 +36,7 @@ import TaskPicker from '@/components/session/TaskPicker';
 import ProjectPicker from '@/components/session/ProjectPicker';
 import TagPicker from '@/components/session/TagPicker';
 
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import { toDBTime } from '@/lib/time';
 import DurationElement from '../form/DurationElement';
 import TimeElement from '../form/TimeElement';
