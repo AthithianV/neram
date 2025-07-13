@@ -88,8 +88,13 @@
 
 # To-Dos
 
-[] When a session is updated or Created, the start and end time of that session should not interfere with any other session.
-[] When a session is Active, cannot update the Session.
+[] Must Allow use to add or Update Session without project or Task.
+[] Complete all CRUD methods for Project.
+[] Finish the Add New Project and Update Project Form.
+[] Complete all CRUD methods for Task.
+[] Finish add and Update Task form.
+[] Complete all CRUD methods for Tags.
+[] Finish add and Update Tags form.
 
 # Colors
 

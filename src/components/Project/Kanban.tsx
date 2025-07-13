@@ -15,8 +15,7 @@ interface KanbanColumn {
 }
 
 const Kanban = () => {
-    // const { data: tasks = [], isLoading } = useTask();
-    let tasks: any[] = [];
+    const { data: tasks = [] } = useTask(1);
     const { data: projects = [] } = useProject();
     const updateTask = useUpdateTask();
     const [draggedTask, setDraggedTask] = useState<Task | null>(null);
