@@ -40,15 +40,19 @@ export const useSession = () => {
     });
 };
 
-export const useSessionById = (id: string) => {
+export const useSessionById = (id?: number) => {
     return useQuery({
         queryKey: ['session', id],
         queryFn: async () => {
-            const sessionWithTags = await invoke('get_session_by_id', {
-                id: parseInt(id, 10),
-            });
+            let sessionWithTags = null;
+            if (id) {
+                sessionWithTags = await invoke('get_session_by_id', {
+                    id: id,
+                });
+            }
             return sessionWithTags as SessionType;
         },
+        enabled: !!id,
         refetchOnWindowFocus: true,
         refetchOnMount: true,
         refetchInterval: false,

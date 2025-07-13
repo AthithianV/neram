@@ -40,9 +40,15 @@ import { useTimer } from '@/hooks/useTimer';
 
 const SessionForm = () => {
     const { sessionId } = useParams();
-    const { data: session, isLoading: isSessionLoading } = useSessionById(
-        sessionId || '',
+
+    console.log(sessionId);
+
+    const { data: session } = useSessionById(
+        sessionId ? Number(sessionId) : undefined,
     );
+
+    console.log(session);
+
     const { data: timer } = useTimer();
 
     const { mutate: createSession } = useCreateSession();
@@ -58,6 +64,7 @@ const SessionForm = () => {
     });
 
     useEffect(() => {
+        form.reset();
         if (session) {
             let session_id = null;
             if (timer) session_id = timer.session_id;
@@ -129,8 +136,6 @@ const SessionForm = () => {
         navigate('/session');
         form.reset();
     }
-
-    if (isSessionLoading) return null;
 
     return (
         <Form {...form}>

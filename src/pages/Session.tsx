@@ -15,7 +15,7 @@ const Session = () => {
     const location = useLocation();
     const { sessionId } = useParams();
 
-    const isEditMode = !!sessionId;
+    const isEditMode = !!sessionId || location.pathname.includes('add-session');
 
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>Error: {error.toString()}</div>;
@@ -50,7 +50,7 @@ const Session = () => {
             </motion.div>
 
             <AnimatePresence mode="wait">
-                {isEditMode && (
+                {isEditMode && (() => console.log('Edit mode')) && (
                     <motion.div
                         key={'sessionId'}
                         initial={{ flex: 0, opacity: 0 }}
