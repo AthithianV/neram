@@ -18,6 +18,7 @@ use tokio::sync::Mutex;
 #[derive(Clone)]
 struct AppState {
     conn: Arc<Mutex<DatabaseConnection>>,
+    timer: Arc<Mutex<TimerState>>,
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -40,6 +41,7 @@ pub async fn run() {
                 delete_session,
                 add_tag_to_session,
                 remove_tag_from_session,
+                check_session_collision,
 
                 // // Task commands
                 // create_task,
@@ -66,7 +68,8 @@ pub async fn run() {
                 start_timer,
                 stop_timer,
                 get_elapsed_time,
-                reset_timer
+                pause_timer,
+                resume_timer
             ]
         )
         .run(tauri::generate_context!())

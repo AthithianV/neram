@@ -22,6 +22,20 @@ pub struct CreateSessionModel {
     pub tags: Vec<i32>,
 }
 
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UpdateSessionModel {
+    pub title: Option<String>,
+    pub description: Option<String>,
+    pub project_id: Option<i32>,
+    pub task_id: Option<i32>,
+    pub date: Option<NaiveDateTime>,
+    pub start_time: Option<NaiveDateTime>,
+    pub end_time: Option<Option<NaiveDateTime>>,
+    pub session_duration_sec: Option<i32>,
+    pub break_duration_sec: Option<i32>,
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Extra {
     pub id: i32,

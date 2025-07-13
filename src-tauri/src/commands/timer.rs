@@ -1,89 +1,123 @@
 use serde::{ Deserialize, Serialize };
-use std::time::{ Duration, Instant };
+use std::time::{ Instant };
 use tauri::State;
-use tokio::sync::Mutex;
+
+use crate::AppState;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum TimerType {
-    Session,
-    Break,
-    Pomodaro,
-}
-
-// Define your timer state
-#[derive(Debug, Clone)]
 pub struct TimerState {
-    pub start_time: Option<Instant>,
-    pub total_elapsed: Duration,
-    pub is_running: bool,
-    pub timer_type: TimerType,
+    #[serde(skip)]
+    pub session_start_time: Option<Instant>,
+    pub session_time_elapsed: i32,
+    #[serde(skip)]
+    pub break_start_time: Option<Instant>,
+    pub break_time_elapsed: i32,
+    pub session_id: Option<i32>,
+    pub is_session: bool,
+    pub is_break: bool,
 }
 
 impl Default for TimerState {
     fn default() -> Self {
         Self {
-            start_time: None,
-            total_elapsed: Duration::from_secs(0),
-            is_running: false,
-            timer_type: TimerType::Session,
+            session_start_time: None,
+            session_time_elapsed: 0,
+            break_start_time: None,
+            break_time_elapsed: 0,
+            session_id: None,
+            is_session: false,
+            is_break: false,
         }
     }
 }
 
-// Tauri commands that share the same state
+///
+/// Function to Start the Timer by Setting the start_time.
+/// Accept an option of session_id. If session_id is None then timer will be considered pomodoro
+/// If session_id is Some, then timer will be considered Session.
+/// If timer is already running, then return Err.
 #[tauri::command]
 pub async fn start_timer(
-    state: State<'_, Mutex<TimerState>>,
-    timer_type: TimerType
+    state: State<'_, AppState>,
+    session_id: Option<i32>
 ) -> Result<(), String> {
-    let mut timer = state.lock().await;
-    timer.start_time = Some(Instant::now());
-    timer.is_running = true;
-    timer.timer_type = timer_type;
+    let mut timer = state.timer.lock().await;
+    timer.session_start_time = Some(Instant::now());
+    timer.session_id = session_id;
+    timer.is_session = true;
+
     Ok(())
 }
 
 #[tauri::command]
-pub async fn stop_timer(state: State<'_, Mutex<TimerState>>) -> Result<u64, String> {
-    let mut timer = state.lock().await;
-    if let Some(start) = timer.start_time {
-        timer.total_elapsed += start.elapsed();
-        timer.start_time = None;
-        timer.is_running = false;
-        Ok(timer.total_elapsed.as_secs())
-    } else {
-        Err("Timer not running".to_string())
+pub async fn pause_timer(state: State<'_, AppState>) -> Result<(), String> {
+    let mut timer = state.timer.lock().await;
+
+    if let Some(session_start_timer) = timer.session_start_time {
+        let time_elapsed = session_start_timer.elapsed();
+        timer.session_time_elapsed = timer.session_time_elapsed + (time_elapsed.as_secs() as i32);
     }
+
+    timer.session_start_time = None;
+    timer.break_start_time = Some(Instant::now());
+    timer.is_session = false;
+    timer.is_break = true;
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn resume_timer(state: State<'_, AppState>) -> Result<(), String> {
+    let mut timer = state.timer.lock().await;
+
+    if let Some(break_start_time) = timer.break_start_time {
+        let time_elapsed = break_start_time.elapsed();
+        timer.break_time_elapsed = timer.break_time_elapsed + (time_elapsed.as_secs() as i32);
+    }
+
+    timer.break_start_time = None;
+    timer.session_start_time = Some(Instant::now());
+    timer.is_session = true;
+    timer.is_break = false;
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn stop_timer(state: State<'_, AppState>) -> Result<(), String> {
+    let mut timer = state.timer.lock().await;
+    *timer = TimerState::default();
+    Ok(())
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TimerResponse {
-    pub time: u64,
-    pub timer_type: TimerType,
-    pub is_running: bool,
+    pub session_time_elapsed: i32,
+    pub break_time_elapsed: i32,
+    pub session_id: Option<i32>,
+    pub is_session: bool,
+    pub is_break: bool,
 }
 
 #[tauri::command]
-pub async fn get_elapsed_time(state: State<'_, Mutex<TimerState>>) -> Result<TimerResponse, String> {
-    let timer = state.lock().await;
-    let current_session = if let Some(start) = timer.start_time {
-        start.elapsed()
-    } else {
-        Duration::from_secs(0)
+pub async fn get_elapsed_time(state: State<'_, AppState>) -> Result<TimerResponse, String> {
+    let timer = state.timer.lock().await;
+
+    let current_session_time_elapsed = match timer.session_start_time {
+        Some(start) => timer.session_time_elapsed + start.elapsed().as_secs() as i32,
+        None => timer.session_time_elapsed,
     };
-    let time = (timer.total_elapsed + current_session).as_secs();
-    let timer_type = timer.timer_type.clone();
-    let is_running = timer.is_running;
-    Ok(TimerResponse {
-        time,
-        timer_type,
-        is_running,
-    })
-}
 
-#[tauri::command]
-pub async fn reset_timer(state: State<'_, Mutex<TimerState>>) -> Result<(), String> {
-    let mut timer = state.lock().await;
-    *timer = TimerState::default();
-    Ok(())
+    let current_break_time_elapsed = match timer.break_start_time {
+        Some(start) => timer.break_time_elapsed + start.elapsed().as_secs() as i32,
+        None => timer.break_time_elapsed,
+    };
+
+    Ok(TimerResponse {
+        session_time_elapsed: current_session_time_elapsed,
+        break_time_elapsed: current_break_time_elapsed,
+        session_id: timer.session_id,
+        is_session: timer.is_session,
+        is_break: timer.is_break,
+    })
 }

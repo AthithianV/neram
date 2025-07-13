@@ -10,5 +10,8 @@ export const useDb = () => {
             const result = await invoke('init_db', { path: appDataPath });
             return result;
         },
+        refetchOnWindowFocus: true,
+        refetchOnMount: true,
+        refetchInterval: false,
     });
 };

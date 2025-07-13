@@ -11,14 +11,15 @@ export const useTask = (projectId: number) => {
     return useQuery({
         queryKey: ['tasks', projectId],
         queryFn: async () => {
-            console.log(projectId);
-
             const data = await invoke('get_all_tasks', {
                 projectId,
             });
             return data as MiniTask[];
         },
-        enabled: !!projectId,
+        enabled: projectId !== 0,
+        refetchOnWindowFocus: true,
+        refetchOnMount: true,
+        refetchInterval: false,
     });
 };
 

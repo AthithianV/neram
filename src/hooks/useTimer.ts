@@ -2,12 +2,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
 import { toast } from 'sonner';
 
-type TimerType = 'Session' | 'Break' | 'Pomodaro';
-
 type TimerResponse = {
-    time: number;
-    timer_type: TimerType;
-    is_running: boolean;
+    session_time_elapsed: number;
+    break_time_elapsed: number;
+    session_id?: number;
+    is_session: boolean;
+    is_break: boolean;
 };
 
 export const useTimer = () => {
@@ -24,8 +24,34 @@ export const useTimer = () => {
 export const useStartTimer = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (timerType: TimerType) =>
-            invoke('start_timer', { timerType }),
+        mutationFn: (data: { sessionId?: number }) =>
+            invoke('start_timer', data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['timer'] });
+        },
+        onError: (error) => {
+            toast.error(error.toString());
+        },
+    });
+};
+
+export const usePauseTimer = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: () => invoke('pause_timer'),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['timer'] });
+        },
+        onError: (error) => {
+            toast.error(error.toString());
+        },
+    });
+};
+
+export const useResumeTimer = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: () => invoke('resume_timer'),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['timer'] });
         },

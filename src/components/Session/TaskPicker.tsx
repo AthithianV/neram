@@ -14,9 +14,10 @@ type PropsType = {
 };
 
 const TaskPicker = ({ onChange, value, projectId }: PropsType) => {
-    const { data: tasks = [] } = useTask(projectId);
-
+    const { data: tasks = [], isLoading } = useTask(projectId);
     const selected = tasks.find((t) => t.id === value);
+
+    if (isLoading) return null;
 
     return (
         <Select

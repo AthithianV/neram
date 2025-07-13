@@ -1,4 +1,4 @@
-import { MinimalProject, useProject } from '@/hooks/useProject';
+import { useProject } from '@/hooks/useProject';
 import {
     Select,
     SelectContent,

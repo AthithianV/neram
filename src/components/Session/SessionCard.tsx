@@ -1,11 +1,11 @@
-import { formatDuration } from '@/lib/time';
+import { formatDuration, makeTimeDisplay } from '@/lib/time';
 import { Badge } from '@/components/ui/badge';
 import { SessionType, useDeleteSession } from '@/hooks/useSession';
 import { useNavigate, useParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 import { useState } from 'react';
-import { Loader2, Trash } from 'lucide-react';
+import { Clock9, Coffee, Loader2, Trash } from 'lucide-react';
 import { Button } from '../ui/button';
 import {
     AlertDialog,
@@ -18,6 +18,8 @@ import {
     AlertDialogCancel,
     AlertDialogAction,
 } from '../ui/alert-dialog';
+import { useTimer } from '@/hooks/useTimer';
+import dayjs from 'dayjs';
 
 interface SessionCardProps {
     sessionWithTaskAndTag: SessionType;
@@ -26,11 +28,21 @@ interface SessionCardProps {
 const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
     const { sessionId } = useParams();
     const navigate = useNavigate();
-    const { id, title, project, tags, session_duration_sec } =
-        sessionWithTaskAndTag;
+    const {
+        id,
+        title,
+        project,
+        tags,
+        session_duration_sec,
+        start_time,
+        end_time,
+        date,
+    } = sessionWithTaskAndTag;
     const [isHovered, setIsHovered] = useState(false);
     const { mutateAsync: deleteSession, isPending: isDeleting } =
         useDeleteSession();
+
+    const { data: timer } = useTimer();
 
     return (
         <li
@@ -89,15 +101,41 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
                     </ScrollArea>
                 </div>
             </div>
-            <div className="flex items-center gap-2">
-                <p className="text-sm text-gray-500">
-                    {formatDuration(session_duration_sec)}
-                </p>
+            <div className="flex items-end gap-2">
+                <div className="flex gap-1 text-sm flex-col items-end">
+                    <span
+                        className={cn(
+                            'font-semibold',
+                            timer && timer.session_id === id
+                                ? 'text-blue-500'
+                                : '',
+                        )}
+                    >
+                        {formatDuration(
+                            timer && timer.session_id === id
+                                ? timer.session_time_elapsed
+                                : session_duration_sec,
+                        )}
+                    </span>
+                    <div className="text-xs text-gray-500 flex flex-col items-end">
+                        <span>
+                            {date && dayjs(date).format('DD MMM YYYY')}{' '}
+                        </span>
+                        <span>
+                            {makeTimeDisplay(start_time)} -{' '}
+                            {end_time ? makeTimeDisplay(end_time) : 'Now'}
+                        </span>
+                    </div>
+                </div>
 
-                {isHovered && (
+                {isHovered && timer && timer.session_id !== id && (
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
-                            <Button variant="outline">
+                            <Button
+                                variant="outline"
+                                onClick={(e) => e.stopPropagation()}
+                                className="cursor-pointer"
+                            >
                                 <Trash className="w-4 h-4 text-red-500" />
                             </Button>
                         </AlertDialogTrigger>
@@ -113,14 +151,20 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogCancel
+                                    className="cursor-pointer"
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    Cancel
+                                </AlertDialogCancel>
                                 <AlertDialogAction
-                                    onClick={async () => {
+                                    onClick={async (e) => {
+                                        e.stopPropagation();
                                         id && (await deleteSession(id));
                                         navigate('/session');
                                     }}
                                     disabled={isDeleting}
-                                    className="bg-red-500 hover:bg-red-600"
+                                    className="bg-red-500 hover:bg-red-600 cursor-pointer"
                                 >
                                     {isDeleting ? (
                                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -132,6 +176,14 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
                         </AlertDialogContent>
                     </AlertDialog>
                 )}
+
+                {timer &&
+                    timer.session_id === id &&
+                    (timer.is_session ? (
+                        <Clock9 className="h-4 text-blue-400" />
+                    ) : (
+                        <Coffee className="h-4 text-blue-500" />
+                    ))}
             </div>
         </li>
     );

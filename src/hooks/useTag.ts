@@ -8,6 +8,9 @@ export const useTag = () => {
             const tags = await invoke('get_all_tags');
             return tags as Tag[];
         },
+        refetchOnWindowFocus: true,
+        refetchOnMount: true,
+        refetchInterval: false,
     });
 };
 
@@ -24,7 +27,7 @@ export const useCreateTag = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tags'] });
-        },
+        }
     });
 };
 

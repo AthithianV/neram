@@ -1,7 +1,8 @@
+use chrono::{ NaiveDateTime, NaiveTime };
 use tauri::{ command, State };
 
 use crate::repository::session::SessionRepository;
-use crate::models::session::{ FullSessionModel, CreateSessionModel };
+use crate::models::session::{ CreateSessionModel, FullSessionModel, UpdateSessionModel };
 use crate::AppState;
 
 /// Creates a new session record in the database.
@@ -17,13 +18,15 @@ use crate::AppState;
 pub async fn create_session(
     app_state: State<'_, AppState>,
     new_session: CreateSessionModel
-) -> Result<(), String> {
-    // Acquire a lock on the database connection
+) -> Result<i32, String> {
     let db = app_state.conn.lock().await;
 
     let session_repository = SessionRepository::new(&db);
-    let _ = session_repository.create(&new_session).await.map_err(|e| e.to_string());
-    Ok(())
+    let session = session_repository.create(&new_session).await.map_err(|e| {
+        println!("Error creating session: {:?}", e);
+        e.to_string()
+    });
+    Ok(session.unwrap().id)
 }
 
 /// Retrieves all session records from the database.
@@ -54,7 +57,6 @@ pub async fn get_all_sessions(
 /// # Returns
 /// A `Result` containing an `Option<SessionModel>` (Some if found, None if not) on success,
 /// or a `String` error message.
-
 #[command]
 pub async fn get_session_by_id(
     app_state: State<'_, AppState>,
@@ -82,13 +84,15 @@ pub async fn get_session_by_id(
 #[command]
 pub async fn update_session(
     app_state: State<'_, AppState>,
-    session_to_update: CreateSessionModel,
+    session_to_update: UpdateSessionModel,
     session_id: i32
 ) -> Result<(), String> {
     let db = app_state.conn.lock().await;
 
     let session_repository = SessionRepository::new(&db);
-    let _ = session_repository.update(&session_to_update, session_id).await.map_err(|e| e.to_string());
+    let _ = session_repository
+        .update(&session_to_update, session_id).await
+        .map_err(|e| e.to_string());
     Ok(())
 }
 
@@ -144,4 +148,27 @@ pub async fn remove_tag_from_session(
 
     let session_repository = SessionRepository::new(&pool);
     session_repository.remove_tag_from_session(session_id, tag_id).await.map_err(|e| e.to_string())
+}
+
+/// Check if session collides with another session on the same day
+///
+/// # Arguments
+/// * `app_state` - The Tauri state containing the database connection mutex.
+/// * `session_id` - Id of the sesssion
+/// * `start_time` - Start time of the session
+/// * `end_time` - End time of the session
+/// * `date` - Date of the session
+#[command]
+pub async fn check_session_collision(
+    app_state: State<'_, AppState>,
+    start_time: NaiveDateTime,
+    end_time: Option<NaiveDateTime>,
+    session_id: i32
+) -> Result<bool, String> {
+    let pool = app_state.conn.lock().await;
+
+    let session_repository = SessionRepository::new(&pool);
+    session_repository
+        .collides_on_day(start_time, end_time, session_id).await
+        .map_err(|e| e.to_string())
 }
