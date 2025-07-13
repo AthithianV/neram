@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
-import { CreateSession, Session, UpdateSession } from '@/schema/SessionSchema';
+import { CreateSession, Session } from '@/schema/SessionSchema';
 import { toast } from 'sonner';
 
 type Related = {
@@ -77,7 +77,7 @@ export const useUpdateSession = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (data: {
-            sessionToUpdate: UpdateSession;
+            sessionToUpdate: UpdateSessionType;
             sessionId: number;
         }) => {
             await invoke('update_session', data);
