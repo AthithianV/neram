@@ -1,4 +1,6 @@
 import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+
 import { Input } from '../ui/input';
 import { useEffect, useState } from 'react';
 import { toDBTime } from '@/lib/time';
@@ -19,6 +21,8 @@ const TimeElement = ({
     date,
     isDisable,
 }: TimeElementProps) => {
+    dayjs.extend(customParseFormat);
+
     const [time, setTime] = useState<string>(
         value ? dayjs(value).format(TIME_FORMAT) : '',
     );

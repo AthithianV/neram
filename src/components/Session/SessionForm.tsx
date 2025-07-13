@@ -38,6 +38,7 @@ import DurationElement from '../form/DurationElement';
 import TimeElement from '../form/TimeElement';
 import { useTimer } from '@/hooks/useTimer';
 import { useSessionCollision } from '@/hooks/useSession';
+import { toast } from 'sonner';
 
 const SessionForm = () => {
     const { sessionId } = useParams();
@@ -119,7 +120,7 @@ const SessionForm = () => {
     async function onSubmit(data: CreateSession | UpdateSession) {
         const isSessionCollides = await checkSessionCollision({
             startTime: form.getValues('start_time'),
-            endTime: form.getValues('end_time'),
+            endTime: form.getValues('end_time') ?? null,
         });
 
         if (isSessionCollides) {
@@ -282,7 +283,7 @@ const SessionForm = () => {
                     />
 
                     {/* End Time */}
-                    {(session && session.id !== timer?.session_id) || (
+                    {(session && session.id == timer?.session_id) || (
                         <FormField
                             control={form.control}
                             name="end_time"
@@ -308,7 +309,7 @@ const SessionForm = () => {
                     )}
                 </div>
 
-                {(session && session.id !== timer?.session_id) || (
+                {(session && session.id == timer?.session_id) || (
                     <div className="flex gap-6 w-full max-sm:flex-col items-start">
                         {/* Start Time */}
                         <FormField

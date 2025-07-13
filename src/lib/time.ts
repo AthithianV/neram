@@ -12,3 +12,7 @@ export const formatDuration = (seconds: number) => {
 export const toDBTime = (time: string) => {
     return dayjs(time).format(`${DB_DATE_FORMAT}T${DB_TIME_FORMAT}`);
 };
+
+export const makeTimeDisplay = (time: string) => {
+    return dayjs(time).format(`HH:mm`);
+};

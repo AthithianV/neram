@@ -1,4 +1,4 @@
-import { formatDuration } from '@/lib/time';
+import { formatDuration, makeTimeDisplay } from '@/lib/time';
 import { Badge } from '@/components/ui/badge';
 import { SessionType, useDeleteSession } from '@/hooks/useSession';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -27,8 +27,15 @@ interface SessionCardProps {
 const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
     const { sessionId } = useParams();
     const navigate = useNavigate();
-    const { id, title, project, tags, session_duration_sec } =
-        sessionWithTaskAndTag;
+    const {
+        id,
+        title,
+        project,
+        tags,
+        session_duration_sec,
+        start_time,
+        end_time,
+    } = sessionWithTaskAndTag;
     const [isHovered, setIsHovered] = useState(false);
     const { mutateAsync: deleteSession, isPending: isDeleting } =
         useDeleteSession();
@@ -92,22 +99,27 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
                     </ScrollArea>
                 </div>
             </div>
-            <div className="flex items-center gap-2">
-                <p
-                    className="text-sm"
-                    style={{
-                        fontWeight:
-                            timer && timer.session_id === id
-                                ? 'bold'
-                                : 'normal',
-                    }}
+            <div className="flex items-end gap-2">
+                <div
+                    className="flex gap-1 text-sm flex-col items-end"
                 >
-                    {formatDuration(
-                        timer && timer.session_id === id
-                            ? timer.session_time_elapsed
-                            : session_duration_sec,
-                    )}
-                </p>
+                    <span className={cn(
+                        'font-semibold',
+                        timer && timer.session_id === id ? 'text-blue-500' : ''
+                    )}>
+                        {formatDuration(
+                            timer && timer.session_id === id
+                                ? timer.session_time_elapsed
+                                : session_duration_sec,
+                        )}
+                    </span>
+                    <div className='text-xs text-gray-500'>
+                        <span>
+                            {makeTimeDisplay(start_time)} -{' '}
+                            {end_time ? makeTimeDisplay(end_time) : 'Now'}
+                        </span>
+                    </div>
+                </div>
 
                 {isHovered && timer && timer.session_id !== id && (
                     <AlertDialog>

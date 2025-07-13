@@ -85,8 +85,10 @@ export const useUpdateSession = () => {
             sessionId: number;
         }) => {
             await invoke('update_session', data);
+            return data.sessionId;
         },
-        onSuccess: () => {
+        onSuccess: (id) => {
+            queryClient.invalidateQueries({ queryKey: ['session', id] });
             queryClient.invalidateQueries({ queryKey: ['sessions'] });
             toast.success('Session updated successfully');
         },
@@ -162,12 +164,19 @@ export const useAddTagToSession = () => {
 
 export const useSessionCollision = () => {
     return useMutation({
-        mutationFn: async (data: { startTime: string; endTime?: string }) => {
-            const isSessionCollides = await invoke(
+        mutationFn: async (data: {
+            startTime: string;
+            endTime: string | null;
+        }) => {
+            const isSessionCollides = await invoke<boolean>(
                 'check_session_collision',
                 data,
             );
-            return isSessionCollides as boolean;
+            return isSessionCollides;
+        },
+        onError: (err) => {
+            console.error(err);
+            toast.error('Failed to check session collision');
         },
     });
 };

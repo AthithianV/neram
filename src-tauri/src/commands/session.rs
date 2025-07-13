@@ -162,12 +162,14 @@ pub async fn remove_tag_from_session(
 pub async fn check_session_collision(
     app_state: State<'_, AppState>,
     start_time: String,
-    end_time: Option<String>,
+    end_time: Option<String>
 ) -> Result<bool, String> {
     let pool = app_state.conn.lock().await;
 
-    let new_start = NaiveTime::parse_from_str(&start_time, "%Y-%m-%d %H:%M:%S").unwrap();
-    let new_end = end_time.map(|time| NaiveTime::parse_from_str(&time, "%Y-%m-%d %H:%M:%S").unwrap());
+    let new_start = NaiveTime::parse_from_str(&start_time, "%Y-%m-%dT%H:%M:%S").unwrap();
+    let new_end = end_time.map(|time|
+        NaiveTime::parse_from_str(&time, "%Y-%m-%dY%H:%M:%S").unwrap()
+    );
 
     let session_repository = SessionRepository::new(&pool);
     session_repository.collides_on_day(new_start, new_end).await.map_err(|e| e.to_string())
