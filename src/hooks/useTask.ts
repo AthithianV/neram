@@ -16,7 +16,10 @@ export const useTask = (projectId: number) => {
             });
             return data as MiniTask[];
         },
-        enabled: !!projectId,
+        enabled: projectId !== 0,
+        refetchOnWindowFocus: true,
+        refetchOnMount: true,
+        refetchInterval: false,
     });
 };
 

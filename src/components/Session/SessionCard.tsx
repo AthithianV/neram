@@ -93,7 +93,15 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
                 </div>
             </div>
             <div className="flex items-center gap-2">
-                <p className="text-sm text-gray-500">
+                <p
+                    className="text-sm"
+                    style={{
+                        fontWeight:
+                            timer && timer.session_id === id
+                                ? 'bold'
+                                : 'normal',
+                    }}
+                >
                     {formatDuration(
                         timer && timer.session_id === id
                             ? timer.session_time_elapsed

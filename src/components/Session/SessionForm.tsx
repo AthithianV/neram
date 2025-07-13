@@ -16,7 +16,12 @@ import { Input } from '@/components/ui/input';
 
 import { Textarea } from '@/components/ui/textarea';
 import { useEffect } from 'react';
-import SessionSchema, { Session } from '@/schema/SessionSchema';
+import {
+    CreateSessionSchema,
+    UpdateSessionSchema,
+    CreateSession,
+    UpdateSession,
+} from '@/schema/SessionSchema';
 import { DEFAULT_SESSION_VALUES } from '@/constants/session';
 import {
     useCreateSession,
@@ -29,29 +34,35 @@ import ProjectPicker from '@/components/session/ProjectPicker';
 import TagPicker from '@/components/session/TagPicker';
 
 import dayjs from 'dayjs';
-import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { toDBTime } from '@/lib/time';
 import DurationElement from '../form/DurationElement';
 import TimeElement from '../form/TimeElement';
 import { useTimer } from '@/hooks/useTimer';
 
 const SessionForm = () => {
-    const form = useForm<Session>({
-        resolver: zodResolver(SessionSchema),
-        defaultValues: DEFAULT_SESSION_VALUES,
-    });
-
-    dayjs.extend(customParseFormat);
-
     const { sessionId } = useParams();
-    const { data: session } = useSessionById(sessionId || '');
+    const { data: session, isLoading: isSessionLoading } = useSessionById(
+        sessionId || '',
+    );
     const { data: timer } = useTimer();
 
     const { mutate: createSession } = useCreateSession();
     const { mutate: updateSession } = useUpdateSession();
 
+    const isEditMode = !!sessionId;
+
+    const form = useForm({
+        resolver: zodResolver(
+            isEditMode ? UpdateSessionSchema : CreateSessionSchema,
+        ),
+        defaultValues: DEFAULT_SESSION_VALUES,
+    });
+
     useEffect(() => {
         if (session) {
+            let session_id = null;
+            if (timer) session_id = timer.session_id;
+
             form.setValue('title', session.title || '');
             form.setValue('description', session.description || '');
             form.setValue('task_id', session.task.id);
@@ -60,7 +71,7 @@ const SessionForm = () => {
             form.setValue('start_time', toDBTime(session.start_time));
             form.setValue(
                 'end_time',
-                session.id === timer?.session_id
+                session.id === session_id
                     ? undefined
                     : session.end_time
                       ? toDBTime(session.end_time)
@@ -100,7 +111,7 @@ const SessionForm = () => {
 
     const navigate = useNavigate();
 
-    function onSubmit(data: z.infer<typeof SessionSchema>) {
+    function onSubmit(data: CreateSession | UpdateSession) {
         if (session && session.id) {
             updateSession({
                 sessionToUpdate:
@@ -114,11 +125,13 @@ const SessionForm = () => {
                 sessionId: session.id,
             });
         } else {
-            createSession(data);
+            createSession(data as CreateSession);
         }
         navigate('/session');
         form.reset();
     }
+
+    if (isSessionLoading) return null;
 
     return (
         <Form {...form}>
@@ -243,6 +256,10 @@ const SessionForm = () => {
                                             : form.clearErrors('start_time')
                                     }
                                     date={form.getValues('date')}
+                                    isDisable={
+                                        session &&
+                                        session.id === timer?.session_id
+                                    }
                                 />
                                 <FormMessage className="text-xs" />
                             </FormItem>
@@ -250,7 +267,7 @@ const SessionForm = () => {
                     />
 
                     {/* End Time */}
-                    {/* {session && session.id !== timer?.session_id && ( */}
+                    {session && session.id !== timer?.session_id && (
                         <FormField
                             control={form.control}
                             name="end_time"
@@ -273,10 +290,10 @@ const SessionForm = () => {
                                 </FormItem>
                             )}
                         />
-                    {/* )} */}
+                    )}
                 </div>
 
-                {/* {session && session.id !== timer?.session_id && ( */}
+                {session && session.id !== timer?.session_id && (
                     <div className="flex gap-6 w-full max-sm:flex-col items-start">
                         {/* Start Time */}
                         <FormField
@@ -334,7 +351,7 @@ const SessionForm = () => {
                             )}
                         />
                     </div>
-                {/* )} */}
+                )}
 
                 {/* Tags */}
                 <FormField

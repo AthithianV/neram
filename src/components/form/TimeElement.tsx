@@ -9,10 +9,19 @@ export interface TimeElementProps {
     date: string;
     setValue: (val: string) => void;
     setError: (error: string) => void;
+    isDisable?: boolean;
 }
 
-const TimeElement = ({ value, setValue, setError, date }: TimeElementProps) => {
-    const [time, setTime] = useState<string>(value ? dayjs(value).format(TIME_FORMAT) : '');
+const TimeElement = ({
+    value,
+    setValue,
+    setError,
+    date,
+    isDisable,
+}: TimeElementProps) => {
+    const [time, setTime] = useState<string>(
+        value ? dayjs(value).format(TIME_FORMAT) : '',
+    );
 
     const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTime(e.target.value);
@@ -46,6 +55,7 @@ const TimeElement = ({ value, setValue, setError, date }: TimeElementProps) => {
             onChange={handleTimeChange}
             onBlur={handleTimeValue}
             className="text-center bg-white"
+            disabled={isDisable}
         />
     );
 };

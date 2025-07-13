@@ -15,6 +15,9 @@ export const useProject = () => {
             const data = await invoke('get_all_projects');
             return data as MinimalProject[];
         },
+        refetchOnWindowFocus: true,
+        refetchOnMount: true,
+        refetchInterval: false,
     });
 };
 

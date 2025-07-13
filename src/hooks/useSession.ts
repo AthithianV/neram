@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
-import { CreateSessionType, Session } from '@/schema/SessionSchema';
+import { CreateSession, Session, UpdateSession } from '@/schema/SessionSchema';
 import { toast } from 'sonner';
 
 type Related = {
@@ -34,6 +34,9 @@ export const useSession = () => {
             const sessions = await invoke('get_all_sessions');
             return sessions as SessionType[];
         },
+        refetchOnWindowFocus: true,
+        refetchOnMount: true,
+        refetchInterval: false,
     });
 };
 
@@ -46,19 +49,20 @@ export const useSessionById = (id: string) => {
             });
             return sessionWithTags as SessionType;
         },
+        refetchOnWindowFocus: true,
+        refetchOnMount: true,
+        refetchInterval: false,
     });
 };
 
 export const useCreateSession = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (newSession: CreateSessionType) => {
+        mutationFn: async (newSession: CreateSession) => {
             const id = await invoke('create_session', { newSession });
             return id as number;
         },
-        onSuccess: (id) => {
-            console.log(id);
-
+        onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['sessions'] });
             toast.success('Session created successfully');
         },
@@ -73,7 +77,7 @@ export const useUpdateSession = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (data: {
-            sessionToUpdate: UpdateSessionType;
+            sessionToUpdate: UpdateSession;
             sessionId: number;
         }) => {
             await invoke('update_session', data);
