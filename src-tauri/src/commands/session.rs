@@ -1,4 +1,4 @@
-use chrono::NaiveTime;
+use chrono::{ NaiveDateTime, NaiveTime };
 use tauri::{ command, State };
 
 use crate::repository::session::SessionRepository;
@@ -161,25 +161,14 @@ pub async fn remove_tag_from_session(
 #[command]
 pub async fn check_session_collision(
     app_state: State<'_, AppState>,
-    start_time: String,
-    end_time: Option<String>
+    start_time: NaiveDateTime,
+    end_time: Option<NaiveDateTime>,
+    session_id: i32
 ) -> Result<bool, String> {
     let pool = app_state.conn.lock().await;
 
-    let new_start = NaiveTime::parse_from_str(&start_time, "%Y-%m-%dT%H:%M:%S").map_err(|e|
-        format!("Invalid start_time: {}", e)
-    )?;
-
-    let new_end = match end_time {
-        Some(time_str) =>
-            Some(
-                NaiveTime::parse_from_str(&time_str, "%Y-%m-%dT%H:%M:%S").map_err(|e|
-                    format!("Invalid end_time: {}", e)
-                )?
-            ),
-        None => None,
-    };
-
     let session_repository = SessionRepository::new(&pool);
-    session_repository.collides_on_day(new_start, new_end).await.map_err(|e| e.to_string())
+    session_repository
+        .collides_on_day(start_time, end_time, session_id).await
+        .map_err(|e| e.to_string())
 }

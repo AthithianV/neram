@@ -1,4 +1,4 @@
-use chrono::NaiveTime;
+use chrono::{ NaiveDateTime };
 use migration::Expr;
 use sea_orm::*;
 use ::entity::{
@@ -173,24 +173,38 @@ impl<'a> SessionRepository<'a> {
 
     pub async fn collides_on_day(
         &self,
-        new_start: NaiveTime,
-        new_end: Option<NaiveTime>
+        new_start: NaiveDateTime,
+        new_end: Option<NaiveDateTime>,
+        session_id: i32
     ) -> Result<bool, DbErr> {
         let mut cond = Condition::all();
 
-        // Only include the "start_time < new_end" clause if new_end is provided
-        if let Some(end) = new_end {
-            cond = cond.add(Expr::col(SessionColumn::StartTime).lt(end.to_string()));
+        let formatted_start = new_start.format("%Y-%m-%d %H:%M:%S").to_string();
+        let formatted_end = new_end.map(|dt| dt.format("%Y-%m-%d %H:%M:%S").to_string());
+
+        // existing.start_time < new_end AND (existing.end_time IS NULL OR existing.end_time > new_start)
+        if let Some(formatted_end) = formatted_end {
+            cond = cond
+                .add(Expr::col(SessionColumn::StartTime).lte(formatted_end.clone()))
+                .add(
+                    Condition::any()
+                        .add(Expr::col(SessionColumn::EndTime).is_null())
+                        .add(Expr::col(SessionColumn::EndTime).gte(formatted_start.clone()))
+                );
+        } else {
+            // If new_end is None, session runs indefinitely → any session that overlaps new_start
+            cond = cond
+                .add(
+                    Expr::col(SessionColumn::EndTime)
+                        .is_null()
+                        .or(Expr::col(SessionColumn::EndTime).gte(formatted_start.clone()))
+                )
+                .add(Expr::col(SessionColumn::StartTime).lte(formatted_start.clone()));
         }
 
-        // Always include: (end_time IS NULL OR end_time > new_start)
-        cond = cond.add(
-            Condition::any()
-                .add(Expr::col(SessionColumn::EndTime).is_null())
-                .add(Expr::col(SessionColumn::EndTime).gt(new_start.to_string()))
-        );
+        cond = cond.add(Expr::col(SessionColumn::Id).ne(session_id));
 
-        let cnt = Session::find().filter(cond).count(self.db).await?;
-        Ok(cnt > 0)
+        let cnt = Session::find().filter(cond).all(self.db).await?;
+        Ok(cnt.len() > 0)
     }
 }

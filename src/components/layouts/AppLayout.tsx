@@ -16,7 +16,7 @@ export function AppLayout() {
             // onContextMenuCapture={(e) => e.preventDefault()}
         >
             <NeramSidebar />
-            <Toaster position="top-center" />
+            <Toaster position="bottom-center" richColors />
             <main className="flex flex-col text-foreground overflow-y-auto h-full w-full bg-gray-50">
                 <div className="title-bar-height bg-white border-b-2 border-gray-100">
                     <TitleBar />

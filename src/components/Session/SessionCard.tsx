@@ -19,6 +19,7 @@ import {
     AlertDialogAction,
 } from '../ui/alert-dialog';
 import { useTimer } from '@/hooks/useTimer';
+import dayjs from 'dayjs';
 
 interface SessionCardProps {
     sessionWithTaskAndTag: SessionType;
@@ -35,6 +36,7 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
         session_duration_sec,
         start_time,
         end_time,
+        date,
     } = sessionWithTaskAndTag;
     const [isHovered, setIsHovered] = useState(false);
     const { mutateAsync: deleteSession, isPending: isDeleting } =
@@ -100,20 +102,25 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
                 </div>
             </div>
             <div className="flex items-end gap-2">
-                <div
-                    className="flex gap-1 text-sm flex-col items-end"
-                >
-                    <span className={cn(
-                        'font-semibold',
-                        timer && timer.session_id === id ? 'text-blue-500' : ''
-                    )}>
+                <div className="flex gap-1 text-sm flex-col items-end">
+                    <span
+                        className={cn(
+                            'font-semibold',
+                            timer && timer.session_id === id
+                                ? 'text-blue-500'
+                                : '',
+                        )}
+                    >
                         {formatDuration(
                             timer && timer.session_id === id
                                 ? timer.session_time_elapsed
                                 : session_duration_sec,
                         )}
                     </span>
-                    <div className='text-xs text-gray-500'>
+                    <div className="text-xs text-gray-500 flex flex-col items-end">
+                        <span>
+                            {date && dayjs(date).format('DD MMM YYYY')}{' '}
+                        </span>
                         <span>
                             {makeTimeDisplay(start_time)} -{' '}
                             {end_time ? makeTimeDisplay(end_time) : 'Now'}

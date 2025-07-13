@@ -1,4 +1,8 @@
-import { DB_DATE_FORMAT, DB_TIME_FORMAT } from '@/constants/session';
+import {
+    DB_DATE_FORMAT,
+    DB_TIME_FORMAT,
+    TIME_FORMAT,
+} from '@/constants/session';
 import dayjs from 'dayjs';
 
 export const formatDuration = (seconds: number) => {
@@ -14,5 +18,5 @@ export const toDBTime = (time: string) => {
 };
 
 export const makeTimeDisplay = (time: string) => {
-    return dayjs(time).format(`HH:mm`);
+    return dayjs(time).format(TIME_FORMAT);
 };

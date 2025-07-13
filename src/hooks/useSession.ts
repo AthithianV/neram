@@ -167,6 +167,7 @@ export const useSessionCollision = () => {
         mutationFn: async (data: {
             startTime: string;
             endTime: string | null;
+            sessionId: number;
         }) => {
             const isSessionCollides = await invoke<boolean>(
                 'check_session_collision',
@@ -176,7 +177,7 @@ export const useSessionCollision = () => {
         },
         onError: (err) => {
             console.error(err);
-            toast.error('Failed to check session collision');
+            toast('Failed to check session collision');
         },
     });
 };

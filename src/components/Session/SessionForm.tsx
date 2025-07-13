@@ -23,6 +23,7 @@ import {
 } from '@/schema/SessionSchema';
 import {
     DB_DATE_FORMAT,
+    DB_TIME_FORMAT,
     DEFAULT_SESSION_VALUES,
     TIME_FORMAT,
 } from '@/constants/session';
@@ -42,6 +43,8 @@ import DurationElement from '../form/DurationElement';
 import TimeElement from '../form/TimeElement';
 import { useTimer } from '@/hooks/useTimer';
 import { useSessionCollision } from '@/hooks/useSession';
+import { toast } from 'sonner';
+import { Bug } from 'lucide-react';
 
 const SessionForm = () => {
     const { sessionId } = useParams();
@@ -121,9 +124,8 @@ const SessionForm = () => {
         let newStartTime = dayjs(date)
             .hour(startTime.hour())
             .minute(startTime.minute())
-            .second(startTime.second())
-            .format(DB_DATE_FORMAT + ' ' + TIME_FORMAT);
-        form.setValue('start_time', newStartTime);
+            .second(startTime.second());
+        form.setValue('start_time', toDBTime(newStartTime.toString()));
 
         let endTime = dayjs(form.getValues('end_time'));
         if (endTime.isValid()) {
@@ -131,9 +133,8 @@ const SessionForm = () => {
             let newEndTime = dayjs(date)
                 .hour(endTime.hour())
                 .minute(endTime.minute())
-                .second(endTime.second())
-                .format(DB_DATE_FORMAT + ' ' + TIME_FORMAT);
-            form.setValue('end_time', newEndTime);
+                .second(endTime.second());
+            form.setValue('end_time', toDBTime(newEndTime.toString()));
         }
     }, [form.watch('date')]);
 
@@ -147,11 +148,12 @@ const SessionForm = () => {
         const isSessionCollides = await checkSessionCollision({
             startTime: form.getValues('start_time'),
             endTime: form.getValues('end_time') ?? null,
+            sessionId: session?.id ?? 0,
         });
 
         if (isSessionCollides) {
-            form.setError('start_time', {
-                message: 'Session collides with another session',
+            toast.error('Session collides with another session', {
+                description: 'Please Adjust Start and End Time',
             });
             return;
         }
