@@ -1,3 +1,5 @@
+use chrono::NaiveTime;
+use migration::Expr;
 use sea_orm::*;
 use ::entity::{
     projects::Entity as Project,
@@ -167,5 +169,28 @@ impl<'a> SessionRepository<'a> {
             .filter(<SessionTags as EntityTrait>::Column::TagId.eq(tag_id))
             .exec(self.db).await?;
         Ok(())
+    }
+
+    pub async fn collides_on_day(
+        &self,
+        new_start: NaiveTime,
+        new_end: Option<NaiveTime>
+    ) -> Result<bool, DbErr> {
+        let mut cond = Condition::all();
+
+        // Only include the "start_time < new_end" clause if new_end is provided
+        if let Some(end) = new_end {
+            cond = cond.add(Expr::col(SessionColumn::StartTime).lt(end.to_string()));
+        }
+
+        // Always include: (end_time IS NULL OR end_time > new_start)
+        cond = cond.add(
+            Condition::any()
+                .add(Expr::col(SessionColumn::EndTime).is_null())
+                .add(Expr::col(SessionColumn::EndTime).gt(new_start.to_string()))
+        );
+
+        let cnt = Session::find().filter(cond).count(self.db).await?;
+        Ok(cnt > 0)
     }
 }

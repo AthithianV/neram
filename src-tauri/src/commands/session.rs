@@ -1,3 +1,4 @@
+use chrono::NaiveTime;
 use tauri::{ command, State };
 
 use crate::repository::session::SessionRepository;
@@ -147,4 +148,27 @@ pub async fn remove_tag_from_session(
 
     let session_repository = SessionRepository::new(&pool);
     session_repository.remove_tag_from_session(session_id, tag_id).await.map_err(|e| e.to_string())
+}
+
+/// Check if session collides with another session on the same day
+///
+/// # Arguments
+/// * `app_state` - The Tauri state containing the database connection mutex.
+/// * `session_id` - Id of the sesssion
+/// * `start_time` - Start time of the session
+/// * `end_time` - End time of the session
+/// * `date` - Date of the session
+#[command]
+pub async fn check_session_collision(
+    app_state: State<'_, AppState>,
+    start_time: String,
+    end_time: Option<String>,
+) -> Result<bool, String> {
+    let pool = app_state.conn.lock().await;
+
+    let new_start = NaiveTime::parse_from_str(&start_time, "%Y-%m-%d %H:%M:%S").unwrap();
+    let new_end = end_time.map(|time| NaiveTime::parse_from_str(&time, "%Y-%m-%d %H:%M:%S").unwrap());
+
+    let session_repository = SessionRepository::new(&pool);
+    session_repository.collides_on_day(new_start, new_end).await.map_err(|e| e.to_string())
 }

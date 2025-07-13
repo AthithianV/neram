@@ -159,3 +159,15 @@ export const useAddTagToSession = () => {
         },
     });
 };
+
+export const useSessionCollision = () => {
+    return useMutation({
+        mutationFn: async (data: { startTime: string; endTime?: string }) => {
+            const isSessionCollides = await invoke(
+                'check_session_collision',
+                data,
+            );
+            return isSessionCollides as boolean;
+        },
+    });
+};

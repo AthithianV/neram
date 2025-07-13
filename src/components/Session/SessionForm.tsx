@@ -37,17 +37,16 @@ import { toDBTime } from '@/lib/time';
 import DurationElement from '../form/DurationElement';
 import TimeElement from '../form/TimeElement';
 import { useTimer } from '@/hooks/useTimer';
+import { useSessionCollision } from '@/hooks/useSession';
 
 const SessionForm = () => {
     const { sessionId } = useParams();
 
-    console.log(sessionId);
+    const { mutateAsync: checkSessionCollision } = useSessionCollision();
 
     const { data: session } = useSessionById(
         sessionId ? Number(sessionId) : undefined,
     );
-
-    console.log(session);
 
     const { data: timer } = useTimer();
 
@@ -117,7 +116,19 @@ const SessionForm = () => {
 
     const navigate = useNavigate();
 
-    function onSubmit(data: CreateSession | UpdateSession) {
+    async function onSubmit(data: CreateSession | UpdateSession) {
+        const isSessionCollides = await checkSessionCollision({
+            startTime: form.getValues('start_time'),
+            endTime: form.getValues('end_time'),
+        });
+
+        if (isSessionCollides) {
+            form.setError('start_time', {
+                message: 'Session collides with another session',
+            });
+            return;
+        }
+
         if (session && session.id) {
             updateSession({
                 sessionToUpdate:
@@ -271,7 +282,7 @@ const SessionForm = () => {
                     />
 
                     {/* End Time */}
-                    {session && session.id !== timer?.session_id && (
+                    {(session && session.id !== timer?.session_id) || (
                         <FormField
                             control={form.control}
                             name="end_time"
@@ -297,7 +308,7 @@ const SessionForm = () => {
                     )}
                 </div>
 
-                {session && session.id !== timer?.session_id && (
+                {(session && session.id !== timer?.session_id) || (
                     <div className="flex gap-6 w-full max-sm:flex-col items-start">
                         {/* Start Time */}
                         <FormField

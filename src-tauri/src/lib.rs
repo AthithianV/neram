@@ -41,6 +41,7 @@ pub async fn run() {
                 delete_session,
                 add_tag_to_session,
                 remove_tag_from_session,
+                check_session_collision,
 
                 // // Task commands
                 // create_task,
