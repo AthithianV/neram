@@ -4,7 +4,7 @@ import { SessionType, useDeleteSession } from '@/hooks/useSession';
 import { useNavigate, useParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Clock9, Coffee, Loader2, Trash } from 'lucide-react';
 import { Button } from '../ui/button';
 import {
@@ -18,14 +18,15 @@ import {
     AlertDialogCancel,
     AlertDialogAction,
 } from '../ui/alert-dialog';
-import { useTimer } from '@/hooks/useTimer';
 import dayjs from 'dayjs';
+import { TimerResponse } from '@/hooks/useTimer';
 
 interface SessionCardProps {
     sessionWithTaskAndTag: SessionType;
+    timer: TimerResponse | null;
 }
 
-const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
+const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
     const { sessionId } = useParams();
     const navigate = useNavigate();
     const {
@@ -38,11 +39,8 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
         end_time,
         date,
     } = sessionWithTaskAndTag;
-    const [isHovered, setIsHovered] = useState(false);
-    const { mutateAsync: deleteSession, isPending: isDeleting } =
-        useDeleteSession();
 
-    const { data: timer } = useTimer();
+    const [isHovered, setIsHovered] = useState(false);
 
     return (
         <li
@@ -101,7 +99,7 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
                     </ScrollArea>
                 </div>
             </div>
-            <div className="flex items-end gap-2">
+            <div className="flex items-center gap-2">
                 <div className="flex gap-1 text-sm flex-col items-end">
                     <span
                         className={cn(
@@ -128,54 +126,10 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
                     </div>
                 </div>
 
-                {isHovered && timer && timer.session_id !== id && (
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                            <Button
-                                variant="outline"
-                                onClick={(e) => e.stopPropagation()}
-                                className="cursor-pointer"
-                            >
-                                <Trash className="w-4 h-4 text-red-500" />
-                            </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                    Are you sure you want to delete this
-                                    session?
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    This action cannot be undone. This will
-                                    permanently delete this session.
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                                <AlertDialogCancel
-                                    className="cursor-pointer"
-                                    onClick={(e) => e.stopPropagation()}
-                                >
-                                    Cancel
-                                </AlertDialogCancel>
-                                <AlertDialogAction
-                                    onClick={async (e) => {
-                                        e.stopPropagation();
-                                        id && (await deleteSession(id));
-                                        navigate('/session');
-                                    }}
-                                    disabled={isDeleting}
-                                    className="bg-red-500 hover:bg-red-600 cursor-pointer"
-                                >
-                                    {isDeleting ? (
-                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                    ) : (
-                                        'Delete'
-                                    )}
-                                </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
-                )}
+                <SessionCard.DELETE
+                    show={isHovered && timer?.session_id !== id}
+                    sessionId={id}
+                />
 
                 {timer &&
                     timer.session_id === id &&
@@ -189,4 +143,70 @@ const SessionCard = ({ sessionWithTaskAndTag }: SessionCardProps) => {
     );
 };
 
-export default SessionCard;
+SessionCard.DELETE = ({
+    show,
+    sessionId,
+}: {
+    show: boolean;
+    sessionId: number;
+}) => {
+    const navigate = useNavigate();
+    const { mutateAsync: deleteSession, isPending: isDeleting } =
+        useDeleteSession();
+    return (
+        show && (
+            <AlertDialog>
+                <AlertDialogTrigger asChild>
+                    <Button
+                        variant="outline"
+                        onClick={(e) => e.stopPropagation()}
+                        className="cursor-pointer"
+                    >
+                        <Trash className="w-4 h-4 text-red-500" />
+                    </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>
+                            Are you sure you want to delete this session?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently
+                            delete this session.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel
+                            className="cursor-pointer"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            Cancel
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={async (e) => {
+                                e.stopPropagation();
+                                sessionId && (await deleteSession(sessionId));
+                                navigate('/session');
+                            }}
+                            disabled={isDeleting}
+                            className="bg-red-500 hover:bg-red-600 cursor-pointer"
+                        >
+                            {isDeleting ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                                'Delete'
+                            )}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        )
+    );
+};
+
+export default React.memo(SessionCard, (prev, next) => {
+    return (
+        prev.sessionWithTaskAndTag === next.sessionWithTaskAndTag &&
+        prev.timer?.session_time_elapsed === next.timer?.session_time_elapsed
+    );
+});

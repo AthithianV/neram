@@ -115,23 +115,8 @@ const Kanban = () => {
         }).format(date);
     };
 
-    // if (isLoading) {
-    //     return (
-    //         <div className="flex items-center justify-center h-64">
-    //             <div className="text-muted-foreground">Loading tasks...</div>
-    //         </div>
-    //     );
-    // }
-
     return (
         <div className="h-[98%] overflow-hidden py-2">
-            {/* <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold">Kanban Board</h2>
-                <div className="text-sm text-muted-foreground">
-                    {tasks.length} tasks total
-                </div>
-            </div> */}
-
             <ScrollArea className="w-full h-full">
                 <div className="flex gap-2 pb-4 min-w-max">
                     {columns.map((column) => (
@@ -279,7 +264,14 @@ const Kanban = () => {
                                 ))}
 
                                 {column.tasks.length === 0 && (
-                                    <div className="flex items-center justify-center h-32 text-muted-foreground text-sm border-2 border-dashed border-gray-200 rounded-lg">
+                                    <div
+                                        className={cn(
+                                            'flex items-center justify-center',
+                                            'h-32 text-muted-foreground text-sm',
+                                            'border-2 border-gray-200',
+                                            'rounded-lg',
+                                        )}
+                                    >
                                         No tasks
                                     </div>
                                 )}

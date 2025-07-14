@@ -109,10 +109,3 @@
 
 [] Filter Session based on Project, Task, Tags.
 [] Group Session based on Date, week, Month, Year.
-
-# Colors
-
-```
-#100d28
-#ff00e2
-```

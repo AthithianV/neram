@@ -6,12 +6,15 @@ import { Separator } from '@/components/ui/separator';
 import Controls from '@/components/session/Controls';
 import SessionCard from '@/components/session/SessionCard';
 
+import { useTimer } from '@/hooks/useTimer';
 import { useSession } from '@/hooks/useSession';
 
 import { cn } from '@/lib/utils';
 
 const Session = () => {
     const { data: sessions, isLoading, error } = useSession();
+    const { data: timer } = useTimer();
+
     const location = useLocation();
     const { sessionId } = useParams();
 
@@ -43,6 +46,12 @@ const Session = () => {
                             <SessionCard
                                 key={index}
                                 sessionWithTaskAndTag={sessionWithTaskAndTag}
+                                timer={
+                                    timer?.session_id ===
+                                    sessionWithTaskAndTag.id
+                                        ? timer
+                                        : null
+                                }
                             />
                         ))}
                     </ul>
