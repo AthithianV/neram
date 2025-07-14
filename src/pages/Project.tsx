@@ -1,25 +1,26 @@
 import { useProject } from '@/hooks/useProject';
-import { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
-import { Project as ProjectType } from '@/schema/ProjectSchema';
 import { cn } from '@/lib/utils';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogTitle,
+    DialogTrigger,
+    DialogFooter,
+    DialogHeader,
+} from '@/components/ui/dialog';
+import { ProjectForm } from '@/components/project/ProjectForm';
 
 const Project = () => {
     const { data: projects } = useProject();
     const { projectId } = useParams();
     const navigate = useNavigate();
-    const [currentProject, setCurrentProject] = useState<ProjectType | null>(
-        null,
-    );
-
-    useEffect(() => {
-        if (projects) {
-            setCurrentProject(null);
-        }
-    }, [projects]);
 
     return (
         <div className="h-full">
@@ -32,15 +33,16 @@ const Project = () => {
                                 className={cn(
                                     `py-2 px-4 rounded cursor-pointer text-sm bg-gray-100 min-w-fit`,
                                     `${
-                                        currentProject?.id === project.id
-                                            ? 'bg-white border-b-2'
+                                        project.id === Number(projectId)
+                                            ? `bg-white border-b-2`
                                             : ''
                                     }`,
                                 )}
                                 style={
                                     project.id === Number(projectId)
                                         ? {
-                                              backgroundColor: project.color,
+                                              borderColor: project.color,
+                                              color: project.color,
                                           }
                                         : {}
                                 }
@@ -54,9 +56,25 @@ const Project = () => {
                     </div>
                     <ScrollBar orientation="horizontal" />
                 </ScrollArea>
-                <div className="py-2 px-4 mb-2 rounded-sm hover:bg-gray-100 cursor-pointer">
-                    <Plus className="w-4 h-4" />
-                </div>
+
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button className="mb-3 cursor-pointer">
+                            <Plus className="w-4 h-4" />
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[50vw] h-[90vh]">
+                        <DialogHeader>
+                            <DialogTitle>Create project</DialogTitle>
+                            <DialogDescription>
+                                Create a new project.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <ScrollArea className="h-[90%] pe-3">
+                            <ProjectForm />
+                        </ScrollArea>
+                    </DialogContent>
+                </Dialog>
             </div>
             <div>
                 <Outlet />

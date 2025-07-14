@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 const ProjectSchema = z.object({
-    id: z.number(),
     title: z.string(),
     description: z.string().optional(),
     color: z.string().optional(),
@@ -15,8 +14,7 @@ const ProjectSchema = z.object({
     hourly_rate: z.number().optional(),
     fixed_rate: z.number().optional(),
     currency: z.string().optional(),
-    created_at: z.string(),
-    updated_at: z.string(),
+    tags: z.array(z.number()),
 });
 
 export type Project = z.infer<typeof ProjectSchema>;
