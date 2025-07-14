@@ -1,11 +1,14 @@
 import { z } from 'zod';
 
 const ProjectSchema = z.object({
-    title: z.string(),
-    description: z.string().optional(),
+    title: z
+        .string()
+        .min(1, { message: 'Title is required' })
+        .max(12, 'Only Support 12 Character'),
+    description: z.string().max(1500, 'Only Support 1500 Character').optional(),
     color: z.string().optional(),
     client_name: z.string().optional(),
-    status: z.string(),
+    status: z.string().min(1, { message: 'Status is required' }),
     started_at: z.string().optional(),
     deadline: z.string().optional(),
     completed_at: z.string().optional(),

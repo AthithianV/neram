@@ -1,10 +1,20 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
 
-export interface MiniTask {
+export interface Task {
     id: number;
     title: string;
+    description?: string;
     color: string;
+    project_id: number;
+    status: string;
+    priority?: string;
+    deadline?: string;
+    started_at: string;
+    completed_at?: string;
+    estimated_time: number;
+    created_at: string;
+    updated_at: string;
 }
 
 export const useTask = (projectId: number) => {
@@ -14,7 +24,7 @@ export const useTask = (projectId: number) => {
             const data = await invoke('get_all_tasks', {
                 projectId,
             });
-            return data as MiniTask[];
+            return data as Task[];
         },
         enabled: projectId !== 0,
         refetchOnWindowFocus: true,

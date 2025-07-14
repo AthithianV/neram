@@ -1,7 +1,7 @@
 use tauri::{ command, State };
 
 use crate::repository::task::TaskRepository;
-use crate::models::task::{ MiniTask, TaskModel };
+use crate::models::task::{ ReadTaskModel };
 use crate::AppState;
 
 // /// Creates a new Task record in the database.
@@ -38,7 +38,7 @@ use crate::AppState;
 pub async fn get_all_tasks(
     app_state: State<'_, AppState>,
     project_id: Option<i32>
-) -> Result<Vec<MiniTask>, String> {
+) -> Result<Vec<ReadTaskModel>, String> {
     let db = app_state.conn.lock().await;
 
     let task_repository = TaskRepository::new(&db);

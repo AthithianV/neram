@@ -25,20 +25,28 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 
 import { PROJECT_INITIAL_VALUES } from '@/constants/project';
+import { useCreateProject } from '@/hooks/useProject';
 
 type Props = {
     initialValues?: Project;
+    closeForm: () => void;
 };
 
-export function ProjectForm({ initialValues }: Props) {
+export function ProjectForm({ initialValues, closeForm }: Props) {
+    const { mutateAsync: createProject, isPending: isSubmitting } =
+        useCreateProject();
+
     const form = useForm<Project>({
         resolver: zodResolver(ProjectSchema),
         defaultValues: initialValues ?? PROJECT_INITIAL_VALUES,
     });
 
     const handleSubmit = async (data: Project) => {
-        // await onSubmit(data);
-        form.reset(data); // keep the form in sync after save
+        console.log(data);
+
+        createProject(data);
+        form.reset();
+        closeForm();
     };
 
     return (
@@ -342,10 +350,14 @@ export function ProjectForm({ initialValues }: Props) {
                     )}
                 />
 
-                {/* submit ----*/}
-                <Button type="submit" disabled={form.formState.isSubmitting}>
-                    {form.formState.isSubmitting ? 'Saving…' : 'Save project'}
-                </Button>
+                <div className="flex gap-2 justify-end">
+                    <Button variant={'destructive'} onClick={closeForm}>
+                        Close
+                    </Button>
+                    <Button type="submit" disabled={isSubmitting}>
+                        {isSubmitting ? 'Saving…' : 'Save project'}
+                    </Button>
+                </div>
             </form>
         </Form>
     );

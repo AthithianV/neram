@@ -1,7 +1,7 @@
 use sea_orm::*;
 use ::entity::tags::{ Entity as Tag, Model as TagModel, ActiveModel as TagActiveModel };
 
-use crate::models::tag::MiniTag;
+use crate::models::tag::ReadTagModel;
 
 pub struct TagRepository<'a> {
     db: &'a DatabaseConnection,
@@ -31,15 +31,11 @@ impl<'a> TagRepository<'a> {
         Ok(tag)
     }
 
-    pub async fn find_all(&self) -> Result<Vec<MiniTag>, DbErr> {
+    pub async fn find_all(&self) -> Result<Vec<ReadTagModel>, DbErr> {
         let tags = Tag::find().all(self.db).await?;
         let minimal_tags = tags
             .into_iter()
-            .map(|tag| MiniTag {
-                id: tag.id,
-                title: tag.title,
-                color: tag.color,
-            })
+            .map(|tag| ReadTagModel::from(tag))
             .collect();
         Ok(minimal_tags)
     }

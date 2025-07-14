@@ -9,7 +9,7 @@ pub struct Model {
     pub id: i32,
     pub title: String,
     pub description: Option<String>,
-    pub color: Option<String>,
+    pub color: String,
     pub created_at: String,
     pub updated_at: String,
 }

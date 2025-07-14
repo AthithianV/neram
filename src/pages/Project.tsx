@@ -7,25 +7,25 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
-    DialogClose,
     DialogContent,
     DialogDescription,
     DialogTitle,
     DialogTrigger,
-    DialogFooter,
     DialogHeader,
 } from '@/components/ui/dialog';
 import { ProjectForm } from '@/components/project/ProjectForm';
+import { useState } from 'react';
 
 const Project = () => {
     const { data: projects } = useProject();
     const { projectId } = useParams();
     const navigate = useNavigate();
+    const [isOpen, setIsopen] = useState(false);
 
     return (
         <div className="h-full">
             <div className="flex border-b-2 items-center gap-2">
-                <ScrollArea className="w-[95%] whitespace-nowrap">
+                <ScrollArea className="max-w-[95%] whitespace-nowrap">
                     <div className="flex gap-1 pb-3">
                         {projects?.map((project) => (
                             <div
@@ -57,9 +57,12 @@ const Project = () => {
                     <ScrollBar orientation="horizontal" />
                 </ScrollArea>
 
-                <Dialog>
+                <Dialog open={isOpen} onOpenChange={setIsopen}>
                     <DialogTrigger asChild>
-                        <Button className="mb-3 cursor-pointer">
+                        <Button
+                            className="mb-3 cursor-pointer"
+                            variant={'outline'}
+                        >
                             <Plus className="w-4 h-4" />
                         </Button>
                     </DialogTrigger>
@@ -71,7 +74,7 @@ const Project = () => {
                             </DialogDescription>
                         </DialogHeader>
                         <ScrollArea className="h-[90%] pe-3">
-                            <ProjectForm />
+                            <ProjectForm closeForm={() => setIsopen(false)} />
                         </ScrollArea>
                     </DialogContent>
                 </Dialog>

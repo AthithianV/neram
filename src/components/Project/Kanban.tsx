@@ -1,11 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { useTask, useUpdateTask } from '@/hooks/useTask';
+import { Task, useTask, useUpdateTask } from '@/hooks/useTask';
 import { useProject } from '@/hooks/useProject';
-import { Task } from '@/schema/TaskSchema';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
+import { useParams } from 'react-router-dom';
+import dayjs from 'dayjs';
 
 interface KanbanColumn {
     id: string;
@@ -15,41 +16,41 @@ interface KanbanColumn {
 }
 
 const Kanban = () => {
-    const { data: tasks = [] } = useTask(1);
+    const { projectId } = useParams();
+
+    const { data: tasks = [] } = useTask(Number(projectId) ?? 0);
     const { data: projects = [] } = useProject();
     const updateTask = useUpdateTask();
     const [draggedTask, setDraggedTask] = useState<Task | null>(null);
 
+    console.log(tasks);
+
     const columns: KanbanColumn[] = useMemo(
         () => [
-            // {
-            //     id: 'todo',
-            //     title: 'To Do',
-            //     color: 'bg-blue-50 border-blue-200',
-            //     tasks: tasks
-            //     // .filter((task) => task.status === 'todo'),
-            // },
-            // {
-            //     id: 'in_progress',
-            //     title: 'In Progress',
-            //     color: 'bg-yellow-50 border-yellow-200',
-            //     tasks: tasks
-            //     // .filter((task) => task.status === 'in_progress'),
-            // },
-            // {
-            //     id: 'review',
-            //     title: 'Review',
-            //     color: 'bg-purple-50 border-purple-200',
-            //     tasks: tasks
-            //     // .filter((task) => task.status === 'review'),
-            // },
-            // {
-            //     id: 'done',
-            //     title: 'Done',
-            //     color: 'bg-green-50 border-green-200',
-            //     tasks: tasks
-            //     // .filter((task) => task.status === 'done'),
-            // },
+            {
+                id: 'Planning',
+                title: 'Planning',
+                color: 'bg-blue-50 border-blue-200',
+                tasks: tasks.filter((task) => task.status === 'Planning'),
+            },
+            {
+                id: 'in_progress',
+                title: 'In Progress',
+                color: 'bg-yellow-50 border-yellow-200',
+                tasks: tasks.filter((task) => task.status === 'In Progress'),
+            },
+            {
+                id: 'review',
+                title: 'Review',
+                color: 'bg-purple-50 border-purple-200',
+                tasks: tasks.filter((task) => task.status === 'review'),
+            },
+            {
+                id: 'Completed',
+                title: 'Completed',
+                color: 'bg-green-50 border-green-200',
+                tasks: tasks.filter((task) => task.status === 'Completed'),
+            },
         ],
         [tasks],
     );
@@ -73,16 +74,16 @@ const Kanban = () => {
         }
 
         try {
-            await updateTask.mutateAsync({
-                ...draggedTask,
-                status: targetStatus,
-                started_at: draggedTask.started_at.toISOString(),
-                deadline: draggedTask.deadline?.toISOString(),
-                completed_at:
-                    targetStatus === 'done'
-                        ? new Date().toISOString()
-                        : undefined,
-            });
+            // await updateTask.mutateAsync({
+            //     ...draggedTask,
+            //     status: targetStatus,
+            //     started_at: draggedTask.started_at.toISOString(),
+            //     deadline: draggedTask.deadline?.toISOString(),
+            //     completed_at:
+            //         targetStatus === 'done'
+            //             ? new Date().toISOString()
+            //             : undefined,
+            // });
         } catch (error) {
             console.error('Failed to update task status:', error);
         }
@@ -171,7 +172,8 @@ const Kanban = () => {
                                                         className={cn(
                                                             'w-2 h-2 rounded-full',
                                                             getPriorityColor(
-                                                                task.priority,
+                                                                task.priority ??
+                                                                    '',
                                                             ),
                                                         )}
                                                     />
@@ -214,7 +216,9 @@ const Kanban = () => {
                                                             )}
                                                         >
                                                             {formatDate(
-                                                                task.deadline,
+                                                                dayjs(
+                                                                    task.deadline,
+                                                                ).toDate(),
                                                             )}
                                                         </span>
                                                     </div>
@@ -252,7 +256,9 @@ const Kanban = () => {
                                                             <span className="text-xs text-muted-foreground">
                                                                 Started:{' '}
                                                                 {formatDate(
-                                                                    task.started_at,
+                                                                    dayjs(
+                                                                        task.started_at,
+                                                                    ).toDate(),
                                                                 )}
                                                             </span>
                                                         )}

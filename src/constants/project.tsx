@@ -1,12 +1,6 @@
 export const PROJECT_INITIAL_VALUES = {
-    title: '',
-    description: '',
     color: '#3b82f6',
-    client_name: '',
     status: 'active',
-    started_at: '',
-    deadline: '',
-    completed_at: '',
     is_billable: false,
     billing_type: 'hourly',
     hourly_rate: 0,

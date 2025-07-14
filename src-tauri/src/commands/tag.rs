@@ -1,7 +1,7 @@
 use tauri::{ command, State };
 
 use crate::repository::tag::TagRepository;
-use crate::models::tag::{ MiniTag };
+use crate::models::tag::{ ReadTagModel };
 use crate::AppState;
 
 // /// Creates a new Tag record in the database.
@@ -35,7 +35,7 @@ use crate::AppState;
 // /// A `Result` containing a `Vec` of `TagModel` on success, or a `String` error message.
 
 #[command]
-pub async fn get_all_tags(app_state: State<'_, AppState>) -> Result<Vec<MiniTag>, String> {
+pub async fn get_all_tags(app_state: State<'_, AppState>) -> Result<Vec<ReadTagModel>, String> {
     let db = app_state.conn.lock().await;
 
     let tag_repository = TagRepository::new(&db);

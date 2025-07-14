@@ -2,11 +2,11 @@ use ::entity::tags;
 use serde::{ Deserialize, Serialize };
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct TagModel {
+pub struct ReadTagModel {
     pub id: i32,
     pub title: String,
     pub description: Option<String>,
-    pub color: Option<String>,
+    pub color: String,
     pub created_at: String,
     pub updated_at: String,
 }
@@ -15,22 +15,18 @@ pub struct TagModel {
 pub struct CreateTagModel {
     pub title: String,
     pub description: Option<String>,
-    pub color: Option<String>,
+    pub color: String,
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct MiniTag {
-    pub id: i32,
-    pub title: String,
-    pub color: Option<String>,
-}
-
-impl From<tags::Model> for MiniTag {
+impl From<tags::Model> for ReadTagModel {
     fn from(tag: tags::Model) -> Self {
         Self {
             id: tag.id,
             title: tag.title,
             color: tag.color,
+            description: tag.description,
+            created_at: tag.created_at,
+            updated_at: tag.updated_at,
         }
     }
 }

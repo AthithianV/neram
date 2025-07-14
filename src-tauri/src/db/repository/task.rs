@@ -7,7 +7,7 @@ use ::entity::tasks::{
 };
 use ::entity::tasks_tags::{ Entity as TaskTags, ActiveModel as TaskTagsActiveModel };
 
-use crate::models::task::MiniTask;
+use crate::models::task::{ MiniTask, ReadTaskModel };
 
 pub struct TaskRepository<'a> {
     db: &'a DatabaseConnection,
@@ -44,27 +44,50 @@ impl<'a> TaskRepository<'a> {
         Ok(task)
     }
 
-    pub async fn find_all(&self) -> Result<Vec<MiniTask>, DbErr> {
+    pub async fn find_all(&self) -> Result<Vec<ReadTaskModel>, DbErr> {
         let tasks = Task::find().all(self.db).await?;
         let minimal_tasks = tasks
             .into_iter()
-            .map(|task| MiniTask {
+            .map(|task| ReadTaskModel {
                 id: task.id,
                 title: task.title,
+                description: task.description,
                 color: task.color,
+                status: task.status,
+                project_id: task.project_id,
+                priority: task.priority,
+                deadline: task.deadline,
+                started_at: task.started_at,
+                completed_at: task.completed_at,
+                estimated_time: task.estimated_time,
+                created_at: task.created_at,
+                updated_at: task.updated_at,
             })
             .collect();
         Ok(minimal_tasks)
     }
 
-    pub async fn find_all_by_project_id(&self, project_id: i32) -> Result<Vec<MiniTask>, DbErr> {
+    pub async fn find_all_by_project_id(
+        &self,
+        project_id: i32
+    ) -> Result<Vec<ReadTaskModel>, DbErr> {
         let tasks = Task::find().filter(TaskColumn::ProjectId.eq(project_id)).all(self.db).await?;
         let minimal_tasks = tasks
             .into_iter()
-            .map(|task| MiniTask {
+            .map(|task| ReadTaskModel {
                 id: task.id,
                 title: task.title,
+                description: task.description,
                 color: task.color,
+                status: task.status,
+                project_id: task.project_id,
+                priority: task.priority,
+                deadline: task.deadline,
+                started_at: task.started_at,
+                completed_at: task.completed_at,
+                estimated_time: task.estimated_time,
+                created_at: task.created_at,
+                updated_at: task.updated_at,
             })
             .collect();
         Ok(minimal_tasks)

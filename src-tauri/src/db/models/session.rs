@@ -22,7 +22,6 @@ pub struct CreateSessionModel {
     pub tags: Vec<i32>,
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UpdateSessionModel {
     pub title: Option<String>,
@@ -66,13 +65,13 @@ for FullSessionModel {
         let task = task_opt.map(|t| Extra {
             id: t.id,
             title: t.title,
-            color: t.color.unwrap(),
+            color: t.color,
         });
 
         let project = project_opt.map(|p| Extra {
             id: p.id,
             title: p.title,
-            color: p.color.unwrap(),
+            color: p.color,
         });
 
         let tags = tag_models
@@ -80,7 +79,7 @@ for FullSessionModel {
             .map(|t| Extra {
                 id: t.id,
                 title: t.title,
-                color: t.color.unwrap(),
+                color: t.color,
             })
             .collect();
 

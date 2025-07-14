@@ -25,7 +25,7 @@ pub struct ProjectModel {
 pub struct CreateProjectModel {
     pub title: String,
     pub description: Option<String>,
-    pub color: Option<String>,
+    pub color: String,
     pub client_name: Option<String>,
     pub status: String,
     pub started_at: Option<String>,
@@ -42,7 +42,7 @@ pub struct CreateProjectModel {
 pub struct MinimalProjectModel {
     pub id: i32,
     pub title: String,
-    pub color: Option<String>,
+    pub color: String,
 }
 
 impl From<projects::Model> for MinimalProjectModel {
