@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
 import { toast } from 'sonner';
 
-type TimerResponse = {
+export type TimerResponse = {
     session_time_elapsed: number;
     break_time_elapsed: number;
     session_id?: number;
