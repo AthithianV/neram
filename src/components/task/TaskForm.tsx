@@ -16,18 +16,31 @@ import { Textarea } from '@/components/ui/textarea';
 import TaskSchema, { Task } from '@/schema/TaskSchema';
 import { Badge } from '../ui/badge';
 import { Plus } from 'lucide-react';
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from '../ui/form';
+import { Select } from '@radix-ui/react-select';
+import {
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '../ui/select';
+import { Table, TableBody, TableCell, TableRow } from '../ui/table';
 
 const TaskForm = () => {
     const [open, setOpen] = useState(false);
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm({
+    const form = useForm({
         resolver: zodResolver(TaskSchema),
         defaultValues: {
             status: 'Planning',
             priority: 'Low',
+            title: 'Untitled',
         },
     });
 
@@ -36,96 +49,156 @@ const TaskForm = () => {
         setOpen(false);
     };
 
+    const closeForm = (state: boolean) => {
+        setOpen(state);
+        if (state) {
+            form.reset();
+        }
+    };
+
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={closeForm}>
             <DialogTrigger asChild>
                 <Badge
                     className="py-1 cursor-pointer hover:bg-gray-200"
                     variant={'secondary'}
+                    onClick={() => setOpen(true)}
                 >
                     <Plus /> Add Task
                 </Badge>
             </DialogTrigger>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Create New Task</DialogTitle>
-                </DialogHeader>
+            <DialogContent
+                onInteractOutside={(e) => e.preventDefault()}
+                onEscapeKeyDown={(e) => e.preventDefault()}
+                className="min-w-[65%] px-20 py-10"
+            >
+                <Form {...form}>
+                    <form
+                        onSubmit={form.handleSubmit(onSubmit)}
+                        className="space-y-6"
+                    >
+                        {/* title */}
+                        <FormField
+                            control={form.control}
+                            name="title"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormControl>
+                                        <Input
+                                            placeholder="Untitled"
+                                            {...field}
+                                            className="!text-3xl font-bold border-none shadow-none px-0 !h-auto"
+                                            value={field.value}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                    <Input placeholder="Title" {...register('title')} />
-                    {errors.title && (
-                        <p className="text-red-500 text-sm">
-                            {errors.title.message}
-                        </p>
-                    )}
+                        <div className="border-b-2 pb-4 space-y-1">
+                            <Table>
+                                <TableBody>
+                                    <TableRow className="border-none">
+                                        <TableCell className="w-20">
+                                            Status
+                                        </TableCell>
+                                        <TableCell>
+                                            <FormField
+                                                control={form.control}
+                                                name="status"
+                                                render={({ field }) => (
+                                                    <FormItem className="flex">
+                                                        <Select
+                                                            onValueChange={
+                                                                field.onChange
+                                                            }
+                                                            defaultValue={
+                                                                field.value
+                                                            }
+                                                        >
+                                                            <FormControl>
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Pick status" />
+                                                                </SelectTrigger>
+                                                            </FormControl>
+                                                            <SelectContent>
+                                                                {[
+                                                                    'Planning',
+                                                                    'Progress',
+                                                                    'Review',
+                                                                    'Completed',
+                                                                ].map((s) => (
+                                                                    <SelectItem
+                                                                        key={s}
+                                                                        value={
+                                                                            s
+                                                                        }
+                                                                    >
+                                                                        {s}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </TableCell>
+                                        <TableCell>Color</TableCell>
+                                        <TableCell>
+                                            <FormField
+                                                control={form.control}
+                                                name="color"
+                                                render={({ field }) => (
+                                                    <FormItem className="flex">
+                                                        <FormControl>
+                                                            <Input />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow></TableRow>
+                                </TableBody>
+                            </Table>
+                            {/* status -----*/}
+                        </div>
 
-                    <Textarea
-                        placeholder="Description"
-                        {...register('description')}
-                    />
+                        {/* description */}
+                        <FormField
+                            control={form.control}
+                            name="description"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormControl>
+                                        <Textarea
+                                            placeholder="Write more about this task Here..."
+                                            rows={4}
+                                            {...field}
+                                            className="bg-transparent border-none shadow-none px-1 w-full !text-md"
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
-                    <Input
-                        placeholder="Color (e.g. #FF0000)"
-                        {...register('color')}
-                    />
-                    {errors.color && (
-                        <p className="text-red-500 text-sm">
-                            {errors.color.message}
-                        </p>
-                    )}
-
-                    <Input
-                        placeholder="Project ID"
-                        type="number"
-                        {...register('project_id', { valueAsNumber: true })}
-                    />
-                    {errors.project_id && (
-                        <p className="text-red-500 text-sm">
-                            {errors.project_id.message}
-                        </p>
-                    )}
-
-                    <Input
-                        placeholder="Priority (Low, Medium, High)"
-                        {...register('priority')}
-                    />
-
-                    <Input
-                        placeholder="Status (Planning, In Progress, Done)"
-                        {...register('status')}
-                    />
-
-                    <Input
-                        placeholder="Deadline"
-                        type="datetime-local"
-                        {...register('deadline')}
-                    />
-
-                    <Input
-                        placeholder="Started At"
-                        type="datetime-local"
-                        {...register('started_at')}
-                    />
-                    {errors.started_at && (
-                        <p className="text-red-500 text-sm">
-                            {errors.started_at.message}
-                        </p>
-                    )}
-
-                    <Input
-                        placeholder="Completed At"
-                        type="datetime-local"
-                        {...register('completed_at')}
-                    />
-
-                    <Input
-                        placeholder="Estimated Time (minutes)"
-                        type="number"
-                        {...register('estimated_time', { valueAsNumber: true })}
-                    />
-
-                    <Button type="submit">Submit</Button>
-                </form>
+                        <div className="flex gap-2 justify-end">
+                            <Button
+                                variant={'destructive'}
+                                onClick={() => closeForm(false)}
+                            >
+                                Close
+                            </Button>
+                            <Button type="submit" disabled={false}>
+                                {false ? 'Saving…' : 'Save project'}
+                            </Button>
+                        </div>
+                    </form>
+                </Form>
             </DialogContent>
         </Dialog>
     );

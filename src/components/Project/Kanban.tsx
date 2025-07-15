@@ -5,7 +5,6 @@ import { cn } from '@/lib/utils';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 import { useParams } from 'react-router-dom';
 import TaskCard from '../task/TaskCard';
-import { Plus } from 'lucide-react';
 import TaskForm from '../task/TaskForm';
 
 interface KanbanColumn {
