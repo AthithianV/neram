@@ -1,12 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import { Task, useTask, useUpdateTask } from '@/hooks/useTask';
 import { useProject } from '@/hooks/useProject';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 import { useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
+import TaskCard from './TaskCard';
+import { Plus } from 'lucide-react';
 
 interface KanbanColumn {
     id: string;
@@ -23,32 +24,30 @@ const Kanban = () => {
     const updateTask = useUpdateTask();
     const [draggedTask, setDraggedTask] = useState<Task | null>(null);
 
-    console.log(tasks);
-
     const columns: KanbanColumn[] = useMemo(
         () => [
             {
                 id: 'Planning',
                 title: 'Planning',
-                color: 'bg-blue-50 border-blue-200',
+                color: 'bg-[#0EA5E9] border-blue-200',
                 tasks: tasks.filter((task) => task.status === 'Planning'),
             },
             {
                 id: 'in_progress',
                 title: 'In Progress',
-                color: 'bg-yellow-50 border-yellow-200',
+                color: 'bg-[#FACC15] border-yellow-200',
                 tasks: tasks.filter((task) => task.status === 'In Progress'),
             },
             {
                 id: 'review',
                 title: 'Review',
-                color: 'bg-purple-50 border-purple-200',
+                color: 'bg-[#EF4444] border-purple-200',
                 tasks: tasks.filter((task) => task.status === 'review'),
             },
             {
                 id: 'Completed',
                 title: 'Completed',
-                color: 'bg-green-50 border-green-200',
+                color: 'bg-[#10B981] border-green-200',
                 tasks: tasks.filter((task) => task.status === 'Completed'),
             },
         ],
@@ -91,203 +90,66 @@ const Kanban = () => {
         setDraggedTask(null);
     };
 
-    const getPriorityColor = (priority: string) => {
-        switch (priority.toLowerCase()) {
-            case 'high':
-                return 'bg-red-500';
-            case 'medium':
-                return 'bg-yellow-500';
-            case 'low':
-                return 'bg-green-500';
-            default:
-                return 'bg-gray-500';
-        }
-    };
-
     const getProjectName = (projectId: number) => {
         const project = projects.find((p) => p.id === projectId);
         return project?.title || 'Unknown Project';
     };
 
     const formatDate = (date: Date) => {
-        return new Intl.DateTimeFormat('en-US', {
-            month: 'short',
-            day: 'numeric',
-        }).format(date);
+        return dayjs(date).format('D MMM');
     };
 
     return (
-        <div className="h-[98%] overflow-hidden py-2">
-            <ScrollArea className="w-full h-full">
-                <div className="flex gap-2 pb-4 min-w-max">
-                    {columns.map((column) => (
-                        <div
-                            key={column.id}
-                            className={cn(
-                                'flex-shrink-0 w-80 rounded-lg border bg-white border-gray-200',
-                                draggedTask &&
-                                    draggedTask.status !== column.id &&
-                                    'border-blue-300 bg-blue-50',
-                                'shadow-sm',
-                                column.color,
-                            )}
-                            onDragOver={handleDragOver}
-                            onDrop={(e) => handleDrop(e, column.id)}
-                        >
-                            <div className={cn('p-2 border-b-2')}>
+        <ScrollArea className="h-full">
+            <div className="flex gap-1 h-full">
+                {columns.map((column) => (
+                    <div className="h-full w-[25%]">
+                        <ScrollArea className="h-full">
+                            <div
+                                key={column.id}
+                                className={cn(
+                                    'rounded-md',
+                                    'bg-white shadow-sm p-2 border-2 border-gray-100',
+                                )}
+                                onDragOver={handleDragOver}
+                                onDrop={(e) => handleDrop(e, column.id)}
+                            >
                                 <div className="flex items-center justify-between">
-                                    <h3 className="font-semibold text-gray-800">
+                                    <Badge
+                                        className={cn(
+                                            'font-semibold rounded text-gary-100',
+                                            column.color,
+                                        )}
+                                    >
                                         {column.title}
-                                    </h3>
+                                    </Badge>
                                     <Badge
                                         variant="secondary"
-                                        className="text-xs"
+                                        className={cn(column.color)}
                                     >
                                         {column.tasks.length}
                                     </Badge>
                                 </div>
-                            </div>
 
-                            <div className="p-2 space-y-2 max-h-[calc(100vh-200px)] overflow-y-auto">
-                                {column.tasks.map((task) => (
-                                    <Card
-                                        key={task.id}
-                                        className={cn(
-                                            'cursor-move transition-all hover:shadow-md',
-                                            draggedTask?.id === task.id &&
-                                                'opacity-50',
-                                        )}
-                                        draggable
-                                        onDragStart={(e) =>
-                                            handleDragStart(e, task)
-                                        }
+                                <div className="py-2 space-y-2">
+                                    {column.tasks.map((task) => (
+                                        <TaskCard task={task} />
+                                    ))}
+
+                                    <Badge
+                                        className="py-1 cursor-pointer hover:bg-gray-200"
+                                        variant={'secondary'}
                                     >
-                                        <CardHeader className="pb-2">
-                                            <div className="flex items-start justify-between gap-2">
-                                                <CardTitle className="text-sm font-medium line-clamp-2">
-                                                    {task.title}
-                                                </CardTitle>
-                                                <div className="flex items-center gap-1">
-                                                    <div
-                                                        className={cn(
-                                                            'w-2 h-2 rounded-full',
-                                                            getPriorityColor(
-                                                                task.priority ??
-                                                                    '',
-                                                            ),
-                                                        )}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </CardHeader>
-
-                                        <CardContent className="pt-0">
-                                            {task.description && (
-                                                <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
-                                                    {task.description}
-                                                </p>
-                                            )}
-
-                                            <div className="space-y-2">
-                                                <div className="flex items-center justify-between text-xs">
-                                                    <span className="text-muted-foreground">
-                                                        Project:
-                                                    </span>
-                                                    <span className="font-medium">
-                                                        {getProjectName(
-                                                            task.project_id,
-                                                        )}
-                                                    </span>
-                                                </div>
-
-                                                {task.deadline && (
-                                                    <div className="flex items-center justify-between text-xs">
-                                                        <span className="text-muted-foreground">
-                                                            Deadline:
-                                                        </span>
-                                                        <span
-                                                            className={cn(
-                                                                'font-medium',
-                                                                new Date(
-                                                                    task.deadline,
-                                                                ) <
-                                                                    new Date() &&
-                                                                    'text-red-500',
-                                                            )}
-                                                        >
-                                                            {formatDate(
-                                                                dayjs(
-                                                                    task.deadline,
-                                                                ).toDate(),
-                                                            )}
-                                                        </span>
-                                                    </div>
-                                                )}
-
-                                                {task.estimated_time && (
-                                                    <div className="flex items-center justify-between text-xs">
-                                                        <span className="text-muted-foreground">
-                                                            Est. Time:
-                                                        </span>
-                                                        <span className="font-medium">
-                                                            {
-                                                                task.estimated_time
-                                                            }
-                                                            h
-                                                        </span>
-                                                    </div>
-                                                )}
-
-                                                <div className="flex items-center justify-between">
-                                                    <Badge
-                                                        variant="outline"
-                                                        className="text-xs"
-                                                        style={{
-                                                            borderColor:
-                                                                task.color,
-                                                            color: task.color,
-                                                        }}
-                                                    >
-                                                        {task.priority}
-                                                    </Badge>
-
-                                                    <div className="flex items-center gap-1">
-                                                        {task.started_at && (
-                                                            <span className="text-xs text-muted-foreground">
-                                                                Started:{' '}
-                                                                {formatDate(
-                                                                    dayjs(
-                                                                        task.started_at,
-                                                                    ).toDate(),
-                                                                )}
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                ))}
-
-                                {column.tasks.length === 0 && (
-                                    <div
-                                        className={cn(
-                                            'flex items-center justify-center',
-                                            'h-32 text-muted-foreground text-sm',
-                                            'border-2 border-gray-200',
-                                            'rounded-lg',
-                                        )}
-                                    >
-                                        No tasks
-                                    </div>
-                                )}
+                                        <Plus /> Add Task
+                                    </Badge>
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
-                <ScrollBar orientation="horizontal" />
-            </ScrollArea>
-        </div>
+                        </ScrollArea>
+                    </div>
+                ))}
+            </div>
+            <ScrollBar orientation="horizontal" />
+        </ScrollArea>
     );
 };
 

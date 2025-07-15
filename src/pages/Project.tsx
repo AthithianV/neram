@@ -14,7 +14,7 @@ import {
     DialogHeader,
 } from '@/components/ui/dialog';
 import { ProjectForm } from '@/components/project/ProjectForm';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const Project = () => {
     const { data: projects } = useProject();
@@ -22,9 +22,15 @@ const Project = () => {
     const navigate = useNavigate();
     const [isOpen, setIsopen] = useState(false);
 
+    useEffect(() => {
+        if (projects && projects.length > 0) {
+            navigate(`/project/${projects[0].id}`);
+        }
+    }, []);
+
     return (
         <div className="h-full">
-            <div className="flex border-b-2 items-center gap-2">
+            <div className="flex items-center gap-2 h-[8%]">
                 <ScrollArea className="max-w-[95%] whitespace-nowrap">
                     <div className="flex gap-1 pb-3">
                         {projects?.map((project) => (
@@ -79,7 +85,7 @@ const Project = () => {
                     </DialogContent>
                 </Dialog>
             </div>
-            <div>
+            <div className="h-[92%]">
                 <Outlet />
             </div>
         </div>
