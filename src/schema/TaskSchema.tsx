@@ -5,12 +5,12 @@ const TaskSchema = z.object({
     title: z.string(),
     description: z.string().optional(),
     color: z.string(),
-    status: z.string(),
+    status: z.string().default('Planning'),
     project_id: z.number(),
-    priority: z.string(),
-    deadline: z.date().optional(),
-    started_at: z.date(),
-    completed_at: z.date().optional(),
+    priority: z.string().default('Low'),
+    deadline: z.string().optional(),
+    started_at: z.string(),
+    completed_at: z.string().optional(),
     estimated_time: z.number().optional(),
 });
 

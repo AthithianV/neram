@@ -1,13 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { Task, useTask, useUpdateTask } from '@/hooks/useTask';
-import { useProject } from '@/hooks/useProject';
+import { Task, useTask } from '@/hooks/useTask';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 import { useParams } from 'react-router-dom';
-import dayjs from 'dayjs';
-import TaskCard from './TaskCard';
+import TaskCard from '../task/TaskCard';
 import { Plus } from 'lucide-react';
+import TaskForm from '../task/TaskForm';
 
 interface KanbanColumn {
     id: string;
@@ -20,8 +19,6 @@ const Kanban = () => {
     const { projectId } = useParams();
 
     const { data: tasks = [] } = useTask(Number(projectId) ?? 0);
-    const { data: projects = [] } = useProject();
-    const updateTask = useUpdateTask();
     const [draggedTask, setDraggedTask] = useState<Task | null>(null);
 
     const columns: KanbanColumn[] = useMemo(
@@ -90,15 +87,6 @@ const Kanban = () => {
         setDraggedTask(null);
     };
 
-    const getProjectName = (projectId: number) => {
-        const project = projects.find((p) => p.id === projectId);
-        return project?.title || 'Unknown Project';
-    };
-
-    const formatDate = (date: Date) => {
-        return dayjs(date).format('D MMM');
-    };
-
     return (
         <ScrollArea className="h-full">
             <div className="flex gap-1 h-full">
@@ -136,12 +124,7 @@ const Kanban = () => {
                                         <TaskCard task={task} />
                                     ))}
 
-                                    <Badge
-                                        className="py-1 cursor-pointer hover:bg-gray-200"
-                                        variant={'secondary'}
-                                    >
-                                        <Plus /> Add Task
-                                    </Badge>
+                                    <TaskForm />
                                 </div>
                             </div>
                         </ScrollArea>
