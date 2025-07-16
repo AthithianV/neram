@@ -5,14 +5,12 @@ import dayjs from 'dayjs';
 import { Badge } from '../ui/badge';
 import { AlarmCheck, Calendar } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
-import { TASK_PRIORITY_COLOR } from '@/constants/project';
+import { TASK_PRIORITY_COLOR, TaskPriority } from '@/constants/project';
 
 const TaskCard = ({ task }: { task: Task }) => {
     const getPriorityColor = (priority?: string | null) => {
         const color =
-            TASK_PRIORITY_COLOR[
-                (priority as 'Low' | 'High' | 'Medium') ?? 'Default'
-            ];
+            TASK_PRIORITY_COLOR[(priority as TaskPriority) ?? 'Default'];
         return color;
     };
 

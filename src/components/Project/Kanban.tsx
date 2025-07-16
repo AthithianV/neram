@@ -51,11 +51,6 @@ const Kanban = () => {
         [tasks],
     );
 
-    const handleDragStart = (e: React.DragEvent, task: Task) => {
-        setDraggedTask(task);
-        e.dataTransfer.effectAllowed = 'move';
-    };
-
     const handleDragOver = (e: React.DragEvent) => {
         e.preventDefault();
         e.dataTransfer.dropEffect = 'move';

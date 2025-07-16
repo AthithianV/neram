@@ -33,11 +33,13 @@ import {
     SelectTrigger,
     SelectValue,
 } from '../ui/select';
-import { Table, TableBody, TableCell, TableRow } from '../ui/table';
 import { COLORS } from '@/constants/colors';
-import { cn } from '@/lib/utils';
 import DatePicker from '../form/DatePicker';
-import { TASK_STATUS, TASK_STATUS_COLOR } from '@/constants/project';
+import {
+    TASK_STATUS,
+    TASK_STATUS_COLOR,
+    TaskStatus,
+} from '@/constants/project';
 
 const TaskForm = () => {
     const [open, setOpen] = useState(false);
@@ -142,6 +144,12 @@ const TaskForm = () => {
 };
 
 TaskForm.TABLE = ({ form }: { form: any }) => {
+    const getTaskStatusBg = (value?: string | null) => {
+        return {
+            backgroundColor:
+                TASK_STATUS_COLOR[(value as TaskStatus) ?? 'Default'],
+        };
+    };
     return (
         <div className="border-b-2 pb-4 space-y-4">
             <div className="flex flex-wrap gap-4">
@@ -162,20 +170,7 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
                                     <FormControl>
                                         <SelectTrigger
                                             className="shadow-none border-none p-2 !h-6 rounded text-gray-900 font-semibold"
-                                            style={
-                                                field.value
-                                                    ? {
-                                                          backgroundColor:
-                                                              TASK_STATUS_COLOR[
-                                                                  field.value as
-                                                                      | 'Planning'
-                                                                      | 'Review'
-                                                                      | 'In Progress'
-                                                                      | 'Completed'
-                                                              ],
-                                                      }
-                                                    : {}
-                                            }
+                                            style={getTaskStatusBg(field.value)}
                                         >
                                             <SelectValue
                                                 placeholder="Pick status"
