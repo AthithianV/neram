@@ -155,7 +155,7 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
             <div className="flex flex-wrap gap-4">
                 {/* Status */}
                 <div className="flex gap-5 w-[45%] items-center">
-                    <label className="flex items-center gap-1 text-sm font-medium">
+                    <label className="flex items-center gap-1 text-sm font-medium w-[50%]">
                         <Gauge size={16} /> Status
                     </label>
                     <FormField
@@ -194,7 +194,7 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
 
                 {/* Color */}
                 <div className="flex gap-5 w-[45%] items-center">
-                    <label className="flex items-center gap-1 text-sm font-medium">
+                    <label className="flex items-center gap-1 text-sm font-medium w-[50%]">
                         <Palette size={16} /> Color
                     </label>
                     <FormField
@@ -207,19 +207,35 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
                                     defaultValue={field.value}
                                 >
                                     <FormControl>
-                                        <SelectTrigger>
+                                        <SelectTrigger
+                                            className="shadow-none border-none p-2 !h-6 rounded text-gray-900 font-semibold"
+                                            style={
+                                                field.value
+                                                    ? {
+                                                          backgroundColor:
+                                                              field.value,
+                                                      }
+                                                    : {}
+                                            }
+                                        >
                                             <SelectValue placeholder="Pick color" />
                                         </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent>
-                                        {COLORS.map((s) => (
-                                            <SelectItem key={s} value={s}>
-                                                <span
-                                                    className="w-4 h-4 rounded-full inline-block"
+                                    <SelectContent className="max-h-[30vh]">
+                                        {COLORS.map((color) => (
+                                            <SelectItem
+                                                key={color.value}
+                                                value={color.value}
+                                            >
+                                                <div
+                                                    className="rounded px-2 font-semibold"
                                                     style={{
-                                                        backgroundColor: s,
+                                                        backgroundColor:
+                                                            color.value,
                                                     }}
-                                                ></span>
+                                                >
+                                                    {color.name}
+                                                </div>
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -232,7 +248,7 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
 
                 {/* Priority */}
                 <div className="flex gap-5 w-[45%] items-center">
-                    <label className="flex items-center gap-1 text-sm font-medium">
+                    <label className="flex items-center gap-1 text-sm font-medium w-[50%]">
                         <Flag size={16} /> Priority
                     </label>
                     <FormField
@@ -245,7 +261,7 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
                                     defaultValue={field.value}
                                 >
                                     <FormControl>
-                                        <SelectTrigger>
+                                        <SelectTrigger className="shadow-none border-none p-2 !h-6 rounded text-gray-900 font-semibold">
                                             <SelectValue placeholder="Pick priority" />
                                         </SelectTrigger>
                                     </FormControl>
@@ -270,7 +286,7 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
 
                 {/* Deadline */}
                 <div className="flex gap-5 w-[45%] items-center">
-                    <label className="flex items-center gap-1 text-sm font-medium">
+                    <label className="flex items-center gap-1 text-sm font-medium w-[50%]">
                         <CalendarCheck size={16} /> Deadline
                     </label>
                     <FormField
@@ -292,7 +308,7 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
 
                 {/* Started At */}
                 <div className="flex gap-5 w-[45%] items-center">
-                    <label className="flex items-center gap-1 text-sm font-medium">
+                    <label className="flex items-center gap-1 text-sm font-medium w-[50%]">
                         <CalendarPlus size={16} /> Started At
                     </label>
                     <FormField
@@ -314,7 +330,7 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
 
                 {/* Completed At */}
                 <div className="flex gap-5 w-[45%] items-center">
-                    <label className="flex items-center gap-1 text-sm font-medium">
+                    <label className="flex items-center gap-1 text-sm font-medium w-[50%]">
                         <CalendarMinus size={16} /> Completed At
                     </label>
                     <FormField
@@ -336,7 +352,7 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
 
                 {/* Estimated Time */}
                 <div className="flex gap-5 w-[45%] items-center">
-                    <label className="flex items-center gap-1 text-sm font-medium">
+                    <label className="flex items-center gap-1 text-sm font-medium w-[50%]">
                         <Clock3 size={16} /> Estimated Time
                     </label>
                     <FormField
