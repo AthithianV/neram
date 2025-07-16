@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -6,13 +6,25 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-
-import TaskSchema, { Task } from '@/schema/TaskSchema';
+import { Popover, PopoverTrigger, PopoverContent } from '../ui/popover';
 import { Badge } from '../ui/badge';
 import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '../ui/select';
+
+import TaskSchema, { Task } from '@/schema/TaskSchema';
+import {
     CalendarCheck,
+    CalendarClock,
     CalendarMinus,
     CalendarPlus,
+    ChevronDown,
+    Clock,
+    Clock1,
     Clock3,
     Flag,
     Gauge,
@@ -26,20 +38,20 @@ import {
     FormItem,
     FormMessage,
 } from '../ui/form';
-import { Select } from '@radix-ui/react-select';
-import {
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '../ui/select';
+
 import { COLORS } from '@/constants/colors';
-import DatePicker from '../form/DatePicker';
 import {
+    TASK_PRIORITY,
+    TASK_PRIORITY_COLOR,
     TASK_STATUS,
     TASK_STATUS_COLOR,
+    TaskPriority,
     TaskStatus,
 } from '@/constants/project';
+import { cn } from '@/lib/utils';
+import dayjs from 'dayjs';
+import { Calendar } from '../ui/calendar';
+import { calcualteDuration, formatDuration, toDBTime } from '@/lib/time';
 
 const TaskForm = () => {
     const [open, setOpen] = useState(false);
@@ -150,9 +162,14 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
                 TASK_STATUS_COLOR[(value as TaskStatus) ?? 'Default'],
         };
     };
+    const getPriorityColor = (value?: string | null) => {
+        return {
+            color: TASK_PRIORITY_COLOR[(value as TaskPriority) ?? 'Default'],
+        };
+    };
     return (
         <div className="border-b-2 pb-4 space-y-4">
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-2">
                 {/* Status */}
                 <div className="flex gap-5 w-[45%] items-center">
                     <label className="flex items-center gap-1 text-sm font-medium w-[50%]">
@@ -169,12 +186,16 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
                                 >
                                     <FormControl>
                                         <SelectTrigger
-                                            className="shadow-none border-none p-2 !h-6 rounded text-gray-900 font-semibold"
+                                            className=" hide-arrow shadow-none border-none p-2 !h-6 rounded text-white font-semibold "
                                             style={getTaskStatusBg(field.value)}
                                         >
                                             <SelectValue
                                                 placeholder="Pick status"
                                                 className="text-black"
+                                            />
+                                            <ChevronDown
+                                                className="text-white font"
+                                                strokeWidth={3}
                                             />
                                         </SelectTrigger>
                                     </FormControl>
@@ -208,7 +229,7 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
                                 >
                                     <FormControl>
                                         <SelectTrigger
-                                            className="shadow-none border-none p-2 !h-6 rounded text-gray-900 font-semibold"
+                                            className="hide-arrow shadow-none border-none p-2 !h-6 rounded text-white font-semibold"
                                             style={
                                                 field.value
                                                     ? {
@@ -219,6 +240,10 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
                                             }
                                         >
                                             <SelectValue placeholder="Pick color" />
+                                            <ChevronDown
+                                                className="text-white font"
+                                                strokeWidth={3}
+                                            />
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent className="max-h-[30vh]">
@@ -228,7 +253,7 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
                                                 value={color.value}
                                             >
                                                 <div
-                                                    className="rounded px-2 font-semibold"
+                                                    className="rounded px-2 font-semibold text-white"
                                                     style={{
                                                         backgroundColor:
                                                             color.value,
@@ -261,18 +286,34 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
                                     defaultValue={field.value}
                                 >
                                     <FormControl>
-                                        <SelectTrigger className="shadow-none border-none p-2 !h-6 rounded text-gray-900 font-semibold">
+                                        <SelectTrigger
+                                            className={cn(
+                                                'hide-arrow ',
+                                                'hover:bg-gray-100',
+                                                'shadow-none border-none',
+                                                'p-2 !h-6 rounded text-gray-900 font-semibold',
+                                            )}
+                                            style={getPriorityColor(
+                                                field.value,
+                                            )}
+                                        >
                                             <SelectValue placeholder="Pick priority" />
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        {[
-                                            'Low',
-                                            'Medium',
-                                            'High',
-                                            'Critical',
-                                        ].map((p) => (
-                                            <SelectItem key={p} value={p}>
+                                        {TASK_PRIORITY.map((p) => (
+                                            <SelectItem
+                                                style={getPriorityColor(p)}
+                                                key={p}
+                                                value={p}
+                                                className="font-semibold"
+                                            >
+                                                <Flag
+                                                    className={`text-${TASK_PRIORITY_COLOR[p]}`}
+                                                    fill={
+                                                        TASK_PRIORITY_COLOR[p]
+                                                    }
+                                                />
                                                 {p}
                                             </SelectItem>
                                         ))}
@@ -295,8 +336,9 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
                         render={({ field }) => (
                             <FormItem>
                                 <FormControl>
-                                    <DatePicker
-                                        date={field.value}
+                                    <TaskForm.DATEPICKER
+                                        icon={<CalendarClock size={16} />}
+                                        value={field.value}
                                         onChange={field.onChange}
                                     />
                                 </FormControl>
@@ -317,8 +359,9 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
                         render={({ field }) => (
                             <FormItem>
                                 <FormControl>
-                                    <DatePicker
-                                        date={field.value}
+                                    <TaskForm.DATEPICKER
+                                        icon={<CalendarClock size={16} />}
+                                        value={field.value}
                                         onChange={field.onChange}
                                     />
                                 </FormControl>
@@ -339,8 +382,9 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
                         render={({ field }) => (
                             <FormItem>
                                 <FormControl>
-                                    <DatePicker
-                                        date={field.value}
+                                    <TaskForm.DATEPICKER
+                                        icon={<CalendarClock size={16} />}
+                                        value={field.value}
                                         onChange={field.onChange}
                                     />
                                 </FormControl>
@@ -351,8 +395,8 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
                 </div>
 
                 {/* Estimated Time */}
-                <div className="flex gap-5 w-[45%] items-center">
-                    <label className="flex items-center gap-1 text-sm font-medium w-[50%]">
+                <div className="flex gap-5 w-[60%] items-center">
+                    <label className="flex items-center gap-1 me-4 text-sm font-medium w-[36%]">
                         <Clock3 size={16} /> Estimated Time
                     </label>
                     <FormField
@@ -361,14 +405,105 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
                         render={({ field }) => (
                             <FormItem>
                                 <FormControl>
-                                    <Input type="time" {...field} />
+                                    <TaskForm.DURATION
+                                        value={field.value}
+                                        onChange={field.onChange}
+                                        setError={(msg) =>
+                                            form.setError('estimated_time', {
+                                                message: msg,
+                                            })
+                                        }
+                                    />
                                 </FormControl>
-                                <FormMessage />
+                                <FormMessage className="text-xs" />
                             </FormItem>
                         )}
                     />
                 </div>
             </div>
+        </div>
+    );
+};
+
+TaskForm.DATEPICKER = ({
+    value,
+    onChange,
+    icon,
+}: {
+    value: string;
+    onChange: (date: string) => void;
+    icon: ReactNode;
+}) => {
+    return (
+        <Popover>
+            <PopoverTrigger asChild>
+                <span
+                    className={cn(
+                        'w-full text-sm font-semibold',
+                        'flex items-center justify-center gap-2 cursor-pointer',
+                        !value && 'text-muted-foreground',
+                        'hover:bg-gray-100 py-1 px-2 rounded',
+                    )}
+                >
+                    {icon}
+                    {value ? (
+                        dayjs(value).format('DD/MM/YYYY')
+                    ) : (
+                        <span>Pick a date</span>
+                    )}
+                </span>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start" side="top">
+                <Calendar
+                    mode="single"
+                    selected={dayjs(value).toDate()}
+                    onSelect={(date) => {
+                        date &&
+                            onChange(
+                                toDBTime(dayjs(date).startOf('day').toString()),
+                            );
+                    }}
+                    initialFocus
+                />
+            </PopoverContent>
+        </Popover>
+    );
+};
+
+TaskForm.DURATION = ({
+    value,
+    onChange,
+    setError,
+}: {
+    value?: number | null;
+    onChange: (duration: number) => void;
+    setError: (msg: string) => void;
+}) => {
+    const [time, setTime] = useState<string>(formatDuration(value ? value : 0));
+
+    const handleChange = () => {
+        const regex = /^\d{2}:\d{2}:\d{2}$/;
+        const isValid = regex.test(time);
+        if (isValid) {
+            onChange(calcualteDuration(time));
+            setError('');
+        } else {
+            setError('Format HH:MM:SS');
+        }
+    };
+
+    return (
+        <div className="flex gap-1 items-center justify-center rounded-md">
+            <Clock size={16} />
+            <Input
+                value={time}
+                onChange={(e) => {
+                    setTime(e.target.value);
+                    setError('');
+                }}
+                className="h-5 px-0 text-start border-none shadow-none"
+                onBlur={handleChange}
+            />
         </div>
     );
 };

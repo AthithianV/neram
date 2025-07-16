@@ -21,11 +21,19 @@ export const TASK_STATUS_COLOR = {
     Default: '#6B7280',
 };
 
-export type TaskPriority = 'Low' | 'Medium' | 'High';
+export type TaskPriority = 'Low' | 'Medium' | 'High' | 'Critical';
+
+export const TASK_PRIORITY: TaskPriority[] = [
+    'Low',
+    'Medium',
+    'High',
+    'Critical',
+];
 
 export const TASK_PRIORITY_COLOR = {
     Low: '#059669',
     Medium: '#F59E0B',
     High: '#EF4444',
-    Default: '#6B7280',
+    Critical: '#E11D48',
+    Default: '#991B1B',
 };

@@ -13,6 +13,11 @@ export const formatDuration = (seconds: number) => {
         .padStart(2, '0')}:${(seconds % 60).toString().padStart(2, '0')}`;
 };
 
+export const calcualteDuration = (time: string) => {
+    const [hh, mm, ss] = time.split(':').map((part) => Number(part));
+    return hh * 3600 + mm * 60 + ss;
+};
+
 export const toDBTime = (time: string) => {
     return dayjs(time).format(`${DB_DATE_FORMAT}T${DB_TIME_FORMAT}`);
 };
