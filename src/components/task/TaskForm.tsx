@@ -24,7 +24,6 @@ import {
     CalendarPlus,
     ChevronDown,
     Clock,
-    Clock1,
     Clock3,
     Flag,
     Gauge,
@@ -36,11 +35,13 @@ import {
     FormControl,
     FormField,
     FormItem,
+    FormLabel,
     FormMessage,
 } from '../ui/form';
 
 import { COLORS } from '@/constants/colors';
 import {
+    TASK_INTIAL_VALUE,
     TASK_PRIORITY,
     TASK_PRIORITY_COLOR,
     TASK_STATUS,
@@ -52,16 +53,15 @@ import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
 import { Calendar } from '../ui/calendar';
 import { calcualteDuration, formatDuration, toDBTime } from '@/lib/time';
+import { useParams } from 'react-router-dom';
 
 const TaskForm = () => {
+    const { projectId } = useParams();
+
     const [open, setOpen] = useState(false);
     const form = useForm({
         resolver: zodResolver(TaskSchema),
-        defaultValues: {
-            status: 'Planning',
-            priority: 'Low',
-            title: 'Untitled',
-        },
+        defaultValues: { ...TASK_INTIAL_VALUE, project_id: Number(projectId) },
     });
 
     const onSubmit = (data: Task) => {
@@ -77,7 +77,7 @@ const TaskForm = () => {
     };
 
     return (
-        <Dialog open={open} onOpenChange={closeForm}>
+        <Dialog open={open} onOpenChange={closeForm} modal={false}>
             <DialogTrigger asChild>
                 <Badge
                     className="py-1 cursor-pointer hover:bg-gray-200"
@@ -172,14 +172,17 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
             <div className="flex flex-wrap gap-2">
                 {/* Status */}
                 <div className="flex gap-5 w-[45%] items-center">
-                    <label className="flex items-center gap-1 text-sm font-medium w-[50%]">
-                        <Gauge size={16} /> Status
-                    </label>
                     <FormField
                         control={form.control}
                         name="status"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="flex justify-between">
+                                <FormLabel className="flex-col gap-1 items-start me-4 text-sm font-medium w-30">
+                                    <div className="flex items-center gap-1">
+                                        <Gauge size={16} /> Status
+                                    </div>
+                                    <FormMessage className="text-xs" />
+                                </FormLabel>
                                 <Select
                                     onValueChange={field.onChange}
                                     defaultValue={field.value}
@@ -215,14 +218,17 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
 
                 {/* Color */}
                 <div className="flex gap-5 w-[45%] items-center">
-                    <label className="flex items-center gap-1 text-sm font-medium w-[50%]">
-                        <Palette size={16} /> Color
-                    </label>
                     <FormField
                         control={form.control}
                         name="color"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="flex justify-between">
+                                <FormLabel className="flex-col gap-1 items-start me-4 text-sm font-medium w-30">
+                                    <div className="flex items-center gap-1">
+                                        <Palette size={16} /> Color
+                                    </div>
+                                    <FormMessage className="text-xs" />
+                                </FormLabel>
                                 <Select
                                     onValueChange={field.onChange}
                                     defaultValue={field.value}
@@ -273,14 +279,17 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
 
                 {/* Priority */}
                 <div className="flex gap-5 w-[45%] items-center">
-                    <label className="flex items-center gap-1 text-sm font-medium w-[50%]">
-                        <Flag size={16} /> Priority
-                    </label>
                     <FormField
                         control={form.control}
                         name="priority"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="flex justify-between">
+                                <FormLabel className="flex-col gap-1 items-start me-4 text-sm font-medium w-30">
+                                    <div className="flex items-center gap-1">
+                                        <Flag size={16} /> Priority
+                                    </div>
+                                    <FormMessage className="text-xs" />
+                                </FormLabel>
                                 <Select
                                     onValueChange={field.onChange}
                                     defaultValue={field.value}
@@ -291,7 +300,7 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
                                                 'hide-arrow ',
                                                 'hover:bg-gray-100',
                                                 'shadow-none border-none',
-                                                'p-2 !h-6 rounded text-gray-900 font-semibold',
+                                                'p-1 !h-6 rounded text-gray-900 font-semibold',
                                             )}
                                             style={getPriorityColor(
                                                 field.value,
@@ -327,14 +336,17 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
 
                 {/* Deadline */}
                 <div className="flex gap-5 w-[45%] items-center">
-                    <label className="flex items-center gap-1 text-sm font-medium w-[50%]">
-                        <CalendarCheck size={16} /> Deadline
-                    </label>
                     <FormField
                         control={form.control}
                         name="deadline"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="flex justify-between">
+                                <FormLabel className="flex-col gap-1 items-start me-4 text-sm w-30">
+                                    <div className="flex items-center gap-1">
+                                        <CalendarCheck size={16} /> Deadline
+                                    </div>
+                                    <FormMessage className="text-xs" />
+                                </FormLabel>
                                 <FormControl>
                                     <TaskForm.DATEPICKER
                                         icon={<CalendarClock size={16} />}
@@ -350,14 +362,17 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
 
                 {/* Started At */}
                 <div className="flex gap-5 w-[45%] items-center">
-                    <label className="flex items-center gap-1 text-sm font-medium w-[50%]">
-                        <CalendarPlus size={16} /> Started At
-                    </label>
                     <FormField
                         control={form.control}
                         name="started_at"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="flex justify-between">
+                                <FormLabel className="flex-col gap-1 items-start me-4 text-sm w-30">
+                                    <div className="flex items-center gap-1">
+                                        <CalendarPlus size={16} /> Started At
+                                    </div>
+                                    <FormMessage className="text-xs" />
+                                </FormLabel>
                                 <FormControl>
                                     <TaskForm.DATEPICKER
                                         icon={<CalendarClock size={16} />}
@@ -373,14 +388,17 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
 
                 {/* Completed At */}
                 <div className="flex gap-5 w-[45%] items-center">
-                    <label className="flex items-center gap-1 text-sm font-medium w-[50%]">
-                        <CalendarMinus size={16} /> Completed At
-                    </label>
                     <FormField
                         control={form.control}
                         name="completed_at"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="flex justify-between">
+                                <FormLabel className="flex-col gap-1 items-start me-4 text-sm w-30">
+                                    <div className="flex items-center gap-1">
+                                        <CalendarMinus size={16} /> Completed At
+                                    </div>
+                                    <FormMessage className="text-xs" />
+                                </FormLabel>
                                 <FormControl>
                                     <TaskForm.DATEPICKER
                                         icon={<CalendarClock size={16} />}
@@ -395,15 +413,18 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
                 </div>
 
                 {/* Estimated Time */}
-                <div className="flex gap-5 w-[60%] items-center">
-                    <label className="flex items-center gap-1 me-4 text-sm font-medium w-[36%]">
-                        <Clock3 size={16} /> Estimated Time
-                    </label>
+                <div className="flex gap-5 w-[45%] items-start ">
                     <FormField
                         control={form.control}
                         name="estimated_time"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="flex justify-between items-start">
+                                <FormLabel className="flex-col gap-1 items-start me-4 text-sm font-medium w-[70%]">
+                                    <div className="flex items-center gap-1">
+                                        <Clock3 size={16} /> Estimated Time
+                                    </div>
+                                    <FormMessage className="text-xs" />
+                                </FormLabel>
                                 <FormControl>
                                     <TaskForm.DURATION
                                         value={field.value}
@@ -413,9 +434,11 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
                                                 message: msg,
                                             })
                                         }
+                                        clearError={() =>
+                                            form.clearErrors('estimated_time')
+                                        }
                                     />
                                 </FormControl>
-                                <FormMessage className="text-xs" />
                             </FormItem>
                         )}
                     />
@@ -439,10 +462,10 @@ TaskForm.DATEPICKER = ({
             <PopoverTrigger asChild>
                 <span
                     className={cn(
-                        'w-full text-sm font-semibold',
-                        'flex items-center justify-center gap-2 cursor-pointer',
+                        'w-30 text-sm ',
+                        'flex items-center justify-start gap-2 cursor-pointer',
                         !value && 'text-muted-foreground',
-                        'hover:bg-gray-100 py-1 px-2 rounded',
+                        'hover:bg-gray-100 py-1 px-1 rounded',
                     )}
                 >
                     {icon}
@@ -474,10 +497,12 @@ TaskForm.DURATION = ({
     value,
     onChange,
     setError,
+    clearError,
 }: {
     value?: number | null;
     onChange: (duration: number) => void;
-    setError: (msg: string) => void;
+    setError: (msg: string | null) => void;
+    clearError: () => void;
 }) => {
     const [time, setTime] = useState<string>(formatDuration(value ? value : 0));
 
@@ -486,20 +511,20 @@ TaskForm.DURATION = ({
         const isValid = regex.test(time);
         if (isValid) {
             onChange(calcualteDuration(time));
-            setError('');
+            clearError();
         } else {
             setError('Format HH:MM:SS');
         }
     };
 
     return (
-        <div className="flex gap-1 items-center justify-center rounded-md">
+        <div className="flex gap-2 items-center justify-center rounded-md">
             <Clock size={16} />
             <Input
                 value={time}
                 onChange={(e) => {
                     setTime(e.target.value);
-                    setError('');
+                    clearError();
                 }}
                 className="h-5 px-0 text-start border-none shadow-none"
                 onBlur={handleChange}

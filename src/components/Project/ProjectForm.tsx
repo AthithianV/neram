@@ -1,19 +1,23 @@
-import { zodResolver } from '@hookform/resolvers/zod';
+'use client';
+
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import ProjectSchema, { Project } from '@/schema/ProjectSchema';
 
+import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog';
 import {
     Form,
     FormField,
     FormItem,
-    FormLabel,
     FormControl,
     FormMessage,
-    FormDescription,
 } from '@/components/ui/form';
 
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
     Select,
     SelectTrigger,
@@ -21,166 +25,233 @@ import {
     SelectContent,
     SelectItem,
 } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Button } from '@/components/ui/button';
+import {
+    Popover,
+    PopoverTrigger,
+    PopoverContent,
+} from '@/components/ui/popover';
 
-import { PROJECT_INITIAL_VALUES } from '@/constants/project';
-import { useCreateProject } from '@/hooks/useProject';
+import { Calendar } from '@/components/ui/calendar';
+import dayjs from 'dayjs';
 
-type Props = {
-    initialValues?: Project;
-    closeForm: () => void;
-};
+import { COLORS } from '@/constants/colors';
+import { TASK_STATUS, TASK_STATUS_COLOR } from '@/constants/project';
+import { cn } from '@/lib/utils';
 
-export function ProjectForm({ initialValues, closeForm }: Props) {
-    const { mutateAsync: createProject, isPending: isSubmitting } =
-        useCreateProject();
+import {
+    CalendarCheck,
+    CalendarClock,
+    CalendarMinus,
+    CalendarPlus,
+    Flag,
+    Gauge,
+    Palette,
+    Plus,
+} from 'lucide-react';
+import { toDBTime } from '@/lib/time';
+
+const ProjectForm = () => {
+    const [open, setOpen] = useState(false);
 
     const form = useForm<Project>({
         resolver: zodResolver(ProjectSchema),
-        defaultValues: initialValues ?? PROJECT_INITIAL_VALUES,
+        defaultValues: {
+            title: '',
+            status: '',
+            tags: [],
+        },
     });
 
-    const handleSubmit = async (data: Project) => {
-        console.log(data);
+    const onSubmit = (data: Project) => {
+        console.log('Project Data:', data);
+        setOpen(false);
+    };
 
-        createProject(data);
-        form.reset();
-        closeForm();
+    const closeForm = (state: boolean) => {
+        setOpen(state);
+        if (state === false) form.reset();
     };
 
     return (
-        <Form {...form}>
-            <form
-                onSubmit={form.handleSubmit(handleSubmit)}
-                className="space-y-6"
-            >
-                {/* title */}
-                <FormField
-                    control={form.control}
-                    name="title"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Title *</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Project X" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+        <Dialog open={open} onOpenChange={closeForm}>
+            <DialogTrigger asChild>
+                <Button className="mb-3 cursor-pointer" variant={'outline'}>
+                    <Plus className="w-4 h-4" />
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="min-w-[50%] px-20 py-10">
+                <Form {...form}>
+                    <form
+                        onSubmit={form.handleSubmit(onSubmit)}
+                        className="space-y-6"
+                    >
+                        {/* Title */}
+                        <FormField
+                            control={form.control}
+                            name="title"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormControl>
+                                        <Input
+                                            placeholder="Project Title..."
+                                            {...field}
+                                            className="border-none shadow-none px-0 !text-2xl font-semibold"
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
-                {/* description */}
-                <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Description</FormLabel>
-                            <FormControl>
-                                <Textarea
-                                    placeholder="What’s this project about?"
-                                    rows={4}
-                                    {...field}
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                        <ProjectForm.TABLE form={form} />
 
-                {/* status -----*/}
-                <FormField
-                    control={form.control}
-                    name="status"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Status *</FormLabel>
-                            <Select
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
+                        {/* Description */}
+                        <FormField
+                            control={form.control}
+                            name="description"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormControl>
+                                        <Textarea
+                                            placeholder="Description"
+                                            rows={4}
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <div className="flex justify-end gap-2">
+                            <Button
+                                type="button"
+                                variant="destructive"
+                                onClick={() => closeForm(false)}
                             >
-                                <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Pick status" />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    {[
-                                        'active',
-                                        'on‑hold',
-                                        'completed',
-                                        'archived',
-                                    ].map((s) => (
-                                        <SelectItem key={s} value={s}>
-                                            {s}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                                Close
+                            </Button>
+                            <Button type="submit">Save Project</Button>
+                        </div>
+                    </form>
+                </Form>
+            </DialogContent>
+        </Dialog>
+    );
+};
 
-                {/* dates */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {(['started_at', 'deadline', 'completed_at'] as const).map(
-                        (name) => (
-                            <FormField
-                                key={name}
-                                control={form.control}
-                                name={name}
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>
-                                            {name
-                                                .replace(/_/g, ' ')
-                                                .replace(/\b\w/g, (c) =>
-                                                    c.toUpperCase(),
-                                                )}
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input type="date" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        ),
-                    )}
-                </div>
+ProjectForm.TABLE = ({ form }: { form: any }) => {
+    const getStatusBg = (value?: string | null) => {
+        return {
+            backgroundColor: 'red',
+        };
+    };
 
-                {/* client / color */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    return (
+        <div className="space-y-4 border-b-2 pb-4">
+            <div className="flex flex-wrap gap-4">
+                {/* Status */}
+                <div className="flex w-[45%] items-center gap-5">
+                    <label className="flex w-[40%] items-center gap-1 text-sm font-medium">
+                        <Gauge size={16} /> Status
+                    </label>
                     <FormField
                         control={form.control}
-                        name="client_name"
+                        name="status"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Client</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        placeholder="ACME Corp."
-                                        {...field}
-                                    />
-                                </FormControl>
+                                <Select
+                                    onValueChange={field.onChange}
+                                    defaultValue={field.value}
+                                >
+                                    <FormControl>
+                                        <SelectTrigger
+                                            className="p-2 !h-6 rounded text-white font-semibold shadow-none border-none"
+                                            style={getStatusBg(field.value)}
+                                        >
+                                            <SelectValue placeholder="Pick status" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {TASK_STATUS.map((status) => (
+                                            <SelectItem
+                                                key={status}
+                                                value={status}
+                                            >
+                                                {status}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
+                </div>
 
+                {/* Color */}
+                <div className="flex w-[45%] items-center gap-5">
+                    <label className="flex w-[40%] items-center gap-1 text-sm font-medium">
+                        <Palette size={16} /> Color
+                    </label>
                     <FormField
                         control={form.control}
                         name="color"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Color</FormLabel>
+                                <Select
+                                    onValueChange={field.onChange}
+                                    defaultValue={field.value}
+                                >
+                                    <FormControl>
+                                        <SelectTrigger
+                                            className="p-2 !h-6 rounded font-semibold shadow-none border-none text-white"
+                                            style={{
+                                                backgroundColor: field.value,
+                                            }}
+                                        >
+                                            <SelectValue placeholder="Pick color" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent className="max-h-[30vh]">
+                                        {COLORS.map((color) => (
+                                            <SelectItem
+                                                key={color.value}
+                                                value={color.value}
+                                            >
+                                                <div
+                                                    className="rounded px-2 font-semibold text-white"
+                                                    style={{
+                                                        backgroundColor:
+                                                            color.value,
+                                                    }}
+                                                >
+                                                    {color.name}
+                                                </div>
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+
+                {/* Started At */}
+                <div className="flex w-[45%] items-center gap-5">
+                    <label className="flex w-[40%] items-center gap-1 text-sm font-medium">
+                        <CalendarPlus size={16} /> Started At
+                    </label>
+                    <FormField
+                        control={form.control}
+                        name="started_at"
+                        render={({ field }) => (
+                            <FormItem>
                                 <FormControl>
-                                    <Input
-                                        type="color"
-                                        className="h-10 w-16 p-0"
-                                        {...field}
+                                    <ProjectForm.DATEPICKER
+                                        value={field.value}
+                                        onChange={field.onChange}
                                     />
                                 </FormControl>
                                 <FormMessage />
@@ -189,176 +260,91 @@ export function ProjectForm({ initialValues, closeForm }: Props) {
                     />
                 </div>
 
-                {/* billing ----*/}
-                <FormField
-                    control={form.control}
-                    name="is_billable"
-                    render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                            <FormControl>
-                                <Checkbox
-                                    checked={field.value}
-                                    onCheckedChange={field.onChange}
-                                />
-                            </FormControl>
-                            <div className="space-y-1 leading-none">
-                                <FormLabel>Billable project</FormLabel>
-                                <FormDescription>
-                                    Untick if work is non‑billable / pro‑bono.
-                                </FormDescription>
-                            </div>
-                        </FormItem>
-                    )}
-                />
-
-                {/* show rate fields only when billable */}
-                {form.watch('is_billable') && (
-                    <>
-                        <FormField
-                            control={form.control}
-                            name="billing_type"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Billing type</FormLabel>
-                                    <Select
-                                        onValueChange={field.onChange}
-                                        defaultValue={field.value}
-                                    >
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select type" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="hourly">
-                                                Hourly
-                                            </SelectItem>
-                                            <SelectItem value="fixed">
-                                                Fixed
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        {/* hourly / fixed conditional fields */}
-                        {form.watch('billing_type') === 'hourly' ? (
-                            <FormField
-                                control={form.control}
-                                name="hourly_rate"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Hourly rate</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="number"
-                                                step="0.01"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        ) : (
-                            <FormField
-                                control={form.control}
-                                name="fixed_rate"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Fixed fee</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="number"
-                                                step="0.01"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                {/* Deadline */}
+                <div className="flex w-[45%] items-center gap-5">
+                    <label className="flex w-[40%] items-center gap-1 text-sm font-medium">
+                        <CalendarCheck size={16} /> Deadline
+                    </label>
+                    <FormField
+                        control={form.control}
+                        name="deadline"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormControl>
+                                    <ProjectForm.DATEPICKER
+                                        value={field.value}
+                                        onChange={field.onChange}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
                         )}
-
-                        <FormField
-                            control={form.control}
-                            name="currency"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Currency</FormLabel>
-                                    <Select
-                                        onValueChange={field.onChange}
-                                        defaultValue={field.value}
-                                    >
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Choose" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {['INR', 'USD', 'EUR', 'GBP'].map(
-                                                (c) => (
-                                                    <SelectItem
-                                                        key={c}
-                                                        value={c}
-                                                    >
-                                                        {c}
-                                                    </SelectItem>
-                                                ),
-                                            )}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </>
-                )}
-
-                {/* tags ------*/}
-                <FormField
-                    control={form.control}
-                    name="tags"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Tags</FormLabel>
-                            <FormControl>
-                                {/* Replace with your own fancy multi‑select / chips UI.
-                    Here we accept a comma‑sep list of numbers for brevity. */}
-                                <Input
-                                    placeholder="e.g. 1, 2, 3"
-                                    value={field.value.join(', ')}
-                                    onChange={(e) =>
-                                        field.onChange(
-                                            e.target.value
-                                                .split(',')
-                                                .map((s) => s.trim())
-                                                .filter(Boolean)
-                                                .map(Number),
-                                        )
-                                    }
-                                />
-                            </FormControl>
-                            <FormDescription>
-                                Temporary input – hook up your own TagPicker
-                                later.
-                            </FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
-                <div className="flex gap-2 justify-end">
-                    <Button variant={'destructive'} onClick={closeForm}>
-                        Close
-                    </Button>
-                    <Button type="submit" disabled={isSubmitting}>
-                        {isSubmitting ? 'Saving…' : 'Save project'}
-                    </Button>
+                    />
                 </div>
-            </form>
-        </Form>
+
+                {/* Completed At */}
+                <div className="flex w-[45%] items-center gap-5">
+                    <label className="flex w-[40%] items-center gap-1 text-sm font-medium">
+                        <CalendarMinus size={16} /> Completed At
+                    </label>
+                    <FormField
+                        control={form.control}
+                        name="completed_at"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormControl>
+                                    <ProjectForm.DATEPICKER
+                                        value={field.value}
+                                        onChange={field.onChange}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+            </div>
+        </div>
     );
-}
+};
+
+ProjectForm.DATEPICKER = ({
+    value,
+    onChange,
+}: {
+    value?: string;
+    onChange: (value: string) => void;
+}) => {
+    return (
+        <Popover>
+            <PopoverTrigger asChild>
+                <span
+                    className={cn(
+                        'w-full text-sm font-semibold',
+                        'flex items-center gap-2 cursor-pointer',
+                        !value && 'text-muted-foreground',
+                        'hover:bg-gray-100 py-1 px-2 rounded',
+                    )}
+                >
+                    <CalendarClock size={16} />
+                    {value ? dayjs(value).format('DD/MM/YYYY') : 'Pick a date'}
+                </span>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start" side="top">
+                <Calendar
+                    mode="single"
+                    selected={value ? dayjs(value).toDate() : undefined}
+                    onSelect={(date) => {
+                        date &&
+                            onChange(
+                                toDBTime(dayjs(date).startOf('day').toString()),
+                            );
+                    }}
+                    initialFocus
+                />
+            </PopoverContent>
+        </Popover>
+    );
+};
+
+export default ProjectForm;

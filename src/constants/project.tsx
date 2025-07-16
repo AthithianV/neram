@@ -1,5 +1,8 @@
+import dayjs from 'dayjs';
+import { COLORS } from './colors';
+
 export const PROJECT_INITIAL_VALUES = {
-    color: '#3b82f6',
+    color: COLORS[0].value,
     status: 'active',
     is_billable: false,
     billing_type: 'hourly',
@@ -7,6 +10,15 @@ export const PROJECT_INITIAL_VALUES = {
     fixed_rate: 0,
     currency: 'INR',
     tags: [],
+};
+
+export const TASK_INTIAL_VALUE = {
+    color: COLORS[0].value,
+    status: 'Planning',
+    priority: 'Low',
+    title: 'Untitled',
+    started_at: dayjs().startOf('day').toString(),
+    estimated_time: 0,
 };
 
 export const TASK_STATUS = ['Planning', 'In Progress', 'Review', 'Completed'];

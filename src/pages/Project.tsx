@@ -1,19 +1,10 @@
 import { useProject } from '@/hooks/useProject';
-import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { Button } from '@/components/ui/button';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogTitle,
-    DialogTrigger,
-    DialogHeader,
-} from '@/components/ui/dialog';
-import { ProjectForm } from '@/components/project/ProjectForm';
+
+import ProjectForm from '@/components/project/ProjectForm';
 import { useEffect, useState } from 'react';
 
 const Project = () => {
@@ -63,27 +54,7 @@ const Project = () => {
                     <ScrollBar orientation="horizontal" />
                 </ScrollArea>
 
-                <Dialog open={isOpen} onOpenChange={setIsopen}>
-                    <DialogTrigger asChild>
-                        <Button
-                            className="mb-3 cursor-pointer"
-                            variant={'outline'}
-                        >
-                            <Plus className="w-4 h-4" />
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[50vw] h-[90vh]">
-                        <DialogHeader>
-                            <DialogTitle>Create project</DialogTitle>
-                            <DialogDescription>
-                                Create a new project.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <ScrollArea className="h-[90%] pe-3">
-                            <ProjectForm closeForm={() => setIsopen(false)} />
-                        </ScrollArea>
-                    </DialogContent>
-                </Dialog>
+                <ProjectForm />
             </div>
             <div className="h-[92%]">
                 <Outlet />
