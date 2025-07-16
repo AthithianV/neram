@@ -5,19 +5,15 @@ import dayjs from 'dayjs';
 import { Badge } from '../ui/badge';
 import { AlarmCheck, Calendar } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
+import { TASK_PRIORITY_COLOR } from '@/constants/project';
 
 const TaskCard = ({ task }: { task: Task }) => {
-    const getPriorityColor = (priority: string) => {
-        switch (priority.toLowerCase()) {
-            case 'high':
-                return 'bg-red-500';
-            case 'medium':
-                return 'bg-yellow-500';
-            case 'low':
-                return 'bg-green-500';
-            default:
-                return 'bg-gray-500';
-        }
+    const getPriorityColor = (priority?: string | null) => {
+        const color =
+            TASK_PRIORITY_COLOR[
+                (priority as 'Low' | 'High' | 'Medium') ?? 'Default'
+            ];
+        return color;
     };
 
     return (
@@ -37,10 +33,12 @@ const TaskCard = ({ task }: { task: Task }) => {
                     </CardTitle>
                     <div className="flex items-center gap-1">
                         <div
-                            className={cn(
-                                'w-2 rounded-full',
-                                getPriorityColor(task.priority ?? ''),
-                            )}
+                            className={cn('w-2 rounded-full')}
+                            style={{
+                                backgroundColor: getPriorityColor(
+                                    task.priority,
+                                ),
+                            }}
                         />
                     </div>
                 </div>
@@ -88,10 +86,12 @@ const TaskCard = ({ task }: { task: Task }) => {
                         <Tooltip>
                             <TooltipTrigger>
                                 <Badge
-                                    className={cn(
-                                        'text-xs',
-                                        getPriorityColor(task.priority ?? ''),
-                                    )}
+                                    className={cn('text-xs')}
+                                    style={{
+                                        backgroundColor: getPriorityColor(
+                                            task.priority,
+                                        ),
+                                    }}
                                 >
                                     {task.priority}
                                 </Badge>

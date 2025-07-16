@@ -6,6 +6,7 @@ import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 import { useParams } from 'react-router-dom';
 import TaskCard from '../task/TaskCard';
 import TaskForm from '../task/TaskForm';
+import { TASK_STATUS_COLOR } from '@/constants/project';
 
 interface KanbanColumn {
     id: string;
@@ -25,25 +26,25 @@ const Kanban = () => {
             {
                 id: 'Planning',
                 title: 'Planning',
-                color: 'bg-[#0EA5E9] border-blue-200',
+                color: `bg-[${TASK_STATUS_COLOR['Planning']}]`,
                 tasks: tasks.filter((task) => task.status === 'Planning'),
             },
             {
-                id: 'in_progress',
+                id: 'In Progress',
                 title: 'In Progress',
-                color: 'bg-[#FACC15] border-yellow-200',
+                color: `bg-[${TASK_STATUS_COLOR['In Progress']}]`,
                 tasks: tasks.filter((task) => task.status === 'In Progress'),
             },
             {
-                id: 'review',
+                id: 'Review',
                 title: 'Review',
-                color: 'bg-[#EF4444] border-purple-200',
+                color: `bg-[${TASK_STATUS_COLOR['Review']}]`,
                 tasks: tasks.filter((task) => task.status === 'review'),
             },
             {
                 id: 'Completed',
                 title: 'Completed',
-                color: 'bg-[#10B981] border-green-200',
+                color: `bg-[${TASK_STATUS_COLOR['Completed']}]`,
                 tasks: tasks.filter((task) => task.status === 'Completed'),
             },
         ],
