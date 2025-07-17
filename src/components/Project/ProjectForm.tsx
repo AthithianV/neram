@@ -73,80 +73,80 @@ const ProjectForm = () => {
     };
 
     return (
-        <Dialog open={open} onOpenChange={closeForm}>
+        <Dialog open={open} onOpenChange={closeForm} modal={false}>
             <DialogTrigger asChild>
                 <Button className="mb-3 cursor-pointer" variant={'outline'}>
                     <Plus className="w-4 h-4" />
                 </Button>
             </DialogTrigger>
-            <DialogContent className="min-w-[50%] px-20 py-10">
-                <Form {...form}>
-                    <form
-                        onSubmit={form.handleSubmit(onSubmit)}
-                        className="space-y-6"
-                    >
-                        {/* Title */}
-                        <FormField
-                            control={form.control}
-                            name="title"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormControl>
-                                        <Input
-                                            placeholder="Project Title..."
-                                            {...field}
-                                            className="border-none shadow-none px-0 !text-2xl font-semibold"
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+            <DialogContent
+                onInteractOutside={(e) => e.preventDefault()}
+                onEscapeKeyDown={(e) => e.preventDefault()}
+                className="bg-gray-800/30 shadow-none border-none rounded-none h-screen flex justify-center items-center min-w-screen"
+            >
+                <div className="bg-white px-20 py-10 rounded-lg shadow-2xl h-[60vh] max-h-[75vh] w-[60%]">
+                    <Form {...form}>
+                        <form
+                            onSubmit={form.handleSubmit(onSubmit)}
+                            className="space-y-6"
+                        >
+                            {/* Title */}
+                            <FormField
+                                control={form.control}
+                                name="title"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                            <Input
+                                                placeholder="Project Title..."
+                                                {...field}
+                                                className="border-none shadow-none px-0 !text-2xl font-semibold"
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
-                        <ProjectForm.TABLE form={form} />
+                            <ProjectForm.TABLE form={form} />
 
-                        {/* Description */}
-                        <FormField
-                            control={form.control}
-                            name="description"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormControl>
-                                        <Textarea
-                                            placeholder="Description"
-                                            rows={4}
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                            {/* Description */}
+                            <FormField
+                                control={form.control}
+                                name="description"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                            <Textarea
+                                                placeholder="Description"
+                                                rows={4}
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
-                        <div className="flex justify-end gap-2">
-                            <Button
-                                type="button"
-                                variant="destructive"
-                                onClick={() => closeForm(false)}
-                            >
-                                Close
-                            </Button>
-                            <Button type="submit">Save Project</Button>
-                        </div>
-                    </form>
-                </Form>
+                            <div className="flex justify-end gap-2">
+                                <Button
+                                    type="button"
+                                    variant="destructive"
+                                    onClick={() => closeForm(false)}
+                                >
+                                    Close
+                                </Button>
+                                <Button type="submit">Save Project</Button>
+                            </div>
+                        </form>
+                    </Form>
+                </div>
             </DialogContent>
         </Dialog>
     );
 };
 
 ProjectForm.TABLE = ({ form }: { form: any }) => {
-    const getStatusBg = (value?: string | null) => {
-        return {
-            backgroundColor: 'red',
-        };
-    };
-
     return (
         <div className="space-y-4 border-b-2 pb-4">
             <div className="flex flex-wrap gap-4">
@@ -165,10 +165,7 @@ ProjectForm.TABLE = ({ form }: { form: any }) => {
                                     defaultValue={field.value}
                                 >
                                     <FormControl>
-                                        <SelectTrigger
-                                            className="p-2 !h-6 rounded text-white font-semibold shadow-none border-none"
-                                            style={getStatusBg(field.value)}
-                                        >
+                                        <SelectTrigger className="p-2 !h-6 rounded text-white bg-yellow-500 font-semibold shadow-none border-none">
                                             <SelectValue placeholder="Pick status" />
                                         </SelectTrigger>
                                     </FormControl>

@@ -90,66 +90,68 @@ const TaskForm = () => {
             <DialogContent
                 onInteractOutside={(e) => e.preventDefault()}
                 onEscapeKeyDown={(e) => e.preventDefault()}
-                className="min-w-[50%] px-20 py-10"
+                className="bg-gray-800/30 shadow-none border-none rounded-none h-screen flex justify-center items-center min-w-screen"
             >
-                <Form {...form}>
-                    <form
-                        onSubmit={form.handleSubmit(onSubmit)}
-                        className="space-y-6"
-                    >
-                        {/* title */}
-                        <FormField
-                            control={form.control}
-                            name="title"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormControl>
-                                        <Input
-                                            placeholder="Untitled"
-                                            {...field}
-                                            className="!text-3xl font-bold border-none shadow-none px-0 !h-auto"
-                                            value={field.value}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                <div className="bg-white px-20 py-10 rounded-lg shadow-2xl h-[60vh] max-h-[75vh] w-[60%]">
+                    <Form {...form}>
+                        <form
+                            onSubmit={form.handleSubmit(onSubmit)}
+                            className="space-y-6"
+                        >
+                            {/* title */}
+                            <FormField
+                                control={form.control}
+                                name="title"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                            <Input
+                                                placeholder="Untitled"
+                                                {...field}
+                                                className="!text-3xl font-bold border-none shadow-none px-0 !h-auto"
+                                                value={field.value}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
-                        <TaskForm.TABLE form={form} />
+                            <TaskForm.TABLE form={form} />
 
-                        {/* description */}
-                        <FormField
-                            control={form.control}
-                            name="description"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormControl>
-                                        <Textarea
-                                            placeholder="Write more about this task Here..."
-                                            rows={4}
-                                            {...field}
-                                            className="bg-transparent border-none shadow-none px-1 w-full !text-md max-h-[30vh] overflow-y-auto"
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                            {/* description */}
+                            <FormField
+                                control={form.control}
+                                name="description"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                            <Textarea
+                                                placeholder="Write more about this task Here..."
+                                                rows={4}
+                                                {...field}
+                                                className="bg-transparent border-none shadow-none px-1 w-full !text-md max-h-[30vh] overflow-y-auto"
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
-                        <div className="flex gap-2 justify-end">
-                            <Button
-                                variant={'destructive'}
-                                onClick={() => closeForm(false)}
-                            >
-                                Close
-                            </Button>
-                            <Button type="submit" disabled={false}>
-                                {false ? 'Saving…' : 'Save project'}
-                            </Button>
-                        </div>
-                    </form>
-                </Form>
+                            <div className="flex gap-2 justify-end">
+                                <Button
+                                    variant={'destructive'}
+                                    onClick={() => closeForm(false)}
+                                >
+                                    Close
+                                </Button>
+                                <Button type="submit" disabled={false}>
+                                    {false ? 'Saving…' : 'Save project'}
+                                </Button>
+                            </div>
+                        </form>
+                    </Form>
+                </div>
             </DialogContent>
         </Dialog>
     );
@@ -169,7 +171,7 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
     };
     return (
         <div className="border-b-2 pb-4 space-y-4">
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-4">
                 {/* Status */}
                 <div className="flex gap-5 w-[45%] items-center">
                     <FormField
@@ -419,7 +421,7 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
                         name="estimated_time"
                         render={({ field }) => (
                             <FormItem className="flex justify-between items-start">
-                                <FormLabel className="flex-col gap-1 items-start me-4 text-sm font-medium w-[70%]">
+                                <FormLabel className="flex-col gap-1 items-start me-4 text-sm font-medium w-[38%]">
                                     <div className="flex items-center gap-1">
                                         <Clock3 size={16} /> Estimated Time
                                     </div>
@@ -518,7 +520,7 @@ TaskForm.DURATION = ({
     };
 
     return (
-        <div className="flex gap-2 items-center justify-center rounded-md">
+        <div className="flex gap-2 items-center justify-center">
             <Clock size={16} />
             <Input
                 value={time}
@@ -526,7 +528,7 @@ TaskForm.DURATION = ({
                     setTime(e.target.value);
                     clearError();
                 }}
-                className="h-5 px-0 text-start border-none shadow-none"
+                className="h-5 px-0 text-start border-none shadow-none rounded-none"
                 onBlur={handleChange}
             />
         </div>
