@@ -48,7 +48,7 @@ import {
     TASK_STATUS_COLOR,
     TaskPriority,
     TaskStatus,
-} from '@/constants/project';
+} from '@/constants/task';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
 import { Calendar } from '../ui/calendar';

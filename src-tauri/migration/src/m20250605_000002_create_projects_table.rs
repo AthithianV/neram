@@ -12,7 +12,6 @@ enum Projects {
     Description,
     Color,
     ClientName,
-    Status,
     StartedAt,
     Deadline,
     CompletedAt,
@@ -39,7 +38,6 @@ impl MigrationTrait for Migration {
                 .col(ColumnDef::new(Projects::Description).string().null())
                 .col(ColumnDef::new(Projects::Color).string().null())
                 .col(ColumnDef::new(Projects::ClientName).string().null())
-                .col(ColumnDef::new(Projects::Status).string().not_null().default("Active"))
                 .col(ColumnDef::new(Projects::StartedAt).string().null())
                 .col(ColumnDef::new(Projects::Deadline).string().null())
                 .col(ColumnDef::new(Projects::CompletedAt).string().null())
@@ -69,7 +67,7 @@ impl MigrationTrait for Migration {
             .execute(
                 Statement::from_string(
                     manager.get_database_backend(),
-                    "INSERT INTO projects (title, description, color, status, created_at, updated_at) VALUES ('General', 'Project to add any General Tasks', '222222', 'Active', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+                    "INSERT INTO projects (title, description, color, created_at, updated_at) VALUES ('General', 'Project to add any General Tasks', '#222222', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
                 )
             ).await?;
 

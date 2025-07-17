@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 import { Badge } from '../ui/badge';
 import { AlarmCheck, Calendar } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
-import { TASK_PRIORITY_COLOR, TaskPriority } from '@/constants/project';
+import { TASK_PRIORITY_COLOR, TaskPriority } from '@/constants/task';
 
 const TaskCard = ({ task }: { task: Task }) => {
     const getPriorityColor = (priority?: string | null) => {
@@ -18,7 +18,7 @@ const TaskCard = ({ task }: { task: Task }) => {
         <Card
             key={task.id}
             className={cn(
-                'cursor-move transition-all hover:shadow-md rounded-md gap-0 py-3 px-2',
+                'cursor-move transition-all hover:shadow-md rounded-md gap-0 py-3 px-2 flex-1',
                 // draggedTask?.id === task.id && 'opacity-50',
             )}
             draggable

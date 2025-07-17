@@ -17,7 +17,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
     Select,
     SelectTrigger,
@@ -35,7 +34,6 @@ import { Calendar } from '@/components/ui/calendar';
 import dayjs from 'dayjs';
 
 import { COLORS } from '@/constants/colors';
-import { TASK_STATUS, TASK_STATUS_COLOR } from '@/constants/project';
 import { cn } from '@/lib/utils';
 
 import {
@@ -43,23 +41,25 @@ import {
     CalendarClock,
     CalendarMinus,
     CalendarPlus,
-    Flag,
+    CircleDollarSign,
     Gauge,
     Palette,
     Plus,
+    Receipt,
+    User,
 } from 'lucide-react';
 import { toDBTime } from '@/lib/time';
+import { ScrollArea } from '../ui/scroll-area';
+import { BILLING_TYPE, CURRENCT_LIST, PROJECT_INITIAL_VALUES } from '@/constants/project';
+import { Switch } from '../ui/switch';
+import { Label } from '../ui/label';
 
 const ProjectForm = () => {
     const [open, setOpen] = useState(false);
 
     const form = useForm<Project>({
         resolver: zodResolver(ProjectSchema),
-        defaultValues: {
-            title: '',
-            status: '',
-            tags: [],
-        },
+        defaultValues: PROJECT_INITIAL_VALUES,
     });
 
     const onSubmit = (data: Project) => {
@@ -84,7 +84,7 @@ const ProjectForm = () => {
                 onEscapeKeyDown={(e) => e.preventDefault()}
                 className="bg-gray-800/30 shadow-none border-none rounded-none h-screen flex justify-center items-center min-w-screen"
             >
-                <div className="bg-white px-20 py-10 rounded-lg shadow-2xl h-[60vh] max-h-[75vh] w-[60%]">
+                <div className="bg-white px-20 py-10 rounded-lg shadow-2xl min-h-[60vh] max-h-[75vh] w-[60%]">
                     <Form {...form}>
                         <form
                             onSubmit={form.handleSubmit(onSubmit)}
@@ -110,19 +110,24 @@ const ProjectForm = () => {
 
                             <ProjectForm.TABLE form={form} />
 
+                            <ProjectForm.FREELANCING form={form} />
+
                             {/* Description */}
                             <FormField
                                 control={form.control}
                                 name="description"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormControl>
-                                            <Textarea
-                                                placeholder="Description"
-                                                rows={4}
-                                                {...field}
-                                            />
-                                        </FormControl>
+                                        <ScrollArea className="max-h-[20vh] w-[48vw]">
+                                            <FormControl>
+                                                <Textarea
+                                                    placeholder="Write more about your project here..."
+                                                    rows={4}
+                                                    {...field}
+                                                    className="p-0 border-none shadow-none min-h-[15vh] rounded-none text-wrap"
+                                                />
+                                            </FormControl>
+                                        </ScrollArea>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -150,42 +155,6 @@ ProjectForm.TABLE = ({ form }: { form: any }) => {
     return (
         <div className="space-y-4 border-b-2 pb-4">
             <div className="flex flex-wrap gap-4">
-                {/* Status */}
-                <div className="flex w-[45%] items-center gap-5">
-                    <label className="flex w-[40%] items-center gap-1 text-sm font-medium">
-                        <Gauge size={16} /> Status
-                    </label>
-                    <FormField
-                        control={form.control}
-                        name="status"
-                        render={({ field }) => (
-                            <FormItem>
-                                <Select
-                                    onValueChange={field.onChange}
-                                    defaultValue={field.value}
-                                >
-                                    <FormControl>
-                                        <SelectTrigger className="p-2 !h-6 rounded text-white bg-yellow-500 font-semibold shadow-none border-none">
-                                            <SelectValue placeholder="Pick status" />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {TASK_STATUS.map((status) => (
-                                            <SelectItem
-                                                key={status}
-                                                value={status}
-                                            >
-                                                {status}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                </div>
-
                 {/* Color */}
                 <div className="flex w-[45%] items-center gap-5">
                     <label className="flex w-[40%] items-center gap-1 text-sm font-medium">
@@ -202,10 +171,10 @@ ProjectForm.TABLE = ({ form }: { form: any }) => {
                                 >
                                     <FormControl>
                                         <SelectTrigger
-                                            className="p-2 !h-6 rounded font-semibold shadow-none border-none text-white"
-                                            style={{
-                                                backgroundColor: field.value,
-                                            }}
+                                            className={cn(
+                                                'p-2 !h-6 rounded shadow-none border-none',
+                                                'text-white font-semibold',
+                                            )}
                                         >
                                             <SelectValue placeholder="Pick color" />
                                         </SelectTrigger>
@@ -305,6 +274,179 @@ ProjectForm.TABLE = ({ form }: { form: any }) => {
     );
 };
 
+ProjectForm.FREELANCING = ({ form }: { form: any }) => {
+    return (
+        <div className="space-y-4 border-b-2 pb-4">
+            <div className="flex items-center space-x-2">
+            <FormField
+                        control={form.control}
+                        name="is_billable"
+                        render={({ field }) => (
+                            <FormItem>
+                                <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                
+                <Label htmlFor="airplane-mode">Freelancing</Label>
+            </div>
+            {form.watch('is_billable') && (
+                <div className="flex flex-wrap gap-4">
+                    {/* Client Name */}
+                    <div className="flex w-[45%] items-center gap-5">
+                        <label className="flex w-[40%] items-center gap-1 text-sm font-medium">
+                            <User size={16} /> Client Name
+                        </label>
+                        <FormField
+                        control={form.control}
+                        name="client_name"
+                        render={({ field }) => (
+                            <FormItem>
+                                <Input 
+                                value={field.value} 
+                                onChange={field.onChange} 
+                                placeholder='Enter name here...'
+                                className='border-none shadow-none font-semibold'
+                                />
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    </div>
+
+                    <div className="flex w-[45%] items-center gap-5">
+                        <label className="flex w-[40%] items-center gap-1 text-sm font-medium">
+                            <Receipt size={16} /> Billing Type
+                        </label>
+                        <FormField
+                            control={form.control}
+                            name="billing_type"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormControl>
+                                    <Select
+value={field.value}
+onValueChange={field.onChange}
+                                >
+                                    <FormControl>
+                                        <SelectTrigger
+                                            className={cn(
+                                                'p-2 !h-6 rounded shadow-none border-none',
+                                                'text-white font-semibold',
+                                            )}
+                                        >
+                                            <SelectValue placeholder="Pick billing type..." />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent className="max-h-[30vh]">
+                                        {BILLING_TYPE.map(({title, color}) => (
+                                            <SelectItem
+                                                key={title}
+                                                value={title}
+                                            >
+                                                <div
+                                                    className="rounded px-2 font-semibold text-white"
+                                                    style={{
+                                                        backgroundColor:
+                                                            color,
+                                                    }}
+                                                >
+                                                    {title}
+                                                </div>
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+
+                    <div className="flex w-[45%] items-center gap-5">
+                        <label className="flex w-[40%] items-center gap-2 text-sm font-medium">
+                            <Gauge size={16} /> {form.watch('billing_type')==='Hourly'?'Hourly Rate': 'Fixed Rate'}
+                        </label>
+                        <FormField
+                            control={form.control}
+                            name={form.watch('billing_type') === 'Hourly'?'fixed_rate': 'hourly_rate'}
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormControl>
+                                        <Input
+                                        type='number'
+                                        min={0}
+                                        placeholder='00.00'
+                                        className='border-none shadow-none font-semibold'
+                                        value={field.value}
+                                        onChange={field.onChange}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+
+                    <div className="flex w-[45%] items-center gap-5">
+                        <label className="flex w-[40%] items-center gap-1 text-sm font-medium">
+                            <CircleDollarSign size={16} /> Currency
+                        </label>
+                        <FormField
+                            control={form.control}
+                            name="billing_type"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormControl>
+                                    <Select
+                                    onValueChange={field.onChange}
+                                    value={field.value}
+                                >
+                                    <FormControl>
+                                        <SelectTrigger
+                                            className={cn(
+                                                'p-2 !h-6 rounded shadow-none border-none',
+                                                'text-white font-semibold',
+                                            )}
+                                        >
+                                            <SelectValue placeholder="Pick Currency..."/>
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent className="max-h-[30vh]">
+                                        {CURRENCT_LIST.map(({code, symbol}) => (
+                                            <SelectItem
+                                                key={code}
+                                                value={code}
+                                                defaultValue={code}
+                                            >
+                                                <div
+                                                    className={cn("rounded px-2 font-semibold text-white", "flex items-center gap-2")}
+                                                    style={{backgroundColor: '#14B8A6'}}
+                                                >
+                                                    <span>{symbol}</span>
+                                                    {code}
+                                                </div>
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
 ProjectForm.DATEPICKER = ({
     value,
     onChange,
@@ -312,8 +454,10 @@ ProjectForm.DATEPICKER = ({
     value?: string;
     onChange: (value: string) => void;
 }) => {
+    const [open, setOpen] = useState(false);
+
     return (
-        <Popover>
+        <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
                 <span
                     className={cn(
@@ -336,6 +480,7 @@ ProjectForm.DATEPICKER = ({
                             onChange(
                                 toDBTime(dayjs(date).startOf('day').toString()),
                             );
+                        setOpen(false);
                     }}
                     initialFocus
                 />
