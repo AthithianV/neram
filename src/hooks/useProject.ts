@@ -22,10 +22,13 @@ export const useProject = () => {
     });
 };
 
-export const useProjectById = (projectId: number) => {
+export const useProjectById = (projectId?: number | null) => {
     return useQuery({
         queryKey: ['project', projectId],
         queryFn: async () => {
+            if (!projectId) {
+                return null;
+            }
             const data = await invoke('get_project_by_id', { projectId });
             return data as Project | null;
         },
@@ -51,11 +54,12 @@ export const useCreateProject = () => {
 export const useUpdateProject = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (project: Project) => {
-            return await invoke('update_project', project);
+        mutationFn: async (data: { projectToUpdate: Project; projectId: number }) => {
+            return await invoke('update_project', data);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['projects'] });
+            toast.success('Project updated Successfully');
         },
     });
 };

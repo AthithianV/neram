@@ -9,10 +9,16 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useProjectById } from '@/hooks/useProject';
 import { Edit, Settings, Trash2 } from 'lucide-react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 
 const ProjectSettings = () => {
     const { projectId } = useParams();
+
+    if (!projectId) {
+        return null;
+    }
+
+    const [_, setSearchParams] = useSearchParams();
     const { data: project } = useProjectById(Number(projectId) ?? 0);
 
     if (!project) {
@@ -29,7 +35,10 @@ const ProjectSettings = () => {
             <DropdownMenuContent side={'bottom'} align="end">
                 <DropdownMenuLabel>{project.title}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
+                <DropdownMenuItem
+                    className="flex items-center gap-2 cursor-pointer"
+                    onClick={() => setSearchParams({ id: projectId, modal: 'edit_project' })}
+                >
                     <Edit className="text-blue-500" />
                     Edit
                 </DropdownMenuItem>

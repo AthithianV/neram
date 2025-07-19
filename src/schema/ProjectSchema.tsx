@@ -1,22 +1,19 @@
 import { z } from 'zod';
 
 const ProjectSchema = z.object({
-    title: z
-        .string()
-        .min(1, { message: 'Title is required' })
-        .max(12, 'Only Support 12 Character'),
+    title: z.string().min(1, { message: 'Title is required' }).max(40, 'Only Support 40 Character'),
     description: z.string().max(1500, 'Only Support 1500 Character').optional(),
-    color: z.string().optional(),
-    started_at: z.string().optional(),
-    deadline: z.string().optional(),
-    completed_at: z.string().optional(),
-    
-    client_name: z.string().optional(),
-    is_billable: z.boolean().optional(),
-    billing_type: z.enum(['Hourly', 'Fixed']).optional(),
-    hourly_rate: z.number().optional(),
-    fixed_rate: z.number().optional(),
-    currency: z.string().optional(),
+    color: z.string(),
+    started_at: z.string().optional().nullable(),
+    deadline: z.string().optional().nullable(),
+    completed_at: z.string().optional().nullable(),
+
+    client_name: z.string().optional().nullable(),
+    is_billable: z.boolean().optional().nullable(),
+    billing_type: z.enum(['Hourly', 'Fixed']).optional().nullable(),
+    hourly_rate: z.number().optional().nullable(),
+    fixed_rate: z.number().optional().nullable(),
+    currency: z.string().optional().nullable(),
     tags: z.array(z.number()),
 });
 

@@ -6,13 +6,6 @@ import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -32,7 +25,7 @@ import { toDBTime } from '@/lib/time';
 import { cn } from '@/lib/utils';
 
 import { BILLING_TYPE, CURRENCT_LIST, PROJECT_INITIAL_VALUES } from '@/constants/project';
-import { useCreateProject } from '@/hooks/useProject';
+import { useCreateProject, useProjectById, useUpdateProject } from '@/hooks/useProject';
 import {
     CalendarCheck,
     CalendarClock,
@@ -41,31 +34,29 @@ import {
     CircleDollarSign,
     Gauge,
     Palette,
-    Plus,
     Receipt,
     User,
 } from 'lucide-react';
 import ColorPicker from '../form/ColorPicker';
 
-const ProjectForm = () => {
-    const [open, setOpen] = useState(false);
+type PropType = {
+    projectId?: number | null;
+    closeModal: () => void;
+};
+
+const ProjectForm = ({ projectId, closeModal }: PropType) => {
+    const { data: project } = useProjectById(projectId);
     const { mutateAsync: createProject } = useCreateProject();
+    const { mutateAsync: updateProject } = useUpdateProject();
 
     const form = useForm<Project>({
         resolver: zodResolver(ProjectSchema),
-        defaultValues: PROJECT_INITIAL_VALUES,
+        defaultValues: project ?? PROJECT_INITIAL_VALUES,
     });
 
-    const onSubmit = (data: Project) => {
-        createProject(data);
-        setOpen(false);
-        form.reset();
-    };
-
-    const closeForm = (state: boolean) => {
-        setOpen(state);
-        if (state === true) form.reset();
-    };
+    useEffect(() => {
+        if (project) form.reset({ ...project, tags: project.tags ? project.tags : [] });
+    }, [project]);
 
     useEffect(() => {
         if (form.getValues('is_billable') == false) {
@@ -77,81 +68,75 @@ const ProjectForm = () => {
         }
     }, [form.watch('is_billable')]);
 
+    const onSubmit = async (data: Project) => {
+        if (projectId) {
+            await updateProject({ projectToUpdate: data, projectId });
+        } else {
+            await createProject(data);
+        }
+        form.reset();
+        closeModal();
+    };
+
+    const closeForm = (state: boolean) => {
+        if (state === true) form.reset();
+        closeModal();
+    };
+
     return (
-        <Dialog open={open} onOpenChange={closeForm} modal={false}>
-            <DialogTrigger asChild>
-                <Button className="mb-3 cursor-pointer" variant={'outline'}>
-                    <Plus className="w-4 h-4" />
-                </Button>
-            </DialogTrigger>
-            <DialogContent
-                onInteractOutside={(e) => e.preventDefault()}
-                onEscapeKeyDown={(e) => e.preventDefault()}
-                className="bg-gray-800/30 shadow-none border-none rounded-none h-screen flex justify-center items-center min-w-screen"
-            >
-                <DialogTitle></DialogTitle>
-                <DialogDescription></DialogDescription>
-                <div className="bg-white px-20 py-10 rounded-lg shadow-2xl min-h-[60vh] max-h-[75vh] w-[60%]">
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                            {/* Title */}
-                            <FormField
-                                control={form.control}
-                                name="title"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormControl>
-                                            <Input
-                                                placeholder="Project Title..."
-                                                {...field}
-                                                className="border-none shadow-none px-0 !text-2xl font-semibold"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                {/* Title */}
+                <FormField
+                    control={form.control}
+                    name="title"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormControl>
+                                <Input
+                                    placeholder="Project Title..."
+                                    {...field}
+                                    className="border-none shadow-none px-0 !text-2xl font-semibold"
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
 
-                            <ProjectForm.TABLE form={form} />
+                <ProjectForm.TABLE form={form} />
 
-                            <ProjectForm.FREELANCING form={form} />
+                <ProjectForm.FREELANCING form={form} />
 
-                            {/* Description */}
-                            <FormField
-                                control={form.control}
-                                name="description"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <ScrollArea className="max-h-[20vh] w-[48vw]">
-                                            <FormControl>
-                                                <Textarea
-                                                    placeholder="Write more about your project here..."
-                                                    rows={4}
-                                                    {...field}
-                                                    className="p-0 border-none shadow-none min-h-[15vh] rounded-none text-wrap"
-                                                />
-                                            </FormControl>
-                                        </ScrollArea>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                {/* Description */}
+                <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                        <FormItem>
+                            <ScrollArea className="max-h-[20vh] w-[48vw]">
+                                <FormControl>
+                                    <Textarea
+                                        placeholder="Write more about your project here..."
+                                        rows={4}
+                                        {...field}
+                                        className="p-0 border-none shadow-none min-h-[15vh] rounded-none text-wrap"
+                                    />
+                                </FormControl>
+                            </ScrollArea>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
 
-                            <div className="flex justify-end gap-2">
-                                <Button
-                                    type="button"
-                                    variant="destructive"
-                                    onClick={() => closeForm(false)}
-                                >
-                                    Close
-                                </Button>
-                                <Button type="submit">Save Project</Button>
-                            </div>
-                        </form>
-                    </Form>
+                <div className="flex justify-end gap-2">
+                    <Button type="button" variant="destructive" onClick={() => closeForm(false)}>
+                        Close
+                    </Button>
+                    <Button type="submit">Save Project</Button>
                 </div>
-            </DialogContent>
-        </Dialog>
+            </form>
+        </Form>
     );
 };
 

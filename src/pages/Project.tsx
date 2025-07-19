@@ -1,20 +1,23 @@
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { useProject } from '@/hooks/useProject';
 import { cn } from '@/lib/utils';
-import { Outlet, useNavigate, useParams } from 'react-router-dom';
+import { Outlet, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
-import ProjectForm from '@/components/project/ProjectForm';
 import ProjectSettings from '@/components/project/ProjectSettings';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
 import { useEffect } from 'react';
 
 const Project = () => {
+    const [_, setSearchParams] = useSearchParams();
     const { data: projects } = useProject();
     const { projectId } = useParams();
     const navigate = useNavigate();
 
     useEffect(() => {
         if (projects && projects.length > 0) {
-            navigate(`/project/${projects[0].id}`);
+            const id = projectId ?? projects[0].id;
+            navigate(`/project/${id}`);
         }
     }, []);
 
@@ -52,7 +55,13 @@ const Project = () => {
                     <ScrollBar orientation="horizontal" />
                 </ScrollArea>
 
-                <ProjectForm />
+                <Button
+                    className="mb-3 cursor-pointer"
+                    variant={'outline'}
+                    onClick={() => setSearchParams({ modal: 'add_project' })}
+                >
+                    <Plus className="w-4 h-4" />
+                </Button>
                 <ProjectSettings />
             </div>
             <div className="h-[92%]">

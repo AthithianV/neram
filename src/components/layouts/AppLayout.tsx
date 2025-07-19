@@ -1,7 +1,8 @@
 import { Outlet } from 'react-router-dom';
-import NeramSidebar from './NeramSidebar';
-import { Toaster } from '../ui/sonner';
 import { useDb } from '../../hooks/useDb';
+import { Toaster } from '../ui/sonner';
+import ModalLayout from './ModalLayout';
+import NeramSidebar from './NeramSidebar';
 import TitleBar from './TitleBar';
 
 export function AppLayout() {
@@ -17,6 +18,7 @@ export function AppLayout() {
         >
             <NeramSidebar />
             <Toaster position="bottom-center" richColors />
+            <ModalLayout />
             <main className="flex flex-col text-foreground overflow-y-auto h-full w-full bg-gray-50">
                 <div className="title-bar-height bg-white border-b-2 border-gray-100">
                     <TitleBar />
