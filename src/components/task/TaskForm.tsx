@@ -53,6 +53,7 @@ const TaskForm = () => {
     const onSubmit = (data: Task) => {
         console.log('Form Data:', data);
         setOpen(false);
+        form.reset();
     };
 
     const closeForm = (state: boolean) => {
@@ -66,7 +67,7 @@ const TaskForm = () => {
         <Dialog open={open} onOpenChange={closeForm} modal={false}>
             <DialogTrigger asChild>
                 <Button
-                    className="!h-8 cursor-pointer hover:bg-gray-100 !w-fit"
+                    className="!h-8 cursor-pointer hover:bg-gray-100 !w-fit !text-gray-700 text-xs"
                     variant={'ghost'}
                     onClick={() => setOpen(true)}
                 >

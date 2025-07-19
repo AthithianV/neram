@@ -44,6 +44,7 @@ impl<'a> ProjectRepository<'a> {
             Some(project) => Some(ReadProjectModel::from(project)),
             None => None,
         };
+        println!("{project:?}");
         Ok(project)
     }
 

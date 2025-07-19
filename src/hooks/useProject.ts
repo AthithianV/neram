@@ -24,10 +24,10 @@ export const useProject = () => {
 
 export const useProjectById = (projectId: number) => {
     return useQuery({
-        queryKey: ['projects'],
+        queryKey: ['project', projectId],
         queryFn: async () => {
             const data = await invoke('get_project_by_id', { projectId });
-            return data as Project[];
+            return data as Project | null;
         },
         refetchOnWindowFocus: true,
         refetchOnMount: true,
