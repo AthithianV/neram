@@ -1,6 +1,7 @@
 import { Project } from '@/schema/ProjectSchema';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
+import { toast } from 'sonner';
 
 export interface MinimalProject {
     id: number;
@@ -29,6 +30,7 @@ export const useCreateProject = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['projects'] });
+            toast.success('✅ New Project Created');
         },
     });
 };
