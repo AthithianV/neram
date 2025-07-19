@@ -22,6 +22,19 @@ export const useProject = () => {
     });
 };
 
+export const useProjectById = (projectId: number) => {
+    return useQuery({
+        queryKey: ['projects'],
+        queryFn: async () => {
+            const data = await invoke('get_project_by_id', { projectId });
+            return data as Project[];
+        },
+        refetchOnWindowFocus: true,
+        refetchOnMount: true,
+        refetchInterval: false,
+    });
+};
+
 export const useCreateProject = () => {
     const queryClient = useQueryClient();
     return useMutation({
