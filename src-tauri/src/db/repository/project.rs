@@ -1,4 +1,4 @@
-use crate::models::project::{CreateProjectModel, MinimalProjectModel};
+use crate::models::project::{CreateProjectModel, MinimalProjectModel, ReadProjectModel};
 use ::entity::projects::{
     ActiveModel as ProjectActiveModel, Entity as Project, Model as ProjectModel,
 };
@@ -38,8 +38,12 @@ impl<'a> ProjectRepository<'a> {
         Ok(model)
     }
 
-    pub async fn find_by_id(&self, id: i32) -> Result<Option<ProjectModel>, DbErr> {
-        let project = Project::find_by_id(id).one(self.db).await?;
+    pub async fn find_by_id(&self, id: i32) -> Result<Option<ReadProjectModel>, DbErr> {
+        let project_model = Project::find_by_id(id).one(self.db).await?;
+        let project = match project_model {
+            Some(project) => Some(ReadProjectModel::from(project)),
+            None => None,
+        };
         Ok(project)
     }
 
@@ -47,11 +51,7 @@ impl<'a> ProjectRepository<'a> {
         let projects = Project::find().all(self.db).await?;
         let minimal_projects = projects
             .into_iter()
-            .map(|project| MinimalProjectModel {
-                id: project.id,
-                title: project.title,
-                color: project.color,
-            })
+            .map(|project| MinimalProjectModel::from(project))
             .collect();
         Ok(minimal_projects)
     }

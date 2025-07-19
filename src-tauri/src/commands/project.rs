@@ -1,6 +1,6 @@
 use tauri::{command, State};
 
-use crate::models::project::{CreateProjectModel, MinimalProjectModel};
+use crate::models::project::{CreateProjectModel, MinimalProjectModel, ReadProjectModel};
 use crate::repository::project::ProjectRepository;
 use crate::AppState;
 
@@ -62,17 +62,20 @@ pub async fn get_all_projects(
 /// A `Result` containing an `Option<ProjectModel>` (Some if found, None if not) on success,
 /// or a `String` error message.
 
-// #[command]
-// pub async fn get_project_by_id(
-//     app_state: State<'_, AppState>,
-//     id: i32
-// ) -> Result<Option<ProjectModel>, String> {
-//     // Acquire a lock on the database connection
-//     let db = app_state.conn.lock().await;
+#[command]
+pub async fn get_project_by_id(
+    app_state: State<'_, AppState>,
+    project_id: i32,
+) -> Result<Option<ReadProjectModel>, String> {
+    // Acquire a lock on the database connection
+    let db = app_state.conn.lock().await;
 
-//     let project_repository = ProjectRepository::new(&db);
-//     project_repository.find_by_id(id).await.map_err(|e| e.to_string())
-// }
+    let project_repository = ProjectRepository::new(&db);
+    project_repository
+        .find_by_id(project_id)
+        .await
+        .map_err(|e| e.to_string())
+}
 
 /// Updates an existing Project record in the database.
 ///

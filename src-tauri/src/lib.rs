@@ -39,7 +39,7 @@ pub async fn run() {
             add_tag_to_session,
             remove_tag_from_session,
             check_session_collision,
-            // // Task commands
+            // Task commands
             // create_task,
             get_all_tasks,
             // get_task_by_id,
@@ -49,7 +49,7 @@ pub async fn run() {
             // Project commands
             create_project,
             get_all_projects,
-            // get_project_by_id,
+            get_project_by_id,
             // update_project,
             delete_project,
             add_tag_to_project,

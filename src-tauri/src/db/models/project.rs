@@ -2,11 +2,11 @@ use ::entity::projects;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ProjectModel {
+pub struct ReadProjectModel {
     pub id: i32,
     pub title: String,
     pub description: Option<String>,
-    pub color: Option<String>,
+    pub color: String,
     pub client_name: Option<String>,
     pub started_at: Option<String>,
     pub deadline: Option<String>,
@@ -16,8 +16,26 @@ pub struct ProjectModel {
     pub hourly_rate: Option<i32>,
     pub fixed_rate: Option<i32>,
     pub currency: Option<String>,
-    pub created_at: String,
-    pub updated_at: String,
+}
+
+impl From<projects::Model> for ReadProjectModel {
+    fn from(project: projects::Model) -> Self {
+        Self {
+            id: project.id,
+            title: project.title,
+            description: project.description,
+            color: project.color,
+            client_name: project.client_name,
+            started_at: project.started_at,
+            deadline: project.deadline,
+            completed_at: project.completed_at,
+            is_billable: project.is_billable,
+            billing_type: project.billing_type,
+            hourly_rate: project.hourly_rate,
+            fixed_rate: project.fixed_rate,
+            currency: project.currency,
+        }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
