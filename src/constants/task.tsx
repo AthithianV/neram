@@ -3,7 +3,7 @@ import { COLORS } from './colors';
 
 export const TASK_INTIAL_VALUE = {
     color: COLORS[0].value,
-    status: 'Planning',
+    status: 'Todo',
     priority: 'Low',
     title: 'Untitled',
     started_at: dayjs().startOf('day').toString(),
@@ -18,12 +18,7 @@ export const TASK_STATUS: TaskStatus[] = [
     'Cancelled',
 ];
 
-export type TaskStatus =
-    | 'Todo'
-    | 'In Progress'
-    | 'Waiting'
-    | 'Completed'
-    | 'Cancelled';
+export type TaskStatus = 'Todo' | 'In Progress' | 'Waiting' | 'Completed' | 'Cancelled';
 
 export const TASK_STATUS_COLOR = {
     Todo: '#0EA5E9',
@@ -36,12 +31,7 @@ export const TASK_STATUS_COLOR = {
 
 export type TaskPriority = 'Low' | 'Medium' | 'High' | 'Critical';
 
-export const TASK_PRIORITY: TaskPriority[] = [
-    'Low',
-    'Medium',
-    'High',
-    'Critical',
-];
+export const TASK_PRIORITY: TaskPriority[] = ['Low', 'Medium', 'High', 'Critical'];
 
 export const TASK_PRIORITY_COLOR = {
     Low: '#059669',

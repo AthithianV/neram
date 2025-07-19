@@ -1,12 +1,12 @@
-import React, { useState, useMemo } from 'react';
-import { Task, useTask } from '@/hooks/useTask';
 import { Badge } from '@/components/ui/badge';
+import { TASK_STATUS, TASK_STATUS_COLOR, TaskStatus } from '@/constants/task';
+import { Task, useTask } from '@/hooks/useTask';
 import { cn } from '@/lib/utils';
-import { ScrollArea, ScrollBar } from '../ui/scroll-area';
+import React, { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import TaskCard from '../task/TaskCard';
 import TaskForm from '../task/TaskForm';
-import { TASK_STATUS, TASK_STATUS_COLOR, TaskStatus } from '@/constants/task';
+import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 
 interface KanbanColumn {
     id: string;
@@ -69,7 +69,7 @@ const Kanban = () => {
         <ScrollArea className="h-full">
             <div className="flex gap-1 h-full">
                 {columns.map((column) => (
-                    <div className="h-full flex-1 min-w-[18vw]">
+                    <div className="h-full flex-1 min-w-[18vw]" key={column.id}>
                         <ScrollArea className="h-full">
                             <div
                                 key={column.id}
@@ -82,24 +82,19 @@ const Kanban = () => {
                             >
                                 <div className="flex items-center justify-between">
                                     <Badge
-                                        className={cn(
-                                            'font-semibold rounded text-gary-100',
-                                        )}
+                                        className={cn('font-semibold rounded text-gary-100')}
                                         style={column.style}
                                     >
                                         {column.title}
                                     </Badge>
-                                    <Badge
-                                        variant="secondary"
-                                        style={column.style}
-                                    >
+                                    <Badge variant="secondary" style={column.style}>
                                         {column.tasks.length}
                                     </Badge>
                                 </div>
 
                                 <div className="py-2 space-y-2 flex flex-col">
                                     {column.tasks.map((task) => (
-                                        <TaskCard task={task} />
+                                        <TaskCard task={task} key={task.id} />
                                     ))}
 
                                     <TaskForm />

@@ -1,16 +1,15 @@
+import { TASK_PRIORITY_COLOR, TaskPriority } from '@/constants/task';
 import { Task } from '@/hooks/useTask';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
-import { Badge } from '../ui/badge';
 import { AlarmCheck, Calendar } from 'lucide-react';
+import { Badge } from '../ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
-import { TASK_PRIORITY_COLOR, TaskPriority } from '@/constants/task';
 
 const TaskCard = ({ task }: { task: Task }) => {
     const getPriorityColor = (priority?: string | null) => {
-        const color =
-            TASK_PRIORITY_COLOR[(priority as TaskPriority) ?? 'Default'];
+        const color = TASK_PRIORITY_COLOR[(priority as TaskPriority) ?? 'Default'];
         return color;
     };
 
@@ -26,16 +25,12 @@ const TaskCard = ({ task }: { task: Task }) => {
         >
             <CardHeader className="px-2">
                 <div className="flex items-start justify-between gap-2">
-                    <CardTitle className="text-sm font-semibold">
-                        {task.title}
-                    </CardTitle>
+                    <CardTitle className="text-sm font-semibold">{task.title}</CardTitle>
                     <div className="flex items-center gap-1">
                         <div
                             className={cn('w-2 rounded-full')}
                             style={{
-                                backgroundColor: getPriorityColor(
-                                    task.priority,
-                                ),
+                                backgroundColor: getPriorityColor(task.priority),
                             }}
                         />
                     </div>
@@ -44,21 +39,23 @@ const TaskCard = ({ task }: { task: Task }) => {
 
             <CardContent className="space-y-4 px-2">
                 {task.description && (
-                    <p className="text-xs text-muted-foreground">
-                        {task.description}
-                    </p>
+                    <p className="text-xs text-muted-foreground">{task.description}</p>
                 )}
 
                 <div className="flex gap-2">
                     {task.deadline && (
                         <Tooltip>
                             <TooltipTrigger>
-                                <Badge className="flex items-center justify-between bg-transparent text-xs text-gray-700 border-gray-200 py-1">
+                                <Badge
+                                    className={cn(
+                                        'flex items-center justify-between',
+                                        'bg-transparent text-gray-700 border-gray-200',
+                                        'text-xs py-1',
+                                    )}
+                                >
                                     <Calendar className="h-4 w-4" />
                                     <span className={cn('font-medium')}>
-                                        {dayjs(task.deadline).format(
-                                            'DD MMM YYYY',
-                                        )}
+                                        {dayjs(task.deadline).format('DD MMM YYYY')}
                                     </span>
                                 </Badge>
                             </TooltipTrigger>
@@ -69,7 +66,13 @@ const TaskCard = ({ task }: { task: Task }) => {
                     {task.estimated_time && (
                         <Tooltip>
                             <TooltipTrigger>
-                                <Badge className="flex items-center justify-between bg-transparent text-xs text-gray-700 border-gray-200 py-1">
+                                <Badge
+                                    className={cn(
+                                        'flex items-center justify-between',
+                                        'bg-transparent text-gray-700 border-gray-200',
+                                        'text-xs py-1',
+                                    )}
+                                >
                                     <AlarmCheck className="h-4 w-4" />
                                     <span className={cn('font-medium')}>
                                         {task.estimated_time / 3600}h
@@ -86,9 +89,7 @@ const TaskCard = ({ task }: { task: Task }) => {
                                 <Badge
                                     className={cn('text-xs')}
                                     style={{
-                                        backgroundColor: getPriorityColor(
-                                            task.priority,
-                                        ),
+                                        backgroundColor: getPriorityColor(task.priority),
                                     }}
                                 >
                                     {task.priority}
@@ -102,8 +103,7 @@ const TaskCard = ({ task }: { task: Task }) => {
                 <div className="flex items-center gap-1">
                     {task.started_at && (
                         <span className="text-xs text-muted-foreground">
-                            Started:{' '}
-                            {dayjs(task.started_at).format('DD MMM YYYY')}
+                            Started: {dayjs(task.started_at).format('DD MMM YYYY')}
                         </span>
                     )}
                 </div>
