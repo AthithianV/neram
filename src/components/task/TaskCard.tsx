@@ -3,11 +3,14 @@ import { ReadTask } from '@/hooks/useTask';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
 import { AlarmCheck, Calendar } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import { Badge } from '../ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 const TaskCard = ({ task }: { task: ReadTask }) => {
+    const [_, setSearchParams] = useSearchParams();
+
     const getPriorityColor = (priority?: string | null) => {
         const color = TASK_PRIORITY_COLOR[(priority as TaskPriority) ?? 'Default'];
         return color;
@@ -17,9 +20,16 @@ const TaskCard = ({ task }: { task: ReadTask }) => {
         <Card
             key={task.id}
             className={cn(
-                'cursor-pointer transition-all hover:shadow-md rounded-md gap-0 py-3 px-2 flex-1',
+                'cursor-pointer transition-all hover:shadow-md rounded-md gap-0 py-3 px-2 w-full',
                 // draggedTask?.id === task.id && 'opacity-50',
             )}
+            onClick={() =>
+                setSearchParams({
+                    task_status: task.status,
+                    modal: 'edit_task',
+                    id: String(task.id),
+                })
+            }
             draggable
             // onDragStart={(e) => handleDragStart(e, task)}
         >
@@ -42,7 +52,7 @@ const TaskCard = ({ task }: { task: ReadTask }) => {
                     <p className="text-xs text-muted-foreground">{task.description}</p>
                 )}
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                     {task.deadline && (
                         <Tooltip>
                             <TooltipTrigger>

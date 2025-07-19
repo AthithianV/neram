@@ -24,7 +24,7 @@ const Project = () => {
     return (
         <div className="h-full">
             <div className="flex items-center gap-2 h-[8%]">
-                <ScrollArea className="max-w-[92%] whitespace-nowrap">
+                <ScrollArea className="max-w-[92%] max-xl:max-w-[88%] max-lg:max-w-[82%] max-md:max-w-[80%]  whitespace-nowrap">
                     <div className="flex gap-1 pb-3">
                         {projects?.map((project) => (
                             <div

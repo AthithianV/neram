@@ -16,14 +16,14 @@ use crate::AppState;
 #[command]
 pub async fn create_task(
     app_state: State<'_, AppState>,
-    new_task: CreateTaskModel,
+    task_to_create: CreateTaskModel,
 ) -> Result<(), String> {
     // Acquire a lock on the database connection
     let db = app_state.conn.lock().await;
 
     let task_repository = TaskRepository::new(&db);
     let _ = task_repository
-        .create(&new_task)
+        .create(&task_to_create)
         .await
         .map_err(|e| e.to_string());
     Ok(())
@@ -69,14 +69,14 @@ pub async fn get_all_tasks(
 #[command]
 pub async fn get_task_by_id(
     app_state: State<'_, AppState>,
-    id: i32,
+    task_id: i32,
 ) -> Result<Option<ReadTaskModel>, String> {
     // Acquire a lock on the database connection
     let db = app_state.conn.lock().await;
 
     let task_repository = TaskRepository::new(&db);
     task_repository
-        .find_by_id(id)
+        .find_by_id(task_id)
         .await
         .map_err(|e| e.to_string())
 }

@@ -25,11 +25,30 @@ export const useTask = (projectId: number) => {
     });
 };
 
+export const useTaskById = (taskId?: number | null) => {
+    return useQuery({
+        queryKey: ['task', taskId],
+        queryFn: async () => {
+            if (!taskId) {
+                return null;
+            }
+            const data = await invoke('get_task_by_id', {
+                taskId,
+            });
+            return data as ReadTask | null;
+        },
+        enabled: taskId !== 0,
+        refetchOnWindowFocus: true,
+        refetchOnMount: true,
+        refetchInterval: false,
+    });
+};
+
 export const useCreateTask = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (task: Task) => {
-            return await invoke('create_task', { newTask: task });
+            return await invoke('create_task', { taskToCreate: task });
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tasks'] });
@@ -41,11 +60,14 @@ export const useCreateTask = () => {
 export const useUpdateTask = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (task: Task) => {
-            return await invoke('update_task', task);
+        mutationFn: async (data: { taskToUpdate: Task; taskId: number }) => {
+            return await invoke('update_task', data);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tasks'] });
+        },
+        onError: (err) => {
+            console.log(err);
         },
     });
 };

@@ -1,9 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
@@ -21,7 +20,6 @@ import {
     Flag,
     Gauge,
     Palette,
-    Plus,
 } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 
@@ -34,7 +32,7 @@ import {
     TaskPriority,
     TaskStatus,
 } from '@/constants/task';
-import { useCreateTask } from '@/hooks/useTask';
+import { useCreateTask, useTaskById, useUpdateTask } from '@/hooks/useTask';
 import { calcualteDuration, formatDuration, toDBTime } from '@/lib/time';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
@@ -44,123 +42,109 @@ import { Calendar } from '../ui/calendar';
 
 type Prop = {
     status: TaskStatus;
+    taskId?: number | null;
+    closeModal: () => void;
 };
 
-const TaskForm = ({ status }: Prop) => {
+const TaskForm = ({ taskId, closeModal, status }: Prop) => {
     const { projectId } = useParams();
 
-    const [open, setOpen] = useState(false);
     const form = useForm({
         resolver: zodResolver(TaskSchema),
-        defaultValues: { ...TASK_INTIAL_VALUE, project_id: Number(projectId), status },
+        defaultValues: {
+            ...TASK_INTIAL_VALUE,
+            project_id: Number(projectId),
+            status: status,
+        },
     });
     const { mutateAsync: createTask } = useCreateTask();
+    const { mutateAsync: updateTask } = useUpdateTask();
+    const { data: task } = useTaskById(taskId);
+
+    useEffect(() => {
+        if (task) {
+            form.reset(task);
+            // console.log(form.getValues());
+        }
+    }, [task]);
 
     const onSubmit = (data: Task) => {
         if (projectId) {
-            createTask({ ...data, project_id: Number(projectId) });
-            setOpen(false);
+            if (taskId) {
+                updateTask({ taskToUpdate: data, taskId });
+            } else {
+                createTask({ ...data, project_id: Number(projectId) });
+            }
             form.reset();
         }
+        closeModal();
     };
 
-    const closeForm = (state: boolean) => {
-        setOpen(state);
-        if (state) {
-            form.reset();
-        }
+    const closeForm = () => {
+        form.reset();
+        closeModal();
     };
+
+    if (taskId && !task) return null;
 
     return (
-        <Dialog open={open} onOpenChange={closeForm} modal={false}>
-            <DialogTrigger asChild>
-                <Button
-                    className="!h-8 cursor-pointer hover:bg-gray-100 !w-fit !text-gray-700 text-xs"
-                    variant={'ghost'}
-                    onClick={() => setOpen(true)}
-                >
-                    <Plus /> Add Task
-                </Button>
-            </DialogTrigger>
-            <DialogContent
-                onInteractOutside={(e) => e.preventDefault()}
-                onEscapeKeyDown={(e) => e.preventDefault()}
-                className={cn(
-                    'bg-gray-800/30 h-screen min-w-screen',
-                    'shadow-none border-none rounded-none',
-                    'flex justify-center items-center',
-                )}
-            >
-                <DialogTitle></DialogTitle>
-                <div
-                    className={cn(
-                        'bg-white px-20 py-10 rounded-lg shadow-2xl',
-                        'h-[60vh] max-h-[75vh] w-[60%]',
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                {/* title */}
+                <FormField
+                    control={form.control}
+                    name="title"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormControl>
+                                <Input
+                                    placeholder="Untitled"
+                                    {...field}
+                                    className="!text-3xl font-bold border-none shadow-none px-0 !h-auto !w-full"
+                                    value={field.value}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
                     )}
-                >
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                            {/* title */}
-                            <FormField
-                                control={form.control}
-                                name="title"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormControl>
-                                            <Input
-                                                placeholder="Untitled"
-                                                {...field}
-                                                className="!text-3xl font-bold border-none shadow-none px-0 !h-auto !w-full"
-                                                value={field.value}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                />
 
-                            <TaskForm.TABLE form={form} />
+                <TaskForm.ATTRIBUTES form={form} />
 
-                            {/* description */}
-                            <FormField
-                                control={form.control}
-                                name="description"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormControl>
-                                            <Textarea
-                                                placeholder="Write more about this task Here..."
-                                                rows={4}
-                                                {...field}
-                                                className="bg-transparent border-none shadow-none px-1 w-full !text-md max-h-[30vh] overflow-y-auto"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                {/* description */}
+                <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormControl>
+                                <Textarea
+                                    value={field.value as string}
+                                    onChange={field.onChange}
+                                    placeholder="Write more about this task Here..."
+                                    rows={4}
+                                    className="bg-transparent border-none shadow-none px-1 w-full !text-md max-h-[30vh] overflow-y-auto"
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
 
-                            <div className="flex gap-2 justify-end">
-                                <Button
-                                    variant={'destructive'}
-                                    onClick={() => closeForm(false)}
-                                    type="button"
-                                >
-                                    Close
-                                </Button>
-                                <Button type="submit" disabled={false}>
-                                    {false ? 'Saving…' : 'Save project'}
-                                </Button>
-                            </div>
-                        </form>
-                    </Form>
+                <div className="flex gap-2 justify-end">
+                    <Button variant={'destructive'} onClick={() => closeForm()} type="button">
+                        Close
+                    </Button>
+                    <Button type="submit" disabled={false}>
+                        {false ? 'Saving…' : 'Save project'}
+                    </Button>
                 </div>
-            </DialogContent>
-        </Dialog>
+            </form>
+        </Form>
     );
 };
 
-TaskForm.TABLE = ({ form }: { form: any }) => {
+TaskForm.ATTRIBUTES = ({ form }: { form: any }) => {
     const getTaskStatusBg = (value?: string | null) => {
         return {
             backgroundColor: TASK_STATUS_COLOR[(value as TaskStatus) ?? 'Default'],
@@ -252,7 +236,7 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
                                     </div>
                                     <FormMessage className="text-xs" />
                                 </FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <Select onValueChange={field.onChange} value={field.value}>
                                     <FormControl>
                                         <SelectTrigger
                                             className={cn(
@@ -453,7 +437,11 @@ TaskForm.DURATION = ({
     setError: (msg: string | null) => void;
     clearError: () => void;
 }) => {
-    const [time, setTime] = useState<string>(formatDuration(value ? value : 0));
+    const [time, setTime] = useState<string>('');
+
+    useEffect(() => {
+        setTime(formatDuration(value ? value : 0));
+    }, [value]);
 
     const handleChange = () => {
         const regex = /^\d{2}:\d{2}:\d{2}$/;

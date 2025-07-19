@@ -104,7 +104,7 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                     )}
                 />
 
-                <ProjectForm.TABLE form={form} />
+                <ProjectForm.ATTRIBUTE form={form} />
 
                 <ProjectForm.FREELANCING form={form} />
 
@@ -140,7 +140,7 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
     );
 };
 
-ProjectForm.TABLE = ({ form }: { form: any }) => {
+ProjectForm.ATTRIBUTE = ({ form }: { form: any }) => {
     return (
         <div className="space-y-4 border-b-2 pb-4">
             <div className="flex flex-wrap gap-4">

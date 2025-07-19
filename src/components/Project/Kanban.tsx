@@ -2,10 +2,11 @@ import { Badge } from '@/components/ui/badge';
 import { TASK_STATUS, TASK_STATUS_COLOR, TaskStatus } from '@/constants/task';
 import { ReadTask, useTask } from '@/hooks/useTask';
 import { cn } from '@/lib/utils';
+import { Plus } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import TaskCard from '../task/TaskCard';
-import TaskForm from '../task/TaskForm';
+import { Button } from '../ui/button';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 
 interface KanbanColumn {
@@ -17,6 +18,7 @@ interface KanbanColumn {
 
 const Kanban = () => {
     const { projectId } = useParams();
+    const [_, setSearchParams] = useSearchParams();
 
     const { data: tasks = [] } = useTask(Number(projectId) ?? 0);
     const [draggedTask, setDraggedTask] = useState<ReadTask | null>(null);
@@ -97,7 +99,18 @@ const Kanban = () => {
                                         <TaskCard task={task} key={task.id} />
                                     ))}
 
-                                    <TaskForm status={column.title} />
+                                    <Button
+                                        className="!h-8 cursor-pointer hover:bg-gray-100 !w-fit !text-gray-700 text-xs"
+                                        variant={'ghost'}
+                                        onClick={() =>
+                                            setSearchParams({
+                                                task_status: column.title,
+                                                modal: 'add_task',
+                                            })
+                                        }
+                                    >
+                                        <Plus /> Add Task
+                                    </Button>
                                 </div>
                             </div>
                         </ScrollArea>

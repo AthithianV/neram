@@ -1,9 +1,11 @@
 import { MODALMODES, ModalModes } from '@/constants/modal';
+import { TaskStatus } from '@/constants/task';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import ProjectForm from '../project/ProjectForm';
+import TaskForm from '../task/TaskForm';
 
 const backdropVariants = {
     hidden: { opacity: 0 },
@@ -11,9 +13,9 @@ const backdropVariants = {
 };
 
 const modalVariants = {
-    hidden: { opacity: 0, scale: 0.9 },
-    visible: { opacity: 1, scale: 1 },
-    exit: { opacity: 0, scale: 0.9 },
+    hidden: { opacity: 0, translateY: 20 },
+    visible: { opacity: 1, translateY: 0 },
+    exit: { opacity: 0, translateY: 20 },
 };
 
 export const ModalOverlay = ({
@@ -54,6 +56,7 @@ const ModalManager = ({ modal }: { modal: ModalModes }) => {
         });
 
     const id = searchParams.get('id');
+    const taskStatus = searchParams.get('task_status');
 
     useEffect(() => {
         const handleEsc = (e: KeyboardEvent) => {
@@ -69,6 +72,16 @@ const ModalManager = ({ modal }: { modal: ModalModes }) => {
         case 'edit_project':
             return (
                 <ProjectForm projectId={id !== null ? Number(id) : id} closeModal={closeModal} />
+            );
+        case 'add_task':
+            return <TaskForm closeModal={closeModal} status={taskStatus as TaskStatus} />;
+        case 'edit_task':
+            return (
+                <TaskForm
+                    closeModal={closeModal}
+                    status={taskStatus as TaskStatus}
+                    taskId={id !== null ? Number(id) : id}
+                />
             );
         default:
             return null;
