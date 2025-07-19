@@ -1,5 +1,5 @@
 use ::entity::tasks;
-use serde::{ Deserialize, Serialize };
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ReadTaskModel {
@@ -9,35 +9,13 @@ pub struct ReadTaskModel {
     pub color: String,
     pub project_id: i32,
     pub status: String,
-    pub priority: String,
+    pub priority: Option<String>,
     pub deadline: Option<String>,
     pub started_at: String,
     pub completed_at: Option<String>,
     pub estimated_time: Option<i32>,
     pub created_at: String,
     pub updated_at: String,
-}
-
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct CreateTaskModel {
-    pub title: String,
-    pub description: Option<String>,
-    pub color: String,
-    pub project_id: i32,
-    pub status: String,
-    pub priority: String,
-    pub deadline: Option<String>,
-    pub started_at: String,
-    pub completed_at: Option<String>,
-    pub estimated_time: Option<i32>,
-}
-
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct MiniTask {
-    pub id: i32,
-    pub title: String,
-    pub color: Option<String>,
-    pub status: String,
 }
 
 impl From<tasks::Model> for ReadTaskModel {
@@ -58,4 +36,26 @@ impl From<tasks::Model> for ReadTaskModel {
             updated_at: task.updated_at,
         }
     }
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct CreateTaskModel {
+    pub title: String,
+    pub description: Option<String>,
+    pub color: String,
+    pub project_id: i32,
+    pub status: String,
+    pub priority: Option<String>,
+    pub deadline: Option<String>,
+    pub started_at: String,
+    pub completed_at: Option<String>,
+    pub estimated_time: Option<i32>,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MiniTask {
+    pub id: i32,
+    pub title: String,
+    pub color: Option<String>,
+    pub status: String,
 }

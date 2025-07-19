@@ -1,19 +1,21 @@
-use chrono::{ NaiveDateTime };
+use chrono::NaiveDateTime;
 use migration::Expr;
 use sea_orm::*;
+
+use crate::{
+    models::session::{CreateSessionModel, FullSessionModel, UpdateSessionModel},
+    time::now,
+};
 use ::entity::{
     projects::Entity as Project,
     sessions::{
-        ActiveModel as SessionActiveModel,
-        Entity as Session,
+        ActiveModel as SessionActiveModel, Column as SessionColumn, Entity as Session,
         Model as SessionModel,
-        Column as SessionColumn,
     },
-    tasks::Entity as Task,
+    sessions_tags::{ActiveModel as SessionTagsActiveModel, Entity as SessionTags},
     tags::Entity as Tag,
-    sessions_tags::{ Entity as SessionTags, ActiveModel as SessionTagsActiveModel },
+    tasks::Entity as Task,
 };
-use crate::models::session::{ CreateSessionModel, FullSessionModel, UpdateSessionModel };
 
 pub struct SessionRepository<'a> {
     db: &'a DatabaseConnection,
@@ -35,8 +37,8 @@ impl<'a> SessionRepository<'a> {
             end_time: Set(session.end_time.map(|t| t.to_string())),
             session_duration_sec: Set(session.session_duration_sec),
             break_duration_sec: Set(session.break_duration_sec),
-            created_at: Set("CURRENT_TIMESTAMP".to_string()),
-            updated_at: Set("CURRENT_TIMESTAMP".to_string()),
+            created_at: Set(now()),
+            updated_at: Set(now()),
             ..Default::default()
         };
 
@@ -48,18 +50,15 @@ impl<'a> SessionRepository<'a> {
         let session = Session::find_by_id(id)
             .find_also_related(Task)
             .find_also_related(Project)
-            .one(self.db).await?;
+            .one(self.db)
+            .await?;
 
         if let Some((session_model, task_model, project_model)) = session {
             // 🔄 Query tags separately
             let tags = session_model.find_related(Tag).all(self.db).await?;
 
-            let full_model = FullSessionModel::from((
-                session_model,
-                task_model,
-                project_model,
-                tags,
-            ));
+            let full_model =
+                FullSessionModel::from((session_model, task_model, project_model, tags));
             Ok(Some(full_model))
         } else {
             Ok(None)
@@ -72,7 +71,8 @@ impl<'a> SessionRepository<'a> {
             .find_also_related(Project)
             .order_by_desc(SessionColumn::Date)
             .order_by_desc(SessionColumn::StartTime)
-            .all(self.db).await?;
+            .all(self.db)
+            .await?;
 
         let mut results = Vec::new();
 
@@ -80,12 +80,8 @@ impl<'a> SessionRepository<'a> {
             let (session_model, task_model, project_model) = session;
 
             let tags = session_model.find_related(Tag).all(self.db).await?;
-            let full_session = FullSessionModel::from((
-                session_model,
-                task_model,
-                project_model,
-                tags,
-            ));
+            let full_session =
+                FullSessionModel::from((session_model, task_model, project_model, tags));
             results.push(full_session);
         }
 
@@ -95,7 +91,7 @@ impl<'a> SessionRepository<'a> {
     pub async fn update(
         &self,
         session_to_update: &UpdateSessionModel,
-        session_id: i32
+        session_id: i32,
     ) -> Result<(), DbErr> {
         let session = Session::find_by_id(session_id).one(self.db).await?;
         let mut session: SessionActiveModel = session.unwrap().into();
@@ -141,7 +137,7 @@ impl<'a> SessionRepository<'a> {
         }
 
         // Always update the timestamp
-        session.updated_at = Set("CURRENT_TIMESTAMP".to_string());
+        session.updated_at = Set(now());
 
         session.update(self.db).await?;
         Ok(())
@@ -163,11 +159,11 @@ impl<'a> SessionRepository<'a> {
     }
 
     pub async fn remove_tag_from_session(&self, session_id: i32, tag_id: i32) -> Result<(), DbErr> {
-        <SessionTags as EntityTrait>
-            ::delete_many()
+        <SessionTags as EntityTrait>::delete_many()
             .filter(<SessionTags as EntityTrait>::Column::SessionId.eq(session_id))
             .filter(<SessionTags as EntityTrait>::Column::TagId.eq(tag_id))
-            .exec(self.db).await?;
+            .exec(self.db)
+            .await?;
         Ok(())
     }
 
@@ -175,7 +171,7 @@ impl<'a> SessionRepository<'a> {
         &self,
         new_start: NaiveDateTime,
         new_end: Option<NaiveDateTime>,
-        session_id: i32
+        session_id: i32,
     ) -> Result<bool, DbErr> {
         let mut cond = Condition::all();
 
@@ -189,7 +185,7 @@ impl<'a> SessionRepository<'a> {
                 .add(
                     Condition::any()
                         .add(Expr::col(SessionColumn::EndTime).is_null())
-                        .add(Expr::col(SessionColumn::EndTime).gte(formatted_start.clone()))
+                        .add(Expr::col(SessionColumn::EndTime).gte(formatted_start.clone())),
                 );
         } else {
             // If new_end is None, session runs indefinitely → any session that overlaps new_start
@@ -197,7 +193,7 @@ impl<'a> SessionRepository<'a> {
                 .add(
                     Expr::col(SessionColumn::EndTime)
                         .is_null()
-                        .or(Expr::col(SessionColumn::EndTime).gte(formatted_start.clone()))
+                        .or(Expr::col(SessionColumn::EndTime).gte(formatted_start.clone())),
                 )
                 .add(Expr::col(SessionColumn::StartTime).lte(formatted_start.clone()));
         }

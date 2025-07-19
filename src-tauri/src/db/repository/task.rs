@@ -4,7 +4,9 @@ use ::entity::tasks::{
 use ::entity::tasks_tags::{ActiveModel as TaskTagsActiveModel, Entity as TaskTags};
 use sea_orm::*;
 
-use crate::models::task::ReadTaskModel;
+use crate::models::task::{CreateTaskModel, ReadTaskModel};
+use crate::time::now;
+use ::entity::sessions::{Column as SessionColumn, Entity as Session};
 
 pub struct TaskRepository<'a> {
     db: &'a DatabaseConnection,
@@ -15,7 +17,7 @@ impl<'a> TaskRepository<'a> {
         Self { db }
     }
 
-    pub async fn create(&self, task: &TaskModel) -> Result<TaskModel, DbErr> {
+    pub async fn create(&self, task: &CreateTaskModel) -> Result<TaskModel, DbErr> {
         let active_model = TaskActiveModel {
             title: Set(task.title.clone()),
             description: Set(task.description.clone()),
@@ -27,8 +29,8 @@ impl<'a> TaskRepository<'a> {
             started_at: Set(task.started_at.clone()),
             completed_at: Set(task.completed_at.clone()),
             estimated_time: Set(task.estimated_time),
-            created_at: Set("CURRENT_TIMESTAMP".to_string()),
-            updated_at: Set("CURRENT_TIMESTAMP".to_string()),
+            created_at: Set(now()),
+            updated_at: Set(now()),
             ..Default::default()
         };
 
@@ -36,8 +38,12 @@ impl<'a> TaskRepository<'a> {
         Ok(model)
     }
 
-    pub async fn find_by_id(&self, id: i32) -> Result<Option<TaskModel>, DbErr> {
-        let task = Task::find_by_id(id).one(self.db).await?;
+    pub async fn find_by_id(&self, id: i32) -> Result<Option<ReadTaskModel>, DbErr> {
+        let task_opt = Task::find_by_id(id).one(self.db).await?;
+        let task = match task_opt {
+            Some(t) => Some(ReadTaskModel::from(t)),
+            None => None,
+        };
         Ok(task)
     }
 
@@ -45,21 +51,7 @@ impl<'a> TaskRepository<'a> {
         let tasks = Task::find().all(self.db).await?;
         let tasks = tasks
             .into_iter()
-            .map(|task| ReadTaskModel {
-                id: task.id,
-                title: task.title,
-                description: task.description,
-                color: task.color,
-                status: task.status,
-                project_id: task.project_id,
-                priority: task.priority,
-                deadline: task.deadline,
-                started_at: task.started_at,
-                completed_at: task.completed_at,
-                estimated_time: task.estimated_time,
-                created_at: task.created_at,
-                updated_at: task.updated_at,
-            })
+            .map(|task| ReadTaskModel::from(task))
             .collect();
         Ok(tasks)
     }
@@ -74,47 +66,36 @@ impl<'a> TaskRepository<'a> {
             .await?;
         let tasks = tasks
             .into_iter()
-            .map(|task| ReadTaskModel {
-                id: task.id,
-                title: task.title,
-                description: task.description,
-                color: task.color,
-                status: task.status,
-                project_id: task.project_id,
-                priority: task.priority,
-                deadline: task.deadline,
-                started_at: task.started_at,
-                completed_at: task.completed_at,
-                estimated_time: task.estimated_time,
-                created_at: task.created_at,
-                updated_at: task.updated_at,
-            })
+            .map(|task| ReadTaskModel::from(task))
             .collect();
         Ok(tasks)
     }
 
-    pub async fn update(&self, task: &TaskModel) -> Result<TaskModel, DbErr> {
-        let active_model = TaskActiveModel {
-            id: Set(task.id),
-            title: Set(task.title.clone()),
-            description: Set(task.description.clone()),
-            color: Set(task.color.clone()),
-            project_id: Set(task.project_id),
-            status: Set(task.status.clone()),
-            priority: Set(task.priority.clone()),
-            deadline: Set(task.deadline.clone()),
-            started_at: Set(task.started_at.clone()),
-            completed_at: Set(task.completed_at.clone()),
-            estimated_time: Set(task.estimated_time),
-            updated_at: Set("CURRENT_TIMESTAMP".to_string()),
-            ..Default::default()
-        };
+    pub async fn update(&self, task_id: i32, task: &CreateTaskModel) -> Result<(), DbErr> {
+        let task_model = Task::find_by_id(task_id).one(self.db).await?;
+        let mut task_active_model: TaskActiveModel = task_model.unwrap().into();
 
-        let model = active_model.update(self.db).await?;
-        Ok(model)
+        task_active_model.title = Set(task.title.clone());
+        task_active_model.description = Set(task.description.clone());
+        task_active_model.color = Set(task.color.clone());
+        task_active_model.project_id = Set(task.project_id);
+        task_active_model.status = Set(task.status.clone());
+        task_active_model.priority = Set(task.priority.clone());
+        task_active_model.deadline = Set(task.deadline.clone());
+        task_active_model.started_at = Set(task.started_at.clone());
+        task_active_model.completed_at = Set(task.completed_at.clone());
+        task_active_model.estimated_time = Set(task.estimated_time);
+        task_active_model.updated_at = Set(now());
+
+        let _ = task_active_model.update(self.db).await?;
+        Ok(())
     }
 
     pub async fn delete(&self, id: i32) -> Result<DeleteResult, DbErr> {
+        let _ = Session::delete_many()
+            .filter(SessionColumn::TaskId.eq(id))
+            .exec(self.db)
+            .await?;
         let result = Task::delete_by_id(id).exec(self.db).await?;
         Ok(result)
     }

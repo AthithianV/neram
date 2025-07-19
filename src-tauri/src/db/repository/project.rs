@@ -1,8 +1,11 @@
 use crate::models::project::{CreateProjectModel, MinimalProjectModel, ReadProjectModel};
+use crate::time::now;
 use ::entity::projects::{
     ActiveModel as ProjectActiveModel, Entity as Project, Model as ProjectModel,
 };
 use ::entity::projects_tags::{ActiveModel as ProjectsTagsActiveModel, Entity as ProjectsTags};
+use ::entity::sessions::{Column as SessionColumn, Entity as Session};
+use ::entity::tasks::{Column as TaskColumn, Entity as Task};
 use sea_orm::*;
 use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 
@@ -29,8 +32,8 @@ impl<'a> ProjectRepository<'a> {
             hourly_rate: Set(project.hourly_rate),
             fixed_rate: Set(project.fixed_rate),
             currency: Set(project.currency.clone()),
-            created_at: Set("CURRENT_TIMESTAMP".to_string()),
-            updated_at: Set("CURRENT_TIMESTAMP".to_string()),
+            created_at: Set(now()),
+            updated_at: Set(now()),
             ..Default::default()
         };
 
@@ -72,7 +75,7 @@ impl<'a> ProjectRepository<'a> {
             hourly_rate: Set(project.hourly_rate),
             fixed_rate: Set(project.fixed_rate),
             currency: Set(project.currency.clone()),
-            updated_at: Set("CURRENT_TIMESTAMP".to_string()),
+            updated_at: Set(now()),
             ..Default::default()
         };
 
@@ -81,6 +84,14 @@ impl<'a> ProjectRepository<'a> {
     }
 
     pub async fn delete(&self, id: i32) -> Result<DeleteResult, DbErr> {
+        let _ = Session::delete_many()
+            .filter(SessionColumn::ProjectId.eq(id))
+            .exec(self.db)
+            .await?;
+        let _ = Task::delete_many()
+            .filter(TaskColumn::ProjectId.eq(id))
+            .exec(self.db)
+            .await?;
         let result = Project::delete_by_id(id).exec(self.db).await?;
         Ok(result)
     }

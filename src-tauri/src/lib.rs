@@ -40,12 +40,13 @@ pub async fn run() {
             remove_tag_from_session,
             check_session_collision,
             // Task commands
-            // create_task,
+            create_task,
             get_all_tasks,
-            // get_task_by_id,
-            // update_task,
-            // delete_task,
-
+            get_task_by_id,
+            update_task,
+            delete_task,
+            add_tag_to_task,
+            remove_tag_from_task,
             // Project commands
             create_project,
             get_all_projects,

@@ -1,7 +1,7 @@
+use ::entity::tags::{ActiveModel as TagActiveModel, Entity as Tag, Model as TagModel};
 use sea_orm::*;
-use ::entity::tags::{ Entity as Tag, Model as TagModel, ActiveModel as TagActiveModel };
 
-use crate::models::tag::ReadTagModel;
+use crate::{models::tag::ReadTagModel, time::now};
 
 pub struct TagRepository<'a> {
     db: &'a DatabaseConnection,
@@ -17,8 +17,8 @@ impl<'a> TagRepository<'a> {
             title: Set(tag.title.clone()),
             description: Set(tag.description.clone()),
             color: Set(tag.color.clone()),
-            created_at: Set("CURRENT_TIMESTAMP".to_string()),
-            updated_at: Set("CURRENT_TIMESTAMP".to_string()),
+            created_at: Set(now()),
+            updated_at: Set(now()),
             ..Default::default()
         };
 
@@ -46,7 +46,7 @@ impl<'a> TagRepository<'a> {
             title: Set(tag.title.clone()),
             description: Set(tag.description.clone()),
             color: Set(tag.color.clone()),
-            updated_at: Set("CURRENT_TIMESTAMP".to_string()),
+            updated_at: Set(now()),
             ..Default::default()
         };
 

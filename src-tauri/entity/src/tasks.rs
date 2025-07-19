@@ -12,7 +12,7 @@ pub struct Model {
     pub color: String,
     pub project_id: i32,
     pub status: String,
-    pub priority: String,
+    pub priority: Option<String>,
     pub deadline: Option<String>,
     pub started_at: String,
     pub completed_at: Option<String>,
