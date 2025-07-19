@@ -1,17 +1,16 @@
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { useProject } from '@/hooks/useProject';
 import { cn } from '@/lib/utils';
-import { Outlet, useNavigate } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { Outlet, useNavigate, useParams } from 'react-router-dom';
 
 import ProjectForm from '@/components/project/ProjectForm';
-import { useEffect, useState } from 'react';
+import ProjectSettings from '@/components/project/ProjectSettings';
+import { useEffect } from 'react';
 
 const Project = () => {
     const { data: projects } = useProject();
     const { projectId } = useParams();
     const navigate = useNavigate();
-    const [isOpen, setIsopen] = useState(false);
 
     useEffect(() => {
         if (projects && projects.length > 0) {
@@ -22,7 +21,7 @@ const Project = () => {
     return (
         <div className="h-full">
             <div className="flex items-center gap-2 h-[8%]">
-                <ScrollArea className="max-w-[95%] whitespace-nowrap">
+                <ScrollArea className="max-w-[92%] whitespace-nowrap">
                     <div className="flex gap-1 pb-3">
                         {projects?.map((project) => (
                             <div
@@ -34,6 +33,7 @@ const Project = () => {
                                             ? `bg-white border-b-2`
                                             : ''
                                     }`,
+                                    'flex gap-2 items-center',
                                 )}
                                 style={
                                     project.id === Number(projectId)
@@ -43,9 +43,7 @@ const Project = () => {
                                           }
                                         : {}
                                 }
-                                onClick={() =>
-                                    navigate(`/project/${project.id}`)
-                                }
+                                onClick={() => navigate(`/project/${project.id}`)}
                             >
                                 {project.title}
                             </div>
@@ -55,6 +53,7 @@ const Project = () => {
                 </ScrollArea>
 
                 <ProjectForm />
+                <ProjectSettings />
             </div>
             <div className="h-[92%]">
                 <Outlet />
