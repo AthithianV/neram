@@ -1,20 +1,13 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { ReactNode, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Popover, PopoverTrigger, PopoverContent } from '../ui/popover';
-import { Badge } from '../ui/badge';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '../ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 import TaskSchema, { Task } from '@/schema/TaskSchema';
 import {
@@ -30,16 +23,8 @@ import {
     Palette,
     Plus,
 } from 'lucide-react';
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from '../ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 
-import { COLORS } from '@/constants/colors';
 import {
     TASK_INTIAL_VALUE,
     TASK_PRIORITY,
@@ -49,11 +34,12 @@ import {
     TaskPriority,
     TaskStatus,
 } from '@/constants/task';
+import { calcualteDuration, formatDuration, toDBTime } from '@/lib/time';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
-import { Calendar } from '../ui/calendar';
-import { calcualteDuration, formatDuration, toDBTime } from '@/lib/time';
 import { useParams } from 'react-router-dom';
+import ColorPicker from '../form/ColorPicker';
+import { Calendar } from '../ui/calendar';
 
 const TaskForm = () => {
     const { projectId } = useParams();
@@ -79,13 +65,13 @@ const TaskForm = () => {
     return (
         <Dialog open={open} onOpenChange={closeForm} modal={false}>
             <DialogTrigger asChild>
-                <Badge
-                    className="py-1 cursor-pointer hover:bg-gray-200"
-                    variant={'secondary'}
+                <Button
+                    className="!h-8 cursor-pointer hover:bg-gray-100 !w-fit"
+                    variant={'ghost'}
                     onClick={() => setOpen(true)}
                 >
                     <Plus /> Add Task
-                </Badge>
+                </Button>
             </DialogTrigger>
             <DialogContent
                 onInteractOutside={(e) => e.preventDefault()}
@@ -94,10 +80,7 @@ const TaskForm = () => {
             >
                 <div className="bg-white px-20 py-10 rounded-lg shadow-2xl h-[60vh] max-h-[75vh] w-[60%]">
                     <Form {...form}>
-                        <form
-                            onSubmit={form.handleSubmit(onSubmit)}
-                            className="space-y-6"
-                        >
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                             {/* title */}
                             <FormField
                                 control={form.control}
@@ -139,10 +122,7 @@ const TaskForm = () => {
                             />
 
                             <div className="flex gap-2 justify-end">
-                                <Button
-                                    variant={'destructive'}
-                                    onClick={() => closeForm(false)}
-                                >
+                                <Button variant={'destructive'} onClick={() => closeForm(false)}>
                                     Close
                                 </Button>
                                 <Button type="submit" disabled={false}>
@@ -160,8 +140,7 @@ const TaskForm = () => {
 TaskForm.TABLE = ({ form }: { form: any }) => {
     const getTaskStatusBg = (value?: string | null) => {
         return {
-            backgroundColor:
-                TASK_STATUS_COLOR[(value as TaskStatus) ?? 'Default'],
+            backgroundColor: TASK_STATUS_COLOR[(value as TaskStatus) ?? 'Default'],
         };
     };
     const getPriorityColor = (value?: string | null) => {
@@ -185,10 +164,7 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
                                     </div>
                                     <FormMessage className="text-xs" />
                                 </FormLabel>
-                                <Select
-                                    onValueChange={field.onChange}
-                                    defaultValue={field.value}
-                                >
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
                                         <SelectTrigger
                                             className=" hide-arrow shadow-none border-none p-2 !h-6 rounded text-white font-semibold "
@@ -231,48 +207,9 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
                                     </div>
                                     <FormMessage className="text-xs" />
                                 </FormLabel>
-                                <Select
-                                    onValueChange={field.onChange}
-                                    defaultValue={field.value}
-                                >
-                                    <FormControl>
-                                        <SelectTrigger
-                                            className="hide-arrow shadow-none border-none p-2 !h-6 rounded text-white font-semibold"
-                                            style={
-                                                field.value
-                                                    ? {
-                                                          backgroundColor:
-                                                              field.value,
-                                                      }
-                                                    : {}
-                                            }
-                                        >
-                                            <SelectValue placeholder="Pick color" />
-                                            <ChevronDown
-                                                className="text-white font"
-                                                strokeWidth={3}
-                                            />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent className="max-h-[30vh]">
-                                        {COLORS.map((color) => (
-                                            <SelectItem
-                                                key={color.value}
-                                                value={color.value}
-                                            >
-                                                <div
-                                                    className="rounded px-2 font-semibold text-white"
-                                                    style={{
-                                                        backgroundColor:
-                                                            color.value,
-                                                    }}
-                                                >
-                                                    {color.name}
-                                                </div>
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <FormControl>
+                                    <ColorPicker onChange={field.onChange} value={field.value} />
+                                </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -292,10 +229,7 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
                                     </div>
                                     <FormMessage className="text-xs" />
                                 </FormLabel>
-                                <Select
-                                    onValueChange={field.onChange}
-                                    defaultValue={field.value}
-                                >
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
                                         <SelectTrigger
                                             className={cn(
@@ -304,9 +238,7 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
                                                 'shadow-none border-none',
                                                 'p-1 !h-6 rounded text-gray-900 font-semibold',
                                             )}
-                                            style={getPriorityColor(
-                                                field.value,
-                                            )}
+                                            style={getPriorityColor(field.value)}
                                         >
                                             <SelectValue placeholder="Pick priority" />
                                         </SelectTrigger>
@@ -321,9 +253,7 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
                                             >
                                                 <Flag
                                                     className={`text-${TASK_PRIORITY_COLOR[p]}`}
-                                                    fill={
-                                                        TASK_PRIORITY_COLOR[p]
-                                                    }
+                                                    fill={TASK_PRIORITY_COLOR[p]}
                                                 />
                                                 {p}
                                             </SelectItem>
@@ -436,9 +366,7 @@ TaskForm.TABLE = ({ form }: { form: any }) => {
                                                 message: msg,
                                             })
                                         }
-                                        clearError={() =>
-                                            form.clearErrors('estimated_time')
-                                        }
+                                        clearError={() => form.clearErrors('estimated_time')}
                                     />
                                 </FormControl>
                             </FormItem>
@@ -471,22 +399,15 @@ TaskForm.DATEPICKER = ({
                     )}
                 >
                     {icon}
-                    {value ? (
-                        dayjs(value).format('DD/MM/YYYY')
-                    ) : (
-                        <span>Pick a date</span>
-                    )}
+                    {value ? dayjs(value).format('DD/MM/YYYY') : <span>Pick a date</span>}
                 </span>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start" side="top">
+            <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                     mode="single"
                     selected={dayjs(value).toDate()}
                     onSelect={(date) => {
-                        date &&
-                            onChange(
-                                toDBTime(dayjs(date).startOf('day').toString()),
-                            );
+                        date && onChange(toDBTime(dayjs(date).startOf('day').toString()));
                     }}
                     initialFocus
                 />
