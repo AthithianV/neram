@@ -1,12 +1,10 @@
-use sea_orm::*;
-use sea_orm::{ EntityTrait, ColumnTrait, QueryFilter };
-use ::entity::projects::{
-    Entity as Project,
-    Model as ProjectModel,
-    ActiveModel as ProjectActiveModel,
-};
-use ::entity::projects_tags::{ Entity as ProjectsTags, ActiveModel as ProjectsTagsActiveModel };
 use crate::models::project::{CreateProjectModel, MinimalProjectModel};
+use ::entity::projects::{
+    ActiveModel as ProjectActiveModel, Entity as Project, Model as ProjectModel,
+};
+use ::entity::projects_tags::{ActiveModel as ProjectsTagsActiveModel, Entity as ProjectsTags};
+use sea_orm::*;
+use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 
 pub struct ProjectRepository<'a> {
     db: &'a DatabaseConnection,
@@ -47,11 +45,14 @@ impl<'a> ProjectRepository<'a> {
 
     pub async fn find_all(&self) -> Result<Vec<MinimalProjectModel>, DbErr> {
         let projects = Project::find().all(self.db).await?;
-        let minimal_projects = projects.into_iter().map(|project| MinimalProjectModel {
-            id: project.id,
-            title: project.title,
-            color: project.color,
-        }).collect();
+        let minimal_projects = projects
+            .into_iter()
+            .map(|project| MinimalProjectModel {
+                id: project.id,
+                title: project.title,
+                color: project.color,
+            })
+            .collect();
         Ok(minimal_projects)
     }
 
@@ -94,11 +95,11 @@ impl<'a> ProjectRepository<'a> {
     }
 
     pub async fn remove_tag_from_project(&self, project_id: i32, tag_id: i32) -> Result<(), DbErr> {
-        let result = <ProjectsTags as EntityTrait>
-            ::delete_many()
+        <ProjectsTags as EntityTrait>::delete_many()
             .filter(<ProjectsTags as EntityTrait>::Column::ProjectId.eq(project_id))
             .filter(<ProjectsTags as EntityTrait>::Column::TagId.eq(tag_id))
-            .exec(self.db).await?;
+            .exec(self.db)
+            .await?;
         Ok(())
     }
 }

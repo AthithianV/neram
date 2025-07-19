@@ -1,5 +1,5 @@
-use serde::{ Deserialize, Serialize };
 use ::entity::projects;
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ProjectModel {
@@ -8,7 +8,6 @@ pub struct ProjectModel {
     pub description: Option<String>,
     pub color: Option<String>,
     pub client_name: Option<String>,
-    pub status: String,
     pub started_at: Option<String>,
     pub deadline: Option<String>,
     pub completed_at: Option<String>,
@@ -27,7 +26,6 @@ pub struct CreateProjectModel {
     pub description: Option<String>,
     pub color: String,
     pub client_name: Option<String>,
-    pub status: String,
     pub started_at: Option<String>,
     pub deadline: Option<String>,
     pub completed_at: Option<String>,

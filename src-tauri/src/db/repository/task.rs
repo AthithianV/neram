@@ -1,13 +1,10 @@
-use sea_orm::*;
 use ::entity::tasks::{
-    Entity as Task,
-    Model as TaskModel,
-    ActiveModel as TaskActiveModel,
-    Column as TaskColumn,
+    ActiveModel as TaskActiveModel, Column as TaskColumn, Entity as Task, Model as TaskModel,
 };
-use ::entity::tasks_tags::{ Entity as TaskTags, ActiveModel as TaskTagsActiveModel };
+use ::entity::tasks_tags::{ActiveModel as TaskTagsActiveModel, Entity as TaskTags};
+use sea_orm::*;
 
-use crate::models::task::{ MiniTask, ReadTaskModel };
+use crate::models::task::ReadTaskModel;
 
 pub struct TaskRepository<'a> {
     db: &'a DatabaseConnection,
@@ -46,7 +43,7 @@ impl<'a> TaskRepository<'a> {
 
     pub async fn find_all(&self) -> Result<Vec<ReadTaskModel>, DbErr> {
         let tasks = Task::find().all(self.db).await?;
-        let minimal_tasks = tasks
+        let tasks = tasks
             .into_iter()
             .map(|task| ReadTaskModel {
                 id: task.id,
@@ -64,15 +61,18 @@ impl<'a> TaskRepository<'a> {
                 updated_at: task.updated_at,
             })
             .collect();
-        Ok(minimal_tasks)
+        Ok(tasks)
     }
 
     pub async fn find_all_by_project_id(
         &self,
-        project_id: i32
+        project_id: i32,
     ) -> Result<Vec<ReadTaskModel>, DbErr> {
-        let tasks = Task::find().filter(TaskColumn::ProjectId.eq(project_id)).all(self.db).await?;
-        let minimal_tasks = tasks
+        let tasks = Task::find()
+            .filter(TaskColumn::ProjectId.eq(project_id))
+            .all(self.db)
+            .await?;
+        let tasks = tasks
             .into_iter()
             .map(|task| ReadTaskModel {
                 id: task.id,
@@ -90,7 +90,7 @@ impl<'a> TaskRepository<'a> {
                 updated_at: task.updated_at,
             })
             .collect();
-        Ok(minimal_tasks)
+        Ok(tasks)
     }
 
     pub async fn update(&self, task: &TaskModel) -> Result<TaskModel, DbErr> {
@@ -130,11 +130,11 @@ impl<'a> TaskRepository<'a> {
     }
 
     pub async fn remove_tag_from_task(&self, task_id: i32, tag_id: i32) -> Result<(), DbErr> {
-        let result = <TaskTags as EntityTrait>
-            ::delete_many()
+        <TaskTags as EntityTrait>::delete_many()
             .filter(<TaskTags as EntityTrait>::Column::TaskId.eq(task_id))
             .filter(<TaskTags as EntityTrait>::Column::TagId.eq(tag_id))
-            .exec(self.db).await?;
+            .exec(self.db)
+            .await?;
         Ok(())
     }
 }

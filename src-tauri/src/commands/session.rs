@@ -1,8 +1,8 @@
-use chrono::{ NaiveDateTime, NaiveTime };
-use tauri::{ command, State };
+use chrono::NaiveDateTime;
+use tauri::{command, State};
 
+use crate::models::session::{CreateSessionModel, FullSessionModel, UpdateSessionModel};
 use crate::repository::session::SessionRepository;
-use crate::models::session::{ CreateSessionModel, FullSessionModel, UpdateSessionModel };
 use crate::AppState;
 
 /// Creates a new session record in the database.
@@ -17,7 +17,7 @@ use crate::AppState;
 #[command]
 pub async fn create_session(
     app_state: State<'_, AppState>,
-    new_session: CreateSessionModel
+    new_session: CreateSessionModel,
 ) -> Result<i32, String> {
     let db = app_state.conn.lock().await;
 
@@ -39,12 +39,15 @@ pub async fn create_session(
 /// A `Result` containing a `Vec` of `SessionModel` on success, or a `String` error message.
 #[command]
 pub async fn get_all_sessions(
-    app_state: State<'_, AppState>
+    app_state: State<'_, AppState>,
 ) -> Result<Vec<FullSessionModel>, String> {
     let db = app_state.conn.lock().await;
 
     let session_repository = SessionRepository::new(&db);
-    session_repository.find_all().await.map_err(|e| e.to_string())
+    session_repository
+        .find_all()
+        .await
+        .map_err(|e| e.to_string())
 }
 
 /// Retrieves a single session record by its ID.
@@ -60,13 +63,16 @@ pub async fn get_all_sessions(
 #[command]
 pub async fn get_session_by_id(
     app_state: State<'_, AppState>,
-    id: i32
+    id: i32,
 ) -> Result<Option<FullSessionModel>, String> {
     // Acquire a lock on the database connection
     let db = app_state.conn.lock().await;
 
     let session_repository = SessionRepository::new(&db);
-    session_repository.find_by_id(id).await.map_err(|e| e.to_string())
+    session_repository
+        .find_by_id(id)
+        .await
+        .map_err(|e| e.to_string())
 }
 
 /// Updates an existing session record in the database.
@@ -85,13 +91,14 @@ pub async fn get_session_by_id(
 pub async fn update_session(
     app_state: State<'_, AppState>,
     session_to_update: UpdateSessionModel,
-    session_id: i32
+    session_id: i32,
 ) -> Result<(), String> {
     let db = app_state.conn.lock().await;
 
     let session_repository = SessionRepository::new(&db);
     let _ = session_repository
-        .update(&session_to_update, session_id).await
+        .update(&session_to_update, session_id)
+        .await
         .map_err(|e| e.to_string());
     Ok(())
 }
@@ -110,7 +117,10 @@ pub async fn delete_session(app_state: State<'_, AppState>, id: i32) -> Result<(
     let db = app_state.conn.lock().await;
 
     let session_repository = SessionRepository::new(&db);
-    session_repository.delete(id).await.map_err(|e| e.to_string())?;
+    session_repository
+        .delete(id)
+        .await
+        .map_err(|e| e.to_string())?;
     Ok(())
 }
 
@@ -124,12 +134,15 @@ pub async fn delete_session(app_state: State<'_, AppState>, id: i32) -> Result<(
 pub async fn add_tag_to_session(
     app_state: State<'_, AppState>,
     session_id: i32,
-    tag_id: i32
+    tag_id: i32,
 ) -> Result<(), String> {
     let pool = app_state.conn.lock().await;
 
     let session_repository = SessionRepository::new(&pool);
-    session_repository.add_tag_to_session(session_id, tag_id).await.map_err(|e| e.to_string())
+    session_repository
+        .add_tag_to_session(session_id, tag_id)
+        .await
+        .map_err(|e| e.to_string())
 }
 
 /// Remove Tag from session
@@ -142,12 +155,15 @@ pub async fn add_tag_to_session(
 pub async fn remove_tag_from_session(
     app_state: State<'_, AppState>,
     session_id: i32,
-    tag_id: i32
+    tag_id: i32,
 ) -> Result<(), String> {
     let pool = app_state.conn.lock().await;
 
     let session_repository = SessionRepository::new(&pool);
-    session_repository.remove_tag_from_session(session_id, tag_id).await.map_err(|e| e.to_string())
+    session_repository
+        .remove_tag_from_session(session_id, tag_id)
+        .await
+        .map_err(|e| e.to_string())
 }
 
 /// Check if session collides with another session on the same day
@@ -163,12 +179,13 @@ pub async fn check_session_collision(
     app_state: State<'_, AppState>,
     start_time: NaiveDateTime,
     end_time: Option<NaiveDateTime>,
-    session_id: i32
+    session_id: i32,
 ) -> Result<bool, String> {
     let pool = app_state.conn.lock().await;
 
     let session_repository = SessionRepository::new(&pool);
     session_repository
-        .collides_on_day(start_time, end_time, session_id).await
+        .collides_on_day(start_time, end_time, session_id)
+        .await
         .map_err(|e| e.to_string())
 }

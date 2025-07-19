@@ -1,8 +1,7 @@
-use tauri::{ command, State };
+use tauri::{command, State};
 
+use crate::models::project::{CreateProjectModel, MinimalProjectModel};
 use crate::repository::project::ProjectRepository;
-use crate::models::project::{ CreateProjectModel, MinimalProjectModel };
-use ::entity::projects::{ Model as ProjectModel };
 use crate::AppState;
 
 /// Creates a new Project record in the database.
@@ -17,13 +16,16 @@ use crate::AppState;
 #[command]
 pub async fn create_project(
     app_state: State<'_, AppState>,
-    new_project: CreateProjectModel
+    new_project: CreateProjectModel,
 ) -> Result<(), String> {
     // Acquire a lock on the database connection
     let db = app_state.conn.lock().await;
 
     let project_repository = ProjectRepository::new(&db);
-    project_repository.create(&new_project).await.map_err(|e| e.to_string());
+    let _ = project_repository
+        .create(&new_project)
+        .await
+        .map_err(|e| e.to_string());
     Ok(())
 }
 
@@ -37,11 +39,16 @@ pub async fn create_project(
 /// A `Result` containing a `Vec` of `ProjectModel` on success, or a `String` error message.
 
 #[command]
-pub async fn get_all_projects(app_state: State<'_, AppState>) -> Result<Vec<MinimalProjectModel>, String> {
+pub async fn get_all_projects(
+    app_state: State<'_, AppState>,
+) -> Result<Vec<MinimalProjectModel>, String> {
     let db = app_state.conn.lock().await;
 
     let project_repository = ProjectRepository::new(&db);
-    project_repository.find_all().await.map_err(|e| e.to_string())
+    project_repository
+        .find_all()
+        .await
+        .map_err(|e| e.to_string())
 }
 
 /// Retrieves a single Project record by its ID.
@@ -104,7 +111,10 @@ pub async fn delete_project(app_state: State<'_, AppState>, id: i32) -> Result<(
     let db = app_state.conn.lock().await;
 
     let project_repository = ProjectRepository::new(&db);
-    project_repository.delete(id).await.map_err(|e| e.to_string())?;
+    project_repository
+        .delete(id)
+        .await
+        .map_err(|e| e.to_string())?;
     Ok(())
 }
 
@@ -118,12 +128,15 @@ pub async fn delete_project(app_state: State<'_, AppState>, id: i32) -> Result<(
 pub async fn add_tag_to_project(
     app_state: State<'_, AppState>,
     project_id: i32,
-    tag_id: i32
+    tag_id: i32,
 ) -> Result<(), String> {
     let pool = app_state.conn.lock().await;
 
     let project_repository = ProjectRepository::new(&pool);
-    project_repository.add_tag_to_project(project_id, tag_id).await.map_err(|e| e.to_string())
+    project_repository
+        .add_tag_to_project(project_id, tag_id)
+        .await
+        .map_err(|e| e.to_string())
 }
 
 /// Remove Tag from Project
@@ -136,10 +149,13 @@ pub async fn add_tag_to_project(
 pub async fn remove_tag_from_project(
     app_state: State<'_, AppState>,
     project_id: i32,
-    tag_id: i32
+    tag_id: i32,
 ) -> Result<(), String> {
     let pool = app_state.conn.lock().await;
 
     let project_repository = ProjectRepository::new(&pool);
-    project_repository.remove_tag_from_project(project_id, tag_id).await.map_err(|e| e.to_string())
+    project_repository
+        .remove_tag_from_project(project_id, tag_id)
+        .await
+        .map_err(|e| e.to_string())
 }

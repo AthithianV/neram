@@ -32,6 +32,7 @@ import { toDBTime } from '@/lib/time';
 import { cn } from '@/lib/utils';
 
 import { BILLING_TYPE, CURRENCT_LIST, PROJECT_INITIAL_VALUES } from '@/constants/project';
+import { useCreateProject } from '@/hooks/useProject';
 import {
     CalendarCheck,
     CalendarClock,
@@ -48,6 +49,7 @@ import ColorPicker from '../form/ColorPicker';
 
 const ProjectForm = () => {
     const [open, setOpen] = useState(false);
+    const { mutateAsync: createProject } = useCreateProject();
 
     const form = useForm<Project>({
         resolver: zodResolver(ProjectSchema),
@@ -55,8 +57,9 @@ const ProjectForm = () => {
     });
 
     const onSubmit = (data: Project) => {
-        console.log('Project Data:', data);
+        createProject(data);
         setOpen(false);
+        form.reset();
     };
 
     const closeForm = (state: boolean) => {
