@@ -59,27 +59,26 @@ impl<'a> ProjectRepository<'a> {
         Ok(minimal_projects)
     }
 
-    pub async fn update(&self, project: &ProjectModel) -> Result<ProjectModel, DbErr> {
-        let active_model = ProjectActiveModel {
-            id: Set(project.id),
-            title: Set(project.title.clone()),
-            description: Set(project.description.clone()),
-            color: Set(project.color.clone()),
-            client_name: Set(project.client_name.clone()),
-            started_at: Set(project.started_at.clone()),
-            deadline: Set(project.deadline.clone()),
-            completed_at: Set(project.completed_at.clone()),
-            is_billable: Set(project.is_billable),
-            billing_type: Set(project.billing_type.clone()),
-            hourly_rate: Set(project.hourly_rate),
-            fixed_rate: Set(project.fixed_rate),
-            currency: Set(project.currency.clone()),
-            updated_at: Set(now()),
-            ..Default::default()
-        };
+    pub async fn update(&self, project: &CreateProjectModel, project_id: i32) -> Result<(), DbErr> {
+        let project_opt = Project::find_by_id(project_id).one(self.db).await?;
+        let mut project_model: ProjectActiveModel = project_opt.unwrap().into();
 
-        let model = active_model.update(self.db).await?;
-        Ok(model)
+        project_model.title = Set(project.title.clone());
+        project_model.description = Set(project.description.clone());
+        project_model.color = Set(project.color.clone());
+        project_model.client_name = Set(project.client_name.clone());
+        project_model.started_at = Set(project.started_at.clone());
+        project_model.deadline = Set(project.deadline.clone());
+        project_model.completed_at = Set(project.completed_at.clone());
+        project_model.is_billable = Set(project.is_billable);
+        project_model.billing_type = Set(project.billing_type.clone());
+        project_model.hourly_rate = Set(project.hourly_rate);
+        project_model.fixed_rate = Set(project.fixed_rate);
+        project_model.currency = Set(project.currency.clone());
+        project_model.updated_at = Set(now());
+
+        let _ = project_model.update(self.db).await?;
+        Ok(())
     }
 
     pub async fn delete(&self, id: i32) -> Result<DeleteResult, DbErr> {

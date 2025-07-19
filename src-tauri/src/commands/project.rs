@@ -89,16 +89,21 @@ pub async fn get_project_by_id(
 ///
 /// # Returns
 /// A `Result` containing the updated `ProjectModel` on success, or a `String` error message.
-// #[command]
-// pub async fn update_project(
-//     app_state: State<'_, AppState>,
-//     project_to_update: ProjectModel
-// ) -> Result<ProjectModel, String> {
-//     let db = app_state.conn.lock().await;
+#[command]
+pub async fn update_project(
+    app_state: State<'_, AppState>,
+    project_to_update: CreateProjectModel,
+    project_id: i32,
+) -> Result<(), String> {
+    let db = app_state.conn.lock().await;
 
-//     let project_repository = ProjectRepository::new(&db);
-//     project_repository.update(&project_to_update).await.map_err(|e| e.to_string())
-// }
+    let project_repository = ProjectRepository::new(&db);
+    let _ = project_repository
+        .update(&project_to_update, project_id)
+        .await
+        .map_err(|e| e.to_string());
+    Ok(())
+}
 
 /// Deletes a Project record by its ID.
 /// It acquires a lock on the database connection to perform the operation.

@@ -51,7 +51,7 @@ pub async fn run() {
             create_project,
             get_all_projects,
             get_project_by_id,
-            // update_project,
+            update_project,
             delete_project,
             add_tag_to_project,
             remove_tag_from_project,
