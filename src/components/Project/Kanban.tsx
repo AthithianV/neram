@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { TASK_STATUS, TASK_STATUS_COLOR, TaskStatus } from '@/constants/task';
-import { Task, useTask } from '@/hooks/useTask';
+import { ReadTask, useTask } from '@/hooks/useTask';
 import { cn } from '@/lib/utils';
 import React, { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -10,16 +10,16 @@ import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 
 interface KanbanColumn {
     id: string;
-    title: string;
+    title: TaskStatus;
     style: any;
-    tasks: Task[];
+    tasks: ReadTask[];
 }
 
 const Kanban = () => {
     const { projectId } = useParams();
 
     const { data: tasks = [] } = useTask(Number(projectId) ?? 0);
-    const [draggedTask, setDraggedTask] = useState<Task | null>(null);
+    const [draggedTask, setDraggedTask] = useState<ReadTask | null>(null);
 
     const columns: KanbanColumn[] = useMemo(
         () =>
@@ -97,7 +97,7 @@ const Kanban = () => {
                                         <TaskCard task={task} key={task.id} />
                                     ))}
 
-                                    <TaskForm />
+                                    <TaskForm status={column.title} />
                                 </div>
                             </div>
                         </ScrollArea>

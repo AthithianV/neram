@@ -8,7 +8,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useProjectById } from '@/hooks/useProject';
-import { Edit, Settings, Trash } from 'lucide-react';
+import { Edit, Settings, Trash2 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 
 const ProjectSettings = () => {
@@ -29,12 +29,12 @@ const ProjectSettings = () => {
             <DropdownMenuContent side={'bottom'} align="end">
                 <DropdownMenuLabel>{project.title}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="flex items-center gap-2">
-                    <Edit />
+                <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
+                    <Edit className="text-blue-500" />
                     Edit
                 </DropdownMenuItem>
-                <DropdownMenuItem className="flex items-center gap-2">
-                    <Trash />
+                <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
+                    <Trash2 className="text-red-500" />
                     Delete
                 </DropdownMenuItem>
             </DropdownMenuContent>

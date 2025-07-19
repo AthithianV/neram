@@ -43,7 +43,7 @@ export const useCreateProject = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['projects'] });
-            toast.success('✅ New Project Created');
+            toast.success('New Project Created');
         },
     });
 };

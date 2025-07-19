@@ -3,7 +3,7 @@ import { ReactNode, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
@@ -34,6 +34,7 @@ import {
     TaskPriority,
     TaskStatus,
 } from '@/constants/task';
+import { useCreateTask } from '@/hooks/useTask';
 import { calcualteDuration, formatDuration, toDBTime } from '@/lib/time';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
@@ -41,19 +42,26 @@ import { useParams } from 'react-router-dom';
 import ColorPicker from '../form/ColorPicker';
 import { Calendar } from '../ui/calendar';
 
-const TaskForm = () => {
+type Prop = {
+    status: TaskStatus;
+};
+
+const TaskForm = ({ status }: Prop) => {
     const { projectId } = useParams();
 
     const [open, setOpen] = useState(false);
     const form = useForm({
         resolver: zodResolver(TaskSchema),
-        defaultValues: { ...TASK_INTIAL_VALUE, project_id: Number(projectId) },
+        defaultValues: { ...TASK_INTIAL_VALUE, project_id: Number(projectId), status },
     });
+    const { mutateAsync: createTask } = useCreateTask();
 
     const onSubmit = (data: Task) => {
-        console.log('Form Data:', data);
-        setOpen(false);
-        form.reset();
+        if (projectId) {
+            createTask({ ...data, project_id: Number(projectId) });
+            setOpen(false);
+            form.reset();
+        }
     };
 
     const closeForm = (state: boolean) => {
@@ -77,9 +85,19 @@ const TaskForm = () => {
             <DialogContent
                 onInteractOutside={(e) => e.preventDefault()}
                 onEscapeKeyDown={(e) => e.preventDefault()}
-                className="bg-gray-800/30 shadow-none border-none rounded-none h-screen flex justify-center items-center min-w-screen"
+                className={cn(
+                    'bg-gray-800/30 h-screen min-w-screen',
+                    'shadow-none border-none rounded-none',
+                    'flex justify-center items-center',
+                )}
             >
-                <div className="bg-white px-20 py-10 rounded-lg shadow-2xl h-[60vh] max-h-[75vh] w-[60%]">
+                <DialogTitle></DialogTitle>
+                <div
+                    className={cn(
+                        'bg-white px-20 py-10 rounded-lg shadow-2xl',
+                        'h-[60vh] max-h-[75vh] w-[60%]',
+                    )}
+                >
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                             {/* title */}
@@ -92,7 +110,7 @@ const TaskForm = () => {
                                             <Input
                                                 placeholder="Untitled"
                                                 {...field}
-                                                className="!text-3xl font-bold border-none shadow-none px-0 !h-auto"
+                                                className="!text-3xl font-bold border-none shadow-none px-0 !h-auto !w-full"
                                                 value={field.value}
                                             />
                                         </FormControl>
@@ -123,7 +141,11 @@ const TaskForm = () => {
                             />
 
                             <div className="flex gap-2 justify-end">
-                                <Button variant={'destructive'} onClick={() => closeForm(false)}>
+                                <Button
+                                    variant={'destructive'}
+                                    onClick={() => closeForm(false)}
+                                    type="button"
+                                >
                                     Close
                                 </Button>
                                 <Button type="submit" disabled={false}>
@@ -408,7 +430,10 @@ TaskForm.DATEPICKER = ({
                     mode="single"
                     selected={dayjs(value).toDate()}
                     onSelect={(date) => {
-                        date && onChange(toDBTime(dayjs(date).startOf('day').toString()));
+                        date &&
+                            onChange(
+                                toDBTime(dayjs(date).startOf('day').format('YYYY-MM-DD HH:mm:ss')),
+                            );
                     }}
                     initialFocus
                 />

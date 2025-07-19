@@ -1,5 +1,5 @@
 import { TASK_PRIORITY_COLOR, TaskPriority } from '@/constants/task';
-import { Task } from '@/hooks/useTask';
+import { ReadTask } from '@/hooks/useTask';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
 import { AlarmCheck, Calendar } from 'lucide-react';
@@ -7,7 +7,7 @@ import { Badge } from '../ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
-const TaskCard = ({ task }: { task: Task }) => {
+const TaskCard = ({ task }: { task: ReadTask }) => {
     const getPriorityColor = (priority?: string | null) => {
         const color = TASK_PRIORITY_COLOR[(priority as TaskPriority) ?? 'Default'];
         return color;
@@ -17,7 +17,7 @@ const TaskCard = ({ task }: { task: Task }) => {
         <Card
             key={task.id}
             className={cn(
-                'cursor-move transition-all hover:shadow-md rounded-md gap-0 py-3 px-2 flex-1',
+                'cursor-pointer transition-all hover:shadow-md rounded-md gap-0 py-3 px-2 flex-1',
                 // draggedTask?.id === task.id && 'opacity-50',
             )}
             draggable
@@ -63,7 +63,7 @@ const TaskCard = ({ task }: { task: Task }) => {
                         </Tooltip>
                     )}
 
-                    {task.estimated_time && (
+                    {task.estimated_time !== 0 && task.estimated_time && (
                         <Tooltip>
                             <TooltipTrigger>
                                 <Badge
@@ -83,21 +83,23 @@ const TaskCard = ({ task }: { task: Task }) => {
                         </Tooltip>
                     )}
 
-                    <div className="flex items-center justify-between">
-                        <Tooltip>
-                            <TooltipTrigger>
-                                <Badge
-                                    className={cn('text-xs')}
-                                    style={{
-                                        backgroundColor: getPriorityColor(task.priority),
-                                    }}
-                                >
-                                    {task.priority}
-                                </Badge>
-                            </TooltipTrigger>
-                            <TooltipContent>Priority</TooltipContent>
-                        </Tooltip>
-                    </div>
+                    {task.priority && (
+                        <div className="flex items-center justify-between">
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <Badge
+                                        className={cn('text-xs')}
+                                        style={{
+                                            backgroundColor: getPriorityColor(task.priority),
+                                        }}
+                                    >
+                                        {task.priority}
+                                    </Badge>
+                                </TooltipTrigger>
+                                <TooltipContent>Priority</TooltipContent>
+                            </Tooltip>
+                        </div>
+                    )}
                 </div>
 
                 <div className="flex items-center gap-1">
