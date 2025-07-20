@@ -1,7 +1,8 @@
 use crate::models::project::{CreateProjectModel, MinimalProjectModel, ReadProjectModel};
 use crate::time::now;
 use ::entity::projects::{
-    ActiveModel as ProjectActiveModel, Entity as Project, Model as ProjectModel,
+    ActiveModel as ProjectActiveModel, Column as ProjectColumn, Entity as Project,
+    Model as ProjectModel,
 };
 use ::entity::projects_tags::{ActiveModel as ProjectsTagsActiveModel, Entity as ProjectsTags};
 use ::entity::sessions::{Column as SessionColumn, Entity as Session};
@@ -51,7 +52,10 @@ impl<'a> ProjectRepository<'a> {
     }
 
     pub async fn find_all(&self) -> Result<Vec<MinimalProjectModel>, DbErr> {
-        let projects = Project::find().all(self.db).await?;
+        let projects = Project::find()
+            .order_by_desc(ProjectColumn::StartedAt)
+            .all(self.db)
+            .await?;
         let minimal_projects = projects
             .into_iter()
             .map(|project| MinimalProjectModel::from(project))
