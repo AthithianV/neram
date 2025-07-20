@@ -170,7 +170,7 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                         name="project_id"
                         render={({ field }) => (
                             <FormItem className="w-1/2 flex items-center gap-5">
-                                <FormLabel className="min-w-24">
+                                <FormLabel className="min-w-24 font-semibold">
                                     <Folder size={16} /> Project
                                 </FormLabel>
                                 <FormControl>
@@ -187,7 +187,7 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                         name="task_id"
                         render={({ field }) => (
                             <FormItem className="w-1/2 flex items-center gap-5">
-                                <FormLabel className="min-w-24">
+                                <FormLabel className="min-w-24 font-semibold">
                                     <ListTodo size={16} />
                                     Task
                                 </FormLabel>
@@ -210,7 +210,7 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                         name="tags"
                         render={({ field }) => (
                             <FormItem className="w-1/2 flex items-center gap-5">
-                                <FormLabel className="min-w-24">
+                                <FormLabel className="min-w-24 font-semibold">
                                     <Tag size={16} />
                                     Tags
                                 </FormLabel>
@@ -229,7 +229,7 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                         name="date"
                         render={({ field }) => (
                             <FormItem className="w-1/2 flex items-center gap-5">
-                                <FormLabel className="min-w-24">
+                                <FormLabel className="min-w-24 font-semibold">
                                     <Calendar size={16} /> Date
                                 </FormLabel>
                                 <FormControl>
@@ -248,7 +248,7 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                         name="start_time"
                         render={({ field }) => (
                             <FormItem className="w-1/2 flex items-center gap-5">
-                                <FormLabel className="min-w-24">
+                                <FormLabel className="min-w-24 font-semibold">
                                     <CalendarPlus size={16} /> Start Time
                                 </FormLabel>
                                 <TimeElement
@@ -276,7 +276,7 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                             name="end_time"
                             render={({ field }) => (
                                 <FormItem className="w-1/2 flex items-center gap-5">
-                                    <FormLabel className="min-w-24">
+                                    <FormLabel className="min-w-24 font-semibold">
                                         <CalendarMinus size={16} /> End Time
                                     </FormLabel>
                                     <TimeElement
@@ -306,7 +306,7 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                             name="session_duration_sec"
                             render={({ field }) => (
                                 <FormItem className="w-1/2 flex items-center gap-5">
-                                    <FormLabel className="min-w-24">
+                                    <FormLabel className="min-w-24 font-semibold">
                                         <Clock size={16} />
                                         Duration
                                     </FormLabel>
@@ -332,7 +332,7 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                             name="break_duration_sec"
                             render={({ field }) => (
                                 <FormItem className="w-1/2 flex items-center gap-5">
-                                    <FormLabel className="min-w-24">
+                                    <FormLabel className="min-w-24 font-semibold">
                                         <Clock size={16} />
                                         Break
                                     </FormLabel>

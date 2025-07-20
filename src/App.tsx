@@ -1,9 +1,9 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
 // Styles
-import './styles/global.css';
 import './styles/animate.css';
+import './styles/global.css';
 
 // Layout
 import { AppLayout } from './components/layouts/AppLayout';
@@ -18,7 +18,6 @@ const Project = lazy(() => import('./pages/Project'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 
 // Lazy-loaded nested components
-const SessionForm = lazy(() => import('./components/session/SessionForm'));
 const Kanban = lazy(() => import('./components/project/Kanban'));
 
 export default function App() {
@@ -28,13 +27,7 @@ export default function App() {
                 <Route element={<AppLayout />}>
                     <Route path="/" element={<Navigate to="/dashboard" />} />
                     <Route path="dashboard" element={<Dashboard />} />
-                    <Route path="session" element={<Session />}>
-                        <Route path="add-session" element={<SessionForm />} />
-                        <Route
-                            path="update-session/:sessionId"
-                            element={<SessionForm />}
-                        />
-                    </Route>
+                    <Route path="session" element={<Session />}></Route>
                     <Route path="project" element={<Project />}>
                         <Route path=":projectId" element={<Kanban />} />
                     </Route>

@@ -1,6 +1,5 @@
 import { COLORS } from '@/constants/colors';
 import { cn } from '@/lib/utils';
-import { ChevronDown } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger } from '../ui/select';
 
 type PropType = {
@@ -19,20 +18,16 @@ const Selector = ({ onChange, value, items, fallbackText, placeholder }: PropTyp
         <Select onValueChange={onChange} value={value}>
             <SelectTrigger
                 className={cn(
-                    'p-3 !h-8 rounded shadow-none border-none  hide-arrow',
+                    '!h-8 rounded shadow-none border-none  hide-arrow',
                     'text-white w-full font-semibold',
-                    'truncate',
+                    'truncate !p-0',
                 )}
-                style={{
-                    backgroundColor: selected?.color,
-                }}
             >
                 {selected ? (
                     <Item color={selected.color} title={selected.title} />
                 ) : (
                     <Item color={COLORS[0].value} title={placeholder} className={'opacity-70'} />
                 )}
-                <ChevronDown className="text-white font" strokeWidth={3} />
             </SelectTrigger>
             <SelectContent className="max-h-[30vh]">
                 {items.length === 0 ? (
