@@ -21,6 +21,7 @@ const TaskCard = ({ task }: { task: ReadTask }) => {
             key={task.id}
             className={cn(
                 'cursor-pointer transition-all hover:shadow-md rounded-md gap-0 py-3 px-2 w-full',
+                task.status === 'Completed' && 'opacity-70',
                 // draggedTask?.id === task.id && 'opacity-50',
             )}
             onClick={() =>
@@ -49,7 +50,10 @@ const TaskCard = ({ task }: { task: ReadTask }) => {
 
             <CardContent className="space-y-4 px-2">
                 {task.description && (
-                    <p className="text-xs text-muted-foreground">{task.description}</p>
+                    <div
+                        className="text-xs text-muted-foreground line-clamp-2"
+                        dangerouslySetInnerHTML={{ __html: task.description }}
+                    />
                 )}
 
                 <div className="flex gap-2 flex-wrap">
@@ -85,7 +89,7 @@ const TaskCard = ({ task }: { task: ReadTask }) => {
                                 >
                                     <AlarmCheck className="h-4 w-4" />
                                     <span className={cn('font-medium')}>
-                                        {task.estimated_time / 3600}h
+                                        {(task.estimated_time / 3600).toFixed(2)} h
                                     </span>
                                 </Badge>
                             </TooltipTrigger>
@@ -112,11 +116,27 @@ const TaskCard = ({ task }: { task: ReadTask }) => {
                     )}
                 </div>
 
-                <div className="flex items-center gap-1">
+                <div className="flex items-center justify-between gap-1">
                     {task.started_at && (
-                        <span className="text-xs text-muted-foreground">
-                            Started: {dayjs(task.started_at).format('DD MMM YYYY')}
-                        </span>
+                        <Tooltip>
+                            <TooltipTrigger>
+                                <Badge className="text-muted-foreground bg-red-100">
+                                    {dayjs(task.started_at).format('DD MMM YYYY')}
+                                </Badge>
+                            </TooltipTrigger>
+                            <TooltipContent>Started At</TooltipContent>
+                        </Tooltip>
+                    )}
+
+                    {task.completed_at && (
+                        <Tooltip>
+                            <TooltipTrigger>
+                                <Badge className="text-muted-foreground bg-green-100">
+                                    {dayjs(task.completed_at).format('DD MMM YYYY')}
+                                </Badge>
+                            </TooltipTrigger>
+                            <TooltipContent>Estimated At</TooltipContent>
+                        </Tooltip>
                     )}
                 </div>
             </CardContent>

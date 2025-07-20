@@ -95,7 +95,7 @@ const Kanban = () => {
 
                             <div className="py-2 space-y-2 flex flex-col">
                                 <ScrollArea>
-                                    <div className="max-h-[70vh]">
+                                    <div className="max-h-[70vh] space-y-1">
                                         {column.tasks.map((task) => (
                                             <TaskCard task={task} key={task.id} />
                                         ))}
