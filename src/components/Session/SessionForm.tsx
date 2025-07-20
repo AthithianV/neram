@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { useNavigate, useParams } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -36,48 +35,27 @@ import { toast } from 'sonner';
 import DurationElement from '../form/DurationElement';
 import TimeElement from '../form/TimeElement';
 
-const SessionForm = () => {
-    const { sessionId } = useParams();
+type PropType = {
+    sessionId?: number | null;
+    closeModal: () => void;
+};
 
-    const { mutateAsync: checkSessionCollision } = useSessionCollision();
-
-    const { data: session } = useSessionById(sessionId ? Number(sessionId) : undefined);
-
+const SessionForm = ({ sessionId, closeModal }: PropType) => {
+    const { data: session } = useSessionById(sessionId);
     const { data: timer } = useTimer();
 
     const { mutate: createSession } = useCreateSession();
     const { mutate: updateSession } = useUpdateSession();
-
-    const isEditMode = !!sessionId;
+    const { mutateAsync: checkSessionCollision } = useSessionCollision();
 
     const form = useForm({
-        resolver: zodResolver(isEditMode ? UpdateSessionSchema : CreateSessionSchema),
+        resolver: zodResolver(sessionId ? UpdateSessionSchema : CreateSessionSchema),
         defaultValues: DEFAULT_SESSION_VALUES,
     });
 
     useEffect(() => {
-        form.reset();
         if (session) {
-            let session_id = null;
-            if (timer) session_id = timer.session_id;
-
-            form.setValue('title', session.title || '');
-            form.setValue('description', session.description || '');
-            form.setValue('task_id', session.task.id);
-            form.setValue('project_id', session.project.id);
-            form.setValue('date', toDBTime(session.date));
-            form.setValue('start_time', toDBTime(session.start_time));
-            form.setValue(
-                'end_time',
-                session.id === session_id
-                    ? undefined
-                    : session.end_time
-                      ? toDBTime(session.end_time)
-                      : undefined,
-            );
-            form.setValue('session_duration_sec', session.session_duration_sec);
-            form.setValue('break_duration_sec', session.break_duration_sec);
-            form.setValue('tags', session.tags.map((tag) => tag.id) || []);
+            form.reset({ ...session, tags: session.tags.map((tag) => tag.id) });
         }
     }, [session]);
 
@@ -123,8 +101,6 @@ const SessionForm = () => {
         form.clearErrors();
     }, [form.watch()]);
 
-    const navigate = useNavigate();
-
     async function onSubmit(data: CreateSession | UpdateSession) {
         const isSessionCollides = await checkSessionCollision({
             startTime: form.getValues('start_time'),
@@ -154,8 +130,17 @@ const SessionForm = () => {
         } else {
             createSession(data as CreateSession);
         }
-        navigate('/session');
+        closeModal();
         form.reset();
+    }
+
+    const handleClose = () => {
+        form.reset();
+        closeModal();
+    };
+
+    if (sessionId && !session) {
+        return null;
     }
 
     return (
@@ -272,7 +257,7 @@ const SessionForm = () => {
                                             : form.clearErrors('start_time')
                                     }
                                     date={form.getValues('date')}
-                                    isDisable={session && session.id === timer?.session_id}
+                                    isDisable={session !== null && sessionId === timer?.session_id}
                                 />
                                 <FormMessage className="text-xs" />
                             </FormItem>
@@ -378,10 +363,7 @@ const SessionForm = () => {
                         type="button"
                         className="cursor-pointer"
                         variant={'outline'}
-                        onClick={() => {
-                            form.reset();
-                            navigate('/session');
-                        }}
+                        onClick={handleClose}
                     >
                         Cancel
                     </Button>

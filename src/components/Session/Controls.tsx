@@ -1,17 +1,14 @@
-import { Pause, Play, PlusIcon, Square } from 'lucide-react';
-import { Button } from '../ui/button';
-import {
-    usePauseTimer,
-    useResumeTimer,
-    useStopTimer,
-    useTimer,
-} from '@/hooks/useTimer';
-import { Link } from 'react-router-dom';
-import StartButton from './StartButton';
 import { useUpdateSession } from '@/hooks/useSession';
+import { usePauseTimer, useResumeTimer, useStopTimer, useTimer } from '@/hooks/useTimer';
 import dayjs from 'dayjs';
+import { Pause, Play, PlusIcon, Square } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
+import { Button } from '../ui/button';
+import StartButton from './StartButton';
 
 const Controls = () => {
+    const [_, setSearchParams] = useSearchParams();
+
     const { data: timer } = useTimer();
     const { mutateAsync: updateSession } = useUpdateSession();
     const { mutate: stopTimer } = useStopTimer();
@@ -100,15 +97,14 @@ const Controls = () => {
                     </Button>
                 ))}
 
-            <Link to="/session/add-session">
-                <Button
-                    variant={'default'}
-                    className="flex items-center gap-1 bg-blue-500 hover:bg-blue-600 cursor-pointer"
-                >
-                    <PlusIcon fill="currentColor" className="w-4 h-4" />
-                    <span>Add Session</span>
-                </Button>
-            </Link>
+            <Button
+                variant={'default'}
+                className="flex items-center gap-1 bg-blue-500 hover:bg-blue-600 cursor-pointer"
+                onClick={() => setSearchParams({ modal: 'add_session' })}
+            >
+                <PlusIcon fill="currentColor" className="w-4 h-4" />
+                <span>Add Session</span>
+            </Button>
         </div>
     );
 };

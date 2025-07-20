@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import ProjectForm from '../project/ProjectForm';
+import SessionForm from '../session/SessionForm';
 import TaskForm from '../task/TaskForm';
 
 const backdropVariants = {
@@ -55,7 +56,9 @@ const ModalManager = ({ modal }: { modal: ModalModes }) => {
             return params;
         });
 
-    const id = searchParams.get('id');
+    const idParam = searchParams.get('id');
+    const id = idParam !== null ? Number(idParam) : null;
+
     const taskStatus = searchParams.get('task_status');
 
     useEffect(() => {
@@ -70,19 +73,17 @@ const ModalManager = ({ modal }: { modal: ModalModes }) => {
         case 'add_project':
             return <ProjectForm closeModal={closeModal} />;
         case 'edit_project':
-            return (
-                <ProjectForm projectId={id !== null ? Number(id) : id} closeModal={closeModal} />
-            );
+            return <ProjectForm projectId={id} closeModal={closeModal} />;
         case 'add_task':
             return <TaskForm closeModal={closeModal} status={taskStatus as TaskStatus} />;
         case 'edit_task':
             return (
-                <TaskForm
-                    closeModal={closeModal}
-                    status={taskStatus as TaskStatus}
-                    taskId={id !== null ? Number(id) : id}
-                />
+                <TaskForm closeModal={closeModal} status={taskStatus as TaskStatus} taskId={id} />
             );
+        case 'add_session':
+            return <SessionForm closeModal={closeModal} />;
+        case 'edit_session':
+            return <SessionForm sessionId={id} closeModal={closeModal} />;
         default:
             return null;
     }

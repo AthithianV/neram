@@ -1,25 +1,25 @@
-import { formatDuration, makeTimeDisplay } from '@/lib/time';
 import { Badge } from '@/components/ui/badge';
 import { SessionType, useDeleteSession } from '@/hooks/useSession';
-import { useNavigate, useParams } from 'react-router-dom';
+import { TimerResponse } from '@/hooks/useTimer';
+import { formatDuration, makeTimeDisplay } from '@/lib/time';
 import { cn } from '@/lib/utils';
-import { ScrollArea, ScrollBar } from '../ui/scroll-area';
-import React, { useState } from 'react';
+import dayjs from 'dayjs';
 import { Clock9, Coffee, Loader2, Trash } from 'lucide-react';
-import { Button } from '../ui/button';
+import React, { useState } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
     AlertDialog,
-    AlertDialogTrigger,
+    AlertDialogAction,
+    AlertDialogCancel,
     AlertDialogContent,
-    AlertDialogHeader,
-    AlertDialogTitle,
     AlertDialogDescription,
     AlertDialogFooter,
-    AlertDialogCancel,
-    AlertDialogAction,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
 } from '../ui/alert-dialog';
-import dayjs from 'dayjs';
-import { TimerResponse } from '@/hooks/useTimer';
+import { Button } from '../ui/button';
+import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 
 interface SessionCardProps {
     sessionWithTaskAndTag: SessionType;
@@ -28,17 +28,9 @@ interface SessionCardProps {
 
 const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
     const { sessionId } = useParams();
-    const navigate = useNavigate();
-    const {
-        id,
-        title,
-        project,
-        tags,
-        session_duration_sec,
-        start_time,
-        end_time,
-        date,
-    } = sessionWithTaskAndTag;
+    const [_, setSearchParams] = useSearchParams();
+    const { id, title, project, tags, session_duration_sec, start_time, end_time, date } =
+        sessionWithTaskAndTag;
 
     const [isHovered, setIsHovered] = useState(false);
 
@@ -48,30 +40,23 @@ const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
                 'flex items-center justify-between',
                 'py-3 pe-3 border shadow rounded-md cursor-pointer',
                 'bg-white',
-                id === parseInt(sessionId || '0')
-                    ? 'bg-blue-300'
-                    : 'hover:bg-gray-50',
+                id === parseInt(sessionId || '0') ? 'bg-blue-300' : 'hover:bg-gray-50',
             )}
             onClick={() => {
-                navigate(`update-session/${id}`);
+                setSearchParams({ modal: 'edit_session', id: id.toString() });
             }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
             <div className="flex items-center gap-4 flex-1">
                 <div
-                    className={cn(
-                        'px-[0.2rem] rounded-e-md bg-gray-50',
-                        'h-14',
-                    )}
+                    className={cn('px-[0.2rem] rounded-e-md bg-gray-50', 'h-14')}
                     style={{
                         backgroundColor: project.color,
                     }}
                 ></div>
                 <div className="flex flex-col gap-2 flex-1">
-                    <h3 className="text-md font-semibold">
-                        {title || 'Untitled'}
-                    </h3>
+                    <h3 className="text-md font-semibold">{title || 'Untitled'}</h3>
                     <ScrollArea className="max-w-5/6">
                         <ul className="flex gap-2">
                             {tags && tags.length > 0 ? (
@@ -89,9 +74,7 @@ const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
                                 ))
                             ) : (
                                 <li className="text-sm text-gray-500 opacity-40">
-                                    <Badge className="bg-gray-200 text-gray-500">
-                                        No tags
-                                    </Badge>
+                                    <Badge className="bg-gray-200 text-gray-500">No tags</Badge>
                                 </li>
                             )}
                         </ul>
@@ -104,9 +87,7 @@ const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
                     <span
                         className={cn(
                             'font-semibold',
-                            timer && timer.session_id === id
-                                ? 'text-blue-500'
-                                : '',
+                            timer && timer.session_id === id ? 'text-blue-500' : '',
                         )}
                     >
                         {formatDuration(
@@ -116,9 +97,7 @@ const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
                         )}
                     </span>
                     <div className="text-xs text-gray-500 flex flex-col items-end">
-                        <span>
-                            {date && dayjs(date).format('DD MMM YYYY')}{' '}
-                        </span>
+                        <span>{date && dayjs(date).format('DD MMM YYYY')} </span>
                         <span>
                             {makeTimeDisplay(start_time)} -{' '}
                             {end_time ? makeTimeDisplay(end_time) : 'Now'}
@@ -126,10 +105,7 @@ const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
                     </div>
                 </div>
 
-                <SessionCard.DELETE
-                    show={isHovered && timer?.session_id !== id}
-                    sessionId={id}
-                />
+                <SessionCard.DELETE show={isHovered && timer?.session_id !== id} sessionId={id} />
 
                 {timer &&
                     timer.session_id === id &&
@@ -143,16 +119,9 @@ const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
     );
 };
 
-SessionCard.DELETE = ({
-    show,
-    sessionId,
-}: {
-    show: boolean;
-    sessionId: number;
-}) => {
+SessionCard.DELETE = ({ show, sessionId }: { show: boolean; sessionId: number }) => {
     const navigate = useNavigate();
-    const { mutateAsync: deleteSession, isPending: isDeleting } =
-        useDeleteSession();
+    const { mutateAsync: deleteSession, isPending: isDeleting } = useDeleteSession();
     return (
         show && (
             <AlertDialog>
@@ -171,8 +140,7 @@ SessionCard.DELETE = ({
                             Are you sure you want to delete this session?
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            This action cannot be undone. This will permanently
-                            delete this session.
+                            This action cannot be undone. This will permanently delete this session.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -191,11 +159,7 @@ SessionCard.DELETE = ({
                             disabled={isDeleting}
                             className="bg-red-500 hover:bg-red-600 cursor-pointer"
                         >
-                            {isDeleting ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                                'Delete'
-                            )}
+                            {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Delete'}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
