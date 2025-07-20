@@ -7,7 +7,12 @@ type PropsType = {
 };
 
 const ProjectPicker = ({ onChange, value }: PropsType) => {
-    const { data: projects = [] } = useProject();
+    const { data: projects = [], isLoading } = useProject();
+
+    if (isLoading) {
+        return null;
+    }
+
     return (
         <Selector
             onChange={(val) => onChange(Number(val))}

@@ -99,7 +99,6 @@ const TagPicker = ({
 
 const SelectedTags = ({
     selectedTags,
-    handleRemoveTag,
 }: {
     selectedTags: Tag[];
     handleRemoveTag: (tag: Tag) => void;
@@ -124,7 +123,7 @@ const SelectedTags = ({
                     <span className="text-sm text-muted-foreground">Select tags</span>
                 )}
             </div>
-            <ScrollBar orientation="horizontal" />
+            <ScrollBar orientation="horizontal" style={{ height: '8px' }} />
         </ScrollArea>
     );
 };

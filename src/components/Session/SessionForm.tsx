@@ -57,9 +57,18 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
 
     useEffect(() => {
         if (session) {
-            form.reset({ ...session, tags: session.tags.map((tag) => tag.id) });
+            form.reset({
+                ...session,
+                project_id: session.project.id,
+                task_id: session.task.id,
+                tags: session.tags.map((tag) => tag.id),
+            });
         }
     }, [session]);
+
+    useEffect(() => {
+        console.log(form.getValues());
+    }, [form.getValues()]);
 
     useEffect(() => {
         const breakDuration = form.getValues('break_duration_sec') ?? 0;
@@ -353,8 +362,6 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                         />
                     </div>
                 )}
-
-                <Separator />
 
                 <FormField
                     control={form.control}

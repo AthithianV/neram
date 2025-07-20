@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useEffect } from 'react';
 import { ScrollArea } from '../ui/scroll-area';
+import { Separator } from '../ui/separator';
 import { Toggle } from '../ui/toggle';
 
 type Props = {
@@ -53,8 +54,9 @@ const RichEditor = ({ value, onChange }: Props) => {
     }, [value]);
 
     return (
-        <div>
+        <div className="bg-slate-50 p-2 rounded-lg border-2">
             <MenuBar editor={editor} />
+            <Separator />
             <ScrollArea>
                 <div className="max-h-40">
                     <EditorContent editor={editor} placeholder="Add more details..." />
@@ -113,7 +115,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
     ];
 
     return (
-        <div className="border rounded-md p-0 mb-1 bg-slate-50 space-x-2 z-50">
+        <div className=" p-0 mb-1 space-x-2 z-50">
             {Options.map((option, index) => (
                 <Toggle
                     className={'overflow-hidden'}
@@ -127,4 +129,5 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
         </div>
     );
 };
+
 export default RichEditor;
