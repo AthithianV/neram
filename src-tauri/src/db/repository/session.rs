@@ -54,7 +54,6 @@ impl<'a> SessionRepository<'a> {
             .await?;
 
         if let Some((session_model, task_model, project_model)) = session {
-            // 🔄 Query tags separately
             let tags = session_model.find_related(Tag).all(self.db).await?;
 
             let full_model =
@@ -136,7 +135,6 @@ impl<'a> SessionRepository<'a> {
             session.break_duration_sec = Set(break_duration_sec);
         }
 
-        // Always update the timestamp
         session.updated_at = Set(now());
 
         session.update(self.db).await?;

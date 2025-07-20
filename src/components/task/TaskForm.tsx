@@ -1,11 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ReactNode, useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 import TaskSchema, { Task } from '@/schema/TaskSchema';
@@ -15,7 +14,6 @@ import {
     CalendarMinus,
     CalendarPlus,
     ChevronDown,
-    Clock,
     Clock3,
     Flag,
     Gauge,
@@ -33,12 +31,11 @@ import {
     TaskStatus,
 } from '@/constants/task';
 import { useCreateTask, useTaskById, useUpdateTask } from '@/hooks/useTask';
-import { calcualteDuration, formatDuration, toDBTime } from '@/lib/time';
 import { cn } from '@/lib/utils';
-import dayjs from 'dayjs';
 import { useParams } from 'react-router-dom';
 import ColorPicker from '../form/ColorPicker';
-import { Calendar } from '../ui/calendar';
+import DatePicker from '../form/DatePicker';
+import DurationElement from '../form/DurationElement';
 
 type Prop = {
     status: TaskStatus;
@@ -64,7 +61,6 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
     useEffect(() => {
         if (task) {
             form.reset(task);
-            // console.log(form.getValues());
         }
     }, [task]);
 
@@ -136,7 +132,7 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                         Close
                     </Button>
                     <Button type="submit" disabled={false}>
-                        {false ? 'Saving…' : 'Save project'}
+                        {false ? 'Saving…' : 'Save Task'}
                     </Button>
                 </div>
             </form>
@@ -287,9 +283,9 @@ TaskForm.ATTRIBUTES = ({ form }: { form: any }) => {
                                     <FormMessage className="text-xs" />
                                 </FormLabel>
                                 <FormControl>
-                                    <TaskForm.DATEPICKER
+                                    <DatePicker
                                         icon={<CalendarClock size={16} />}
-                                        value={field.value}
+                                        dateValue={field.value}
                                         onChange={field.onChange}
                                     />
                                 </FormControl>
@@ -313,9 +309,9 @@ TaskForm.ATTRIBUTES = ({ form }: { form: any }) => {
                                     <FormMessage className="text-xs" />
                                 </FormLabel>
                                 <FormControl>
-                                    <TaskForm.DATEPICKER
+                                    <DatePicker
                                         icon={<CalendarClock size={16} />}
-                                        value={field.value}
+                                        dateValue={field.value}
                                         onChange={field.onChange}
                                     />
                                 </FormControl>
@@ -339,9 +335,9 @@ TaskForm.ATTRIBUTES = ({ form }: { form: any }) => {
                                     <FormMessage className="text-xs" />
                                 </FormLabel>
                                 <FormControl>
-                                    <TaskForm.DATEPICKER
+                                    <DatePicker
                                         icon={<CalendarClock size={16} />}
-                                        value={field.value}
+                                        dateValue={field.value}
                                         onChange={field.onChange}
                                     />
                                 </FormControl>
@@ -365,7 +361,7 @@ TaskForm.ATTRIBUTES = ({ form }: { form: any }) => {
                                     <FormMessage className="text-xs" />
                                 </FormLabel>
                                 <FormControl>
-                                    <TaskForm.DURATION
+                                    <DurationElement
                                         value={field.value}
                                         onChange={field.onChange}
                                         setError={(msg) =>
@@ -381,91 +377,6 @@ TaskForm.ATTRIBUTES = ({ form }: { form: any }) => {
                     />
                 </div>
             </div>
-        </div>
-    );
-};
-
-TaskForm.DATEPICKER = ({
-    value,
-    onChange,
-    icon,
-}: {
-    value: string;
-    onChange: (date: string) => void;
-    icon: ReactNode;
-}) => {
-    return (
-        <Popover>
-            <PopoverTrigger asChild>
-                <span
-                    className={cn(
-                        'w-30 text-sm ',
-                        'flex items-center justify-start gap-2 cursor-pointer',
-                        !value && 'text-muted-foreground',
-                        'hover:bg-gray-100 py-1 px-1 rounded',
-                    )}
-                >
-                    {icon}
-                    {value ? dayjs(value).format('DD/MM/YYYY') : <span>Pick a date</span>}
-                </span>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                    mode="single"
-                    selected={dayjs(value).toDate()}
-                    onSelect={(date) => {
-                        date &&
-                            onChange(
-                                toDBTime(dayjs(date).startOf('day').format('YYYY-MM-DD HH:mm:ss')),
-                            );
-                    }}
-                    initialFocus
-                />
-            </PopoverContent>
-        </Popover>
-    );
-};
-
-TaskForm.DURATION = ({
-    value,
-    onChange,
-    setError,
-    clearError,
-}: {
-    value?: number | null;
-    onChange: (duration: number) => void;
-    setError: (msg: string | null) => void;
-    clearError: () => void;
-}) => {
-    const [time, setTime] = useState<string>('');
-
-    useEffect(() => {
-        setTime(formatDuration(value ? value : 0));
-    }, [value]);
-
-    const handleChange = () => {
-        const regex = /^\d{2}:\d{2}:\d{2}$/;
-        const isValid = regex.test(time);
-        if (isValid) {
-            onChange(calcualteDuration(time));
-            clearError();
-        } else {
-            setError('Format HH:MM:SS');
-        }
-    };
-
-    return (
-        <div className="flex gap-2 items-center justify-center">
-            <Clock size={16} />
-            <Input
-                value={time}
-                onChange={(e) => {
-                    setTime(e.target.value);
-                    clearError();
-                }}
-                className="h-5 px-0 text-start border-none shadow-none rounded-none"
-                onBlur={handleChange}
-            />
         </div>
     );
 };

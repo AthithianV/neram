@@ -1,14 +1,11 @@
 import ProjectSchema, { Project } from '@/schema/ProjectSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import dayjs from 'dayjs';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
     Select,
     SelectContent,
@@ -21,14 +18,12 @@ import { Label } from '../ui/label';
 import { ScrollArea } from '../ui/scroll-area';
 import { Switch } from '../ui/switch';
 
-import { toDBTime } from '@/lib/time';
 import { cn } from '@/lib/utils';
 
 import { BILLING_TYPE, CURRENCT_LIST, PROJECT_INITIAL_VALUES } from '@/constants/project';
 import { useCreateProject, useProjectById, useUpdateProject } from '@/hooks/useProject';
 import {
     CalendarCheck,
-    CalendarClock,
     CalendarMinus,
     CalendarPlus,
     CircleDollarSign,
@@ -38,6 +33,7 @@ import {
     User,
 } from 'lucide-react';
 import ColorPicker from '../form/ColorPicker';
+import DatePicker from '../form/DatePicker';
 
 type PropType = {
     projectId?: number | null;
@@ -174,10 +170,7 @@ ProjectForm.ATTRIBUTE = ({ form }: { form: any }) => {
                         render={({ field }) => (
                             <FormItem>
                                 <FormControl>
-                                    <ProjectForm.DATEPICKER
-                                        value={field.value}
-                                        onChange={field.onChange}
-                                    />
+                                    <DatePicker dateValue={field.value} onChange={field.onChange} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -196,10 +189,7 @@ ProjectForm.ATTRIBUTE = ({ form }: { form: any }) => {
                         render={({ field }) => (
                             <FormItem>
                                 <FormControl>
-                                    <ProjectForm.DATEPICKER
-                                        value={field.value}
-                                        onChange={field.onChange}
-                                    />
+                                    <DatePicker dateValue={field.value} onChange={field.onChange} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -218,10 +208,7 @@ ProjectForm.ATTRIBUTE = ({ form }: { form: any }) => {
                         render={({ field }) => (
                             <FormItem>
                                 <FormControl>
-                                    <ProjectForm.DATEPICKER
-                                        value={field.value}
-                                        onChange={field.onChange}
-                                    />
+                                    <DatePicker dateValue={field.value} onChange={field.onChange} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -398,45 +385,6 @@ ProjectForm.FREELANCING = ({ form }: { form: any }) => {
                 </div>
             )}
         </div>
-    );
-};
-
-ProjectForm.DATEPICKER = ({
-    value,
-    onChange,
-}: {
-    value?: string;
-    onChange: (value: string) => void;
-}) => {
-    const [open, setOpen] = useState(false);
-
-    return (
-        <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-                <span
-                    className={cn(
-                        'w-full text-sm font-semibold',
-                        'flex items-center gap-2 cursor-pointer',
-                        !value && 'text-muted-foreground',
-                        'hover:bg-gray-100 py-1 px-2 rounded',
-                    )}
-                >
-                    <CalendarClock size={16} />
-                    {value ? dayjs(value).format('DD/MM/YYYY') : 'Pick a date'}
-                </span>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start" side="top">
-                <Calendar
-                    mode="single"
-                    selected={value ? dayjs(value).toDate() : undefined}
-                    onSelect={(date) => {
-                        date && onChange(toDBTime(dayjs(date).startOf('day').toString()));
-                        setOpen(false);
-                    }}
-                    initialFocus
-                />
-            </PopoverContent>
-        </Popover>
     );
 };
 

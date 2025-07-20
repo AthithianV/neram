@@ -13,41 +13,35 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
-import { Textarea } from '@/components/ui/textarea';
-import { useEffect } from 'react';
-import {
-    CreateSessionSchema,
-    UpdateSessionSchema,
-    CreateSession,
-    UpdateSession,
-} from '@/schema/SessionSchema';
-import { DEFAULT_SESSION_VALUES } from '@/constants/session';
-import {
-    useCreateSession,
-    useUpdateSession,
-    useSessionById,
-} from '@/hooks/useSession';
 import DatePicker from '@/components/form/DatePicker';
-import TaskPicker from '@/components/session/TaskPicker';
 import ProjectPicker from '@/components/session/ProjectPicker';
 import TagPicker from '@/components/session/TagPicker';
+import TaskPicker from '@/components/session/TaskPicker';
+import { Textarea } from '@/components/ui/textarea';
+import { DEFAULT_SESSION_VALUES } from '@/constants/session';
+import { useCreateSession, useSessionById, useUpdateSession } from '@/hooks/useSession';
+import {
+    CreateSession,
+    CreateSessionSchema,
+    UpdateSession,
+    UpdateSessionSchema,
+} from '@/schema/SessionSchema';
+import { useEffect } from 'react';
 
-import dayjs from 'dayjs';
+import { useSessionCollision } from '@/hooks/useSession';
+import { useTimer } from '@/hooks/useTimer';
 import { toDBTime } from '@/lib/time';
+import dayjs from 'dayjs';
+import { toast } from 'sonner';
 import DurationElement from '../form/DurationElement';
 import TimeElement from '../form/TimeElement';
-import { useTimer } from '@/hooks/useTimer';
-import { useSessionCollision } from '@/hooks/useSession';
-import { toast } from 'sonner';
 
 const SessionForm = () => {
     const { sessionId } = useParams();
 
     const { mutateAsync: checkSessionCollision } = useSessionCollision();
 
-    const { data: session } = useSessionById(
-        sessionId ? Number(sessionId) : undefined,
-    );
+    const { data: session } = useSessionById(sessionId ? Number(sessionId) : undefined);
 
     const { data: timer } = useTimer();
 
@@ -57,9 +51,7 @@ const SessionForm = () => {
     const isEditMode = !!sessionId;
 
     const form = useForm({
-        resolver: zodResolver(
-            isEditMode ? UpdateSessionSchema : CreateSessionSchema,
-        ),
+        resolver: zodResolver(isEditMode ? UpdateSessionSchema : CreateSessionSchema),
         defaultValues: DEFAULT_SESSION_VALUES,
     });
 
@@ -98,18 +90,13 @@ const SessionForm = () => {
             const duration = endTime.diff(startTime, 'second');
             if (duration < breakDuration) {
                 form.setError('break_duration_sec', {
-                    message:
-                        'Break duration must be less than session duration',
+                    message: 'Break duration must be less than session duration',
                 });
                 return;
             }
             form.setValue('session_duration_sec', duration - breakDuration);
         }
-    }, [
-        form.watch('break_duration_sec'),
-        form.watch('start_time'),
-        form.watch('end_time'),
-    ]);
+    }, [form.watch('break_duration_sec'), form.watch('start_time'), form.watch('end_time')]);
 
     useEffect(() => {
         const date = form.getValues('date');
@@ -208,10 +195,7 @@ const SessionForm = () => {
                         <FormItem>
                             <FormLabel>Description</FormLabel>
                             <FormControl>
-                                <Textarea
-                                    {...field}
-                                    className="bg-white shadow"
-                                />
+                                <Textarea {...field} className="bg-white shadow" />
                             </FormControl>
                             <FormMessage className="text-xs" />
                         </FormItem>
@@ -227,10 +211,7 @@ const SessionForm = () => {
                             <FormItem className="flex-1">
                                 <FormLabel>Project</FormLabel>
                                 <FormControl>
-                                    <ProjectPicker
-                                        onChange={field.onChange}
-                                        value={field.value}
-                                    />
+                                    <ProjectPicker onChange={field.onChange} value={field.value} />
                                 </FormControl>
                                 <FormMessage className="text-xs" />
                             </FormItem>
@@ -265,10 +246,7 @@ const SessionForm = () => {
                         <FormItem>
                             <FormLabel>Date</FormLabel>
                             <FormControl>
-                                <DatePicker
-                                    date={field.value}
-                                    onChange={field.onChange}
-                                />
+                                <DatePicker dateValue={field.value} onChange={field.onChange} />
                             </FormControl>
                             <FormMessage className="text-xs" />
                         </FormItem>
@@ -294,10 +272,7 @@ const SessionForm = () => {
                                             : form.clearErrors('start_time')
                                     }
                                     date={form.getValues('date')}
-                                    isDisable={
-                                        session &&
-                                        session.id === timer?.session_id
-                                    }
+                                    isDisable={session && session.id === timer?.session_id}
                                 />
                                 <FormMessage className="text-xs" />
                             </FormItem>
@@ -342,19 +317,14 @@ const SessionForm = () => {
                                     <FormLabel>Duration</FormLabel>
                                     <DurationElement
                                         value={field.value}
-                                        setValue={field.onChange}
+                                        onChange={field.onChange}
                                         setError={(message) =>
-                                            message
-                                                ? form.setError(
-                                                      'session_duration_sec',
-                                                      {
-                                                          message,
-                                                      },
-                                                  )
-                                                : form.clearErrors(
-                                                      'session_duration_sec',
-                                                  )
+                                            form.setError('session_duration_sec', {
+                                                message,
+                                            })
                                         }
+                                        isSession={true}
+                                        clearError={() => form.clearErrors('session_duration_sec')}
                                     />
                                     <FormMessage className="text-xs" />
                                 </FormItem>
@@ -370,19 +340,14 @@ const SessionForm = () => {
                                     <FormLabel>Break</FormLabel>
                                     <DurationElement
                                         value={field.value}
-                                        setValue={field.onChange}
+                                        onChange={field.onChange}
                                         setError={(message) =>
-                                            message
-                                                ? form.setError(
-                                                      'break_duration_sec',
-                                                      {
-                                                          message,
-                                                      },
-                                                  )
-                                                : form.clearErrors(
-                                                      'break_duration_sec',
-                                                  )
+                                            form.setError('break_duration_sec', {
+                                                message,
+                                            })
                                         }
+                                        isSession={true}
+                                        clearError={() => form.clearErrors('break_duration_sec')}
                                     />
                                     <FormMessage className="text-xs" />
                                 </FormItem>

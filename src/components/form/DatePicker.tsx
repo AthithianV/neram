@@ -1,52 +1,42 @@
-import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from '@/components/ui/popover';
-import { CalendarIcon } from 'lucide-react';
-import dayjs from 'dayjs';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { toDBTime } from '@/lib/time';
+import { cn } from '@/lib/utils';
+import dayjs from 'dayjs';
+import { CalendarClock } from 'lucide-react';
+import { ReactNode, useState } from 'react';
 
 type PropsType = {
-    date: string;
+    dateValue?: string;
     onChange: (date: string) => void;
+    icon?: ReactNode;
 };
 
-const DatePicker = ({ date, onChange }: PropsType) => {
+const DatePicker = ({ dateValue, onChange, icon }: PropsType) => {
+    const [open, setOpen] = useState(false);
+
     return (
-        <Popover>
+        <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
                 <span
                     className={cn(
-                        'w-full text-sm font-normal bg-white',
-                        'border border-input rounded-md px-3 py-2 shadow-xs',
-                        'flex items-center justify-center cursor-pointer',
-                        !date && 'text-muted-foreground'
+                        'w-full text-sm font-semibold',
+                        'flex items-center gap-2 cursor-pointer',
+                        !dateValue && 'text-muted-foreground',
+                        'hover:bg-gray-100 py-1 px-2 rounded',
                     )}
                 >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? (
-                        dayjs(date).format('DD/MM/YYYY')
-                    ) : (
-                        <span>Pick a date</span>
-                    )}
+                    {icon ? icon : <CalendarClock size={16} />}
+                    {dateValue ? dayjs(dateValue).format('DD/MM/YYYY') : 'Pick a date'}
                 </span>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start" side="top">
                 <Calendar
                     mode="single"
-                    selected={dayjs(date).toDate()}
+                    selected={dateValue ? dayjs(dateValue).toDate() : undefined}
                     onSelect={(date) => {
-                        date &&
-                            onChange(
-                                toDBTime(
-                                    dayjs(date)
-                                        .startOf('day')
-                                        .format('YYYY-MM-DD HH:mm:ss')
-                                )
-                            );
+                        date && onChange(toDBTime(dayjs(date).startOf('day').toString()));
+                        setOpen(false);
                     }}
                     initialFocus
                 />
