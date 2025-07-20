@@ -13,19 +13,17 @@ export function AppLayout() {
 
     return (
         <div
-            className="flex h-screen w-full fixed top-0"
+            className="flex h-screen w-full fixed top-0 overflow-hidden"
             // onContextMenuCapture={(e) => e.preventDefault()}
         >
             <NeramSidebar />
             <Toaster position="bottom-center" richColors />
             <ModalLayout />
-            <main className="flex flex-col text-foreground overflow-y-auto h-full w-full bg-gray-50">
+            <main className="flex flex-col text-foreground overflow-hidden h-full w-full bg-gray-50">
                 <div className="title-bar-height bg-white border-b-2 border-gray-100">
                     <TitleBar />
                 </div>
-                <div className="main-content-height w-full p-[var(--page-padding)]">
-                    <Outlet />
-                </div>
+                <Outlet />
             </main>
         </div>
     );

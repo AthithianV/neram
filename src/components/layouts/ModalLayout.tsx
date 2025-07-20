@@ -19,13 +19,7 @@ const modalVariants = {
     exit: { opacity: 0, translateY: 20 },
 };
 
-export const ModalOverlay = ({
-    children,
-    className,
-}: {
-    children: React.ReactNode;
-    className: string;
-}) => (
+export const ModalOverlay = ({ children }: { children: React.ReactNode }) => (
     <motion.div
         className="fixed inset-0 bg-gray-800/30 flex justify-center items-center z-50"
         variants={backdropVariants}
@@ -34,7 +28,7 @@ export const ModalOverlay = ({
         exit="hidden"
     >
         <motion.div
-            className={cn('bg-white py-10 px-20 rounded-lg', className)}
+            className={cn('bg-white py-10 px-20 rounded-lg')}
             variants={modalVariants}
             initial="hidden"
             animate="visible"
@@ -98,7 +92,7 @@ const ModalLayout = () => {
     return (
         <AnimatePresence>
             {modal && (
-                <ModalOverlay className={'w-[50vw]'}>
+                <ModalOverlay>
                     <ModalManager modal={modal} />
                 </ModalOverlay>
             )}
