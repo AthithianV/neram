@@ -4,21 +4,24 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import { Label } from '../ui/label';
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { Switch } from '../ui/switch';
 
-import { cn } from '@/lib/utils';
-
-import { BILLING_TYPE, CURRENCT_LIST, PROJECT_INITIAL_VALUES } from '@/constants/project';
+import { COLORS } from '@/constants/colors';
+import {
+    BILLING_TYPE,
+    CURRENCT_LIST,
+    DEFAULT_CURRENCY,
+    PROJECT_INITIAL_VALUES,
+} from '@/constants/project';
 import { useCreateProject, useProjectById, useUpdateProject } from '@/hooks/useProject';
 import {
     CalendarCheck,
@@ -33,6 +36,7 @@ import {
 import ColorPicker from '../form/ColorPicker';
 import DatePicker from '../form/DatePicker';
 import RichEditor from '../form/Editor';
+import Selector from '../form/Selector';
 import { Separator } from '../ui/separator';
 
 type PropType = {
@@ -81,13 +85,13 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-[50vw]">
                 {/* Title */}
                 <FormField
                     control={form.control}
                     name="title"
                     render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="w-1/2 flex items-center gap-5">
                             <FormControl>
                                 <Input
                                     placeholder="Project Title..."
@@ -102,11 +106,206 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
 
                 <Separator />
 
-                <ProjectForm.ATTRIBUTE form={form} />
+                <div className="flex gap-6 w-full max-sm:flex-col">
+                    <FormField
+                        control={form.control}
+                        name="color"
+                        render={({ field }) => (
+                            <FormItem className="w-1/2 flex items-center gap-5">
+                                <FormLabel className="min-w-24 font-semibold">
+                                    <Palette size={16} /> Color
+                                </FormLabel>
+                                <FormControl>
+                                    <ColorPicker onChange={field.onChange} value={field.value} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    {/* Started At */}
+                    <FormField
+                        control={form.control}
+                        name="started_at"
+                        render={({ field }) => (
+                            <FormItem className="w-1/2 flex items-center gap-5">
+                                <FormLabel className="min-w-24 font-semibold">
+                                    <CalendarPlus size={16} /> Started At
+                                </FormLabel>
+                                <FormControl>
+                                    <DatePicker dateValue={field.value} onChange={field.onChange} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+
+                <div className="flex gap-6 w-full max-sm:flex-col">
+                    {/* Deadline */}
+                    <FormField
+                        control={form.control}
+                        name="deadline"
+                        render={({ field }) => (
+                            <FormItem className="w-1/2 flex items-center gap-5">
+                                <FormLabel className="min-w-24 font-semibold">
+                                    <CalendarCheck size={16} /> Deadline
+                                </FormLabel>
+                                <FormControl>
+                                    <DatePicker dateValue={field.value} onChange={field.onChange} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    {/* Completed At */}
+                    <FormField
+                        control={form.control}
+                        name="completed_at"
+                        render={({ field }) => (
+                            <FormItem className="w-1/2 flex items-center gap-5">
+                                <FormLabel className="min-w-24 font-semibold">
+                                    <CalendarMinus size={16} /> Completed At
+                                </FormLabel>
+                                <FormControl>
+                                    <DatePicker dateValue={field.value} onChange={field.onChange} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
 
                 <Separator />
 
-                <ProjectForm.FREELANCING form={form} />
+                <FormField
+                    control={form.control}
+                    name="is_billable"
+                    render={({ field }) => (
+                        <FormItem className="w-1/2 flex items-center gap-5">
+                            <FormLabel className="font-semibold">Freelancing</FormLabel>
+                            <Switch
+                                checked={field.value ? field.value : false}
+                                onCheckedChange={field.onChange}
+                            />
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                {form.watch('is_billable') && (
+                    <div className="space-y-6">
+                        <div className="flex gap-6 w-full max-sm:flex-col">
+                            <FormField
+                                control={form.control}
+                                name="client_name"
+                                render={({ field }) => (
+                                    <FormItem className="w-1/2 flex items-center gap-5">
+                                        <FormLabel className="min-w-32 font-semibold">
+                                            <User size={16} /> Client Name
+                                        </FormLabel>
+                                        <Input
+                                            value={field.value ? field.value : undefined}
+                                            onChange={field.onChange}
+                                            placeholder="Enter name..."
+                                            className="input"
+                                        />
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="billing_type"
+                                render={({ field }) => (
+                                    <FormItem className="w-1/2 flex items-center gap-5">
+                                        <FormLabel className="min-w-24 font-semibold">
+                                            <Receipt size={16} /> Billing Type
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Selector
+                                                value={
+                                                    field.value
+                                                        ? field.value
+                                                        : BILLING_TYPE[0].title
+                                                }
+                                                onChange={field.onChange}
+                                                items={BILLING_TYPE.map((type) => ({
+                                                    value: type.title,
+                                                    color: type.color,
+                                                    title: type.title,
+                                                }))}
+                                                fallbackText="No Type Available"
+                                                placeholder="Select Billing TYpe"
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        <div className="flex gap-6 w-full max-sm:flex-col">
+                            <FormField
+                                control={form.control}
+                                name={
+                                    form.watch('billing_type') === 'Hourly'
+                                        ? 'fixed_rate'
+                                        : 'hourly_rate'
+                                }
+                                render={({ field }) => (
+                                    <FormItem className="w-1/2 flex items-center gap-5">
+                                        <FormLabel className="min-w-32 font-semibold">
+                                            <Gauge size={16} />{' '}
+                                            {form.watch('billing_type') === 'Hourly'
+                                                ? 'Hourly Rate'
+                                                : 'Fixed Rate'}
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="number"
+                                                min={0}
+                                                placeholder="00.00"
+                                                className="input"
+                                                value={field.value ?? 0}
+                                                onChange={field.onChange}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="currency"
+                                render={({ field }) => (
+                                    <FormItem className="w-1/2 flex items-center gap-5">
+                                        <FormLabel className="min-w-24 font-semibold">
+                                            <CircleDollarSign size={16} /> Currency
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Selector
+                                                onChange={field.onChange}
+                                                value={field.value ?? DEFAULT_CURRENCY}
+                                                items={CURRENCT_LIST.map((type) => ({
+                                                    value: `${type.symbol} ${type.code}`,
+                                                    color: COLORS[4].value,
+                                                    title: `${type.symbol} ${type.code}`,
+                                                }))}
+                                                fallbackText="No Type Available"
+                                                placeholder="Select Billing TYpe"
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                    </div>
+                )}
 
                 <Separator />
 
@@ -131,258 +330,6 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                 </div>
             </form>
         </Form>
-    );
-};
-
-ProjectForm.ATTRIBUTE = ({ form }: { form: any }) => {
-    return (
-        <div className="space-y-4">
-            <div className="flex flex-wrap gap-4">
-                {/* Color */}
-                <div className="flex w-[45%] items-center gap-5">
-                    <label className="flex w-[40%] items-center gap-1 text-sm font-medium">
-                        <Palette size={16} /> Color
-                    </label>
-                    <FormField
-                        control={form.control}
-                        name="color"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormControl>
-                                    <ColorPicker onChange={field.onChange} value={field.value} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                </div>
-
-                {/* Started At */}
-                <div className="flex w-[45%] items-center gap-5">
-                    <label className="flex w-[40%] items-center gap-1 text-sm font-medium">
-                        <CalendarPlus size={16} /> Started At
-                    </label>
-                    <FormField
-                        control={form.control}
-                        name="started_at"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormControl>
-                                    <DatePicker dateValue={field.value} onChange={field.onChange} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                </div>
-
-                {/* Deadline */}
-                <div className="flex w-[45%] items-center gap-5">
-                    <label className="flex w-[40%] items-center gap-1 text-sm font-medium">
-                        <CalendarCheck size={16} /> Deadline
-                    </label>
-                    <FormField
-                        control={form.control}
-                        name="deadline"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormControl>
-                                    <DatePicker dateValue={field.value} onChange={field.onChange} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                </div>
-
-                {/* Completed At */}
-                <div className="flex w-[45%] items-center gap-5">
-                    <label className="flex w-[40%] items-center gap-1 text-sm font-medium">
-                        <CalendarMinus size={16} /> Completed At
-                    </label>
-                    <FormField
-                        control={form.control}
-                        name="completed_at"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormControl>
-                                    <DatePicker dateValue={field.value} onChange={field.onChange} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                </div>
-            </div>
-        </div>
-    );
-};
-
-ProjectForm.FREELANCING = ({ form }: { form: any }) => {
-    return (
-        <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-                <FormField
-                    control={form.control}
-                    name="is_billable"
-                    render={({ field }) => (
-                        <FormItem>
-                            <Switch checked={field.value} onCheckedChange={field.onChange} />
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
-                <Label htmlFor="airplane-mode">Freelancing</Label>
-            </div>
-            {form.watch('is_billable') && (
-                <div className="flex flex-wrap gap-4">
-                    {/* Client Name */}
-                    <div className="flex w-[45%] items-center gap-5">
-                        <label className="flex w-[40%] items-center gap-1 text-sm font-medium">
-                            <User size={16} /> Client Name
-                        </label>
-                        <FormField
-                            control={form.control}
-                            name="client_name"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <Input
-                                        value={field.value}
-                                        onChange={field.onChange}
-                                        placeholder="Enter name here..."
-                                        className="border-none shadow-none font-semibold"
-                                    />
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
-
-                    <div className="flex w-[45%] items-center gap-5">
-                        <label className="flex w-[40%] items-center gap-1 text-sm font-medium">
-                            <Receipt size={16} /> Billing Type
-                        </label>
-                        <FormField
-                            control={form.control}
-                            name="billing_type"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormControl>
-                                        <Select value={field.value} onValueChange={field.onChange}>
-                                            <SelectTrigger
-                                                className={cn(
-                                                    'p-2 !h-6 rounded shadow-none border-none',
-                                                    'text-white font-semibold',
-                                                )}
-                                            >
-                                                <SelectValue placeholder="Pick billing type..." />
-                                            </SelectTrigger>
-                                            <SelectContent className="max-h-[30vh]">
-                                                {BILLING_TYPE.map((type) => (
-                                                    <SelectItem key={type.title} value={type.title}>
-                                                        <div
-                                                            className="rounded px-2 font-semibold text-white"
-                                                            style={{
-                                                                backgroundColor: type.color,
-                                                            }}
-                                                        >
-                                                            {type.title}
-                                                        </div>
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
-
-                    <div className="flex w-[45%] items-center gap-5">
-                        <label className="flex w-[40%] items-center gap-2 text-sm font-medium">
-                            <Gauge size={16} />{' '}
-                            {form.watch('billing_type') === 'Hourly' ? 'Hourly Rate' : 'Fixed Rate'}
-                        </label>
-                        <FormField
-                            control={form.control}
-                            name={
-                                form.watch('billing_type') === 'Hourly'
-                                    ? 'fixed_rate'
-                                    : 'hourly_rate'
-                            }
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormControl>
-                                        <Input
-                                            type="number"
-                                            min={0}
-                                            placeholder="00.00"
-                                            className="border-none shadow-none font-semibold"
-                                            value={field.value}
-                                            onChange={field.onChange}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
-
-                    <div className="flex w-[45%] items-center gap-5">
-                        <label className="flex w-[40%] items-center gap-1 text-sm font-medium">
-                            <CircleDollarSign size={16} /> Currency
-                        </label>
-                        <FormField
-                            control={form.control}
-                            name="currency"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormControl>
-                                        <Select onValueChange={field.onChange} value={field.value}>
-                                            <FormControl>
-                                                <SelectTrigger
-                                                    className={cn(
-                                                        'p-2 !h-6 rounded shadow-none border-none',
-                                                        'text-white font-semibold',
-                                                    )}
-                                                >
-                                                    <SelectValue placeholder="Pick Currency..." />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent className="max-h-[30vh]">
-                                                {CURRENCT_LIST.map(({ code, symbol }) => (
-                                                    <SelectItem
-                                                        key={code}
-                                                        value={code}
-                                                        defaultValue={code}
-                                                    >
-                                                        <div
-                                                            className={cn(
-                                                                'rounded px-2 font-semibold text-white',
-                                                                'flex items-center gap-2',
-                                                            )}
-                                                            style={{
-                                                                backgroundColor: '#14B8A6',
-                                                            }}
-                                                        >
-                                                            <span>{symbol}</span>
-                                                            {code}
-                                                        </div>
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
-                </div>
-            )}
-        </div>
     );
 };
 

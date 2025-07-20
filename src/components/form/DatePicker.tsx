@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { Input } from '../ui/input';
 
 type PropsType = {
-    dateValue?: string;
+    dateValue?: string | null;
     onChange: (date: string) => void;
 };
 
@@ -19,7 +19,7 @@ const DatePicker = ({ dateValue, onChange }: PropsType) => {
             <PopoverTrigger asChild>
                 <Input
                     className={cn(
-                        'flex-1 !h-8 hover:bg-gray-100 font-semibold cursor-pointer',
+                        '!w-45 !h-8 hover:bg-gray-100 font-semibold cursor-pointer',
                         'shadow-none',
                         open && 'border-b-2 border-sky-500',
                     )}

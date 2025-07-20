@@ -16,9 +16,11 @@ export const PROJECT_INITIAL_VALUES = {
 };
 
 export const BILLING_TYPE = [
-    {title: 'Hourly', color: '#0EA5E9'},
-    {title: 'Fixed', color: '#EC4899'},
-]
+    { title: 'Hourly', color: '#0EA5E9' },
+    { title: 'Fixed', color: '#EC4899' },
+];
+
+export const DEFAULT_CURRENCY = `$ USD`;
 
 export const CURRENCT_LIST = [
     { code: 'USD', symbol: '$' }, // US Dollar

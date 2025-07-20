@@ -4,14 +4,12 @@ import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 import TaskSchema, { Task } from '@/schema/TaskSchema';
 import {
     CalendarCheck,
     CalendarMinus,
     CalendarPlus,
-    ChevronDown,
     Clock3,
     Flag,
     Gauge,
@@ -19,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 
+import { COLORS } from '@/constants/colors';
 import {
     TASK_INTIAL_VALUE,
     TASK_PRIORITY,
@@ -29,12 +28,15 @@ import {
     TaskStatus,
 } from '@/constants/task';
 import { useCreateTask, useTaskById, useUpdateTask } from '@/hooks/useTask';
-import { cn } from '@/lib/utils';
+import { toDBTime } from '@/lib/time';
+import dayjs from 'dayjs';
 import { useParams } from 'react-router-dom';
 import ColorPicker from '../form/ColorPicker';
 import DatePicker from '../form/DatePicker';
 import DurationElement from '../form/DurationElement';
 import RichEditor from '../form/Editor';
+import Selector from '../form/Selector';
+import ProjectPicker from '../session/ProjectPicker';
 import { Separator } from '../ui/separator';
 
 type Prop = {
@@ -64,6 +66,14 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
         }
     }, [task]);
 
+    useEffect(() => {
+        if (form.getValues('status') === 'Completed') {
+            form.setValue('completed_at', toDBTime(dayjs().startOf('day').toString()));
+        } else {
+            form.setValue('completed_at', null);
+        }
+    }, [form.watch('status')]);
+
     const onSubmit = (data: Task) => {
         if (projectId) {
             if (taskId) {
@@ -85,7 +95,7 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-[50vw]">
                 {/* title */}
                 <FormField
                     control={form.control}
@@ -106,7 +116,199 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                 />
                 <Separator />
 
-                <TaskForm.ATTRIBUTES form={form} />
+                {/* Priority */}
+                <div className="flex gap-6 w-full max-sm:flex-col">
+                    <FormField
+                        control={form.control}
+                        name="project_id"
+                        render={({ field }) => (
+                            <FormItem className="w-1/2 flex items-center gap-5">
+                                <FormLabel className="w-32 font-semibold">
+                                    <div className="flex items-center gap-1">
+                                        <Flag size={16} /> Priority
+                                    </div>
+                                    <FormMessage className="text-xs" />
+                                </FormLabel>
+                                <ProjectPicker onChange={field.onChange} value={field.value} />
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="priority"
+                        render={({ field }) => (
+                            <FormItem className="w-1/2 flex items-center gap-5">
+                                <FormLabel className="w-32 font-semibold">
+                                    <div className="flex items-center gap-1">
+                                        <Flag size={16} /> Priority
+                                    </div>
+                                    <FormMessage className="text-xs" />
+                                </FormLabel>
+                                <Selector
+                                    onChange={field.onChange}
+                                    value={field.value ?? TASK_PRIORITY[0]}
+                                    items={TASK_PRIORITY.map((priority) => ({
+                                        title: priority,
+                                        value: priority,
+                                        color: TASK_PRIORITY_COLOR[
+                                            (priority as TaskPriority) ?? 'Default'
+                                        ],
+                                    }))}
+                                    fallbackText="No Priority Available"
+                                    placeholder="Select Priority"
+                                />
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+
+                {/* Status */}
+                <div className="flex gap-6 w-full max-sm:flex-col">
+                    <FormField
+                        control={form.control}
+                        name="status"
+                        render={({ field }) => (
+                            <FormItem className="w-1/2 flex items-center gap-5">
+                                <FormLabel className="w-32 font-semibold">
+                                    <div className="flex items-center gap-1">
+                                        <Gauge size={16} /> Status
+                                    </div>
+                                    <FormMessage className="text-xs" />
+                                </FormLabel>
+                                <Selector
+                                    onChange={field.onChange}
+                                    value={field.value ?? TASK_STATUS[0]}
+                                    items={TASK_STATUS.map((status) => ({
+                                        title: status,
+                                        value: status,
+                                        color: TASK_STATUS_COLOR[
+                                            (status as TaskStatus) ?? 'Default'
+                                        ],
+                                    }))}
+                                    fallbackText="No Priority Available"
+                                    placeholder="Select Priority"
+                                />
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="color"
+                        render={({ field }) => (
+                            <FormItem className="w-1/2 flex items-center gap-5">
+                                <FormLabel className="w-32 font-semibold">
+                                    <div className="flex items-center gap-1">
+                                        <Palette size={16} /> Color
+                                    </div>
+                                    <FormMessage className="text-xs" />
+                                </FormLabel>
+                                <FormControl>
+                                    <ColorPicker
+                                        onChange={field.onChange}
+                                        value={field.value ? field.value : COLORS[0].value}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+
+                {/* Started At */}
+                <div className="flex gap-6 w-full max-sm:flex-col">
+                    <FormField
+                        control={form.control}
+                        name="started_at"
+                        render={({ field }) => (
+                            <FormItem className="w-1/2 flex items-center gap-5">
+                                <FormLabel className="w-32 font-semibold">
+                                    <div className="flex items-center gap-1">
+                                        <CalendarPlus size={16} /> Started At
+                                    </div>
+                                    <FormMessage className="text-xs" />
+                                </FormLabel>
+                                <FormControl>
+                                    <DatePicker dateValue={field.value} onChange={field.onChange} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="deadline"
+                        render={({ field }) => (
+                            <FormItem className="w-1/2 flex items-center gap-5">
+                                <FormLabel className="w-32 font-semibold">
+                                    <div className="flex items-center gap-1">
+                                        <CalendarCheck size={16} /> Deadline
+                                    </div>
+                                    <FormMessage className="text-xs" />
+                                </FormLabel>
+                                <FormControl>
+                                    <DatePicker dateValue={field.value} onChange={field.onChange} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+
+                {/* Estimated Time */}
+                <div className="flex gap-6 w-full max-sm:flex-col">
+                    <FormField
+                        control={form.control}
+                        name="estimated_time"
+                        render={({ field }) => (
+                            <FormItem className="w-1/2 flex items-center gap-5">
+                                <FormLabel className="w-32 font-semibold">
+                                    <div className="flex items-center gap-1">
+                                        <Clock3 size={16} /> Estimated Time
+                                    </div>
+                                    <FormMessage className="text-xs" />
+                                </FormLabel>
+                                <FormControl>
+                                    <DurationElement
+                                        value={field.value}
+                                        onChange={field.onChange}
+                                        setError={(msg) =>
+                                            form.setError('estimated_time', {
+                                                message: msg,
+                                            })
+                                        }
+                                        clearError={() => form.clearErrors('estimated_time')}
+                                    />
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="completed_at"
+                        render={({ field }) => (
+                            <FormItem className="w-1/2 flex items-center gap-5">
+                                <FormLabel className="w-32 font-semibold">
+                                    <div className="flex items-center gap-1">
+                                        <CalendarMinus size={16} /> Completed At
+                                    </div>
+                                    <FormMessage className="text-xs" />
+                                </FormLabel>
+                                <FormControl>
+                                    <DatePicker dateValue={field.value} onChange={field.onChange} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+
                 <Separator />
 
                 <FormField
@@ -132,235 +334,6 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                 </div>
             </form>
         </Form>
-    );
-};
-
-TaskForm.ATTRIBUTES = ({ form }: { form: any }) => {
-    const getTaskStatusBg = (value?: string | null) => {
-        return {
-            backgroundColor: TASK_STATUS_COLOR[(value as TaskStatus) ?? 'Default'],
-        };
-    };
-    const getPriorityColor = (value?: string | null) => {
-        return {
-            color: TASK_PRIORITY_COLOR[(value as TaskPriority) ?? 'Default'],
-        };
-    };
-    return (
-        <div className="space-y-4">
-            <div className="flex flex-wrap gap-4">
-                {/* Status */}
-                <div className="flex gap-5 w-[45%] items-center">
-                    <FormField
-                        control={form.control}
-                        name="status"
-                        render={({ field }) => (
-                            <FormItem className="flex justify-between">
-                                <FormLabel className="flex-col gap-1 items-start me-4 text-sm font-medium w-30">
-                                    <div className="flex items-center gap-1">
-                                        <Gauge size={16} /> Status
-                                    </div>
-                                    <FormMessage className="text-xs" />
-                                </FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl>
-                                        <SelectTrigger
-                                            className=" hide-arrow shadow-none border-none p-2 !h-6 rounded text-white font-semibold "
-                                            style={getTaskStatusBg(field.value)}
-                                        >
-                                            <SelectValue
-                                                placeholder="Pick status"
-                                                className="text-black"
-                                            />
-                                            <ChevronDown
-                                                className="text-white font"
-                                                strokeWidth={3}
-                                            />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {TASK_STATUS.map((s) => (
-                                            <SelectItem key={s} value={s}>
-                                                {s}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                </div>
-
-                {/* Color */}
-                <div className="flex gap-5 w-[45%] items-center">
-                    <FormField
-                        control={form.control}
-                        name="color"
-                        render={({ field }) => (
-                            <FormItem className="flex justify-between">
-                                <FormLabel className="flex-col gap-1 items-start me-4 text-sm font-medium w-30">
-                                    <div className="flex items-center gap-1">
-                                        <Palette size={16} /> Color
-                                    </div>
-                                    <FormMessage className="text-xs" />
-                                </FormLabel>
-                                <FormControl>
-                                    <ColorPicker onChange={field.onChange} value={field.value} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                </div>
-
-                {/* Priority */}
-                <div className="flex gap-5 w-[45%] items-center">
-                    <FormField
-                        control={form.control}
-                        name="priority"
-                        render={({ field }) => (
-                            <FormItem className="flex justify-between">
-                                <FormLabel className="flex-col gap-1 items-start me-4 text-sm font-medium w-30">
-                                    <div className="flex items-center gap-1">
-                                        <Flag size={16} /> Priority
-                                    </div>
-                                    <FormMessage className="text-xs" />
-                                </FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value}>
-                                    <FormControl>
-                                        <SelectTrigger
-                                            className={cn(
-                                                'hide-arrow ',
-                                                'hover:bg-gray-100',
-                                                'shadow-none border-none',
-                                                'p-1 !h-6 rounded text-gray-900 font-semibold',
-                                            )}
-                                            style={getPriorityColor(field.value)}
-                                        >
-                                            <SelectValue placeholder="Pick priority" />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {TASK_PRIORITY.map((p) => (
-                                            <SelectItem
-                                                style={getPriorityColor(p)}
-                                                key={p}
-                                                value={p}
-                                                className="font-semibold"
-                                            >
-                                                <Flag
-                                                    className={`text-${TASK_PRIORITY_COLOR[p]}`}
-                                                    fill={TASK_PRIORITY_COLOR[p]}
-                                                />
-                                                {p}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                </div>
-
-                {/* Deadline */}
-                <div className="flex gap-5 w-[45%] items-center">
-                    <FormField
-                        control={form.control}
-                        name="deadline"
-                        render={({ field }) => (
-                            <FormItem className="flex justify-between">
-                                <FormLabel className="flex-col gap-1 items-start me-4 text-sm w-30">
-                                    <div className="flex items-center gap-1">
-                                        <CalendarCheck size={16} /> Deadline
-                                    </div>
-                                    <FormMessage className="text-xs" />
-                                </FormLabel>
-                                <FormControl>
-                                    <DatePicker dateValue={field.value} onChange={field.onChange} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                </div>
-
-                {/* Started At */}
-                <div className="flex gap-5 w-[45%] items-center">
-                    <FormField
-                        control={form.control}
-                        name="started_at"
-                        render={({ field }) => (
-                            <FormItem className="flex justify-between">
-                                <FormLabel className="flex-col gap-1 items-start me-4 text-sm w-30">
-                                    <div className="flex items-center gap-1">
-                                        <CalendarPlus size={16} /> Started At
-                                    </div>
-                                    <FormMessage className="text-xs" />
-                                </FormLabel>
-                                <FormControl>
-                                    <DatePicker dateValue={field.value} onChange={field.onChange} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                </div>
-
-                {/* Completed At */}
-                <div className="flex gap-5 w-[45%] items-center">
-                    <FormField
-                        control={form.control}
-                        name="completed_at"
-                        render={({ field }) => (
-                            <FormItem className="flex justify-between">
-                                <FormLabel className="flex-col gap-1 items-start me-4 text-sm w-30">
-                                    <div className="flex items-center gap-1">
-                                        <CalendarMinus size={16} /> Completed At
-                                    </div>
-                                    <FormMessage className="text-xs" />
-                                </FormLabel>
-                                <FormControl>
-                                    <DatePicker dateValue={field.value} onChange={field.onChange} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                </div>
-
-                {/* Estimated Time */}
-                <div className="flex gap-5 w-[45%] items-start ">
-                    <FormField
-                        control={form.control}
-                        name="estimated_time"
-                        render={({ field }) => (
-                            <FormItem className="flex justify-between items-start">
-                                <FormLabel className="flex-col gap-1 items-start me-4 text-sm font-medium w-[38%]">
-                                    <div className="flex items-center gap-1">
-                                        <Clock3 size={16} /> Estimated Time
-                                    </div>
-                                    <FormMessage className="text-xs" />
-                                </FormLabel>
-                                <FormControl>
-                                    <DurationElement
-                                        value={field.value}
-                                        onChange={field.onChange}
-                                        setError={(msg) =>
-                                            form.setError('estimated_time', {
-                                                message: msg,
-                                            })
-                                        }
-                                        clearError={() => form.clearErrors('estimated_time')}
-                                    />
-                                </FormControl>
-                            </FormItem>
-                        )}
-                    />
-                </div>
-            </div>
-        </div>
     );
 };
 

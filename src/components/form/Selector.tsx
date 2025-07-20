@@ -29,7 +29,8 @@ const Selector = ({ onChange, value, items, fallbackText, placeholder }: PropTyp
                     className={cn(
                         '!h-8 rounded shadow-none border-none  hide-arrow',
                         'text-white w-full font-semibold',
-                        'truncate !p-0',
+                        '!p-0',
+                        'cursor-pointer',
                     )}
                 >
                     {selectedItem ? (
