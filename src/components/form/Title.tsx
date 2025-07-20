@@ -28,7 +28,6 @@ const Title = ({ value, onChange }: PropType) => {
                 'outline-none word-wrap',
                 'text-xl font-semibold text-black placeholder:text-gray-400',
                 'max-w-full',
-                'border-b-2 pb-2',
             )}
             data-placeholder="Untitled"
         />

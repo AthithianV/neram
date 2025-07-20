@@ -3,32 +3,28 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { toDBTime } from '@/lib/time';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
-import { CalendarClock } from 'lucide-react';
-import { ReactNode, useState } from 'react';
+import { useState } from 'react';
+import { Input } from '../ui/input';
 
 type PropsType = {
     dateValue?: string;
     onChange: (date: string) => void;
-    icon?: ReactNode;
 };
 
-const DatePicker = ({ dateValue, onChange, icon }: PropsType) => {
+const DatePicker = ({ dateValue, onChange }: PropsType) => {
     const [open, setOpen] = useState(false);
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <span
+                <Input
                     className={cn(
-                        'w-full text-sm font-semibold',
-                        'flex items-center gap-2 cursor-pointer',
-                        !dateValue && 'text-muted-foreground',
-                        'hover:bg-gray-100 py-1 px-2 rounded',
+                        'flex-1 !h-8 hover:bg-gray-100 font-semibold cursor-pointer',
+                        'shadow-none',
+                        open && 'border-b-2 border-sky-500',
                     )}
-                >
-                    {icon ? icon : <CalendarClock size={16} />}
-                    {dateValue ? dayjs(dateValue).format('DD/MM/YYYY') : 'Pick a date'}
-                </span>
+                    value={dateValue ? dayjs(dateValue).format('DD/MM/YYYY') : 'Pick a date'}
+                />
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start" side="top">
                 <Calendar

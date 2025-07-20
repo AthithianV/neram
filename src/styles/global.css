@@ -9,6 +9,11 @@
     --main-content-height: calc(100vh - 3rem);
     --dashbord-controls-height: 6rem;
     --dashbord-controls-height: calc(100vh - 9rem);
+    --project-tab-height: 3rem;
+    --page-padding: 0.5rem;
+    --kanban-height: calc(
+        var(--main-content-height) - var(--project-tab-height) - 1rem
+    );
 }
 
 .title-bar-height {
@@ -42,6 +47,14 @@
     }
     h3 {
         @apply text-lg font-bold;
+    }
+
+    .flex-center {
+        @apply !flex items-center justify-center;
+    }
+
+    .input {
+        @apply text-center !h-8 !px-4 shadow-none cursor-pointer  !w-45 focus:!border-b-2 focus:!border-sky-500 !transition-all !duration-150 !font-semibold box-border;
     }
 }
 

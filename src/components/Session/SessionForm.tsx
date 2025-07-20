@@ -10,13 +10,11 @@ import {
     FormLabel,
     FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 
 import DatePicker from '@/components/form/DatePicker';
 import ProjectPicker from '@/components/session/ProjectPicker';
 import TagPicker from '@/components/session/TagPicker';
 import TaskPicker from '@/components/session/TaskPicker';
-import { Textarea } from '@/components/ui/textarea';
 import { DEFAULT_SESSION_VALUES } from '@/constants/session';
 import { useCreateSession, useSessionById, useUpdateSession } from '@/hooks/useSession';
 import {
@@ -31,9 +29,13 @@ import { useSessionCollision } from '@/hooks/useSession';
 import { useTimer } from '@/hooks/useTimer';
 import { toDBTime } from '@/lib/time';
 import dayjs from 'dayjs';
+import { Calendar, CalendarMinus, CalendarPlus, Clock, Folder, ListTodo, Tag } from 'lucide-react';
 import { toast } from 'sonner';
 import DurationElement from '../form/DurationElement';
+import RichEditor from '../form/Editor';
 import TimeElement from '../form/TimeElement';
+import Title from '../form/Title';
+import { Separator } from '../ui/separator';
 
 type PropType = {
     sessionId?: number | null;
@@ -101,6 +103,11 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
         form.clearErrors();
     }, [form.watch()]);
 
+    const handleClose = () => {
+        form.reset();
+        closeModal();
+    };
+
     async function onSubmit(data: CreateSession | UpdateSession) {
         const isSessionCollides = await checkSessionCollision({
             startTime: form.getValues('start_time'),
@@ -130,14 +137,8 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
         } else {
             createSession(data as CreateSession);
         }
-        closeModal();
-        form.reset();
+        handleClose();
     }
-
-    const handleClose = () => {
-        form.reset();
-        closeModal();
-    };
 
     if (sessionId && !session) {
         return null;
@@ -145,47 +146,22 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
 
     return (
         <Form {...form}>
-            <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-6 px-8 max-sm:px-4 w-[30vw] max-md:w-fit"
-            >
-                <h1 className="text-lg font-semibold mb-1">
-                    {session ? 'Edit Session' : 'Add new Session'}
-                </h1>
-                <p className="text-sm text-muted-foreground mb-6">
-                    {session
-                        ? 'Edit a work unit to track your time.'
-                        : 'Create a new work unit to track your time.'}
-                </p>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 {/* title */}
                 <FormField
                     control={form.control}
                     name="title"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Title</FormLabel>
                             <FormControl>
-                                <Input {...field} className="bg-white shadow" />
+                                <Title value={field.value} onChange={field.onChange} />
                             </FormControl>
-                            <FormMessage className="text-xs" />
+                            <FormMessage className="text-xs mt-1" />
                         </FormItem>
                     )}
                 />
 
-                {/* description */}
-                <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Description</FormLabel>
-                            <FormControl>
-                                <Textarea {...field} className="bg-white shadow" />
-                            </FormControl>
-                            <FormMessage className="text-xs" />
-                        </FormItem>
-                    )}
-                />
+                <Separator />
 
                 <div className="flex gap-6 w-full max-sm:flex-col">
                     {/* Project */}
@@ -193,8 +169,10 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                         control={form.control}
                         name="project_id"
                         render={({ field }) => (
-                            <FormItem className="flex-1">
-                                <FormLabel>Project</FormLabel>
+                            <FormItem className="w-1/2 flex items-center gap-5">
+                                <FormLabel className="min-w-24">
+                                    <Folder size={16} /> Project
+                                </FormLabel>
                                 <FormControl>
                                     <ProjectPicker onChange={field.onChange} value={field.value} />
                                 </FormControl>
@@ -208,8 +186,11 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                         control={form.control}
                         name="task_id"
                         render={({ field }) => (
-                            <FormItem className="flex-1">
-                                <FormLabel>Task</FormLabel>
+                            <FormItem className="w-1/2 flex items-center gap-5">
+                                <FormLabel className="min-w-24">
+                                    <ListTodo size={16} />
+                                    Task
+                                </FormLabel>
                                 <FormControl>
                                     <TaskPicker
                                         onChange={field.onChange}
@@ -223,20 +204,42 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                     />
                 </div>
 
-                {/* Date */}
-                <FormField
-                    control={form.control}
-                    name="date"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Date</FormLabel>
-                            <FormControl>
-                                <DatePicker dateValue={field.value} onChange={field.onChange} />
-                            </FormControl>
-                            <FormMessage className="text-xs" />
-                        </FormItem>
-                    )}
-                />
+                <div className="flex gap-6 w-full max-sm:flex-col">
+                    <FormField
+                        control={form.control}
+                        name="tags"
+                        render={({ field }) => (
+                            <FormItem className="w-1/2 flex items-center gap-5">
+                                <FormLabel className="min-w-24">
+                                    <Tag size={16} />
+                                    Tags
+                                </FormLabel>
+                                <TagPicker
+                                    sessionId={session?.id}
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                />
+                                <FormMessage className="text-xs" />
+                            </FormItem>
+                        )}
+                    />
+                    {/* Date */}
+                    <FormField
+                        control={form.control}
+                        name="date"
+                        render={({ field }) => (
+                            <FormItem className="w-1/2 flex items-center gap-5">
+                                <FormLabel className="min-w-24">
+                                    <Calendar size={16} /> Date
+                                </FormLabel>
+                                <FormControl>
+                                    <DatePicker dateValue={field.value} onChange={field.onChange} />
+                                </FormControl>
+                                <FormMessage className="text-xs" />
+                            </FormItem>
+                        )}
+                    />
+                </div>
 
                 <div className="flex gap-6 w-full max-sm:flex-col items-start">
                     {/* Start Time */}
@@ -244,8 +247,10 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                         control={form.control}
                         name="start_time"
                         render={({ field }) => (
-                            <FormItem className="flex-1">
-                                <FormLabel>Start Time</FormLabel>
+                            <FormItem className="w-1/2 flex items-center gap-5">
+                                <FormLabel className="min-w-24">
+                                    <CalendarPlus size={16} /> Start Time
+                                </FormLabel>
                                 <TimeElement
                                     value={field.value}
                                     setValue={field.onChange}
@@ -270,8 +275,10 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                             control={form.control}
                             name="end_time"
                             render={({ field }) => (
-                                <FormItem className="flex-1">
-                                    <FormLabel>End Time</FormLabel>
+                                <FormItem className="w-1/2 flex items-center gap-5">
+                                    <FormLabel className="min-w-24">
+                                        <CalendarMinus size={16} /> End Time
+                                    </FormLabel>
                                     <TimeElement
                                         value={field.value}
                                         setValue={field.onChange}
@@ -298,8 +305,11 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                             control={form.control}
                             name="session_duration_sec"
                             render={({ field }) => (
-                                <FormItem className="flex-1">
-                                    <FormLabel>Duration</FormLabel>
+                                <FormItem className="w-1/2 flex items-center gap-5">
+                                    <FormLabel className="min-w-24">
+                                        <Clock size={16} />
+                                        Duration
+                                    </FormLabel>
                                     <DurationElement
                                         value={field.value}
                                         onChange={field.onChange}
@@ -321,8 +331,11 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                             control={form.control}
                             name="break_duration_sec"
                             render={({ field }) => (
-                                <FormItem className="flex-1">
-                                    <FormLabel>Break</FormLabel>
+                                <FormItem className="w-1/2 flex items-center gap-5">
+                                    <FormLabel className="min-w-24">
+                                        <Clock size={16} />
+                                        Break
+                                    </FormLabel>
                                     <DurationElement
                                         value={field.value}
                                         onChange={field.onChange}
@@ -341,18 +354,16 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                     </div>
                 )}
 
-                {/* Tags */}
+                <Separator />
+
                 <FormField
                     control={form.control}
-                    name="tags"
+                    name="description"
                     render={({ field }) => (
-                        <FormItem className="flex-1">
-                            <FormLabel>Tags</FormLabel>
-                            <TagPicker
-                                sessionId={session?.id}
-                                value={field.value}
-                                onChange={field.onChange}
-                            />
+                        <FormItem>
+                            <FormControl>
+                                <RichEditor value={field.value} onChange={field.onChange} />
+                            </FormControl>
                             <FormMessage className="text-xs" />
                         </FormItem>
                     )}

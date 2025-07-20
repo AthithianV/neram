@@ -1,5 +1,6 @@
 import { Editor, EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
     Bold,
     Heading1,
@@ -10,7 +11,7 @@ import {
     ListOrdered,
     Strikethrough,
 } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Toggle } from '../ui/toggle';
 
 type Props = {
@@ -19,6 +20,9 @@ type Props = {
 };
 
 const RichEditor = ({ value, onChange }: Props) => {
+    const [active, setActive] = useState(false);
+    const toolbarRef = useRef<HTMLDivElement | null>(null);
+
     const editor = useEditor({
         extensions: [
             StarterKit.configure({
@@ -34,13 +38,32 @@ const RichEditor = ({ value, onChange }: Props) => {
                 },
             }),
         ],
-        content: `<p>${value}</p>`,
+        content: value ?? 'More...',
         onUpdate: ({ editor }) => {
             onChange(editor.getHTML());
         },
         editorProps: {
             attributes: {
                 class: 'min-h-[150px] focus:outline-none text-base leading-relaxed p-2 prose max-w-none',
+            },
+            handleDOMEvents: {
+                focus: () => {
+                    setActive(true);
+                    return false;
+                },
+                blur: () => {
+                    setTimeout(() => {
+                        const activeEl = document.activeElement;
+                        if (
+                            !editor?.isFocused &&
+                            toolbarRef.current &&
+                            !toolbarRef.current.contains(activeEl)
+                        ) {
+                            setActive(false);
+                        }
+                    }, 0);
+                    return false;
+                },
             },
         },
     });
@@ -53,13 +76,21 @@ const RichEditor = ({ value, onChange }: Props) => {
 
     return (
         <>
-            <MenuBar editor={editor} />
+            <AnimatePresence>
+                {active && <MenuBar editor={editor} toolbarRef={toolbarRef} />}
+            </AnimatePresence>
             <EditorContent editor={editor} />
         </>
     );
 };
 
-const MenuBar = ({ editor }: { editor: Editor | null }) => {
+const MenuBar = ({
+    editor,
+    toolbarRef,
+}: {
+    editor: Editor | null;
+    toolbarRef: React.RefObject<HTMLDivElement>;
+}) => {
     if (!editor) {
         return null;
     }
@@ -107,14 +138,32 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
         },
     ];
 
+    const backdropVariants = {
+        hidden: { opacity: 0, scale: 0.95, height: 0 },
+        visible: { opacity: 1, scale: 1, height: 'auto' },
+    };
+
     return (
-        <div className="border rounded-md p-0 mb-1 bg-slate-50 space-x-2 z-50">
+        <motion.div
+            variants={backdropVariants}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="border rounded-md p-0 mb-1 bg-slate-50 space-x-2 z-50"
+            ref={toolbarRef}
+        >
             {Options.map((option, index) => (
-                <Toggle key={index} pressed={option.pressed} onPressedChange={option.onClick}>
+                <Toggle
+                    className={'overflow-hidden'}
+                    key={index}
+                    pressed={option.pressed}
+                    onPressedChange={option.onClick}
+                >
                     {option.icon}
                 </Toggle>
             ))}
-        </div>
+        </motion.div>
     );
 };
 export default RichEditor;

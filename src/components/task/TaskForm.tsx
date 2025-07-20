@@ -4,13 +4,11 @@ import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 import TaskSchema, { Task } from '@/schema/TaskSchema';
 import {
     CalendarCheck,
-    CalendarClock,
     CalendarMinus,
     CalendarPlus,
     ChevronDown,
@@ -36,6 +34,8 @@ import { useParams } from 'react-router-dom';
 import ColorPicker from '../form/ColorPicker';
 import DatePicker from '../form/DatePicker';
 import DurationElement from '../form/DurationElement';
+import RichEditor from '../form/Editor';
+import { Separator } from '../ui/separator';
 
 type Prop = {
     status: TaskStatus;
@@ -104,25 +104,20 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                         </FormItem>
                     )}
                 />
+                <Separator />
 
                 <TaskForm.ATTRIBUTES form={form} />
+                <Separator />
 
-                {/* description */}
                 <FormField
                     control={form.control}
                     name="description"
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <Textarea
-                                    value={field.value as string}
-                                    onChange={field.onChange}
-                                    placeholder="Write more about this task Here..."
-                                    rows={4}
-                                    className="bg-transparent border-none shadow-none px-1 w-full !text-md max-h-[30vh] overflow-y-auto"
-                                />
+                                <RichEditor value={field.value ?? ''} onChange={field.onChange} />
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage className="text-xs" />
                         </FormItem>
                     )}
                 />
@@ -152,7 +147,7 @@ TaskForm.ATTRIBUTES = ({ form }: { form: any }) => {
         };
     };
     return (
-        <div className="border-b-2 pb-4 space-y-4">
+        <div className="space-y-4">
             <div className="flex flex-wrap gap-4">
                 {/* Status */}
                 <div className="flex gap-5 w-[45%] items-center">
@@ -283,11 +278,7 @@ TaskForm.ATTRIBUTES = ({ form }: { form: any }) => {
                                     <FormMessage className="text-xs" />
                                 </FormLabel>
                                 <FormControl>
-                                    <DatePicker
-                                        icon={<CalendarClock size={16} />}
-                                        dateValue={field.value}
-                                        onChange={field.onChange}
-                                    />
+                                    <DatePicker dateValue={field.value} onChange={field.onChange} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -309,11 +300,7 @@ TaskForm.ATTRIBUTES = ({ form }: { form: any }) => {
                                     <FormMessage className="text-xs" />
                                 </FormLabel>
                                 <FormControl>
-                                    <DatePicker
-                                        icon={<CalendarClock size={16} />}
-                                        dateValue={field.value}
-                                        onChange={field.onChange}
-                                    />
+                                    <DatePicker dateValue={field.value} onChange={field.onChange} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -335,11 +322,7 @@ TaskForm.ATTRIBUTES = ({ form }: { form: any }) => {
                                     <FormMessage className="text-xs" />
                                 </FormLabel>
                                 <FormControl>
-                                    <DatePicker
-                                        icon={<CalendarClock size={16} />}
-                                        dateValue={field.value}
-                                        onChange={field.onChange}
-                                    />
+                                    <DatePicker dateValue={field.value} onChange={field.onChange} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

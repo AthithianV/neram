@@ -1,10 +1,10 @@
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 
-import { Input } from '../ui/input';
-import { useEffect, useState } from 'react';
-import { toDBTime } from '@/lib/time';
 import { DB_DATE_FORMAT, TIME_FORMAT } from '@/constants/session';
+import { toDBTime } from '@/lib/time';
+import { useEffect, useState } from 'react';
+import { Input } from '../ui/input';
 
 export interface TimeElementProps {
     value: string | undefined;
@@ -14,18 +14,10 @@ export interface TimeElementProps {
     isDisable?: boolean;
 }
 
-const TimeElement = ({
-    value,
-    setValue,
-    setError,
-    date,
-    isDisable,
-}: TimeElementProps) => {
+const TimeElement = ({ value, setValue, setError, date, isDisable }: TimeElementProps) => {
     dayjs.extend(customParseFormat);
 
-    const [time, setTime] = useState<string>(
-        value ? dayjs(value).format(TIME_FORMAT) : '',
-    );
+    const [time, setTime] = useState<string>(value ? dayjs(value).format(TIME_FORMAT) : '');
 
     const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTime(e.target.value);
@@ -42,9 +34,7 @@ const TimeElement = ({
         } else {
             setError('');
 
-            const setDate =
-                dayjs(date).format(DB_DATE_FORMAT) ||
-                dayjs().format(DB_DATE_FORMAT);
+            const setDate = dayjs(date).format(DB_DATE_FORMAT) || dayjs().format(DB_DATE_FORMAT);
 
             const result = dayjs(
                 `${setDate} ${e.target.value}`,
@@ -60,7 +50,7 @@ const TimeElement = ({
             value={time}
             onChange={handleTimeChange}
             onBlur={handleTimeValue}
-            className="text-center bg-white"
+            className="input"
             disabled={isDisable}
         />
     );

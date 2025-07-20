@@ -23,7 +23,7 @@ const Project = () => {
 
     return (
         <div className="h-full">
-            <div className="flex items-center gap-2 h-[8%]">
+            <div className="flex items-center gap-2 h-[var(--project-tab-height)]">
                 <ScrollArea className="max-w-[92%] max-xl:max-w-[88%] max-lg:max-w-[82%] max-md:max-w-[80%]  whitespace-nowrap">
                     <div className="flex gap-1 pb-3">
                         {projects?.map((project) => (
@@ -64,7 +64,7 @@ const Project = () => {
                 </Button>
                 <ProjectSettings />
             </div>
-            <div className="h-[92%]">
+            <div className="h-[var(--kanban-height)]">
                 <Outlet />
             </div>
         </div>

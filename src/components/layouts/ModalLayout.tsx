@@ -98,7 +98,7 @@ const ModalLayout = () => {
     return (
         <AnimatePresence>
             {modal && (
-                <ModalOverlay className={'max-w-[60vw]'}>
+                <ModalOverlay className={'w-[50vw]'}>
                     <ModalManager modal={modal} />
                 </ModalOverlay>
             )}

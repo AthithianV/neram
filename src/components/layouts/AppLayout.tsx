@@ -23,7 +23,7 @@ export function AppLayout() {
                 <div className="title-bar-height bg-white border-b-2 border-gray-100">
                     <TitleBar />
                 </div>
-                <div className="main-content-height w-full p-4">
+                <div className="main-content-height w-full p-[var(--page-padding)]">
                     <Outlet />
                 </div>
             </main>

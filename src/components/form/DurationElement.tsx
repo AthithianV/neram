@@ -1,5 +1,4 @@
 import { formatDuration } from '@/lib/time';
-import { Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Input } from '../ui/input';
 
@@ -45,18 +44,15 @@ const DurationElement = ({
     };
 
     return (
-        <div className="flex gap-2 items-center justify-center">
-            <Clock size={16} />
-            <Input
-                value={fieldValue}
-                onChange={(e) => {
-                    setFieldValue(e.target.value);
-                    clearError();
-                }}
-                className="h-5 px-0 text-start border-none shadow-none rounded-none"
-                onBlur={(e) => handleChange(e.target.value)}
-            />
-        </div>
+        <Input
+            value={fieldValue}
+            onChange={(e) => {
+                setFieldValue(e.target.value);
+                clearError();
+            }}
+            className="input"
+            onBlur={(e) => handleChange(e.target.value)}
+        />
     );
 };
 
