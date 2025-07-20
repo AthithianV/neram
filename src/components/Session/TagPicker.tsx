@@ -6,20 +6,14 @@ import {
     CommandItem,
     CommandList,
 } from '@/components/ui/command';
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useAddTagToSession, useRemoveTagFromSession } from '@/hooks/useSession';
+import { useTag } from '@/hooks/useTag';
+import { Tag } from '@/schema/TagSchema';
+import { Check } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Badge } from '../ui/badge';
-import { useTag } from '@/hooks/useTag';
-import { ChevronsUpDown, Check } from 'lucide-react';
-import {
-    useAddTagToSession,
-    useRemoveTagFromSession,
-} from '@/hooks/useSession';
-import { Tag } from '@/schema/TagSchema';
+import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 
 const TagPicker = ({
     sessionId,
@@ -33,9 +27,7 @@ const TagPicker = ({
     const { data: allTags } = useTag();
 
     const [openDropdown, setOpenDropdown] = useState(false);
-    const [selectedTags, setSelectedTags] = useState<Map<number, Tag>>(
-        new Map()
-    );
+    const [selectedTags, setSelectedTags] = useState<Map<number, Tag>>(new Map());
     const { mutate: removeTag } = useRemoveTagFromSession();
     const { mutate: addTag } = useAddTagToSession();
 
@@ -43,10 +35,8 @@ const TagPicker = ({
         if (value && allTags) {
             setSelectedTags(
                 new Map(
-                    allTags
-                        .filter((tag) => value.includes(tag.id))
-                        .map((tag) => [tag.id, tag])
-                )
+                    allTags.filter((tag) => value.includes(tag.id)).map((tag) => [tag.id, tag]),
+                ),
             );
         }
     }, [value, allTags]);
@@ -70,56 +60,40 @@ const TagPicker = ({
     };
 
     return (
-        <div className="flex gap-2">
-            <SelectedTags
-                selectedTags={Array.from(selectedTags.values())}
-                handleRemoveTag={handleSelectTag}
-            />
-            <Popover open={openDropdown} onOpenChange={setOpenDropdown}>
-                <PopoverTrigger asChild>
-                    <span className="w-fit bg-white border border-input rounded-md px-3 py-2 shadow-xs flex items-center justify-between cursor-pointer">
-                        <ChevronsUpDown className="opacity-50" />
-                    </span>
-                </PopoverTrigger>
-                <PopoverContent
-                    className="w-full p-0"
-                    align="end"
-                    side="top"
-                    sideOffset={10}
-                >
-                    <Command>
-                        <CommandInput
-                            placeholder="Search Tags..."
-                            className="h-9"
-                        />
-                        <CommandList>
-                            <CommandEmpty>No Tags found.</CommandEmpty>
-                            <CommandGroup>
-                                {allTags?.map((tag) => (
-                                    <CommandItem
-                                        key={tag.title}
-                                        value={tag.title}
-                                        onSelect={() => handleSelectTag(tag)}
-                                    >
-                                        <div
-                                            className="p-2 rounded-full"
-                                            style={{
-                                                backgroundColor:
-                                                    tag.color || '#ccc',
-                                            }}
-                                        ></div>
-                                        {tag.title}
-                                        {selectedTags.has(tag.id) && (
-                                            <Check className="ml-auto" />
-                                        )}
-                                    </CommandItem>
-                                ))}
-                            </CommandGroup>
-                        </CommandList>
-                    </Command>
-                </PopoverContent>
-            </Popover>
-        </div>
+        <Popover open={openDropdown} onOpenChange={setOpenDropdown}>
+            <PopoverTrigger>
+                <SelectedTags
+                    selectedTags={Array.from(selectedTags.values())}
+                    handleRemoveTag={handleSelectTag}
+                />
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0" align="end" side="top" sideOffset={10}>
+                <Command>
+                    <CommandInput placeholder="Search Tags..." className="h-9" />
+                    <CommandList>
+                        <CommandEmpty>No Tags found.</CommandEmpty>
+                        <CommandGroup>
+                            {allTags?.map((tag) => (
+                                <CommandItem
+                                    key={tag.title}
+                                    value={tag.title}
+                                    onSelect={() => handleSelectTag(tag)}
+                                >
+                                    <div
+                                        className="p-2 rounded-full"
+                                        style={{
+                                            backgroundColor: tag.color || '#ccc',
+                                        }}
+                                    ></div>
+                                    {tag.title}
+                                    {selectedTags.has(tag.id) && <Check className="ml-auto" />}
+                                </CommandItem>
+                            ))}
+                        </CommandGroup>
+                    </CommandList>
+                </Command>
+            </PopoverContent>
+        </Popover>
     );
 };
 
@@ -131,30 +105,27 @@ const SelectedTags = ({
     handleRemoveTag: (tag: Tag) => void;
 }) => {
     return (
-        <div className="flex flex-wrap items-center gap-2 bg-white border p-2 rounded-md flex-1">
-            {Array.from(selectedTags).length > 0 ? (
-                Array.from(selectedTags).map((tag) => (
-                    <Badge
-                        key={tag.title}
-                        variant="outline"
-                        className="cursor-pointer flex items-center gap-1"
-                        style={{
-                            backgroundColor: tag.color || '#ccc',
-                        }}
-                        onClick={(e) => {
-                            e.preventDefault();
-                            handleRemoveTag(tag);
-                        }}
-                    >
-                        {tag.title}
-                    </Badge>
-                ))
-            ) : (
-                <span className="text-sm text-muted-foreground">
-                    Select tags
-                </span>
-            )}
-        </div>
+        <ScrollArea className="bg-white border rounded-md">
+            <div className="flex items-center gap-1  p-2 rounded-md flex-1 w-45 !h-8">
+                {Array.from(selectedTags).length > 0 ? (
+                    Array.from(selectedTags).map((tag) => (
+                        <Badge
+                            key={tag.title}
+                            variant="outline"
+                            className="cursor-pointer flex items-center gap-1"
+                            style={{
+                                backgroundColor: tag.color || '#ccc',
+                            }}
+                        >
+                            {tag.title}
+                        </Badge>
+                    ))
+                ) : (
+                    <span className="text-sm text-muted-foreground">Select tags</span>
+                )}
+            </div>
+            <ScrollBar orientation="horizontal" />
+        </ScrollArea>
     );
 };
 

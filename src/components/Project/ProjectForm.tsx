@@ -13,9 +13,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '../ui/label';
-import { ScrollArea } from '../ui/scroll-area';
 import { Switch } from '../ui/switch';
 
 import { cn } from '@/lib/utils';
@@ -34,6 +32,8 @@ import {
 } from 'lucide-react';
 import ColorPicker from '../form/ColorPicker';
 import DatePicker from '../form/DatePicker';
+import RichEditor from '../form/Editor';
+import { Separator } from '../ui/separator';
 
 type PropType = {
     projectId?: number | null;
@@ -100,27 +100,25 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                     )}
                 />
 
+                <Separator />
+
                 <ProjectForm.ATTRIBUTE form={form} />
+
+                <Separator />
 
                 <ProjectForm.FREELANCING form={form} />
 
-                {/* Description */}
+                <Separator />
+
                 <FormField
                     control={form.control}
                     name="description"
                     render={({ field }) => (
                         <FormItem>
-                            <ScrollArea className="max-h-[20vh] w-[48vw]">
-                                <FormControl>
-                                    <Textarea
-                                        placeholder="Write more about your project here..."
-                                        rows={4}
-                                        {...field}
-                                        className="p-0 border-none shadow-none min-h-[15vh] rounded-none text-wrap"
-                                    />
-                                </FormControl>
-                            </ScrollArea>
-                            <FormMessage />
+                            <FormControl>
+                                <RichEditor value={field.value} onChange={field.onChange} />
+                            </FormControl>
+                            <FormMessage className="text-xs" />
                         </FormItem>
                     )}
                 />
@@ -138,7 +136,7 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
 
 ProjectForm.ATTRIBUTE = ({ form }: { form: any }) => {
     return (
-        <div className="space-y-4 border-b-2 pb-4">
+        <div className="space-y-4">
             <div className="flex flex-wrap gap-4">
                 {/* Color */}
                 <div className="flex w-[45%] items-center gap-5">
@@ -222,7 +220,7 @@ ProjectForm.ATTRIBUTE = ({ form }: { form: any }) => {
 
 ProjectForm.FREELANCING = ({ form }: { form: any }) => {
     return (
-        <div className="space-y-4 border-b-2 pb-4">
+        <div className="space-y-4">
             <div className="flex items-center space-x-2">
                 <FormField
                     control={form.control}
