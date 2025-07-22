@@ -8,7 +8,7 @@ type Item = { title: string; color: string; value: string };
 
 type PropType = {
     onChange: (color: string) => void;
-    value: string;
+    value?: string;
     items: Item[];
     fallbackText: string;
     placeholder: string;

@@ -8,8 +8,9 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useProjectById } from '@/hooks/useProject';
-import { Edit, Settings, Trash2 } from 'lucide-react';
+import { Edit, Settings, Trash } from 'lucide-react';
 import { useParams, useSearchParams } from 'react-router-dom';
+import DeleteProject from './DeleteProject';
 
 const ProjectSettings = () => {
     const { projectId } = useParams();
@@ -39,12 +40,26 @@ const ProjectSettings = () => {
                     className="flex items-center gap-2 cursor-pointer"
                     onClick={() => setSearchParams({ id: projectId, modal: 'edit_project' })}
                 >
-                    <Edit className="text-blue-500" />
-                    Edit
+                    <Button
+                        variant="ghost"
+                        onClick={(e) => e.stopPropagation()}
+                        className="cursor-pointer !h-5 !p-0"
+                    >
+                        <Edit className="text-blue-500" />
+                        Edit
+                    </Button>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
-                    <Trash2 className="text-red-500" />
-                    Delete
+                    <DeleteProject projectId={project.id}>
+                        <Button
+                            variant="ghost"
+                            onClick={(e) => e.stopPropagation()}
+                            className="cursor-pointer !h-5"
+                        >
+                            <Trash className="w-4 h-4 text-red-500" />
+                            Delete
+                        </Button>
+                    </DeleteProject>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

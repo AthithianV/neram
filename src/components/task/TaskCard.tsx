@@ -120,9 +120,9 @@ const TaskCard = ({ task }: { task: ReadTask }) => {
                     {task.started_at && (
                         <Tooltip>
                             <TooltipTrigger>
-                                <Badge className="text-muted-foreground bg-red-100">
+                                <span className="text-muted-foreground text-xs font-semibold">
                                     {dayjs(task.started_at).format('DD MMM YYYY')}
-                                </Badge>
+                                </span>
                             </TooltipTrigger>
                             <TooltipContent>Started At</TooltipContent>
                         </Tooltip>
@@ -131,9 +131,9 @@ const TaskCard = ({ task }: { task: ReadTask }) => {
                     {task.completed_at && (
                         <Tooltip>
                             <TooltipTrigger>
-                                <Badge className="text-muted-foreground bg-green-100">
+                                <span className="text-muted-foreground text-xs font-semibold">
                                     {dayjs(task.completed_at).format('DD MMM YYYY')}
-                                </Badge>
+                                </span>
                             </TooltipTrigger>
                             <TooltipContent>Estimated At</TooltipContent>
                         </Tooltip>

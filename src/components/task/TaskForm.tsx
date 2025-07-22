@@ -12,6 +12,7 @@ import {
     CalendarPlus,
     Clock3,
     Flag,
+    Folder,
     Gauge,
     Palette,
 } from 'lucide-react';
@@ -125,7 +126,7 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                             <FormItem className="w-1/2 flex items-center gap-5">
                                 <FormLabel className="w-32 font-semibold">
                                     <div className="flex items-center gap-1">
-                                        <Flag size={16} /> Priority
+                                        <Folder size={16} /> Project
                                     </div>
                                     <FormMessage className="text-xs" />
                                 </FormLabel>

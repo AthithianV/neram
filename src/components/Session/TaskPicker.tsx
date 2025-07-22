@@ -3,7 +3,7 @@ import Selector from '../form/Selector';
 
 type PropsType = {
     onChange: (task: number) => void;
-    value: number;
+    value?: number;
     projectId: number;
 };
 
@@ -15,7 +15,7 @@ const TaskPicker = ({ onChange, value, projectId }: PropsType) => {
     return (
         <Selector
             onChange={(val) => onChange(Number(val))}
-            value={value.toString()}
+            value={value ? value.toString() : 'undefined'}
             items={tasks.map((task) => ({
                 title: task.title,
                 color: task.color ?? '',

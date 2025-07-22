@@ -9,6 +9,10 @@ export interface MinimalProject {
     color: string;
 }
 
+export interface ReadProject extends Project {
+    id: number;
+}
+
 export const useProject = () => {
     return useQuery({
         queryKey: ['projects'],
@@ -30,7 +34,7 @@ export const useProjectById = (projectId?: number | null) => {
                 return null;
             }
             const data = await invoke('get_project_by_id', { projectId });
-            return data as Project | null;
+            return data as ReadProject | null;
         },
         refetchOnWindowFocus: true,
         refetchOnMount: true,
@@ -72,6 +76,7 @@ export const useDeleteProject = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['projects'] });
+            toast.success('Project is Deleted');
         },
     });
 };

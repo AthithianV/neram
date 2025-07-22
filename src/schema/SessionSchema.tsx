@@ -1,10 +1,10 @@
-import { z } from 'zod';
 import dayjs from 'dayjs';
+import { z } from 'zod';
 
 const BaseSessionSchema = z.object({
     title: z.string().optional(),
     description: z.string().optional(),
-    task_id: z.number(),
+    task_id: z.number().optional(),
     project_id: z.number(),
     date: z.string(),
     start_time: z.string(),
@@ -23,9 +23,7 @@ export const CreateSessionSchema = BaseSessionSchema.refine(
 )
     .refine(
         (data) => {
-            return data.end_time
-                ? dayjs(data.end_time).isAfter(dayjs(data.start_time))
-                : true;
+            return data.end_time ? dayjs(data.end_time).isAfter(dayjs(data.start_time)) : true;
         },
         {
             message: 'End time must be after start time',
@@ -35,10 +33,7 @@ export const CreateSessionSchema = BaseSessionSchema.refine(
     .refine(
         (data) => {
             return data.end_time
-                ? dayjs(data.end_time).diff(
-                      dayjs(data.start_time),
-                      'second',
-                  ) ===
+                ? dayjs(data.end_time).diff(dayjs(data.start_time), 'second') ===
                       data.session_duration_sec + data.break_duration_sec
                 : true;
         },

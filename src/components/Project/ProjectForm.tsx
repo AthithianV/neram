@@ -85,7 +85,7 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-[50vw]">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 w-[50vw]">
                 {/* Title */}
                 <FormField
                     control={form.control}
@@ -112,7 +112,7 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                         name="color"
                         render={({ field }) => (
                             <FormItem className="w-1/2 flex items-center gap-5">
-                                <FormLabel className="min-w-24 font-semibold">
+                                <FormLabel className="min-w-32 font-semibold">
                                     <Palette size={16} /> Color
                                 </FormLabel>
                                 <FormControl>
@@ -129,7 +129,7 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                         name="started_at"
                         render={({ field }) => (
                             <FormItem className="w-1/2 flex items-center gap-5">
-                                <FormLabel className="min-w-24 font-semibold">
+                                <FormLabel className="min-w-32 font-semibold">
                                     <CalendarPlus size={16} /> Started At
                                 </FormLabel>
                                 <FormControl>
@@ -148,7 +148,7 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                         name="deadline"
                         render={({ field }) => (
                             <FormItem className="w-1/2 flex items-center gap-5">
-                                <FormLabel className="min-w-24 font-semibold">
+                                <FormLabel className="min-w-32 font-semibold">
                                     <CalendarCheck size={16} /> Deadline
                                 </FormLabel>
                                 <FormControl>
@@ -165,7 +165,7 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                         name="completed_at"
                         render={({ field }) => (
                             <FormItem className="w-1/2 flex items-center gap-5">
-                                <FormLabel className="min-w-24 font-semibold">
+                                <FormLabel className="min-w-32 font-semibold">
                                     <CalendarMinus size={16} /> Completed At
                                 </FormLabel>
                                 <FormControl>
@@ -221,7 +221,7 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                                 name="billing_type"
                                 render={({ field }) => (
                                     <FormItem className="w-1/2 flex items-center gap-5">
-                                        <FormLabel className="min-w-24 font-semibold">
+                                        <FormLabel className="min-w-32 font-semibold">
                                             <Receipt size={16} /> Billing Type
                                         </FormLabel>
                                         <FormControl>
@@ -283,7 +283,7 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                                 name="currency"
                                 render={({ field }) => (
                                     <FormItem className="w-1/2 flex items-center gap-5">
-                                        <FormLabel className="min-w-24 font-semibold">
+                                        <FormLabel className="min-w-32 font-semibold">
                                             <CircleDollarSign size={16} /> Currency
                                         </FormLabel>
                                         <FormControl>

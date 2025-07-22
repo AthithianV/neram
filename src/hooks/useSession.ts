@@ -10,7 +10,7 @@ type Related = {
 };
 
 export type SessionType = Omit<Session, 'project_id' | 'task_id' | 'tags'> & {
-    task: Related;
+    task: Related | null;
     project: Related;
     tags: Related[];
 };

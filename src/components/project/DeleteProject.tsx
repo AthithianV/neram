@@ -1,5 +1,6 @@
 import { useDeleteProject } from '@/hooks/useProject';
-import { Loader2, Trash } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import { ReactNode } from 'react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -11,25 +12,25 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '../ui/alert-dialog';
-import { Button } from '../ui/button';
 
 type PropType = {
     projectId: number;
+    children: ReactNode;
 };
 
-const DeleteProject = ({ projectId }: PropType) => {
+const DeleteProject = ({ projectId, children }: PropType) => {
     const { mutateAsync: deleteProject, isPending } = useDeleteProject();
+
+    const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        e.preventDefault();
+        await deleteProject(projectId);
+    };
 
     return (
         <AlertDialog>
-            <AlertDialogTrigger asChild>
-                <Button
-                    variant="outline"
-                    onClick={(e) => e.stopPropagation()}
-                    className="cursor-pointer"
-                >
-                    <Trash className="w-4 h-4 text-red-500" />
-                </Button>
+            <AlertDialogTrigger asChild className="!p-0 !py-0">
+                {children}
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
@@ -48,10 +49,7 @@ const DeleteProject = ({ projectId }: PropType) => {
                         Cancel
                     </AlertDialogCancel>
                     <AlertDialogAction
-                        onClick={async (e) => {
-                            e.stopPropagation();
-                            projectId && (await deleteProject(projectId));
-                        }}
+                        onClick={handleDelete}
                         disabled={isPending}
                         className="bg-red-500 hover:bg-red-600 cursor-pointer"
                     >

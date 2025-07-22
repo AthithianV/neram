@@ -10,7 +10,7 @@ pub struct Model {
     pub title: Option<String>,
     pub description: Option<String>,
     pub project_id: i32,
-    pub task_id: i32,
+    pub task_id: Option<i32>,
     pub date: String,
     pub start_time: String,
     pub end_time: Option<String>,

@@ -108,7 +108,7 @@ impl<'a> SessionRepository<'a> {
         }
 
         if let Some(task_id) = session_to_update.task_id {
-            session.task_id = Set(task_id);
+            session.task_id = Set(Some(task_id));
         }
 
         if let Some(ref date) = session_to_update.date {

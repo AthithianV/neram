@@ -1,19 +1,17 @@
-use serde::{ Deserialize, Serialize };
-use chrono::{ NaiveDateTime };
-use crate::{ time::{ parse_time, parse_time_with_option } };
+use crate::time::{parse_time, parse_time_with_option};
 use ::entity::{
-    projects::{ Model as ProjectModel },
-    tasks::{ Model as TaskModel },
-    tags::{ Model as TagModel },
-    sessions::{ Model as SessionModel },
+    projects::Model as ProjectModel, sessions::Model as SessionModel, tags::Model as TagModel,
+    tasks::Model as TaskModel,
 };
+use chrono::NaiveDateTime;
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct CreateSessionModel {
     pub title: Option<String>,
     pub description: Option<String>,
     pub project_id: i32,
-    pub task_id: i32,
+    pub task_id: Option<i32>,
     pub date: NaiveDateTime,
     pub start_time: NaiveDateTime,
     pub end_time: Option<NaiveDateTime>,
@@ -47,7 +45,7 @@ pub struct FullSessionModel {
     pub id: i32,
     pub title: Option<String>,
     pub description: Option<String>,
-    pub task: Extra,
+    pub task: Option<Extra>,
     pub project: Extra,
     pub tags: Vec<Extra>,
     pub date: NaiveDateTime,
@@ -57,9 +55,22 @@ pub struct FullSessionModel {
     pub break_duration_sec: i32,
 }
 
-impl From<(SessionModel, Option<TaskModel>, Option<ProjectModel>, Vec<TagModel>)>
-for FullSessionModel {
-    fn from(input: (SessionModel, Option<TaskModel>, Option<ProjectModel>, Vec<TagModel>)) -> Self {
+impl
+    From<(
+        SessionModel,
+        Option<TaskModel>,
+        Option<ProjectModel>,
+        Vec<TagModel>,
+    )> for FullSessionModel
+{
+    fn from(
+        input: (
+            SessionModel,
+            Option<TaskModel>,
+            Option<ProjectModel>,
+            Vec<TagModel>,
+        ),
+    ) -> Self {
         let (session, task_opt, project_opt, tag_models) = input;
 
         let task = task_opt.map(|t| Extra {
@@ -93,7 +104,7 @@ for FullSessionModel {
             end_time: parse_time_with_option(session.end_time),
             session_duration_sec: session.session_duration_sec,
             break_duration_sec: session.break_duration_sec,
-            task: task.unwrap(),
+            task: task,
             project: project.unwrap(),
         }
     }
