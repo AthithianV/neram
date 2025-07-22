@@ -7,7 +7,7 @@ import PageAnimation from '@/components/layouts/PageAnimation';
 import ProjectSettings from '@/components/project/ProjectSettings';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import { useEffect } from 'react';
+import { toast } from 'sonner';
 
 const Project = () => {
     const [_, setSearchParams] = useSearchParams();
@@ -15,12 +15,13 @@ const Project = () => {
     const { projectId } = useParams();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (projects && projects.length > 0) {
-            const id = projectId ?? projects[0].id;
-            navigate(`/project/${id}`);
+    const handleAdd = async () => {
+        if (projects && projects.length >= 5) {
+            toast.warning('Cannot Add more than 5 Projects');
+            return;
         }
-    }, []);
+        setSearchParams({ modal: 'add_project' });
+    };
 
     return (
         <PageAnimation>
@@ -57,11 +58,7 @@ const Project = () => {
                         <ScrollBar orientation="horizontal" />
                     </ScrollArea>
 
-                    <Button
-                        className="mb-3 cursor-pointer"
-                        variant={'outline'}
-                        onClick={() => setSearchParams({ modal: 'add_project' })}
-                    >
+                    <Button className="mb-3 cursor-pointer" variant={'outline'} onClick={handleAdd}>
                         <Plus className="w-4 h-4" />
                     </Button>
                     <ProjectSettings />

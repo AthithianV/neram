@@ -1,6 +1,6 @@
 import { useDeleteProject } from '@/hooks/useProject';
 import { Loader2 } from 'lucide-react';
-import { ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -10,28 +10,26 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-    AlertDialogTrigger,
 } from '../ui/alert-dialog';
 
 type PropType = {
     projectId: number;
-    children: ReactNode;
+    isAlertOpen: boolean;
+    setAlertOpen: (state: boolean) => void;
 };
 
-const DeleteProject = ({ projectId, children }: PropType) => {
+const DeleteProject = ({ projectId, setAlertOpen, isAlertOpen }: PropType) => {
+    const navigate = useNavigate();
     const { mutateAsync: deleteProject, isPending } = useDeleteProject();
 
-    const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.stopPropagation();
-        e.preventDefault();
+    const handleDelete = async () => {
         await deleteProject(projectId);
+        setAlertOpen(false);
+        navigate('/project');
     };
 
     return (
-        <AlertDialog>
-            <AlertDialogTrigger asChild className="!p-0 !py-0">
-                {children}
-            </AlertDialogTrigger>
+        <AlertDialog open={isAlertOpen} onOpenChange={setAlertOpen}>
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>

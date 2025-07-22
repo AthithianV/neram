@@ -39,7 +39,7 @@ const Selector = ({ onChange, value, items, fallbackText, placeholder }: PropTyp
                         <Item
                             color={COLORS[0].value}
                             title={placeholder}
-                            className={'opacity-70'}
+                            className={cn('opacity-70')}
                         />
                     )}
                 </SelectTrigger>

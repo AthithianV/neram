@@ -1,7 +1,18 @@
 import ProjectSchema, { Project } from '@/schema/ProjectSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+    CalendarCheck,
+    CalendarMinus,
+    CalendarPlus,
+    CircleDollarSign,
+    Gauge,
+    Palette,
+    Receipt,
+    User,
+} from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -13,6 +24,7 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Separator } from '../ui/separator';
 import { Switch } from '../ui/switch';
 
 import { COLORS } from '@/constants/colors';
@@ -23,21 +35,11 @@ import {
     PROJECT_INITIAL_VALUES,
 } from '@/constants/project';
 import { useCreateProject, useProjectById, useUpdateProject } from '@/hooks/useProject';
-import {
-    CalendarCheck,
-    CalendarMinus,
-    CalendarPlus,
-    CircleDollarSign,
-    Gauge,
-    Palette,
-    Receipt,
-    User,
-} from 'lucide-react';
+
 import ColorPicker from '../form/ColorPicker';
 import DatePicker from '../form/DatePicker';
 import RichEditor from '../form/Editor';
 import Selector from '../form/Selector';
-import { Separator } from '../ui/separator';
 
 type PropType = {
     projectId?: number | null;
@@ -45,6 +47,7 @@ type PropType = {
 };
 
 const ProjectForm = ({ projectId, closeModal }: PropType) => {
+    const navigate = useNavigate();
     const { data: project } = useProjectById(projectId);
     const { mutateAsync: createProject } = useCreateProject();
     const { mutateAsync: updateProject } = useUpdateProject();
@@ -72,7 +75,10 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
         if (projectId) {
             await updateProject({ projectToUpdate: data, projectId });
         } else {
-            await createProject(data);
+            const projectId = await createProject(data);
+            console.log(projectId);
+
+            navigate(`/project/${projectId}`);
         }
         form.reset();
         closeModal();

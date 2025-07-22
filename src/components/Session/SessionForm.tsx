@@ -60,7 +60,7 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
             form.reset({
                 ...session,
                 project_id: session.project.id,
-                task_id: session.task.id,
+                task_id: session.task ? session.task.id : undefined,
                 tags: session.tags.map((tag) => tag.id),
             });
         }

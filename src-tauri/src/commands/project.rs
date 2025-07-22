@@ -17,16 +17,19 @@ use crate::AppState;
 pub async fn create_project(
     app_state: State<'_, AppState>,
     new_project: CreateProjectModel,
-) -> Result<(), String> {
+) -> Result<i32, String> {
     // Acquire a lock on the database connection
     let db = app_state.conn.lock().await;
 
     let project_repository = ProjectRepository::new(&db);
-    let _ = project_repository
+    let created_project = project_repository
         .create(&new_project)
         .await
         .map_err(|e| e.to_string());
-    Ok(())
+    match created_project {
+        Ok(p) => Ok(p.id),
+        Err(e) => Err(e),
+    }
 }
 
 /// Retrieves all Project records from the database.
