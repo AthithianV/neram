@@ -58,7 +58,11 @@ const Project = () => {
                         <ScrollBar orientation="horizontal" />
                     </ScrollArea>
 
-                    <Button className="mb-3 cursor-pointer" variant={'outline'} onClick={handleAdd}>
+                    <Button
+                        className="mb-3 cursor-pointer"
+                        variant={'outline'}
+                        onClick={handleAdd}
+                    >
                         <Plus className="w-4 h-4" />
                     </Button>
                     <ProjectSettings />

@@ -205,6 +205,8 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                     />
                 </div>
 
+                <Separator />
+
                 {/* Started At */}
                 <div className="flex gap-6 w-full max-sm:flex-col">
                     <FormField

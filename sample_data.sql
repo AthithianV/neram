@@ -19,21 +19,21 @@ VALUES
 ( 'AI Resume Builder', 'Resume generator using GPT', 'Active', '#4CAF50', 'ResumeBoost', 'Hourly', 1, 35, NULL, 'USD', '2025-09-01', '2025-06-10', NULL);
 
 INSERT INTO tasks (
-    title, description, color, priority,
+    title, description, priority,
     status, project_id, estimated_time,
     deadline, started_at, completed_at
 )
 VALUES
-( 'Setup DB Schema', 'Initial schema design and migrations', '#FF5733', 'High', 'In Progress', 1, 14400, '2025-05-10', '2025-05-01', NULL),
-( 'Design Dashboard UI', 'UI for ecom analytics widgets', '#33A1FF', 'Medium', 'Planning', 2, 10800, '2025-07-01', '2025-06-01', NULL),
-( 'Integrate JWT Auth', 'Login and token-based auth', '#A833FF', 'High', 'Completed', 3, 7200, '2025-05-15', '2025-05-05', '2025-05-10'),
-( 'Setup Tailwind', 'Tailwind with custom theme config', '#33FF99', 'Low', 'Completed', 4, 3600, '2025-03-10', '2025-03-02', '2025-03-03'),
-( 'Add Product CRUD', 'CRUD ops for inventory', '#FFBD33', 'High', 'In Progress', 5, 14400, '2025-06-15', '2025-06-05', NULL),
-( 'Create Workout API', 'Add workout logging endpoints', '#FF33A6', 'Medium', 'Planning', 6, 10800, '2025-07-15', '2025-06-20', NULL),
-( 'Update Leave UI', 'Employee leave request UI update', '#33FFF3', 'Low', 'Paused', 7, 7200, '2025-05-01', '2025-03-15', NULL),
-( 'Add Markdown Parser', 'Custom markdown rendering logic', '#FF8C33', 'Medium', 'Completed', 8, 5400, '2025-01-30', '2025-01-10', '2025-01-28'),
-( 'Contact Form Backend', 'Send email + spam filter', '#C70039', 'High', 'In Progress', 9, 7200, '2025-06-20', '2025-06-05', NULL),
-( 'PDF Resume Export', 'PDF export with template switching', '#4CAF50', 'High', 'Planning', 10, 10800, '2025-08-01', '2025-06-12', NULL);
+( 'Setup DB Schema', 'Initial schema design and migrations', 'High', 'In Progress', 1, 14400, '2025-05-10', '2025-05-01', NULL),
+( 'Design Dashboard UI', 'UI for ecom analytics widgets', 'Medium', 'Planning', 2, 10800, '2025-07-01', '2025-06-01', NULL),
+( 'Integrate JWT Auth', 'Login and token-based auth', 'High', 'Completed', 3, 7200, '2025-05-15', '2025-05-05', '2025-05-10'),
+( 'Setup Tailwind', 'Tailwind with custom theme config', 'Low', 'Completed', 4, 3600, '2025-03-10', '2025-03-02', '2025-03-03'),
+( 'Add Product CRUD', 'CRUD ops for inventory', 'High', 'In Progress', 5, 14400, '2025-06-15', '2025-06-05', NULL),
+( 'Create Workout API', 'Add workout logging endpoints', 'Medium', 'Planning', 6, 10800, '2025-07-15', '2025-06-20', NULL),
+( 'Update Leave UI', 'Employee leave request UI update', 'Low', 'Paused', 7, 7200, '2025-05-01', '2025-03-15', NULL),
+( 'Add Markdown Parser', 'Custom markdown rendering logic', 'Medium', 'Completed', 8, 5400, '2025-01-30', '2025-01-10', '2025-01-28'),
+( 'Contact Form Backend', 'Send email + spam filter', 'High', 'In Progress', 9, 7200, '2025-06-20', '2025-06-05', NULL),
+( 'PDF Resume Export', 'PDF export with template switching', 'High', 'Planning', 10, 10800, '2025-08-01', '2025-06-12', NULL);
 
 
 -- Sessions

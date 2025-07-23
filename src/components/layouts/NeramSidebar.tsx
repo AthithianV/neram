@@ -1,22 +1,22 @@
+import NeramLogo from '@/assets/logo.png';
 import {
     Sidebar,
     SidebarContent,
-    SidebarGroupContent,
     SidebarFooter,
     SidebarGroup,
+    SidebarGroupContent,
+    SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-    SidebarHeader,
-    SidebarTrigger,
     SidebarProvider,
+    SidebarTrigger,
+    useSidebar,
 } from '@/components/ui/sidebar';
-import { useLocation } from 'react-router-dom';
 import { SIDEBAR_BODY_LINKS, SIDEBAR_FOOTER_LINKS } from '@/constants/sidebar';
-import { useSidebar } from '@/components/ui/sidebar';
-import NeramLogo from '@/assets/logo.png';
-import Brand from './Brand';
 import { cn } from '@/lib/utils';
+import { useLocation } from 'react-router-dom';
+import Brand from './Brand';
 
 const NeramSidebar = () => {
     const { pathname } = useLocation();
@@ -34,12 +34,12 @@ const NeramSidebar = () => {
                                     <SidebarMenuItem key={index}>
                                         <SidebarMenuButton
                                             asChild
-                                            className={`${
-                                                pathname.startsWith(
-                                                    link.props.to
-                                                ) &&
-                                                'bg-sidebar-accent font-semibold text-theme hover:text-theme'
-                                            }`}
+                                            className={cn(
+                                                pathname.startsWith(link.props.to) &&
+                                                    'bg-sidebar-accent font-semibold text-theme hover:text-theme',
+                                                'px-4 !h-auto text-[0.9rem] rounded-md',
+                                            )}
+                                            tooltip={link.props.key}
                                         >
                                             {link}
                                         </SidebarMenuButton>
@@ -57,11 +57,11 @@ const NeramSidebar = () => {
                             <SidebarMenuItem key={index}>
                                 <SidebarMenuButton
                                     asChild
-                                    className={`${
-                                        link.props.to.replace('/', '') ===
-                                            pathname.split('/')[1] &&
-                                        'bg-sidebar-accent font-semibold text-theme hover:text-theme'
-                                    }`}
+                                    className={cn(
+                                        pathname.startsWith(link.props.to) &&
+                                            'bg-sidebar-accent font-semibold text-theme hover:text-theme',
+                                        'px-4 !h-auto text-[0.9rem] rounded-md',
+                                    )}
                                 >
                                     {link}
                                 </SidebarMenuButton>
@@ -81,7 +81,7 @@ const Header = () => {
         <SidebarHeader
             className={cn(
                 'title-bar-height bg-white',
-                open ? 'border-b-2 border-gray-100' : ''
+                open ? 'border-b-2 border-gray-100' : '',
             )}
         >
             <SidebarMenu>
