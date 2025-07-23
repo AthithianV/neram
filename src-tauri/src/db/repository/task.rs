@@ -21,7 +21,6 @@ impl<'a> TaskRepository<'a> {
         let active_model = TaskActiveModel {
             title: Set(task.title.clone()),
             description: Set(task.description.clone()),
-            color: Set(task.color.clone()),
             project_id: Set(task.project_id),
             status: Set(task.status.clone()),
             priority: Set(task.priority.clone()),
@@ -77,7 +76,6 @@ impl<'a> TaskRepository<'a> {
 
         task_active_model.title = Set(task.title.clone());
         task_active_model.description = Set(task.description.clone());
-        task_active_model.color = Set(task.color.clone());
         task_active_model.project_id = Set(task.project_id);
         task_active_model.status = Set(task.status.clone());
         task_active_model.priority = Set(task.priority.clone());

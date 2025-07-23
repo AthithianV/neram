@@ -9,7 +9,6 @@ enum Tasks {
     Id,
     Title,
     Description,
-    Color,
     ProjectId,
     Status,
     Priority,
@@ -37,7 +36,6 @@ impl MigrationTrait for Migration {
                 .col(ColumnDef::new(Tasks::Id).integer().not_null().auto_increment().primary_key())
                 .col(ColumnDef::new(Tasks::Title).string().not_null())
                 .col(ColumnDef::new(Tasks::Description).string().null())
-                .col(ColumnDef::new(Tasks::Color).string().null())
                 .col(ColumnDef::new(Tasks::ProjectId).integer().not_null())
                 .col(ColumnDef::new(Tasks::Status).string().not_null().default("Planning"))
                 .col(ColumnDef::new(Tasks::Priority).string().not_null().default("Low"))

@@ -6,7 +6,6 @@ pub struct ReadTaskModel {
     pub id: i32,
     pub title: String,
     pub description: Option<String>,
-    pub color: String,
     pub project_id: i32,
     pub status: String,
     pub priority: Option<String>,
@@ -24,7 +23,6 @@ impl From<tasks::Model> for ReadTaskModel {
             id: task.id,
             title: task.title,
             description: task.description,
-            color: task.color,
             project_id: task.project_id,
             status: task.status,
             priority: task.priority,
@@ -42,7 +40,6 @@ impl From<tasks::Model> for ReadTaskModel {
 pub struct CreateTaskModel {
     pub title: String,
     pub description: Option<String>,
-    pub color: String,
     pub project_id: i32,
     pub status: String,
     pub priority: Option<String>,
@@ -50,12 +47,4 @@ pub struct CreateTaskModel {
     pub started_at: String,
     pub completed_at: Option<String>,
     pub estimated_time: Option<i32>,
-}
-
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct MiniTask {
-    pub id: i32,
-    pub title: String,
-    pub color: Option<String>,
-    pub status: String,
 }

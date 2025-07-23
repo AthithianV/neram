@@ -5,7 +5,6 @@ import { cn } from '@/lib/utils';
 import { Plus } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import PageAnimation from '../layouts/PageAnimation';
 import TaskCard from '../task/TaskCard';
 import { Button } from '../ui/button';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
@@ -76,54 +75,52 @@ const Kanban = () => {
         <ScrollArea className="h-full">
             <div className="flex gap-1 h-full">
                 {columns.map((column) => (
-                    <PageAnimation>
-                        <div className="flex-1 min-w-[18vw]" key={column.id}>
-                            <div
-                                key={column.id}
-                                className={cn(
-                                    'rounded-md',
-                                    'bg-white shadow-sm p-2 border-2 border-gray-100',
-                                )}
-                                onDragOver={handleDragOver}
-                                onDrop={(e) => handleDrop(e, column.id)}
-                            >
-                                <div className="flex items-center justify-between">
-                                    <Badge
-                                        className={cn('font-semibold rounded text-gary-100')}
-                                        style={column.style}
-                                    >
-                                        {column.title}
-                                    </Badge>
-                                    <Badge variant="secondary" style={column.style}>
-                                        {column.tasks.length}
-                                    </Badge>
-                                </div>
+                    <div className="flex-1 min-w-[18vw]" key={column.id}>
+                        <div
+                            key={column.id}
+                            className={cn(
+                                'rounded-md',
+                                'bg-white shadow-sm p-2 border-2 border-gray-100',
+                            )}
+                            onDragOver={handleDragOver}
+                            onDrop={(e) => handleDrop(e, column.id)}
+                        >
+                            <div className="flex items-center justify-between">
+                                <Badge
+                                    className={cn('font-semibold rounded text-gary-100')}
+                                    style={column.style}
+                                >
+                                    {column.title}
+                                </Badge>
+                                <Badge variant="secondary" style={column.style}>
+                                    {column.tasks.length}
+                                </Badge>
+                            </div>
 
-                                <div className="py-2 space-y-2 flex flex-col">
-                                    <ScrollArea>
-                                        <div className="max-h-[70vh] space-y-1">
-                                            {column.tasks.map((task) => (
-                                                <TaskCard task={task} key={task.id} />
-                                            ))}
-                                        </div>
-                                    </ScrollArea>
+                            <div className="py-2 space-y-2 flex flex-col">
+                                <ScrollArea>
+                                    <div className="max-h-[70vh] space-y-1">
+                                        {column.tasks.map((task) => (
+                                            <TaskCard task={task} key={task.id} />
+                                        ))}
+                                    </div>
+                                </ScrollArea>
 
-                                    <Button
-                                        className="!h-8 cursor-pointer hover:bg-gray-100 !w-fit !text-gray-700 text-xs"
-                                        variant={'ghost'}
-                                        onClick={() =>
-                                            setSearchParams({
-                                                task_status: column.title,
-                                                modal: 'add_task',
-                                            })
-                                        }
-                                    >
-                                        <Plus /> Add Task
-                                    </Button>
-                                </div>
+                                <Button
+                                    className="!h-8 cursor-pointer hover:bg-gray-100 !w-fit !text-gray-700 text-xs"
+                                    variant={'ghost'}
+                                    onClick={() =>
+                                        setSearchParams({
+                                            task_status: column.title,
+                                            modal: 'add_task',
+                                        })
+                                    }
+                                >
+                                    <Plus /> Add Task
+                                </Button>
                             </div>
                         </div>
-                    </PageAnimation>
+                    </div>
                 ))}
             </div>
             <ScrollBar orientation="horizontal" />

@@ -37,7 +37,7 @@ pub struct UpdateSessionModel {
 pub struct Extra {
     pub id: i32,
     pub title: String,
-    pub color: String,
+    pub color: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -76,13 +76,13 @@ impl
         let task = task_opt.map(|t| Extra {
             id: t.id,
             title: t.title,
-            color: t.color,
+            color: None,
         });
 
         let project = project_opt.map(|p| Extra {
             id: p.id,
             title: p.title,
-            color: p.color,
+            color: Some(p.color),
         });
 
         let tags = tag_models
@@ -90,7 +90,7 @@ impl
             .map(|t| Extra {
                 id: t.id,
                 title: t.title,
-                color: t.color,
+                color: Some(t.color),
             })
             .collect();
 

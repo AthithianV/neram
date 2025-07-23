@@ -14,11 +14,16 @@ import {
     Flag,
     Folder,
     Gauge,
-    Palette,
 } from 'lucide-react';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from '../ui/form';
 
-import { COLORS } from '@/constants/colors';
 import {
     TASK_INTIAL_VALUE,
     TASK_PRIORITY,
@@ -32,7 +37,6 @@ import { useCreateTask, useTaskById, useUpdateTask } from '@/hooks/useTask';
 import { toDBTime } from '@/lib/time';
 import dayjs from 'dayjs';
 import { useParams } from 'react-router-dom';
-import ColorPicker from '../form/ColorPicker';
 import DatePicker from '../form/DatePicker';
 import DurationElement from '../form/DurationElement';
 import RichEditor from '../form/Editor';
@@ -130,7 +134,10 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                                     </div>
                                     <FormMessage className="text-xs" />
                                 </FormLabel>
-                                <ProjectPicker onChange={field.onChange} value={field.value} />
+                                <ProjectPicker
+                                    onChange={field.onChange}
+                                    value={field.value}
+                                />
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -196,28 +203,6 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                             </FormItem>
                         )}
                     />
-
-                    <FormField
-                        control={form.control}
-                        name="color"
-                        render={({ field }) => (
-                            <FormItem className="w-1/2 flex items-center gap-5">
-                                <FormLabel className="w-32 font-semibold">
-                                    <div className="flex items-center gap-1">
-                                        <Palette size={16} /> Color
-                                    </div>
-                                    <FormMessage className="text-xs" />
-                                </FormLabel>
-                                <FormControl>
-                                    <ColorPicker
-                                        onChange={field.onChange}
-                                        value={field.value ? field.value : COLORS[0].value}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
                 </div>
 
                 {/* Started At */}
@@ -234,7 +219,10 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                                     <FormMessage className="text-xs" />
                                 </FormLabel>
                                 <FormControl>
-                                    <DatePicker dateValue={field.value} onChange={field.onChange} />
+                                    <DatePicker
+                                        dateValue={field.value}
+                                        onChange={field.onChange}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -253,7 +241,10 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                                     <FormMessage className="text-xs" />
                                 </FormLabel>
                                 <FormControl>
-                                    <DatePicker dateValue={field.value} onChange={field.onChange} />
+                                    <DatePicker
+                                        dateValue={field.value}
+                                        onChange={field.onChange}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -283,7 +274,9 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                                                 message: msg,
                                             })
                                         }
-                                        clearError={() => form.clearErrors('estimated_time')}
+                                        clearError={() =>
+                                            form.clearErrors('estimated_time')
+                                        }
                                     />
                                 </FormControl>
                             </FormItem>
@@ -302,7 +295,10 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                                     <FormMessage className="text-xs" />
                                 </FormLabel>
                                 <FormControl>
-                                    <DatePicker dateValue={field.value} onChange={field.onChange} />
+                                    <DatePicker
+                                        dateValue={field.value}
+                                        onChange={field.onChange}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -318,7 +314,10 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <RichEditor value={field.value ?? ''} onChange={field.onChange} />
+                                <RichEditor
+                                    value={field.value ?? ''}
+                                    onChange={field.onChange}
+                                />
                             </FormControl>
                             <FormMessage className="text-xs" />
                         </FormItem>
@@ -326,7 +325,11 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                 />
 
                 <div className="flex gap-2 justify-end">
-                    <Button variant={'destructive'} onClick={() => closeForm()} type="button">
+                    <Button
+                        variant={'destructive'}
+                        onClick={() => closeForm()}
+                        type="button"
+                    >
                         Close
                     </Button>
                     <Button type="submit" disabled={false}>

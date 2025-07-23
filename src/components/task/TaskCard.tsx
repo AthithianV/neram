@@ -2,14 +2,17 @@ import { TASK_PRIORITY_COLOR, TaskPriority } from '@/constants/task';
 import { ReadTask } from '@/hooks/useTask';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
-import { AlarmCheck, Calendar } from 'lucide-react';
+import { AlarmCheck, Calendar, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 const TaskCard = ({ task }: { task: ReadTask }) => {
     const [_, setSearchParams] = useSearchParams();
+    const [isHovered, setIsHovered] = useState(false);
 
     const getPriorityColor = (priority?: string | null) => {
         const color = TASK_PRIORITY_COLOR[(priority as TaskPriority) ?? 'Default'];
@@ -31,20 +34,24 @@ const TaskCard = ({ task }: { task: ReadTask }) => {
                     id: String(task.id),
                 })
             }
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
             draggable
             // onDragStart={(e) => handleDragStart(e, task)}
         >
             <CardHeader className="px-2">
-                <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center justify-between gap-2">
                     <CardTitle className="text-sm font-semibold">{task.title}</CardTitle>
-                    <div className="flex items-center gap-1">
-                        <div
-                            className={cn('w-2 rounded-full')}
-                            style={{
-                                backgroundColor: getPriorityColor(task.priority),
-                            }}
-                        />
-                    </div>
+
+                    <Button
+                        variant="ghost"
+                        className={cn(
+                            isHovered ? 'opacity-100' : 'opacity-0',
+                            'transition ease-in-out delay-10',
+                        )}
+                    >
+                        <Trash2 className="w-4 h-4 text-red-500" />
+                    </Button>
                 </div>
             </CardHeader>
 
@@ -52,7 +59,9 @@ const TaskCard = ({ task }: { task: ReadTask }) => {
                 {task.description && (
                     <div
                         className="text-xs text-muted-foreground line-clamp-2"
-                        dangerouslySetInnerHTML={{ __html: task.description }}
+                        dangerouslySetInnerHTML={{
+                            __html: task.description,
+                        }}
                     />
                 )}
 
@@ -89,7 +98,7 @@ const TaskCard = ({ task }: { task: ReadTask }) => {
                                 >
                                     <AlarmCheck className="h-4 w-4" />
                                     <span className={cn('font-medium')}>
-                                        {(task.estimated_time / 3600).toFixed(2)} h
+                                        {(task.estimated_time / 3600).toFixed(1)} h
                                     </span>
                                 </Badge>
                             </TooltipTrigger>
@@ -104,7 +113,9 @@ const TaskCard = ({ task }: { task: ReadTask }) => {
                                     <Badge
                                         className={cn('text-xs')}
                                         style={{
-                                            backgroundColor: getPriorityColor(task.priority),
+                                            backgroundColor: getPriorityColor(
+                                                task.priority,
+                                            ),
                                         }}
                                     >
                                         {task.priority}
@@ -135,7 +146,7 @@ const TaskCard = ({ task }: { task: ReadTask }) => {
                                     {dayjs(task.completed_at).format('DD MMM YYYY')}
                                 </span>
                             </TooltipTrigger>
-                            <TooltipContent>Estimated At</TooltipContent>
+                            <TooltipContent>Completed At</TooltipContent>
                         </Tooltip>
                     )}
                 </div>

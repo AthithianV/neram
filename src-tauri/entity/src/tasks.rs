@@ -9,7 +9,6 @@ pub struct Model {
     pub id: i32,
     pub title: String,
     pub description: Option<String>,
-    pub color: String,
     pub project_id: i32,
     pub status: String,
     pub priority: Option<String>,

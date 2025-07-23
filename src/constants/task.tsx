@@ -1,8 +1,6 @@
 import dayjs from 'dayjs';
-import { COLORS } from './colors';
 
 export const TASK_INTIAL_VALUE = {
-    color: COLORS[0].value,
     priority: 'Low',
     title: 'Untitled',
     started_at: dayjs().startOf('day').toString(),

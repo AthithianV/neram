@@ -127,7 +127,7 @@ SessionCard.DELETE = ({ show, sessionId }: { show: boolean; sessionId: number })
             <AlertDialog>
                 <AlertDialogTrigger asChild>
                     <Button
-                        variant="outline"
+                        variant="ghost"
                         onClick={(e) => e.stopPropagation()}
                         className="cursor-pointer"
                     >
