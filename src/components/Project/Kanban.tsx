@@ -1,13 +1,22 @@
+import {
+    DndContext,
+    DragEndEvent,
+    DragStartEvent,
+    closestCorners,
+    useDroppable,
+} from '@dnd-kit/core';
+import { Plus } from 'lucide-react';
+import React, { Suspense, useMemo, useState } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
+
 import { Badge } from '@/components/ui/badge';
 import { TASK_STATUS, TASK_STATUS_COLOR, TaskStatus } from '@/constants/task';
 import { ReadTask, useTask } from '@/hooks/useTask';
 import { cn } from '@/lib/utils';
-import { Plus } from 'lucide-react';
-import React, { useMemo, useState } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
-import TaskCard from '../task/TaskCard';
 import { Button } from '../ui/button';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
+
+const TaskCard = React.lazy(() => import('../task/TaskCard'));
 
 interface KanbanColumn {
     id: string;
@@ -18,14 +27,12 @@ interface KanbanColumn {
 
 const Kanban = () => {
     const { projectId } = useParams();
-    const [_, setSearchParams] = useSearchParams();
-
     const { data: tasks = [] } = useTask(Number(projectId));
-    const [draggedTask, setDraggedTask] = useState<ReadTask | null>(null);
 
-    if (!projectId) {
-        return null;
-    }
+    const [_, setSearchParams] = useSearchParams();
+    const [activeTask, setActiveTask] = useState<ReadTask | null>(null);
+
+    if (!projectId) return null;
 
     const columns: KanbanColumn[] = useMemo(
         () =>
@@ -40,91 +47,122 @@ const Kanban = () => {
         [tasks],
     );
 
-    const handleDragOver = (e: React.DragEvent) => {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
+    const handleDragStart = (event: DragStartEvent) => {
+        const taskId = event.active.id;
+        const task = tasks.find((t) => t.id === taskId);
+        if (task) {
+            setActiveTask(task);
+        }
     };
 
-    const handleDrop = async (e: React.DragEvent, targetStatus: string) => {
-        e.preventDefault();
+    const handleDragEnd = async (event: DragEndEvent) => {
+        const { active, over } = event;
 
-        if (!draggedTask || draggedTask.status === targetStatus) {
-            setDraggedTask(null);
+        if (!over || !activeTask || active.id === over.id) {
+            setActiveTask(null);
             return;
         }
 
-        try {
-            // await updateTask.mutateAsync({
-            //     ...draggedTask,
-            //     status: targetStatus,
-            //     started_at: draggedTask.started_at.toISOString(),
-            //     deadline: draggedTask.deadline?.toISOString(),
-            //     completed_at:
-            //         targetStatus === 'done'
-            //             ? new Date().toISOString()
-            //             : undefined,
-            // });
-        } catch (error) {
-            console.error('Failed to update task status:', error);
+        const newStatus = over.id as TaskStatus;
+
+        if (activeTask.status !== newStatus) {
+            try {
+                // await updateTask.mutateAsync({
+                //     ...activeTask,
+                //     status: newStatus,
+                //     started_at: activeTask.started_at.toISOString(),
+                //     deadline: activeTask.deadline?.toISOString(),
+                //     completed_at:
+                //         newStatus === 'Done'
+                //             ? new Date().toISOString()
+                //             : undefined,
+                // });
+            } catch (error) {
+                console.error('Failed to update task status:', error);
+            }
         }
 
-        setDraggedTask(null);
+        setActiveTask(null);
     };
 
     return (
         <ScrollArea className="h-full">
-            <div className="flex gap-1 h-full">
-                {columns.map((column) => (
-                    <div className="flex-1 min-w-[18vw]" key={column.id}>
-                        <div
+            <DndContext
+                collisionDetection={closestCorners}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+            >
+                <div className="flex gap-1 h-full">
+                    {columns.map((column) => (
+                        <Column
                             key={column.id}
-                            className={cn(
-                                'rounded-md',
-                                'bg-white shadow-sm p-2 border-2 border-gray-100',
-                            )}
-                            onDragOver={handleDragOver}
-                            onDrop={(e) => handleDrop(e, column.id)}
-                        >
-                            <div className="flex items-center justify-between">
-                                <Badge
-                                    className={cn('font-semibold rounded text-gary-100')}
-                                    style={column.style}
-                                >
-                                    {column.title}
-                                </Badge>
-                                <Badge variant="secondary" style={column.style}>
-                                    {column.tasks.length}
-                                </Badge>
-                            </div>
-
-                            <div className="py-2 space-y-2 flex flex-col">
-                                <ScrollArea>
-                                    <div className="max-h-[70vh] space-y-1">
-                                        {column.tasks.map((task) => (
-                                            <TaskCard task={task} key={task.id} />
-                                        ))}
-                                    </div>
-                                </ScrollArea>
-
-                                <Button
-                                    className="!h-8 cursor-pointer hover:bg-gray-100 !w-fit !text-gray-700 text-xs"
-                                    variant={'ghost'}
-                                    onClick={() =>
-                                        setSearchParams({
-                                            task_status: column.title,
-                                            modal: 'add_task',
-                                        })
-                                    }
-                                >
-                                    <Plus /> Add Task
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
+                            column={column}
+                            setSearchParams={setSearchParams}
+                        />
+                    ))}
+                </div>
+            </DndContext>
             <ScrollBar orientation="horizontal" />
         </ScrollArea>
+    );
+};
+
+const Column = ({
+    column,
+    setSearchParams,
+}: {
+    column: KanbanColumn;
+    setSearchParams: ReturnType<typeof useSearchParams>[1];
+}) => {
+    const { setNodeRef, isOver } = useDroppable({ id: column.id });
+
+    return (
+        <div className="flex-1 min-w-[18vw] max-lg:min-w-[25vw]" ref={setNodeRef}>
+            <div
+                className={cn(
+                    'rounded-md bg-white shadow-sm p-2 border-2 border-gray-100',
+                    isOver && 'bg-sky-100',
+                )}
+            >
+                <div className="flex items-center justify-between">
+                    <Badge
+                        className={cn('font-semibold rounded text-white')}
+                        style={column.style}
+                    >
+                        {column.title}
+                    </Badge>
+                    <Badge variant="secondary" style={column.style}>
+                        {column.tasks.length}
+                    </Badge>
+                </div>
+
+                <div className="py-2 space-y-2 flex flex-col">
+                    <ScrollArea>
+                        <div className="max-h-[70vh] space-y-1">
+                            {column.tasks.map((task) => (
+                                <Suspense fallback={<div>Loading...</div>}>
+                                    <TaskCard task={task} key={task.id} />
+                                </Suspense>
+                            ))}
+                        </div>
+                        <ScrollBar orientation="vertical" />
+                    </ScrollArea>
+
+                    <Button
+                        className="!h-8 cursor-pointer hover:bg-gray-100 !w-fit !text-gray-700 text-xs"
+                        variant={'ghost'}
+                        onClick={() =>
+                            setSearchParams({
+                                task_status: column.title,
+                                modal: 'add_task',
+                            })
+                        }
+                    >
+                        <Plus /> Add Task
+                    </Button>
+                </div>
+            </div>
+        </div>
     );
 };
 

@@ -1,22 +1,22 @@
 
 -- Projects
 INSERT INTO projects (
-    title, description, status, color, client_name, billing_type,
+    title, description, color, client_name, billing_type,
     is_billable, hourly_rate, fixed_rate, currency, deadline,
     started_at, completed_at
 )
 VALUES
-( 'General', 'Project to add any General Tasks', 'Active', '#FF5733', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-( 'TimeTracker Pro', 'Time tracking desktop app for freelancers', 'Active', '#FF5733', 'Internal', 'Hourly', 1, 20, NULL, 'USD', '2025-07-01', '2025-05-01', NULL),
-( 'Ecom Dashboard', 'Admin dashboard for ecommerce analytics', 'Active', '#33A1FF', 'ShopX', 'Fixed', 1, NULL, 3000, 'USD', '2025-08-01', '2025-05-10', NULL),
-( 'Client Portal', 'Portal for client reports and communications', 'Paused', '#A833FF', 'BizCorp', 'Hourly', 1, 25, NULL, 'USD', '2025-06-30', '2025-04-15', NULL),
-( 'Landing Page Redesign', 'Marketing landing page revamp', 'Completed', '#33FF99', 'WebFlowz', NULL, 0, NULL, 800, 'USD', '2025-03-31', '2025-03-01', '2025-03-30'),
-( 'Inventory System', 'Full inventory + billing management system', 'Active', '#FFBD33', 'RetailMart', 'Hourly', 1, 30, NULL, 'USD', '2025-07-15', '2025-04-01', NULL),
-( 'Fitness App API', 'Backend for mobile fitness tracking app', 'Active', '#FF33A6', 'Fitify', 'Fixed', 1, NULL, 5000, 'USD', '2025-08-20', '2025-05-20', NULL),
-( 'HRMS UI', 'UI overhaul for HR management system', 'Paused', '#33FFF3', 'HRPro', 'Hourly', 1, 18, NULL, 'USD', '2025-05-01', '2025-02-10', NULL),
-( 'Blog Engine', 'CMS-style markdown blog engine', 'Completed', '#FF8C33', 'Contento', 'Fixed', 0, NULL, 1200, 'USD', '2025-02-10', '2025-01-01', '2025-02-08'),
-( 'Portfolio Website', 'Personal portfolio with blog and contact form', 'Active', '#C70039', 'Self', NULL, 0, NULL, NULL, 'USD', NULL, '2025-06-01', NULL),
-( 'AI Resume Builder', 'Resume generator using GPT', 'Active', '#4CAF50', 'ResumeBoost', 'Hourly', 1, 35, NULL, 'USD', '2025-09-01', '2025-06-10', NULL);
+( 'General', 'Project to add any General Tasks', '#FF5733', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+( 'TimeTracker Pro', 'Time tracking desktop app for freelancers', '#FF5733', 'Internal', 'Hourly', 1, 20, NULL, 'USD', '2025-07-01', '2025-05-01', NULL),
+( 'Ecom Dashboard', 'Admin dashboard for ecommerce analytics', '#33A1FF', 'ShopX', 'Fixed', 1, NULL, 3000, 'USD', '2025-08-01', '2025-05-10', NULL),
+( 'Client Portal', 'Portal for client reports and communications', '#A833FF', 'BizCorp', 'Hourly', 1, 25, NULL, 'USD', '2025-06-30', '2025-04-15', NULL),
+( 'Landing Page Redesign', 'Marketing landing page revamp', '#33FF99', 'WebFlowz', NULL, 0, NULL, 800, 'USD', '2025-03-31', '2025-03-01', '2025-03-30'),
+( 'Inventory System', 'Full inventory + billing management system', '#FFBD33', 'RetailMart', 'Hourly', 1, 30, NULL, 'USD', '2025-07-15', '2025-04-01', NULL),
+( 'Fitness App API', 'Backend for mobile fitness tracking app', '#FF33A6', 'Fitify', 'Fixed', 1, NULL, 5000, 'USD', '2025-08-20', '2025-05-20', NULL),
+( 'HRMS UI', 'UI overhaul for HR management system', '#33FFF3', 'HRPro', 'Hourly', 1, 18, NULL, 'USD', '2025-05-01', '2025-02-10', NULL),
+( 'Blog Engine', 'CMS-style markdown blog engine', '#FF8C33', 'Contento', 'Fixed', 0, NULL, 1200, 'USD', '2025-02-10', '2025-01-01', '2025-02-08'),
+( 'Portfolio Website', 'Personal portfolio with blog and contact form', '#C70039', 'Self', NULL, 0, NULL, NULL, 'USD', NULL, '2025-06-01', NULL),
+( 'AI Resume Builder', 'Resume generator using GPT', '#4CAF50', 'ResumeBoost', 'Hourly', 1, 35, NULL, 'USD', '2025-09-01', '2025-06-10', NULL);
 
 INSERT INTO tasks (
     title, description, priority,

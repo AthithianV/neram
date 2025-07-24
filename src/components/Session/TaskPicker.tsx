@@ -18,7 +18,7 @@ const TaskPicker = ({ onChange, value, projectId }: PropsType) => {
             value={value ? value.toString() : 'undefined'}
             items={tasks.map((task) => ({
                 title: task.title,
-                color: task.color ?? '',
+                color: '#EC4899',
                 value: task.id.toString(),
             }))}
             fallbackText="No Task Available"

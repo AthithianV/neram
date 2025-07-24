@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.tauri.app/config/2",
-    "productName": "neram",
+    "productName": "Neram",
     "version": "0.1.0",
     "identifier": "com.neram.app",
     "build": {
@@ -12,13 +12,13 @@
     "app": {
         "windows": [
             {
-                "title": "neram",
+                "title": "Neram",
                 "label": "main",
                 "decorations": false,
-                "titleBarStyle": "Overlay",
                 "maximized": true,
                 "width": 1200,
-                "height": 800
+                "height": 800,
+                "devtools": false
             }
         ],
         "security": {
