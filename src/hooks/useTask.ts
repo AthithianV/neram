@@ -57,17 +57,36 @@ export const useCreateTask = () => {
     });
 };
 
-export const useUpdateTask = () => {
+export const useUpdateTask = (projectId: number) => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (data: { taskToUpdate: Task; taskId: number }) => {
             return await invoke('update_task', data);
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['tasks'] });
+        onMutate: async ({ taskToUpdate, taskId }) => {
+            await queryClient.cancelQueries({ queryKey: ['tasks', projectId] });
+
+            const previousTasks = queryClient.getQueryData<ReadTask[]>([
+                'tasks',
+                projectId,
+            ]);
+
+            queryClient.setQueryData<ReadTask[]>(['tasks', projectId], (old = []) =>
+                old.map((task) =>
+                    task.id === taskId ? { ...task, ...taskToUpdate } : task,
+                ),
+            );
+
+            return { previousTasks };
         },
-        onError: (err) => {
-            console.log(err);
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ['tasks', projectId] });
+        },
+        onError: (err, _, context) => {
+            if (context?.previousTasks) {
+                queryClient.setQueryData(['tasks'], projectId);
+            }
+            console.error('Update failed:', err);
         },
     });
 };

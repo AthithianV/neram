@@ -1,6 +1,7 @@
 import {
     DndContext,
     DragEndEvent,
+    DragOverlay,
     DragStartEvent,
     closestCorners,
     useDroppable,
@@ -11,10 +12,13 @@ import { useParams, useSearchParams } from 'react-router-dom';
 
 import { Badge } from '@/components/ui/badge';
 import { TASK_STATUS, TASK_STATUS_COLOR, TaskStatus } from '@/constants/task';
-import { ReadTask, useTask } from '@/hooks/useTask';
+import { ReadTask, useTask, useUpdateTask } from '@/hooks/useTask';
+import { toDBTime } from '@/lib/time';
 import { cn } from '@/lib/utils';
+import dayjs from 'dayjs';
 import { Button } from '../ui/button';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
+import { Skeleton } from '../ui/skeleton';
 
 const TaskCard = React.lazy(() => import('../task/TaskCard'));
 
@@ -31,6 +35,7 @@ const Kanban = () => {
 
     const [_, setSearchParams] = useSearchParams();
     const [activeTask, setActiveTask] = useState<ReadTask | null>(null);
+    const { mutateAsync: updateTask } = useUpdateTask(Number(projectId));
 
     if (!projectId) return null;
 
@@ -67,16 +72,17 @@ const Kanban = () => {
 
         if (activeTask.status !== newStatus) {
             try {
-                // await updateTask.mutateAsync({
-                //     ...activeTask,
-                //     status: newStatus,
-                //     started_at: activeTask.started_at.toISOString(),
-                //     deadline: activeTask.deadline?.toISOString(),
-                //     completed_at:
-                //         newStatus === 'Done'
-                //             ? new Date().toISOString()
-                //             : undefined,
-                // });
+                await updateTask({
+                    taskToUpdate: {
+                        ...activeTask,
+                        status: newStatus,
+                        completed_at:
+                            newStatus === 'Completed'
+                                ? toDBTime(dayjs().toString())
+                                : undefined,
+                    },
+                    taskId: activeTask.id,
+                });
             } catch (error) {
                 console.error('Failed to update task status:', error);
             }
@@ -101,6 +107,9 @@ const Kanban = () => {
                         />
                     ))}
                 </div>
+                <DragOverlay>
+                    {activeTask ? <TaskCard task={activeTask} isDragged={true} /> : null}
+                </DragOverlay>
             </DndContext>
             <ScrollBar orientation="horizontal" />
         </ScrollArea>
@@ -140,8 +149,11 @@ const Column = ({
                     <ScrollArea>
                         <div className="max-h-[70vh] space-y-1">
                             {column.tasks.map((task) => (
-                                <Suspense fallback={<div>Loading...</div>}>
-                                    <TaskCard task={task} key={task.id} />
+                                <Suspense
+                                    fallback={<Skeleton className="flex-1 h-12" />}
+                                    key={task.id}
+                                >
+                                    <TaskCard task={task} />
                                 </Suspense>
                             ))}
                         </div>

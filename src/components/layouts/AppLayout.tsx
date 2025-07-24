@@ -12,10 +12,7 @@ export function AppLayout() {
     if (error) return <div>Error: {error.toString()}</div>;
 
     return (
-        <div
-            className="flex h-screen w-full fixed top-0 overflow-hidden"
-            // onContextMenuCapture={(e) => e.preventDefault()}
-        >
+        <div className="flex h-screen w-full fixed top-0 overflow-hidden">
             <NeramSidebar />
             <Toaster position="bottom-center" richColors />
             <ModalLayout />

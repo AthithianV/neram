@@ -39,7 +39,6 @@ const NeramSidebar = () => {
                                                     'bg-sidebar-accent font-semibold text-theme hover:text-theme',
                                                 'px-4 !h-auto text-[0.9rem] rounded-md',
                                             )}
-                                            tooltip={link.props.key}
                                         >
                                             {link}
                                         </SidebarMenuButton>

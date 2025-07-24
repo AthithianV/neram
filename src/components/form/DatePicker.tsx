@@ -1,9 +1,10 @@
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { toDBTime } from '@/lib/time';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
 import { useState } from 'react';
+
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Input } from '../ui/input';
 
 type PropsType = {
@@ -23,7 +24,9 @@ const DatePicker = ({ dateValue, onChange }: PropsType) => {
                         'shadow-none',
                         open && 'border-b-2 border-sky-500',
                     )}
-                    value={dateValue ? dayjs(dateValue).format('DD/MM/YYYY') : 'Pick a date'}
+                    value={
+                        dateValue ? dayjs(dateValue).format('DD/MM/YYYY') : 'Pick a date'
+                    }
                 />
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start" side="top">

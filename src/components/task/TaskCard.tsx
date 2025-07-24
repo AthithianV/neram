@@ -12,7 +12,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import DeleteTask from './DeleteTask';
 
-const TaskCard = ({ task }: { task: ReadTask }) => {
+type PropType = { task: ReadTask; isDragged?: boolean };
+
+const TaskCard = ({ task, isDragged }: PropType) => {
     const [_, setSearchParams] = useSearchParams();
     const [isHovered, setIsHovered] = useState(false);
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -32,14 +34,20 @@ const TaskCard = ({ task }: { task: ReadTask }) => {
         return color;
     };
 
+    const getOpacity = () => {
+        const { status } = task;
+        return status === 'Completed' || status === 'Cancelled' || isDragged
+            ? 'opacity-50'
+            : '';
+    };
+
     return (
-        <div ref={setNodeRef} {...attributes} {...listeners} style={style}>
+        <div ref={setNodeRef} style={style}>
             <Card
-                key={task.id}
                 className={cn(
                     'transition-all hover:shadow-md rounded-md gap-0 py-3 px-2 w-full z-800',
-                    task.status === 'Completed' && 'opacity-70',
-                    // draggedTask?.id === task.id && 'opacity-50',
+                    'cursor-pointer',
+                    getOpacity(),
                 )}
                 onClick={() =>
                     setSearchParams({
@@ -55,7 +63,11 @@ const TaskCard = ({ task }: { task: ReadTask }) => {
             >
                 <CardHeader className="px-2">
                     <div className="flex items-center justify-between gap-2">
-                        <CardTitle className="text-sm font-semibold">
+                        <CardTitle
+                            className="text-sm font-semibold cursor-grab"
+                            {...attributes}
+                            {...listeners}
+                        >
                             {task.title}
                         </CardTitle>
                         <Button
