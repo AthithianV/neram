@@ -6,6 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { useSession } from '@/hooks/useSession';
 import { useTimer } from '@/hooks/useTimer';
 
+import LoaderWrapper from '@/components/layouts/Loader';
 import PageAnimation from '@/components/layouts/PageAnimation';
 import { cn } from '@/lib/utils';
 
@@ -13,7 +14,7 @@ const Session = () => {
     const { data: sessions, isLoading, error } = useSession();
     const { data: timer } = useTimer();
 
-    if (isLoading) return <div>Loading...</div>;
+    if (isLoading) return <LoaderWrapper />;
     if (error) return <div>Error: {error.toString()}</div>;
 
     return (
@@ -37,7 +38,8 @@ const Session = () => {
                                     key={index}
                                     sessionWithTaskAndTag={sessionWithTaskAndTag}
                                     timer={
-                                        timer && timer.session_id === sessionWithTaskAndTag.id
+                                        timer &&
+                                        timer.session_id === sessionWithTaskAndTag.id
                                             ? timer
                                             : null
                                     }

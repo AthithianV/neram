@@ -3,7 +3,6 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 
 import TaskSchema, { Task } from '@/schema/TaskSchema';
 import {
@@ -41,6 +40,8 @@ import DatePicker from '../form/DatePicker';
 import DurationElement from '../form/DurationElement';
 import RichEditor from '../form/Editor';
 import Selector from '../form/Selector';
+import Title from '../form/Title';
+import LoaderWrapper from '../layouts/Loader';
 import ProjectPicker from '../session/ProjectPicker';
 import { Separator } from '../ui/separator';
 
@@ -96,7 +97,7 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
         closeModal();
     };
 
-    if (taskId && !task) return null;
+    if (taskId && !task) return <LoaderWrapper />;
 
     return (
         <Form {...form}>
@@ -108,11 +109,10 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <Input
-                                    placeholder="Untitled"
-                                    {...field}
-                                    className="!text-3xl font-bold border-none shadow-none px-0 !h-auto !w-full"
+                                <Title
+                                    ref={field.ref}
                                     value={field.value}
+                                    onChange={field.onChange}
                                 />
                             </FormControl>
                             <FormMessage />

@@ -11,6 +11,7 @@ import { useProjectById } from '@/hooks/useProject';
 import { Edit, Settings, Trash } from 'lucide-react';
 import { useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
+import LoaderWrapper from '../layouts/Loader';
 import DeleteProject from './DeleteProject';
 
 const ProjectSettings = () => {
@@ -22,7 +23,7 @@ const ProjectSettings = () => {
     const { data: project } = useProjectById(Number(projectId) ?? 0);
 
     if (!project || !projectId) {
-        return null;
+        return <LoaderWrapper />;
     }
 
     const handleEdit = (e: React.MouseEvent<HTMLDivElement>) => {

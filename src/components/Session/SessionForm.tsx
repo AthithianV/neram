@@ -29,12 +29,21 @@ import { useSessionCollision } from '@/hooks/useSession';
 import { useTimer } from '@/hooks/useTimer';
 import { toDBTime } from '@/lib/time';
 import dayjs from 'dayjs';
-import { Calendar, CalendarMinus, CalendarPlus, Clock, Folder, ListTodo, Tag } from 'lucide-react';
+import {
+    Calendar,
+    CalendarMinus,
+    CalendarPlus,
+    Clock,
+    Folder,
+    ListTodo,
+    Tag,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import DurationElement from '../form/DurationElement';
 import RichEditor from '../form/Editor';
 import TimeElement from '../form/TimeElement';
 import Title from '../form/Title';
+import LoaderWrapper from '../layouts/Loader';
 import { Separator } from '../ui/separator';
 
 type PropType = {
@@ -64,13 +73,10 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                 tags: session.tags.map((tag) => tag.id),
             });
         }
+        form.setFocus('title');
     }, [session]);
 
-    useEffect(() => {
-        console.log(form.getValues());
-    }, [form.getValues()]);
-
-    useEffect(() => {
+    const adjustDuration = () => {
         const breakDuration = form.getValues('break_duration_sec') ?? 0;
         const startTime = dayjs(form.getValues('start_time'));
         const endTime = dayjs(form.getValues('end_time'));
@@ -85,11 +91,12 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
             }
             form.setValue('session_duration_sec', duration - breakDuration);
         }
-    }, [form.watch('break_duration_sec'), form.watch('start_time'), form.watch('end_time')]);
+    };
 
-    useEffect(() => {
-        const date = form.getValues('date');
+    const setDateToTimes = () => {
         const startTime = dayjs(form.getValues('start_time'));
+        const endTime = dayjs(form.getValues('end_time'));
+        const date = form.getValues('date');
 
         let newStartTime = dayjs(date)
             .hour(startTime.hour())
@@ -97,20 +104,14 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
             .second(startTime.second());
         form.setValue('start_time', toDBTime(newStartTime.toString()));
 
-        let endTime = dayjs(form.getValues('end_time'));
         if (endTime.isValid()) {
-            endTime = dayjs(endTime);
             let newEndTime = dayjs(date)
                 .hour(endTime.hour())
                 .minute(endTime.minute())
                 .second(endTime.second());
             form.setValue('end_time', toDBTime(newEndTime.toString()));
         }
-    }, [form.watch('date')]);
-
-    useEffect(() => {
-        form.clearErrors();
-    }, [form.watch()]);
+    };
 
     const handleClose = () => {
         form.reset();
@@ -150,7 +151,7 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
     }
 
     if (sessionId && !session) {
-        return null;
+        return <LoaderWrapper />;
     }
 
     return (
@@ -163,7 +164,11 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <Title value={field.value} onChange={field.onChange} />
+                                <Title
+                                    ref={field.ref}
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                />
                             </FormControl>
                             <FormMessage className="text-xs mt-1" />
                         </FormItem>
@@ -183,7 +188,10 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                                     <Folder size={16} /> Project
                                 </FormLabel>
                                 <FormControl>
-                                    <ProjectPicker onChange={field.onChange} value={field.value} />
+                                    <ProjectPicker
+                                        onChange={field.onChange}
+                                        value={field.value}
+                                    />
                                 </FormControl>
                                 <FormMessage className="text-xs" />
                             </FormItem>
@@ -203,7 +211,7 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                                 <FormControl>
                                     <TaskPicker
                                         onChange={field.onChange}
-                                        value={field.value}
+                                        value={field.value ? field.value : undefined}
                                         projectId={form.watch('project_id')}
                                     />
                                 </FormControl>
@@ -242,7 +250,15 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                                     <Calendar size={16} /> Date
                                 </FormLabel>
                                 <FormControl>
-                                    <DatePicker dateValue={field.value} onChange={field.onChange} />
+                                    <DatePicker
+                                        dateValue={field.value}
+                                        onChange={field.onChange}
+                                        setDateToTimes={setDateToTimes}
+                                        disable={
+                                            session !== null &&
+                                            sessionId === timer?.session_id
+                                        }
+                                    />
                                 </FormControl>
                                 <FormMessage className="text-xs" />
                             </FormItem>
@@ -271,7 +287,11 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                                             : form.clearErrors('start_time')
                                     }
                                     date={form.getValues('date')}
-                                    isDisable={session !== null && sessionId === timer?.session_id}
+                                    isDisable={
+                                        session !== null &&
+                                        sessionId === timer?.session_id
+                                    }
+                                    adjustDuration={adjustDuration}
                                 />
                                 <FormMessage className="text-xs" />
                             </FormItem>
@@ -289,7 +309,7 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                                         <CalendarMinus size={16} /> End Time
                                     </FormLabel>
                                     <TimeElement
-                                        value={field.value}
+                                        value={field.value ? field.value : undefined}
                                         setValue={field.onChange}
                                         setError={(message) =>
                                             message
@@ -299,6 +319,7 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                                                 : form.clearErrors('end_time')
                                         }
                                         date={form.getValues('date')}
+                                        adjustDuration={adjustDuration}
                                     />
                                     <FormMessage className="text-xs" />
                                 </FormItem>
@@ -328,7 +349,10 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                                             })
                                         }
                                         isSession={true}
-                                        clearError={() => form.clearErrors('session_duration_sec')}
+                                        clearError={() =>
+                                            form.clearErrors('session_duration_sec')
+                                        }
+                                        adjustDuration={adjustDuration}
                                     />
                                     <FormMessage className="text-xs" />
                                 </FormItem>
@@ -354,7 +378,10 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                                             })
                                         }
                                         isSession={true}
-                                        clearError={() => form.clearErrors('break_duration_sec')}
+                                        clearError={() =>
+                                            form.clearErrors('break_duration_sec')
+                                        }
+                                        adjustDuration={adjustDuration}
                                     />
                                     <FormMessage className="text-xs" />
                                 </FormItem>
@@ -369,7 +396,10 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <RichEditor value={field.value} onChange={field.onChange} />
+                                <RichEditor
+                                    value={field.value ? field.value : undefined}
+                                    onChange={field.onChange}
+                                />
                             </FormControl>
                             <FormMessage className="text-xs" />
                         </FormItem>

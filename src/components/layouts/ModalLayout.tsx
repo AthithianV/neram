@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { Suspense, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Skeleton } from '../ui/skeleton';
+import LoaderWrapper from './Loader';
 
 const ProjectForm = React.lazy(() => import('../project/ProjectForm'));
 const SessionForm = React.lazy(() => import('../session/SessionForm'));
@@ -68,25 +68,25 @@ const ModalManager = ({ modal }: { modal: ModalModes }) => {
     switch (modal) {
         case 'add_project':
             return (
-                <Suspense fallback={<Skeleton className="h-100 w-100" />}>
+                <Suspense fallback={<LoaderWrapper />}>
                     <ProjectForm closeModal={closeModal} />
                 </Suspense>
             );
         case 'edit_project':
             return (
-                <Suspense fallback={<Skeleton className="h-100 w-100" />}>
+                <Suspense fallback={<LoaderWrapper />}>
                     <ProjectForm projectId={id} closeModal={closeModal} />
                 </Suspense>
             );
         case 'add_task':
             return (
-                <Suspense fallback={<Skeleton className="h-100 w-100" />}>
+                <Suspense fallback={<LoaderWrapper />}>
                     <TaskForm closeModal={closeModal} status={taskStatus as TaskStatus} />
                 </Suspense>
             );
         case 'edit_task':
             return (
-                <Suspense fallback={<Skeleton className="h-100 w-100" />}>
+                <Suspense fallback={<LoaderWrapper />}>
                     <TaskForm
                         closeModal={closeModal}
                         status={taskStatus as TaskStatus}
@@ -96,13 +96,13 @@ const ModalManager = ({ modal }: { modal: ModalModes }) => {
             );
         case 'add_session':
             return (
-                <Suspense fallback={<Skeleton className="h-100 w-100" />}>
+                <Suspense fallback={<LoaderWrapper />}>
                     <SessionForm closeModal={closeModal} />
                 </Suspense>
             );
         case 'edit_session':
             return (
-                <Suspense fallback={<Skeleton className="h-100 w-100" />}>
+                <Suspense fallback={<LoaderWrapper />}>
                     <SessionForm sessionId={id} closeModal={closeModal} />
                 </Suspense>
             );

@@ -3,6 +3,7 @@ import { useProject } from '@/hooks/useProject';
 import { cn } from '@/lib/utils';
 import { Outlet, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
+import LoaderWrapper from '@/components/layouts/Loader';
 import PageAnimation from '@/components/layouts/PageAnimation';
 import ProjectSettings from '@/components/project/ProjectSettings';
 import { Button } from '@/components/ui/button';
@@ -11,7 +12,7 @@ import { toast } from 'sonner';
 
 const Project = () => {
     const [_, setSearchParams] = useSearchParams();
-    const { data: projects } = useProject();
+    const { data: projects, isLoading } = useProject();
     const { projectId } = useParams();
     const navigate = useNavigate();
 
@@ -22,6 +23,10 @@ const Project = () => {
         }
         setSearchParams({ modal: 'add_project' });
     };
+
+    if (isLoading) {
+        return <LoaderWrapper />;
+    }
 
     return (
         <PageAnimation>

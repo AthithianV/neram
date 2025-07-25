@@ -15,7 +15,7 @@ const DurationElement = ({
     setError: (error: string) => void;
     isSession?: boolean;
     clearError: () => void;
-    adjustDuration: () => void;
+    adjustDuration?: () => void;
 }) => {
     const [fieldValue, setFieldValue] = useState('');
 

@@ -40,6 +40,8 @@ import ColorPicker from '../form/ColorPicker';
 import DatePicker from '../form/DatePicker';
 import RichEditor from '../form/Editor';
 import Selector from '../form/Selector';
+import Title from '../form/Title';
+import LoaderWrapper from '../layouts/Loader';
 
 type PropType = {
     projectId?: number | null;
@@ -48,7 +50,7 @@ type PropType = {
 
 const ProjectForm = ({ projectId, closeModal }: PropType) => {
     const navigate = useNavigate();
-    const { data: project } = useProjectById(projectId);
+    const { data: project, isLoading } = useProjectById(projectId);
     const { mutateAsync: createProject } = useCreateProject();
     const { mutateAsync: updateProject } = useUpdateProject();
 
@@ -89,6 +91,10 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
         closeModal();
     };
 
+    if (isLoading) {
+        return <LoaderWrapper />;
+    }
+
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 w-[50vw]">
@@ -99,10 +105,10 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                     render={({ field }) => (
                         <FormItem className="w-1/2 flex items-center gap-5">
                             <FormControl>
-                                <Input
-                                    placeholder="Project Title..."
-                                    {...field}
-                                    className="border-none shadow-none px-0 !text-2xl font-semibold"
+                                <Title
+                                    ref={field.ref}
+                                    value={field.value}
+                                    onChange={field.onChange}
                                 />
                             </FormControl>
                             <FormMessage />
@@ -122,7 +128,10 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                                     <Palette size={16} /> Color
                                 </FormLabel>
                                 <FormControl>
-                                    <ColorPicker onChange={field.onChange} value={field.value} />
+                                    <ColorPicker
+                                        onChange={field.onChange}
+                                        value={field.value}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -139,7 +148,10 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                                     <CalendarPlus size={16} /> Started At
                                 </FormLabel>
                                 <FormControl>
-                                    <DatePicker dateValue={field.value} onChange={field.onChange} />
+                                    <DatePicker
+                                        dateValue={field.value}
+                                        onChange={field.onChange}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -158,7 +170,10 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                                     <CalendarCheck size={16} /> Deadline
                                 </FormLabel>
                                 <FormControl>
-                                    <DatePicker dateValue={field.value} onChange={field.onChange} />
+                                    <DatePicker
+                                        dateValue={field.value}
+                                        onChange={field.onChange}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -175,7 +190,10 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                                     <CalendarMinus size={16} /> Completed At
                                 </FormLabel>
                                 <FormControl>
-                                    <DatePicker dateValue={field.value} onChange={field.onChange} />
+                                    <DatePicker
+                                        dateValue={field.value}
+                                        onChange={field.onChange}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -321,7 +339,10 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <RichEditor value={field.value} onChange={field.onChange} />
+                                <RichEditor
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                />
                             </FormControl>
                             <FormMessage className="text-xs" />
                         </FormItem>
@@ -329,7 +350,11 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                 />
 
                 <div className="flex justify-end gap-2">
-                    <Button type="button" variant="destructive" onClick={() => closeForm(false)}>
+                    <Button
+                        type="button"
+                        variant="destructive"
+                        onClick={() => closeForm(false)}
+                    >
                         Close
                     </Button>
                     <Button type="submit">Save Project</Button>

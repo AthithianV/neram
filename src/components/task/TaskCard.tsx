@@ -3,14 +3,17 @@ import { ReadTask } from '@/hooks/useTask';
 import { cn } from '@/lib/utils';
 import { useDraggable } from '@dnd-kit/core';
 import dayjs from 'dayjs';
-import { AlarmCheck, Calendar, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { AlarmCheck, Calendar, Flag, Trash2 } from 'lucide-react';
+import { ReactNode, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import DeleteTask from './DeleteTask';
+
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(relativeTime);
 
 type PropType = { task: ReadTask; isDragged?: boolean };
 
@@ -29,9 +32,9 @@ const TaskCard = ({ task, isDragged }: PropType) => {
             : undefined,
     };
 
-    const getPriorityColor = (priority?: string | null) => {
+    const getPriorityStyle = (priority?: string | null) => {
         const color = TASK_PRIORITY_COLOR[(priority as TaskPriority) ?? 'Default'];
-        return color;
+        return { color };
     };
 
     const getOpacity = () => {
@@ -39,6 +42,11 @@ const TaskCard = ({ task, isDragged }: PropType) => {
         return status === 'Completed' || status === 'Cancelled' || isDragged
             ? 'opacity-50'
             : '';
+    };
+
+    const formatDeadLine = (deadline: string): string => {
+        const date = dayjs(deadline);
+        return date.isBefore(dayjs()) ? date.fromNow() : date.toNow(true);
     };
 
     return (
@@ -99,63 +107,34 @@ const TaskCard = ({ task, isDragged }: PropType) => {
 
                     <div className="flex gap-1 flex-wrap item-center">
                         {task.deadline && (
-                            <Tooltip>
-                                <TooltipTrigger>
-                                    <Badge
-                                        className={cn(
-                                            'flex items-center justify-between',
-                                            'bg-transparent text-gray-700 border-gray-200',
-                                            'text-xs py-1',
-                                        )}
-                                    >
-                                        <Calendar className="h-4 w-4" />
-                                        <span className={cn('font-medium')}>
-                                            {dayjs(task.deadline).format('DD MMM YYYY')}
-                                        </span>
-                                    </Badge>
-                                </TooltipTrigger>
-                                <TooltipContent>Deadline</TooltipContent>
-                            </Tooltip>
+                            <TaskAttribute
+                                title="Deadline"
+                                text={formatDeadLine(task.deadline)}
+                                icon={<Calendar />}
+                                className={
+                                    dayjs(task.deadline).isBefore(dayjs())
+                                        ? 'text-red-500'
+                                        : 'text-blue-600'
+                                }
+                            />
                         )}
 
                         {task.estimated_time !== 0 && task.estimated_time && (
-                            <Tooltip>
-                                <TooltipTrigger>
-                                    <Badge
-                                        className={cn(
-                                            'flex items-center justify-between',
-                                            'bg-transparent text-gray-700 border-gray-200',
-                                            'text-xs py-1',
-                                        )}
-                                    >
-                                        <AlarmCheck className="h-4 w-4" />
-                                        <span className={cn('font-medium')}>
-                                            {(task.estimated_time / 3600).toFixed(1)} h
-                                        </span>
-                                    </Badge>
-                                </TooltipTrigger>
-                                <TooltipContent>Estimated Time</TooltipContent>
-                            </Tooltip>
+                            <TaskAttribute
+                                title="Estimated Time"
+                                text={`${(task.estimated_time / 3600).toFixed(1)} h`}
+                                icon={<AlarmCheck className="h-4 w-4" />}
+                            />
                         )}
 
                         {task.priority && (
-                            <div className="flex items-center justify-between">
-                                <Tooltip>
-                                    <TooltipTrigger>
-                                        <Badge
-                                            className={cn('text-xs')}
-                                            style={{
-                                                backgroundColor: getPriorityColor(
-                                                    task.priority,
-                                                ),
-                                            }}
-                                        >
-                                            {task.priority}
-                                        </Badge>
-                                    </TooltipTrigger>
-                                    <TooltipContent>Priority</TooltipContent>
-                                </Tooltip>
-                            </div>
+                            <TaskAttribute
+                                title="Priority"
+                                text={task.priority}
+                                icon={<Flag />}
+                                style={getPriorityStyle(task.priority)}
+                                className="text-white border-none"
+                            />
                         )}
                     </div>
 
@@ -190,6 +169,42 @@ const TaskCard = ({ task, isDragged }: PropType) => {
                 setAlertOpen={setOpenDeleteModal}
             />
         </div>
+    );
+};
+
+const TaskAttribute = ({
+    title,
+    text,
+    icon,
+    className,
+    style,
+}: {
+    title: string;
+    text: string;
+    icon: ReactNode;
+    className?: string;
+    style?: { color: string };
+}) => {
+    return (
+        <Tooltip>
+            <TooltipTrigger>
+                <Badge
+                    className={cn(
+                        'flex items-center justify-between',
+                        'bg-transparent text-gray-700 border-gray-200',
+                        'text-xs py-1',
+                        'font-semibold',
+                        'rounded-sm',
+                        className ?? '',
+                    )}
+                    style={style}
+                >
+                    {icon}
+                    <span>{text}</span>
+                </Badge>
+            </TooltipTrigger>
+            <TooltipContent>{title}</TooltipContent>
+        </Tooltip>
     );
 };
 

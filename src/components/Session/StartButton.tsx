@@ -40,10 +40,7 @@ const StartButton = () => {
                             <TaskList key={project.id} project={project} />
                         ))
                     ) : (
-                        <DropdownMenuItem disabled>
-                            {' '}
-                            No Projects{' '}
-                        </DropdownMenuItem>
+                        <DropdownMenuItem disabled> No Projects </DropdownMenuItem>
                     )}
                 </DropdownMenuGroup>
             </DropdownMenuContent>
@@ -58,7 +55,7 @@ const TaskList = ({ project }: { project: MinimalProject }) => {
 
     if (isLoading) return <DropdownMenuItem>Loading...</DropdownMenuItem>;
 
-    const handleStart = async (projectId: number, taskId: number) => {
+    const handleStart = async (projectId: number, taskId?: number) => {
         const id = await createSession({
             title: 'UNTITLED',
             project_id: projectId,
@@ -74,7 +71,14 @@ const TaskList = ({ project }: { project: MinimalProject }) => {
 
     return (
         <DropdownMenuSub key={project.id}>
-            <DropdownMenuSubTrigger>{project.title}</DropdownMenuSubTrigger>
+            <DropdownMenuSubTrigger
+                onPointerDown={(e) => {
+                    e.stopPropagation();
+                    handleStart(project.id);
+                }}
+            >
+                {project.title}
+            </DropdownMenuSubTrigger>
             <DropdownMenuPortal>
                 <DropdownMenuSubContent>
                     {tasksForProject?.length ? (
@@ -87,9 +91,7 @@ const TaskList = ({ project }: { project: MinimalProject }) => {
                             </DropdownMenuItem>
                         ))
                     ) : (
-                        <DropdownMenuItem disabled>
-                            No tasks yet
-                        </DropdownMenuItem>
+                        <DropdownMenuItem disabled>No tasks yet</DropdownMenuItem>
                     )}
                 </DropdownMenuSubContent>
             </DropdownMenuPortal>

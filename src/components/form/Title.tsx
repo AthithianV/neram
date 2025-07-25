@@ -1,37 +1,49 @@
 import { cn } from '@/lib/utils';
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 type PropType = {
     value?: string;
     onChange: (val: string) => void;
+    placeholder?: string;
 };
 
-const Title = ({ value, onChange }: PropType) => {
-    const ref = useRef<HTMLDivElement>(null);
+const Title = React.forwardRef<HTMLDivElement, PropType>(
+    ({ value, onChange, placeholder }, ref) => {
+        const localRef = useRef<HTMLDivElement>(null);
 
-    const handleInput = () => {
-        onChange(ref.current?.innerText || '');
-    };
+        const handleInput = () => {
+            onChange(localRef.current?.innerText || '');
+        };
 
-    useEffect(() => {
-        if (ref.current && value !== ref.current.innerText) {
-            ref.current.innerText = value || '';
-        }
-    }, [value]);
+        useEffect(() => {
+            if (localRef.current && value !== localRef.current.innerText) {
+                localRef.current.innerText = value || '';
+            }
+        }, [value]);
 
-    return (
-        <div
-            ref={ref}
-            contentEditable
-            onInput={handleInput}
-            className={cn(
-                'outline-none word-wrap',
-                'text-xl font-semibold text-black placeholder:text-gray-400',
-                'max-w-full',
-            )}
-            data-placeholder="Untitled"
-        />
-    );
-};
+        useEffect(() => {
+            if (!ref || !localRef.current) return;
+            if (typeof ref === 'function') {
+                ref(localRef.current);
+            } else {
+                ref.current = localRef.current;
+            }
+        }, [ref]);
+
+        return (
+            <div
+                ref={localRef}
+                contentEditable
+                onInput={handleInput}
+                className={cn(
+                    'outline-none word-wrap',
+                    'text-xl font-semibold text-black placeholder:text-gray-400',
+                    'max-w-full',
+                )}
+                data-placeholder={placeholder}
+            />
+        );
+    },
+);
 
 export default Title;
