@@ -8,12 +8,14 @@ const DurationElement = ({
     setError,
     isSession,
     clearError,
+    adjustDuration,
 }: {
     value?: number | null;
     onChange: (value: number) => void;
     setError: (error: string) => void;
     isSession?: boolean;
     clearError: () => void;
+    adjustDuration: () => void;
 }) => {
     const [fieldValue, setFieldValue] = useState('');
 
@@ -41,6 +43,7 @@ const DurationElement = ({
         }
 
         onChange(duration);
+        adjustDuration && adjustDuration();
     };
 
     return (

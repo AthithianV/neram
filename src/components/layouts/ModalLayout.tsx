@@ -2,11 +2,13 @@ import { MODALMODES, ModalModes } from '@/constants/modal';
 import { TaskStatus } from '@/constants/task';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import ProjectForm from '../project/ProjectForm';
-import SessionForm from '../session/SessionForm';
-import TaskForm from '../task/TaskForm';
+import { Skeleton } from '../ui/skeleton';
+
+const ProjectForm = React.lazy(() => import('../project/ProjectForm'));
+const SessionForm = React.lazy(() => import('../session/SessionForm'));
+const TaskForm = React.lazy(() => import('../task/TaskForm'));
 
 const backdropVariants = {
     hidden: { opacity: 0 },
@@ -65,19 +67,45 @@ const ModalManager = ({ modal }: { modal: ModalModes }) => {
 
     switch (modal) {
         case 'add_project':
-            return <ProjectForm closeModal={closeModal} />;
+            return (
+                <Suspense fallback={<Skeleton className="h-100 w-100" />}>
+                    <ProjectForm closeModal={closeModal} />
+                </Suspense>
+            );
         case 'edit_project':
-            return <ProjectForm projectId={id} closeModal={closeModal} />;
+            return (
+                <Suspense fallback={<Skeleton className="h-100 w-100" />}>
+                    <ProjectForm projectId={id} closeModal={closeModal} />
+                </Suspense>
+            );
         case 'add_task':
-            return <TaskForm closeModal={closeModal} status={taskStatus as TaskStatus} />;
+            return (
+                <Suspense fallback={<Skeleton className="h-100 w-100" />}>
+                    <TaskForm closeModal={closeModal} status={taskStatus as TaskStatus} />
+                </Suspense>
+            );
         case 'edit_task':
             return (
-                <TaskForm closeModal={closeModal} status={taskStatus as TaskStatus} taskId={id} />
+                <Suspense fallback={<Skeleton className="h-100 w-100" />}>
+                    <TaskForm
+                        closeModal={closeModal}
+                        status={taskStatus as TaskStatus}
+                        taskId={id}
+                    />
+                </Suspense>
             );
         case 'add_session':
-            return <SessionForm closeModal={closeModal} />;
+            return (
+                <Suspense fallback={<Skeleton className="h-100 w-100" />}>
+                    <SessionForm closeModal={closeModal} />
+                </Suspense>
+            );
         case 'edit_session':
-            return <SessionForm sessionId={id} closeModal={closeModal} />;
+            return (
+                <Suspense fallback={<Skeleton className="h-100 w-100" />}>
+                    <SessionForm sessionId={id} closeModal={closeModal} />
+                </Suspense>
+            );
         default:
             return null;
     }
@@ -87,7 +115,9 @@ const ModalLayout = () => {
     const [searchParams] = useSearchParams();
     const rawModal = searchParams.get('modal');
     const modal: ModalModes | null =
-        rawModal && MODALMODES.includes(rawModal as ModalModes) ? (rawModal as ModalModes) : null;
+        rawModal && MODALMODES.includes(rawModal as ModalModes)
+            ? (rawModal as ModalModes)
+            : null;
 
     return (
         <AnimatePresence>

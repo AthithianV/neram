@@ -62,7 +62,7 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
         },
     });
     const { mutateAsync: createTask } = useCreateTask();
-    const { mutateAsync: updateTask } = useUpdateTask();
+    const { mutateAsync: updateTask } = useUpdateTask(Number(projectId));
     const { data: task } = useTaskById(taskId);
 
     useEffect(() => {

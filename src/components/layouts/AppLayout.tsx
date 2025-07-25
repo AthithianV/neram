@@ -1,9 +1,12 @@
+import React, { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useDb } from '../../hooks/useDb';
+import { Skeleton } from '../ui/skeleton';
 import { Toaster } from '../ui/sonner';
-import ModalLayout from './ModalLayout';
-import NeramSidebar from './NeramSidebar';
-import TitleBar from './TitleBar';
+
+const ModalLayout = React.lazy(() => import('./ModalLayout'));
+const NeramSidebar = React.lazy(() => import('./NeramSidebar'));
+const TitleBar = React.lazy(() => import('./TitleBar'));
 
 export function AppLayout() {
     const { isLoading, error } = useDb();
@@ -13,12 +16,19 @@ export function AppLayout() {
 
     return (
         <div className="flex h-screen w-full fixed top-0 overflow-hidden">
-            <NeramSidebar />
+            <Suspense fallback={<Skeleton className="h-full" />}>
+                <NeramSidebar />
+            </Suspense>
             <Toaster position="bottom-center" richColors />
-            <ModalLayout />
+            <Suspense fallback={<Skeleton />}>
+                <ModalLayout />
+            </Suspense>
+
             <main className="flex flex-col text-foreground overflow-hidden h-full w-full bg-gray-50">
                 <div className="title-bar-height bg-white border-b-2 border-gray-100">
-                    <TitleBar />
+                    <Suspense fallback={<Skeleton className="title-bar-height w-full" />}>
+                        <TitleBar />
+                    </Suspense>
                 </div>
                 <Outlet />
             </main>

@@ -12,12 +12,22 @@ export interface TimeElementProps {
     setValue: (val: string) => void;
     setError: (error: string) => void;
     isDisable?: boolean;
+    adjustDuration?: () => void;
 }
 
-const TimeElement = ({ value, setValue, setError, date, isDisable }: TimeElementProps) => {
+const TimeElement = ({
+    value,
+    setValue,
+    setError,
+    date,
+    isDisable,
+    adjustDuration,
+}: TimeElementProps) => {
     dayjs.extend(customParseFormat);
 
-    const [time, setTime] = useState<string>(value ? dayjs(value).format(TIME_FORMAT) : '');
+    const [time, setTime] = useState<string>(
+        value ? dayjs(value).format(TIME_FORMAT) : '',
+    );
 
     const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTime(e.target.value);
@@ -34,7 +44,8 @@ const TimeElement = ({ value, setValue, setError, date, isDisable }: TimeElement
         } else {
             setError('');
 
-            const setDate = dayjs(date).format(DB_DATE_FORMAT) || dayjs().format(DB_DATE_FORMAT);
+            const setDate =
+                dayjs(date).format(DB_DATE_FORMAT) || dayjs().format(DB_DATE_FORMAT);
 
             const result = dayjs(
                 `${setDate} ${e.target.value}`,
@@ -43,6 +54,7 @@ const TimeElement = ({ value, setValue, setError, date, isDisable }: TimeElement
 
             setValue(toDBTime(result));
         }
+        adjustDuration && adjustDuration();
     };
 
     return (

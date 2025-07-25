@@ -10,10 +10,18 @@ import { Input } from '../ui/input';
 type PropsType = {
     dateValue?: string | null;
     onChange: (date: string) => void;
+    setDateToTimes?: () => void;
+    disable?: boolean;
 };
 
-const DatePicker = ({ dateValue, onChange }: PropsType) => {
+const DatePicker = ({ dateValue, onChange, setDateToTimes, disable }: PropsType) => {
     const [open, setOpen] = useState(false);
+
+    const handleSelect = (date: Date | undefined) => {
+        date && onChange(toDBTime(date));
+        setOpen(false);
+        setDateToTimes && setDateToTimes();
+    };
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -27,16 +35,14 @@ const DatePicker = ({ dateValue, onChange }: PropsType) => {
                     value={
                         dateValue ? dayjs(dateValue).format('DD/MM/YYYY') : 'Pick a date'
                     }
+                    disabled={disable}
                 />
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start" side="top">
                 <Calendar
                     mode="single"
                     selected={dateValue ? dayjs(dateValue).toDate() : undefined}
-                    onSelect={(date) => {
-                        date && onChange(toDBTime(dayjs(date).startOf('day').toString()));
-                        setOpen(false);
-                    }}
+                    onSelect={handleSelect}
                     initialFocus
                 />
             </PopoverContent>

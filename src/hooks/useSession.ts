@@ -17,12 +17,12 @@ export type SessionType = Omit<Session, 'project_id' | 'task_id' | 'tags'> & {
 
 export type UpdateSessionType = {
     title?: string;
-    description?: string;
-    task_id?: number;
+    description?: string | null;
+    task_id?: number | null;
     project_id?: number;
     date?: string;
     start_time?: string;
-    end_time?: string;
+    end_time?: string | null;
     session_duration_sec?: number;
     break_duration_sec?: number;
 };
@@ -80,7 +80,10 @@ export const useCreateSession = () => {
 export const useUpdateSession = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (data: { sessionToUpdate: UpdateSessionType; sessionId: number }) => {
+        mutationFn: async (data: {
+            sessionToUpdate: UpdateSessionType;
+            sessionId: number;
+        }) => {
             await invoke('update_session', data);
             return data.sessionId;
         },
@@ -114,7 +117,13 @@ export const useDeleteSession = () => {
 export const useRemoveTagFromSession = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async ({ sessionId, tagId }: { sessionId: number; tagId: number }) => {
+        mutationFn: async ({
+            sessionId,
+            tagId,
+        }: {
+            sessionId: number;
+            tagId: number;
+        }) => {
             await invoke('remove_tag_from_session', {
                 sessionId,
                 tagId,
@@ -132,7 +141,13 @@ export const useRemoveTagFromSession = () => {
 export const useAddTagToSession = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async ({ sessionId, tagId }: { sessionId: number; tagId: number }) => {
+        mutationFn: async ({
+            sessionId,
+            tagId,
+        }: {
+            sessionId: number;
+            tagId: number;
+        }) => {
             await invoke('add_tag_to_session', {
                 sessionId,
                 tagId,
@@ -154,7 +169,10 @@ export const useSessionCollision = () => {
             endTime: string | null;
             sessionId: number;
         }) => {
-            const isSessionCollides = await invoke<boolean>('check_session_collision', data);
+            const isSessionCollides = await invoke<boolean>(
+                'check_session_collision',
+                data,
+            );
             return isSessionCollides;
         },
         onError: (err) => {

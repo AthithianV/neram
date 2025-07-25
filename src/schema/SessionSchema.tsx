@@ -3,12 +3,12 @@ import { z } from 'zod';
 
 const BaseSessionSchema = z.object({
     title: z.string().optional(),
-    description: z.string().optional(),
-    task_id: z.number().optional(),
+    description: z.string().optional().nullable(),
+    task_id: z.number().optional().nullable(),
     project_id: z.number(),
     date: z.string(),
     start_time: z.string(),
-    end_time: z.string().optional(),
+    end_time: z.string().optional().nullable(),
     session_duration_sec: z.number(),
     break_duration_sec: z.number(),
     tags: z.array(z.number()),
@@ -23,7 +23,9 @@ export const CreateSessionSchema = BaseSessionSchema.refine(
 )
     .refine(
         (data) => {
-            return data.end_time ? dayjs(data.end_time).isAfter(dayjs(data.start_time)) : true;
+            return data.end_time
+                ? dayjs(data.end_time).isAfter(dayjs(data.start_time))
+                : true;
         },
         {
             message: 'End time must be after start time',
