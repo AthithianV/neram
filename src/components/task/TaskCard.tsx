@@ -1,7 +1,6 @@
 import { TASK_PRIORITY_COLOR, TaskPriority } from '@/constants/task';
 import { ReadTask } from '@/hooks/useTask';
 import { cn } from '@/lib/utils';
-import { useDraggable } from '@dnd-kit/core';
 import dayjs from 'dayjs';
 import { AlarmCheck, Calendar, Flag, Trash2 } from 'lucide-react';
 import { ReactNode, useState } from 'react';
@@ -12,6 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import DeleteTask from './DeleteTask';
 
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 
@@ -20,16 +21,19 @@ type PropType = { task: ReadTask; isDragged?: boolean };
 const TaskCard = ({ task, isDragged }: PropType) => {
     const [_, setSearchParams] = useSearchParams();
     const [isHovered, setIsHovered] = useState(false);
+    const [isHeaderHovered, setIsHeaderHovered] = useState(false);
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
-    const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    // const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    //     id: task.id,
+    // });
+    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
         id: task.id,
     });
 
     const style = {
-        transform: transform
-            ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
-            : undefined,
+        transition,
+        transform: CSS.Transform.toString(transform),
     };
 
     const getPriorityStyle = (priority?: string | null) => {
@@ -56,6 +60,7 @@ const TaskCard = ({ task, isDragged }: PropType) => {
                     'transition-all hover:shadow-md rounded-md gap-0 py-3 px-2 w-full z-800',
                     'cursor-pointer',
                     getOpacity(),
+                    isHeaderHovered ? 'border-2 border-sky-500' : '',
                 )}
                 onClick={() =>
                     setSearchParams({
@@ -67,7 +72,6 @@ const TaskCard = ({ task, isDragged }: PropType) => {
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
                 draggable
-                // onDragStart={(e) => handleDragStart(e, task)}
             >
                 <CardHeader className="px-2">
                     <div className="flex items-center justify-between gap-2">
@@ -75,6 +79,9 @@ const TaskCard = ({ task, isDragged }: PropType) => {
                             className="text-sm font-semibold cursor-grab"
                             {...attributes}
                             {...listeners}
+                            onClick={(e) => e.stopPropagation()}
+                            onMouseEnter={() => setIsHeaderHovered(true)}
+                            onMouseLeave={() => setIsHeaderHovered(false)}
                         >
                             {task.title}
                         </CardTitle>

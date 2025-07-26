@@ -61,6 +61,7 @@ impl<'a> TaskRepository<'a> {
     ) -> Result<Vec<ReadTaskModel>, DbErr> {
         let tasks = Task::find()
             .filter(TaskColumn::ProjectId.eq(project_id))
+            .order_by_desc(TaskColumn::UpdatedAt)
             .all(self.db)
             .await?;
         let tasks = tasks

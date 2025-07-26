@@ -6,8 +6,9 @@ import {
     closestCorners,
     useDroppable,
 } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Plus } from 'lucide-react';
-import React, { Suspense, useMemo, useState } from 'react';
+import React, { Suspense, useEffect, useMemo, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 
 import { Badge } from '@/components/ui/badge';
@@ -32,11 +33,18 @@ interface KanbanColumn {
 
 const Kanban = () => {
     const { projectId } = useParams();
-    const { data: tasks = [], isLoading } = useTask(Number(projectId));
+    const { data: tasksData = [], isLoading } = useTask(Number(projectId));
 
     const [_, setSearchParams] = useSearchParams();
     const [activeTask, setActiveTask] = useState<ReadTask | null>(null);
     const { mutateAsync: updateTask } = useUpdateTask(Number(projectId));
+
+    const [tasks, setTasks] = useState<ReadTask[]>([]);
+    const [overColumn, setOverColumn] = useState<TaskStatus | null>(null);
+
+    useEffect(() => {
+        setTasks([...tasksData]);
+    }, [tasksData]);
 
     if (!projectId) return null;
 
@@ -69,9 +77,26 @@ const Kanban = () => {
             return;
         }
 
-        const newStatus = over.id as TaskStatus;
+        const activeId = active.id;
+        const overId = over.id;
 
-        if (activeTask.status !== newStatus) {
+        const activeTaskData = tasks.find((t) => t.id === activeId);
+        const overTaskData = tasks.find((t) => t.id === overId);
+
+        const isOverAColumn = TASK_STATUS.includes(overId as TaskStatus);
+        const newStatus: TaskStatus = isOverAColumn
+            ? (overId as TaskStatus)
+            : ((overTaskData?.status ?? activeTaskData?.status) as TaskStatus);
+
+        const oldStatus = activeTaskData?.status;
+
+        // Case 1: Move to another column (status change)
+        if (oldStatus !== newStatus) {
+            const updatedTasks = tasks.map((task) =>
+                task.id === activeId ? { ...task, status: newStatus } : task,
+            );
+            setTasks(updatedTasks);
+
             try {
                 await updateTask({
                     taskToUpdate: {
@@ -86,6 +111,25 @@ const Kanban = () => {
                 });
             } catch (error) {
                 console.error('Failed to update task status:', error);
+            }
+
+            setActiveTask(null);
+            return;
+        }
+
+        // Case 2: Reorder within same column
+        if (overTaskData && oldStatus === overTaskData.status) {
+            const columnTasks = tasks.filter((t) => t.status === oldStatus);
+            const oldIndex = columnTasks.findIndex((t) => t.id === activeId);
+            const newIndex = columnTasks.findIndex((t) => t.id === overId);
+
+            if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
+                const reordered = [...columnTasks];
+                const [moved] = reordered.splice(oldIndex, 1);
+                reordered.splice(newIndex, 0, moved);
+
+                const nonColumnTasks = tasks.filter((t) => t.status !== oldStatus);
+                setTasks([...nonColumnTasks, ...reordered]);
             }
         }
 
@@ -102,6 +146,9 @@ const Kanban = () => {
                 collisionDetection={closestCorners}
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
+                onDragOver={({ over }) =>
+                    setOverColumn((over?.id as TaskStatus | null) ?? null)
+                }
             >
                 <div className="flex gap-1 h-full">
                     {columns.map((column) => (
@@ -109,11 +156,18 @@ const Kanban = () => {
                             key={column.id}
                             column={column}
                             setSearchParams={setSearchParams}
+                            overColumn={overColumn}
                         />
                     ))}
                 </div>
                 <DragOverlay>
-                    {activeTask ? <TaskCard task={activeTask} isDragged={true} /> : null}
+                    {activeTask ? (
+                        <TaskCard
+                            key={activeTask.id}
+                            task={activeTask}
+                            isDragged={true}
+                        />
+                    ) : null}
                 </DragOverlay>
             </DndContext>
             <ScrollBar orientation="horizontal" />
@@ -124,18 +178,20 @@ const Kanban = () => {
 const Column = ({
     column,
     setSearchParams,
+    overColumn,
 }: {
     column: KanbanColumn;
     setSearchParams: ReturnType<typeof useSearchParams>[1];
+    overColumn: TaskStatus | null;
 }) => {
-    const { setNodeRef, isOver } = useDroppable({ id: column.id });
+    const { setNodeRef } = useDroppable({ id: column.id });
 
     return (
         <div className="flex-1 min-w-[18vw] max-lg:min-w-[25vw]" ref={setNodeRef}>
             <div
                 className={cn(
                     'rounded-md bg-white shadow-sm p-2 border-2 border-gray-100',
-                    isOver && 'bg-sky-100',
+                    overColumn === column.id && 'bg-sky-100',
                 )}
             >
                 <div className="flex items-center justify-between">
@@ -151,19 +207,24 @@ const Column = ({
                 </div>
 
                 <div className="py-2 space-y-2 flex flex-col">
-                    <ScrollArea>
-                        <div className="max-h-[70vh] space-y-1">
-                            {column.tasks.map((task) => (
-                                <Suspense
-                                    fallback={<Skeleton className="flex-1 h-12" />}
-                                    key={task.id}
-                                >
-                                    <TaskCard task={task} />
-                                </Suspense>
-                            ))}
-                        </div>
-                        <ScrollBar orientation="vertical" />
-                    </ScrollArea>
+                    <SortableContext
+                        items={column.tasks.map((t) => t.id)}
+                        strategy={verticalListSortingStrategy}
+                    >
+                        <ScrollArea>
+                            <div className="max-h-[70vh] space-y-1">
+                                {column.tasks.map((task) => (
+                                    <Suspense
+                                        fallback={<Skeleton className="flex-1 h-12" />}
+                                        key={task.id}
+                                    >
+                                        <TaskCard task={task} key={task.id} />
+                                    </Suspense>
+                                ))}
+                            </div>
+                            <ScrollBar orientation="vertical" />
+                        </ScrollArea>
+                    </SortableContext>
 
                     <Button
                         className="!h-8 cursor-pointer hover:bg-gray-100 !w-fit !text-gray-700 text-xs"

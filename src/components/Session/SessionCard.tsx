@@ -56,7 +56,7 @@ const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
                     }}
                 ></div>
                 <div className="flex flex-col gap-2 flex-1">
-                    <h3 className="text-md font-semibold">{title || 'Untitled'}</h3>
+                    <h3 className="text-sm font-semibold">{title || 'Untitled'}</h3>
                     <ScrollArea className="max-w-5/6">
                         <ul className="flex gap-2">
                             {tags && tags.length > 0 ? (
@@ -74,7 +74,9 @@ const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
                                 ))
                             ) : (
                                 <li className="text-sm text-gray-500 opacity-40">
-                                    <Badge className="bg-gray-200 text-gray-500">No tags</Badge>
+                                    <Badge className="bg-gray-200 text-gray-500">
+                                        No tags
+                                    </Badge>
                                 </li>
                             )}
                         </ul>
@@ -105,7 +107,10 @@ const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
                     </div>
                 </div>
 
-                <SessionCard.DELETE show={isHovered && timer?.session_id !== id} sessionId={id} />
+                <SessionCard.DELETE
+                    show={isHovered && timer?.session_id !== id}
+                    sessionId={id}
+                />
 
                 {timer &&
                     timer.session_id === id &&
@@ -140,7 +145,8 @@ SessionCard.DELETE = ({ show, sessionId }: { show: boolean; sessionId: number })
                             Are you sure you want to delete this session?
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete this session.
+                            This action cannot be undone. This will permanently delete
+                            this session.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -159,7 +165,11 @@ SessionCard.DELETE = ({ show, sessionId }: { show: boolean; sessionId: number })
                             disabled={isDeleting}
                             className="bg-red-500 hover:bg-red-600 cursor-pointer"
                         >
-                            {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Delete'}
+                            {isDeleting ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                                'Delete'
+                            )}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
