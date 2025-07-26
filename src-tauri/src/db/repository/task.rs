@@ -6,7 +6,6 @@ use sea_orm::*;
 
 use crate::models::task::{CreateTaskModel, ReadTaskModel};
 use crate::time::now;
-use ::entity::sessions::{Column as SessionColumn, Entity as Session};
 
 pub struct TaskRepository<'a> {
     db: &'a DatabaseConnection,
@@ -91,10 +90,6 @@ impl<'a> TaskRepository<'a> {
     }
 
     pub async fn delete(&self, id: i32) -> Result<DeleteResult, DbErr> {
-        let _ = Session::delete_many()
-            .filter(SessionColumn::TaskId.eq(id))
-            .exec(self.db)
-            .await?;
         let result = Task::delete_by_id(id).exec(self.db).await?;
         Ok(result)
     }

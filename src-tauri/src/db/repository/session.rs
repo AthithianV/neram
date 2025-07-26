@@ -14,7 +14,6 @@ use ::entity::{
     },
     sessions_tags::{ActiveModel as SessionTagsActiveModel, Entity as SessionTags},
     tags::Entity as Tag,
-    tasks::Entity as Task,
 };
 
 pub struct SessionRepository<'a> {
@@ -31,7 +30,6 @@ impl<'a> SessionRepository<'a> {
             title: Set(session.title.clone()),
             description: Set(session.description.clone()),
             project_id: Set(session.project_id),
-            task_id: Set(session.task_id),
             date: Set(session.date.to_string()),
             start_time: Set(session.start_time.to_string()),
             end_time: Set(session.end_time.map(|t| t.to_string())),
@@ -48,16 +46,14 @@ impl<'a> SessionRepository<'a> {
 
     pub async fn find_by_id(&self, id: i32) -> Result<Option<FullSessionModel>, DbErr> {
         let session = Session::find_by_id(id)
-            .find_also_related(Task)
             .find_also_related(Project)
             .one(self.db)
             .await?;
 
-        if let Some((session_model, task_model, project_model)) = session {
+        if let Some((session_model, project_model)) = session {
             let tags = session_model.find_related(Tag).all(self.db).await?;
 
-            let full_model =
-                FullSessionModel::from((session_model, task_model, project_model, tags));
+            let full_model = FullSessionModel::from((session_model, project_model, tags));
             Ok(Some(full_model))
         } else {
             Ok(None)
@@ -66,7 +62,6 @@ impl<'a> SessionRepository<'a> {
 
     pub async fn find_all(&self) -> Result<Vec<FullSessionModel>, DbErr> {
         let sessions = Session::find()
-            .find_also_related(Task)
             .find_also_related(Project)
             .order_by_desc(SessionColumn::Date)
             .order_by_desc(SessionColumn::StartTime)
@@ -76,11 +71,10 @@ impl<'a> SessionRepository<'a> {
         let mut results = Vec::new();
 
         for session in sessions {
-            let (session_model, task_model, project_model) = session;
+            let (session_model, project_model) = session;
 
             let tags = session_model.find_related(Tag).all(self.db).await?;
-            let full_session =
-                FullSessionModel::from((session_model, task_model, project_model, tags));
+            let full_session = FullSessionModel::from((session_model, project_model, tags));
             results.push(full_session);
         }
 
@@ -105,10 +99,6 @@ impl<'a> SessionRepository<'a> {
 
         if let Some(project_id) = session_to_update.project_id {
             session.project_id = Set(project_id);
-        }
-
-        if let Some(task_id) = session_to_update.task_id {
-            session.task_id = Set(Some(task_id));
         }
 
         if let Some(ref date) = session_to_update.date {

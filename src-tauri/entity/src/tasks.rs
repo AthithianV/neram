@@ -30,8 +30,6 @@ pub enum Relation {
         on_delete = "Cascade"
     )]
     Projects,
-    #[sea_orm(has_many = "super::sessions::Entity")]
-    Sessions,
     #[sea_orm(has_many = "super::tasks_tags::Entity")]
     TasksTags,
 }
@@ -39,12 +37,6 @@ pub enum Relation {
 impl Related<super::projects::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Projects.def()
-    }
-}
-
-impl Related<super::sessions::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Sessions.def()
     }
 }
 

@@ -4,7 +4,6 @@ import { z } from 'zod';
 const BaseSessionSchema = z.object({
     title: z.string().optional(),
     description: z.string().optional().nullable(),
-    task_id: z.number().optional().nullable(),
     project_id: z.number(),
     date: z.string(),
     start_time: z.string(),

@@ -9,8 +9,7 @@ type Related = {
     color: string;
 };
 
-export type SessionType = Omit<Session, 'project_id' | 'task_id' | 'tags'> & {
-    task: Related | null;
+export type SessionType = Omit<Session, 'project_id' | 'tags'> & {
     project: Related;
     tags: Related[];
 };
@@ -18,7 +17,6 @@ export type SessionType = Omit<Session, 'project_id' | 'task_id' | 'tags'> & {
 export type UpdateSessionType = {
     title?: string;
     description?: string | null;
-    task_id?: number | null;
     project_id?: number;
     date?: string;
     start_time?: string;

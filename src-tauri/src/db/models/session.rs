@@ -1,7 +1,6 @@
 use crate::time::{parse_time, parse_time_with_option};
 use ::entity::{
     projects::Model as ProjectModel, sessions::Model as SessionModel, tags::Model as TagModel,
-    tasks::Model as TaskModel,
 };
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
@@ -11,7 +10,6 @@ pub struct CreateSessionModel {
     pub title: Option<String>,
     pub description: Option<String>,
     pub project_id: i32,
-    pub task_id: Option<i32>,
     pub date: NaiveDateTime,
     pub start_time: NaiveDateTime,
     pub end_time: Option<NaiveDateTime>,
@@ -25,7 +23,6 @@ pub struct UpdateSessionModel {
     pub title: Option<String>,
     pub description: Option<String>,
     pub project_id: Option<i32>,
-    pub task_id: Option<i32>,
     pub date: Option<NaiveDateTime>,
     pub start_time: Option<NaiveDateTime>,
     pub end_time: Option<Option<NaiveDateTime>>,
@@ -45,7 +42,6 @@ pub struct FullSessionModel {
     pub id: i32,
     pub title: Option<String>,
     pub description: Option<String>,
-    pub task: Option<Extra>,
     pub project: Extra,
     pub tags: Vec<Extra>,
     pub date: NaiveDateTime,
@@ -55,29 +51,9 @@ pub struct FullSessionModel {
     pub break_duration_sec: i32,
 }
 
-impl
-    From<(
-        SessionModel,
-        Option<TaskModel>,
-        Option<ProjectModel>,
-        Vec<TagModel>,
-    )> for FullSessionModel
-{
-    fn from(
-        input: (
-            SessionModel,
-            Option<TaskModel>,
-            Option<ProjectModel>,
-            Vec<TagModel>,
-        ),
-    ) -> Self {
-        let (session, task_opt, project_opt, tag_models) = input;
-
-        let task = task_opt.map(|t| Extra {
-            id: t.id,
-            title: t.title,
-            color: None,
-        });
+impl From<(SessionModel, Option<ProjectModel>, Vec<TagModel>)> for FullSessionModel {
+    fn from(input: (SessionModel, Option<ProjectModel>, Vec<TagModel>)) -> Self {
+        let (session, project_opt, tag_models) = input;
 
         let project = project_opt.map(|p| Extra {
             id: p.id,
@@ -104,7 +80,6 @@ impl
             end_time: parse_time_with_option(session.end_time),
             session_duration_sec: session.session_duration_sec,
             break_duration_sec: session.break_duration_sec,
-            task: task,
             project: project.unwrap(),
         }
     }

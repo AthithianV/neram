@@ -27,10 +27,10 @@ const Selector = ({ onChange, value, items, fallbackText, placeholder }: PropTyp
             <ScrollArea className="max-w-45">
                 <SelectTrigger
                     className={cn(
-                        '!h-8 rounded shadow-none border-none  hide-arrow',
-                        'text-white w-full font-semibold',
+                        '!h-8 rounded shadow-none  hide-arrow',
+                        'text-white font-semibold',
                         '!p-0',
-                        'cursor-pointer',
+                        'cursor-pointer input !p-0',
                     )}
                 >
                     {selectedItem ? (
