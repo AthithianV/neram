@@ -14,7 +14,6 @@ import {
 import DatePicker from '@/components/form/DatePicker';
 import ProjectPicker from '@/components/session/ProjectPicker';
 import TagPicker from '@/components/session/TagPicker';
-import TaskPicker from '@/components/session/TaskPicker';
 import { DEFAULT_SESSION_VALUES } from '@/constants/session';
 import { useCreateSession, useSessionById, useUpdateSession } from '@/hooks/useSession';
 import {
@@ -29,15 +28,7 @@ import { useSessionCollision } from '@/hooks/useSession';
 import { useTimer } from '@/hooks/useTimer';
 import { toDBTime } from '@/lib/time';
 import dayjs from 'dayjs';
-import {
-    Calendar,
-    CalendarMinus,
-    CalendarPlus,
-    Clock,
-    Folder,
-    ListTodo,
-    Tag,
-} from 'lucide-react';
+import { Calendar, CalendarMinus, CalendarPlus, Clock, Folder, Tag } from 'lucide-react';
 import { toast } from 'sonner';
 import DurationElement from '../form/DurationElement';
 import RichEditor from '../form/Editor';
@@ -69,7 +60,6 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
             form.reset({
                 ...session,
                 project_id: session.project.id,
-                task_id: session.task ? session.task.id : undefined,
                 tags: session.tags.map((tag) => tag.id),
             });
         }
@@ -198,30 +188,6 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                         )}
                     />
 
-                    {/* Task */}
-                    <FormField
-                        control={form.control}
-                        name="task_id"
-                        render={({ field }) => (
-                            <FormItem className="w-1/2 flex items-center gap-5">
-                                <FormLabel className="min-w-24 font-semibold">
-                                    <ListTodo size={16} />
-                                    Task
-                                </FormLabel>
-                                <FormControl>
-                                    <TaskPicker
-                                        onChange={field.onChange}
-                                        value={field.value ? field.value : undefined}
-                                        projectId={form.watch('project_id')}
-                                    />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                            </FormItem>
-                        )}
-                    />
-                </div>
-
-                <div className="flex gap-6 w-full max-sm:flex-col">
                     <FormField
                         control={form.control}
                         name="tags"
@@ -240,6 +206,9 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                             </FormItem>
                         )}
                     />
+                </div>
+
+                <div className="flex gap-6 w-full max-sm:flex-col">
                     {/* Date */}
                     <FormField
                         control={form.control}
@@ -265,6 +234,8 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                         )}
                     />
                 </div>
+
+                <Separator />
 
                 <div className="flex gap-6 w-full max-sm:flex-col items-start">
                     {/* Start Time */}
