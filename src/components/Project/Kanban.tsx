@@ -16,6 +16,7 @@ import { ReadTask, useTask, useUpdateTask } from '@/hooks/useTask';
 import { toDBTime } from '@/lib/time';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
+import LoaderWrapper from '../layouts/Loader';
 import { Button } from '../ui/button';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 import { Skeleton } from '../ui/skeleton';
@@ -31,7 +32,7 @@ interface KanbanColumn {
 
 const Kanban = () => {
     const { projectId } = useParams();
-    const { data: tasks = [] } = useTask(Number(projectId));
+    const { data: tasks = [], isLoading } = useTask(Number(projectId));
 
     const [_, setSearchParams] = useSearchParams();
     const [activeTask, setActiveTask] = useState<ReadTask | null>(null);
@@ -90,6 +91,10 @@ const Kanban = () => {
 
         setActiveTask(null);
     };
+
+    if (isLoading) {
+        return <LoaderWrapper />;
+    }
 
     return (
         <ScrollArea className="h-full">

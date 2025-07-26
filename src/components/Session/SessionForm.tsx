@@ -114,8 +114,8 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
     };
 
     const handleClose = () => {
-        form.reset();
         closeModal();
+        form.reset();
     };
 
     async function onSubmit(data: CreateSession | UpdateSession) {

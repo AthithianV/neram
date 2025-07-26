@@ -93,8 +93,8 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
     };
 
     const closeForm = () => {
-        form.reset();
         closeModal();
+        form.reset();
     };
 
     if (taskId && !task) return <LoaderWrapper />;

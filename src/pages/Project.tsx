@@ -8,6 +8,7 @@ import PageAnimation from '@/components/layouts/PageAnimation';
 import ProjectSettings from '@/components/project/ProjectSettings';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import { useEffect } from 'react';
 import { toast } from 'sonner';
 
 const Project = () => {
@@ -24,7 +25,13 @@ const Project = () => {
         setSearchParams({ modal: 'add_project' });
     };
 
-    if (isLoading) {
+    useEffect(() => {
+        if (projects && projects.length > 0) {
+            navigate(`/project/${projects[0].id}`);
+        }
+    }, [projects]);
+
+    if (isLoading || !projects) {
         return <LoaderWrapper />;
     }
 

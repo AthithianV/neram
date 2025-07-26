@@ -82,8 +82,8 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
 
             navigate(`/project/${projectId}`);
         }
-        form.reset();
         closeModal();
+        form.reset();
     };
 
     const closeForm = (state: boolean) => {
