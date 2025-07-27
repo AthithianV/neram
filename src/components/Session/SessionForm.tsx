@@ -11,7 +11,6 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 
-import DatePicker from '@/components/form/DatePicker';
 import ProjectPicker from '@/components/session/ProjectPicker';
 import TagPicker from '@/components/session/TagPicker';
 import { DEFAULT_SESSION_VALUES } from '@/constants/session';
@@ -22,7 +21,7 @@ import {
     UpdateSession,
     UpdateSessionSchema,
 } from '@/schema/SessionSchema';
-import { useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 
 import { useSessionCollision } from '@/hooks/useSession';
 import { useTimer } from '@/hooks/useTimer';
@@ -32,9 +31,12 @@ import { Calendar, CalendarMinus, CalendarPlus, Clock, Folder, Tag } from 'lucid
 import { toast } from 'sonner';
 import DurationElement from '../form/DurationElement';
 import TimeElement from '../form/TimeElement';
-import Title from '../form/Title';
 import LoaderWrapper from '../layouts/Loader';
 import { Separator } from '../ui/separator';
+import { Skeleton } from '../ui/skeleton';
+
+const Title = React.lazy(() => import('../form/Title'));
+const DatePicker = React.lazy(() => import('../form/DatePicker'));
 
 type PropType = {
     sessionId?: number | null;
@@ -150,22 +152,24 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                 className="modal-form animate-modal-show"
             >
                 {/* title */}
-                <FormField
-                    control={form.control}
-                    name="title"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormControl>
-                                <Title
-                                    ref={field.ref}
-                                    value={field.value}
-                                    onChange={field.onChange}
-                                />
-                            </FormControl>
-                            <FormMessage className="text-xs mt-1" />
-                        </FormItem>
-                    )}
-                />
+                <Suspense fallback={<Skeleton className="h-3 w-full" />}>
+                    <FormField
+                        control={form.control}
+                        name="title"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormControl>
+                                    <Title
+                                        ref={field.ref}
+                                        value={field.value}
+                                        onChange={field.onChange}
+                                    />
+                                </FormControl>
+                                <FormMessage className="text-xs mt-1" />
+                            </FormItem>
+                        )}
+                    />
+                </Suspense>
 
                 <Separator />
 
@@ -221,15 +225,19 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                                     <Calendar size={16} /> Date
                                 </FormLabel>
                                 <FormControl>
-                                    <DatePicker
-                                        dateValue={field.value}
-                                        onChange={field.onChange}
-                                        setDateToTimes={setDateToTimes}
-                                        disable={
-                                            session !== null &&
-                                            sessionId === timer?.session_id
-                                        }
-                                    />
+                                    <Suspense
+                                        fallback={<Skeleton className="w-full h-3" />}
+                                    >
+                                        <DatePicker
+                                            dateValue={field.value}
+                                            onChange={field.onChange}
+                                            setDateToTimes={setDateToTimes}
+                                            disable={
+                                                session !== null &&
+                                                sessionId === timer?.session_id
+                                            }
+                                        />
+                                    </Suspense>
                                 </FormControl>
                                 <FormMessage className="text-xs" />
                             </FormItem>

@@ -10,7 +10,7 @@ import {
     Receipt,
     User,
 } from 'lucide-react';
-import { useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
@@ -37,10 +37,12 @@ import {
 import { useCreateProject, useProjectById, useUpdateProject } from '@/hooks/useProject';
 
 import ColorPicker from '../form/ColorPicker';
-import DatePicker from '../form/DatePicker';
 import Selector from '../form/Selector';
-import Title from '../form/Title';
 import LoaderWrapper from '../layouts/Loader';
+import { Skeleton } from '../ui/skeleton';
+
+const Title = React.lazy(() => import('../form/Title'));
+const DatePicker = React.lazy(() => import('../form/DatePicker'));
 
 type PropType = {
     projectId?: number | null;
@@ -101,22 +103,24 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                 className="modal-form animate-modal-show"
             >
                 {/* Title */}
-                <FormField
-                    control={form.control}
-                    name="title"
-                    render={({ field }) => (
-                        <FormItem className="w-1/2 flex items-center gap-5">
-                            <FormControl>
-                                <Title
-                                    ref={field.ref}
-                                    value={field.value}
-                                    onChange={field.onChange}
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                <Suspense fallback={<Skeleton className="w-full h-3" />}>
+                    <FormField
+                        control={form.control}
+                        name="title"
+                        render={({ field }) => (
+                            <FormItem className="w-1/2 flex items-center gap-5">
+                                <FormControl>
+                                    <Title
+                                        ref={field.ref}
+                                        value={field.value}
+                                        onChange={field.onChange}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </Suspense>
 
                 <Separator />
 
@@ -150,10 +154,15 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                                     <CalendarPlus size={16} /> Started At
                                 </FormLabel>
                                 <FormControl>
-                                    <DatePicker
-                                        dateValue={field.value}
-                                        onChange={field.onChange}
-                                    />
+                                    <Suspense
+                                        fallback={<Skeleton className="w-full h-3" />}
+                                    >
+                                        <DatePicker
+                                            dateValue={field.value}
+                                            onChange={field.onChange}
+                                        />
+                                    </Suspense>
+                                    ;
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -172,10 +181,15 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                                     <CalendarCheck size={16} /> Deadline
                                 </FormLabel>
                                 <FormControl>
-                                    <DatePicker
-                                        dateValue={field.value}
-                                        onChange={field.onChange}
-                                    />
+                                    <Suspense
+                                        fallback={<Skeleton className="w-full h-3" />}
+                                    >
+                                        <DatePicker
+                                            dateValue={field.value}
+                                            onChange={field.onChange}
+                                        />
+                                    </Suspense>
+                                    ;
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -192,10 +206,14 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                                     <CalendarMinus size={16} /> Completed At
                                 </FormLabel>
                                 <FormControl>
-                                    <DatePicker
-                                        dateValue={field.value}
-                                        onChange={field.onChange}
-                                    />
+                                    <Suspense
+                                        fallback={<Skeleton className="w-full h-3" />}
+                                    >
+                                        <DatePicker
+                                            dateValue={field.value}
+                                            onChange={field.onChange}
+                                        />
+                                    </Suspense>
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

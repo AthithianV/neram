@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
@@ -36,13 +36,15 @@ import { useCreateTask, useTaskById, useUpdateTask } from '@/hooks/useTask';
 import { toDBTime } from '@/lib/time';
 import dayjs from 'dayjs';
 import { useParams } from 'react-router-dom';
-import DatePicker from '../form/DatePicker';
 import DurationElement from '../form/DurationElement';
 import Selector from '../form/Selector';
-import Title from '../form/Title';
 import LoaderWrapper from '../layouts/Loader';
 import ProjectPicker from '../session/ProjectPicker';
 import { Separator } from '../ui/separator';
+import { Skeleton } from '../ui/skeleton';
+
+const Title = React.lazy(() => import('../form/Title'));
+const DatePicker = React.lazy(() => import('../form/DatePicker'));
 
 type Prop = {
     status: TaskStatus;
@@ -105,22 +107,25 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                 className="modal-form animate-modal-show"
             >
                 {/* title */}
-                <FormField
-                    control={form.control}
-                    name="title"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormControl>
-                                <Title
-                                    ref={field.ref}
-                                    value={field.value}
-                                    onChange={field.onChange}
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                <Suspense fallback={<Skeleton className="h-3 w-full" />}>
+                    <FormField
+                        control={form.control}
+                        name="title"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormControl>
+                                    <Title
+                                        ref={field.ref}
+                                        value={field.value}
+                                        onChange={field.onChange}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </Suspense>
+
                 <Separator />
 
                 {/* Priority */}
@@ -223,10 +228,14 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                                     <FormMessage className="text-xs" />
                                 </FormLabel>
                                 <FormControl>
-                                    <DatePicker
-                                        dateValue={field.value}
-                                        onChange={field.onChange}
-                                    />
+                                    <Suspense
+                                        fallback={<Skeleton className="w-full h-3" />}
+                                    >
+                                        <DatePicker
+                                            dateValue={field.value}
+                                            onChange={field.onChange}
+                                        />
+                                    </Suspense>
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -245,10 +254,14 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                                     <FormMessage className="text-xs" />
                                 </FormLabel>
                                 <FormControl>
-                                    <DatePicker
-                                        dateValue={field.value}
-                                        onChange={field.onChange}
-                                    />
+                                    <Suspense
+                                        fallback={<Skeleton className="w-full h-3" />}
+                                    >
+                                        <DatePicker
+                                            dateValue={field.value}
+                                            onChange={field.onChange}
+                                        />
+                                    </Suspense>
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -299,10 +312,14 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                                     <FormMessage className="text-xs" />
                                 </FormLabel>
                                 <FormControl>
-                                    <DatePicker
-                                        dateValue={field.value}
-                                        onChange={field.onChange}
-                                    />
+                                    <Suspense
+                                        fallback={<Skeleton className="w-full h-3" />}
+                                    >
+                                        <DatePicker
+                                            dateValue={field.value}
+                                            onChange={field.onChange}
+                                        />
+                                    </Suspense>
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
