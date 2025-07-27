@@ -2,7 +2,6 @@ import { Suspense, lazy } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 // Styles
-import './styles/animate.css';
 import './styles/global.css';
 
 // Layout

@@ -38,7 +38,6 @@ import { useCreateProject, useProjectById, useUpdateProject } from '@/hooks/useP
 
 import ColorPicker from '../form/ColorPicker';
 import DatePicker from '../form/DatePicker';
-import RichEditor from '../form/Editor';
 import Selector from '../form/Selector';
 import Title from '../form/Title';
 import LoaderWrapper from '../layouts/Loader';
@@ -97,7 +96,10 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 w-[50vw]">
+            <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="modal-form animate-modal-show"
+            >
                 {/* Title */}
                 <FormField
                     control={form.control}
@@ -333,7 +335,7 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
 
                 <Separator />
 
-                <FormField
+                {/* <FormField
                     control={form.control}
                     name="description"
                     render={({ field }) => (
@@ -347,7 +349,7 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                             <FormMessage className="text-xs" />
                         </FormItem>
                     )}
-                />
+                /> */}
 
                 <div className="flex justify-end gap-2">
                     <Button

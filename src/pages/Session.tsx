@@ -1,7 +1,6 @@
 import Controls from '@/components/session/Controls';
 import SessionCard from '@/components/session/SessionCard';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
 
 import { useSession } from '@/hooks/useSession';
 import { useTimer } from '@/hooks/useTimer';
@@ -19,19 +18,17 @@ const Session = () => {
 
     return (
         <PageAnimation>
-            <div className="flex flex-col h-full w-full overflow-hidden">
-                <div className="flex items-center justify-between h-1/12">
+            <div className="flex flex-col overflow-hidden p-2">
+                <div className="flex items-center justify-between pb-2 box-border">
                     <Controls />
                 </div>
-                <Separator className="mb-0" />
                 <ScrollArea
                     className={cn(
-                        'h-11/12',
                         location.pathname !== '/dashboard' && 'max-sm:hidden',
                         'max-md:w-full',
                     )}
                 >
-                    <ul className="flex flex-col py-2">
+                    <ul className="flex flex-col max-h-[var(--session-list-height)]">
                         {sessions && sessions.length > 0 ? (
                             sessions.map((sessionWithTaskAndTag, index) => (
                                 <SessionCard

@@ -141,7 +141,7 @@ const Kanban = () => {
     }
 
     return (
-        <ScrollArea className="h-full">
+        <ScrollArea className="">
             <DndContext
                 collisionDetection={closestCorners}
                 onDragStart={handleDragStart}
@@ -150,7 +150,7 @@ const Kanban = () => {
                     setOverColumn((over?.id as TaskStatus | null) ?? null)
                 }
             >
-                <div className="flex gap-1 h-full">
+                <div className="flex gap-1 h-[var(--kanban-height)]">
                     {columns.map((column) => (
                         <Column
                             key={column.id}
@@ -187,58 +187,59 @@ const Column = ({
     const { setNodeRef } = useDroppable({ id: column.id });
 
     return (
-        <div className="flex-1 min-w-[18vw] max-lg:min-w-[25vw]" ref={setNodeRef}>
-            <div
-                className={cn(
-                    'rounded-md bg-white shadow-sm p-2 border-2 border-gray-100',
-                    overColumn === column.id && 'bg-sky-100',
-                )}
-            >
-                <div className="flex items-center justify-between">
-                    <Badge
-                        className={cn('font-semibold rounded text-white')}
-                        style={column.style}
-                    >
-                        {column.title}
-                    </Badge>
-                    <Badge variant="secondary" style={column.style}>
-                        {column.tasks.length}
-                    </Badge>
-                </div>
+        <div
+            className={cn(
+                'min-w-[18vw] max-lg:min-w-[25vw] h-fit max-h-full',
+                'rounded-md bg-white shadow-sm p-2 border-2 border-gray-100',
+                overColumn === column.id && 'bg-sky-100',
+                'animate-page-fade-in',
+            )}
+            ref={setNodeRef}
+        >
+            <div className="flex items-center justify-between">
+                <Badge
+                    className={cn('font-semibold rounded text-white')}
+                    style={column.style}
+                >
+                    {column.title}
+                </Badge>
+                <Badge variant="secondary" style={column.style}>
+                    {column.tasks.length}
+                </Badge>
+            </div>
 
-                <div className="py-2 space-y-2 flex flex-col">
-                    <SortableContext
-                        items={column.tasks.map((t) => t.id)}
-                        strategy={verticalListSortingStrategy}
-                    >
-                        <ScrollArea>
-                            <div className="max-h-[70vh] space-y-1">
-                                {column.tasks.map((task) => (
-                                    <Suspense
-                                        fallback={<Skeleton className="flex-1 h-12" />}
-                                        key={task.id}
-                                    >
-                                        <TaskCard task={task} key={task.id} />
-                                    </Suspense>
-                                ))}
-                            </div>
-                            <ScrollBar orientation="vertical" />
-                        </ScrollArea>
-                    </SortableContext>
+            <div className="py-2 space-y-2 flex flex-col">
+                <SortableContext
+                    items={column.tasks.map((t) => t.id)}
+                    strategy={verticalListSortingStrategy}
+                >
+                    <ScrollArea>
+                        <div className="space-y-1 max-h-[var(--kanban-column-height)]">
+                            {column.tasks.map((task) => (
+                                <Suspense
+                                    fallback={<Skeleton className="flex-1 h-12" />}
+                                    key={task.id}
+                                >
+                                    <TaskCard task={task} key={task.id} />
+                                </Suspense>
+                            ))}
+                        </div>
+                        <ScrollBar orientation="vertical" />
+                    </ScrollArea>
+                </SortableContext>
 
-                    <Button
-                        className="!h-8 cursor-pointer hover:bg-gray-100 !w-fit !text-gray-700 text-xs"
-                        variant={'ghost'}
-                        onClick={() =>
-                            setSearchParams({
-                                task_status: column.title,
-                                modal: 'add_task',
-                            })
-                        }
-                    >
-                        <Plus /> Add Task
-                    </Button>
-                </div>
+                <Button
+                    className="!h-8 cursor-pointer hover:bg-gray-100 !w-fit !text-gray-700 text-xs"
+                    variant={'ghost'}
+                    onClick={() =>
+                        setSearchParams({
+                            task_status: column.title,
+                            modal: 'add_task',
+                        })
+                    }
+                >
+                    <Plus /> Add Task
+                </Button>
             </div>
         </div>
     );

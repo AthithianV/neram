@@ -41,11 +41,11 @@ const ProjectSettings = () => {
     };
 
     return (
-        <div>
+        <div className="h-full">
             {' '}
             <DropdownMenu open={open} onOpenChange={setOpen}>
-                <DropdownMenuTrigger asChild>
-                    <Button className="mb-3 cursor-pointer" variant={'outline'}>
+                <DropdownMenuTrigger asChild className="!h-full">
+                    <Button className="cursor-pointer" variant={'ghost'}>
                         <Settings className="w-4 h-4" />
                     </Button>
                 </DropdownMenuTrigger>

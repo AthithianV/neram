@@ -7,7 +7,7 @@ import LoaderWrapper from '@/components/layouts/Loader';
 import PageAnimation from '@/components/layouts/PageAnimation';
 import ProjectSettings from '@/components/project/ProjectSettings';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Folder, Plus } from 'lucide-react';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 
@@ -38,20 +38,27 @@ const Project = () => {
     return (
         <PageAnimation>
             <div className="h-full">
-                <div className="flex items-center gap-2 h-[var(--project-tab-height)]">
-                    <ScrollArea className="max-w-[92%] max-xl:max-w-[88%] max-lg:max-w-[82%] max-md:max-w-[80%]  whitespace-nowrap">
-                        <div className="flex gap-1 pb-3">
+                <div className="flex items-center h-[var(--project-tab-height)]">
+                    <ScrollArea
+                        className={cn(
+                            'max-w-[92%] max-xl:max-w-[88%]',
+                            ' max-lg:max-w-[82%] max-md:max-w-[80%]',
+                            'h-full',
+                            'whitespace-nowrap',
+                        )}
+                    >
+                        <div className="flex gap-1">
                             {projects?.map((project) => (
                                 <div
                                     key={project.id}
                                     className={cn(
-                                        `py-2 px-4 rounded cursor-pointer text-sm bg-gray-100 min-w-fit`,
+                                        `py-2 px-4  cursor-pointer text-sm  min-w-fit font-bold`,
+                                        'flex gap-2 items-center',
                                         `${
                                             project.id === Number(projectId)
                                                 ? `bg-white border-b-2`
-                                                : ''
+                                                : 'hover:bg-gray-100'
                                         }`,
-                                        'flex gap-2 items-center',
                                     )}
                                     style={
                                         project.id === Number(projectId)
@@ -59,10 +66,11 @@ const Project = () => {
                                                   borderColor: project.color,
                                                   color: project.color,
                                               }
-                                            : {}
+                                            : { color: project.color }
                                     }
                                     onClick={() => navigate(`/project/${project.id}`)}
                                 >
+                                    <Folder className="h-4 w-4" />
                                     {project.title}
                                 </div>
                             ))}
@@ -71,17 +79,16 @@ const Project = () => {
                     </ScrollArea>
 
                     <Button
-                        className="mb-3 cursor-pointer"
-                        variant={'outline'}
+                        className="cursor-pointer h-full"
+                        variant={'ghost'}
                         onClick={handleAdd}
                     >
                         <Plus className="w-4 h-4" />
                     </Button>
                     <ProjectSettings />
                 </div>
-                <div className="h-[var(--kanban-height)]">
-                    <Outlet />
-                </div>
+
+                <Outlet />
             </div>
         </PageAnimation>
     );

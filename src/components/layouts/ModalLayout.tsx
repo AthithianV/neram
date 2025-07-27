@@ -1,7 +1,6 @@
 import { MODALMODES, ModalModes } from '@/constants/modal';
 import { TaskStatus } from '@/constants/task';
 import { cn } from '@/lib/utils';
-import { AnimatePresence, motion } from 'framer-motion';
 import React, { Suspense, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import LoaderWrapper from './Loader';
@@ -10,36 +9,10 @@ const ProjectForm = React.lazy(() => import('../project/ProjectForm'));
 const SessionForm = React.lazy(() => import('../session/SessionForm'));
 const TaskForm = React.lazy(() => import('../task/TaskForm'));
 
-const backdropVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1 },
-};
-
-const modalVariants = {
-    hidden: { opacity: 0, translateY: 20 },
-    visible: { opacity: 1, translateY: 0 },
-    exit: { opacity: 0, translateY: 20 },
-};
-
 export const ModalOverlay = ({ children }: { children: React.ReactNode }) => (
-    <motion.div
-        className="fixed inset-0 bg-gray-800/30 flex justify-center items-center z-50"
-        variants={backdropVariants}
-        initial="hidden"
-        animate="visible"
-        exit="hidden"
-    >
-        <motion.div
-            className={cn('bg-white py-10 px-20 rounded-lg')}
-            variants={modalVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-        >
-            {children}
-        </motion.div>
-    </motion.div>
+    <div className="fixed inset-0 bg-gray-800/30 flex justify-center items-center z-50">
+        <div className={cn('')}>{children}</div>
+    </div>
 );
 
 const ModalManager = ({ modal }: { modal: ModalModes }) => {
@@ -120,13 +93,11 @@ const ModalLayout = () => {
             : null;
 
     return (
-        <AnimatePresence>
-            {modal && (
-                <ModalOverlay>
-                    <ModalManager modal={modal} />
-                </ModalOverlay>
-            )}
-        </AnimatePresence>
+        modal && (
+            <ModalOverlay>
+                <ModalManager modal={modal} />
+            </ModalOverlay>
+        )
     );
 };
 

@@ -31,7 +31,6 @@ import dayjs from 'dayjs';
 import { Calendar, CalendarMinus, CalendarPlus, Clock, Folder, Tag } from 'lucide-react';
 import { toast } from 'sonner';
 import DurationElement from '../form/DurationElement';
-import RichEditor from '../form/Editor';
 import TimeElement from '../form/TimeElement';
 import Title from '../form/Title';
 import LoaderWrapper from '../layouts/Loader';
@@ -146,7 +145,10 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="modal-form animate-modal-show"
+            >
                 {/* title */}
                 <FormField
                     control={form.control}
@@ -361,7 +363,7 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                     </div>
                 )}
 
-                <FormField
+                {/* <FormField
                     control={form.control}
                     name="description"
                     render={({ field }) => (
@@ -375,7 +377,7 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                             <FormMessage className="text-xs" />
                         </FormItem>
                     )}
-                />
+                /> */}
 
                 <div className="flex justify-center items-center gap-2">
                     <Button

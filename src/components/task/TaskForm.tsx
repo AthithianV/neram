@@ -38,7 +38,6 @@ import dayjs from 'dayjs';
 import { useParams } from 'react-router-dom';
 import DatePicker from '../form/DatePicker';
 import DurationElement from '../form/DurationElement';
-import RichEditor from '../form/Editor';
 import Selector from '../form/Selector';
 import Title from '../form/Title';
 import LoaderWrapper from '../layouts/Loader';
@@ -101,7 +100,10 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-[50vw]">
+            <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="modal-form animate-modal-show"
+            >
                 {/* title */}
                 <FormField
                     control={form.control}
@@ -310,7 +312,7 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
 
                 <Separator />
 
-                <FormField
+                {/* <FormField
                     control={form.control}
                     name="description"
                     render={({ field }) => (
@@ -324,7 +326,7 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                             <FormMessage className="text-xs" />
                         </FormItem>
                     )}
-                />
+                /> */}
 
                 <div className="flex gap-2 justify-end">
                     <Button

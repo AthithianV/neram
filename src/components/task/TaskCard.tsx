@@ -2,7 +2,7 @@ import { TASK_PRIORITY_COLOR, TaskPriority } from '@/constants/task';
 import { ReadTask } from '@/hooks/useTask';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
-import { AlarmCheck, Calendar, Flag, Trash2 } from 'lucide-react';
+import { AlarmCheck, Calendar, Flame, Trash2 } from 'lucide-react';
 import { ReactNode, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Badge } from '../ui/badge';
@@ -24,9 +24,6 @@ const TaskCard = ({ task, isDragged }: PropType) => {
     const [isHeaderHovered, setIsHeaderHovered] = useState(false);
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
-    // const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    //     id: task.id,
-    // });
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
         id: task.id,
     });
@@ -113,49 +110,48 @@ const TaskCard = ({ task, isDragged }: PropType) => {
                     )}
 
                     <div className="flex gap-1 flex-wrap item-center">
-                        {task.deadline && (
-                            <TaskAttribute
-                                title="Deadline"
-                                text={formatDeadLine(task.deadline)}
-                                icon={<Calendar />}
-                                className={
-                                    dayjs(task.deadline).isBefore(dayjs())
-                                        ? 'text-red-500'
-                                        : 'text-blue-600'
-                                }
-                            />
-                        )}
+                        <TaskAttribute
+                            title="Deadline"
+                            text={task.deadline ? formatDeadLine(task.deadline) : null}
+                            icon={<Calendar />}
+                            className={
+                                dayjs(task.deadline).isBefore(dayjs())
+                                    ? 'text-red-500'
+                                    : 'text-blue-600'
+                            }
+                        />
 
-                        {task.estimated_time !== 0 && task.estimated_time && (
-                            <TaskAttribute
-                                title="Estimated Time"
-                                text={`${(task.estimated_time / 3600).toFixed(1)} h`}
-                                icon={<AlarmCheck className="h-4 w-4" />}
-                            />
-                        )}
+                        <TaskAttribute
+                            title="Estimated Time"
+                            text={
+                                task.estimated_time !== 0 && task.estimated_time
+                                    ? `${(task.estimated_time / 3600).toFixed(0)} h`
+                                    : null
+                            }
+                            icon={<AlarmCheck className="h-4 w-4" />}
+                        />
 
                         {task.priority && (
                             <TaskAttribute
                                 title="Priority"
                                 text={task.priority}
-                                icon={<Flag />}
+                                icon={<Flame fill="currentColor" />}
                                 style={getPriorityStyle(task.priority)}
-                                className="text-white border-none"
+                                className="text-white border-none px-0"
                             />
                         )}
                     </div>
 
                     <div className="flex items-center justify-between gap-1">
-                        {task.started_at && (
-                            <Tooltip>
-                                <TooltipTrigger>
-                                    <span className="text-muted-foreground text-xs font-semibold">
-                                        {dayjs(task.started_at).format('DD MMM YYYY')}
-                                    </span>
-                                </TooltipTrigger>
-                                <TooltipContent>Started At</TooltipContent>
-                            </Tooltip>
-                        )}
+                        <Tooltip>
+                            <TooltipTrigger>
+                                <span className="text-muted-foreground text-xs font-semibold">
+                                    {task.started_at &&
+                                        dayjs(task.started_at).format('DD MMM YYYY')}
+                                </span>
+                            </TooltipTrigger>
+                            <TooltipContent>Started At</TooltipContent>
+                        </Tooltip>
 
                         {task.completed_at && (
                             <Tooltip>
@@ -187,7 +183,7 @@ const TaskAttribute = ({
     style,
 }: {
     title: string;
-    text: string;
+    text: string | null;
     icon: ReactNode;
     className?: string;
     style?: { color: string };
@@ -201,13 +197,13 @@ const TaskAttribute = ({
                         'bg-transparent text-gray-700 border-gray-200',
                         'text-xs py-1',
                         'font-semibold',
-                        'rounded-sm',
+                        'rounded-sm gap-[2px] h-full',
                         className ?? '',
                     )}
                     style={style}
                 >
                     {icon}
-                    <span>{text}</span>
+                    {text && <span>{text}</span>}
                 </Badge>
             </TooltipTrigger>
             <TooltipContent>{title}</TooltipContent>

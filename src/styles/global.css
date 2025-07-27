@@ -1,19 +1,23 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import './fonts.css';
+@import './animation.css';
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
     --title-bar-height: 3rem;
     --main-content-height: calc(100vh - 3rem);
-    --dashbord-controls-height: 6rem;
-    --dashbord-controls-height: calc(100vh - 9rem);
-    --project-tab-height: 3rem;
+    --session-controls-height: 2.5rem;
+    --session-list-height: calc(
+        100vh - var(--session-controls-height) - 4.3rem
+    );
+    --project-tab-height: 2.5rem;
     --page-padding: 0.5rem;
     --kanban-height: calc(
-        var(--main-content-height) - var(--project-tab-height) - 1rem
+        var(--main-content-height) - var(--project-tab-height)
     );
+    --kanban-column-height: calc(var(--kanban-height) - 7rem);
 }
 
 .title-bar-height {
@@ -22,6 +26,14 @@
 
 .main-content-height {
     height: var(--main-content-height);
+}
+
+.animate-modal-show {
+    animation: modal-show 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.animate-modal-hide {
+    animation: modal-hide 200ms ease-in;
 }
 
 @layer utilities {
@@ -55,6 +67,10 @@
 
     .input {
         @apply text-center !h-8 !px-4 shadow-none cursor-pointer  !w-45 focus:!border-b-2 focus:!border-sky-500 !transition-all !duration-150 !font-semibold box-border;
+    }
+
+    .modal-form {
+        @apply space-y-6 min-w-[60vw] bg-white rounded-lg py-10 p-20;
     }
 }
 
