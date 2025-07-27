@@ -37,6 +37,7 @@ import { toDBTime } from '@/lib/time';
 import dayjs from 'dayjs';
 import { useParams } from 'react-router-dom';
 import DurationElement from '../form/DurationElement';
+import RichTextEditor from '../form/Editor';
 import Selector from '../form/Selector';
 import LoaderWrapper from '../layouts/Loader';
 import ProjectPicker from '../session/ProjectPicker';
@@ -329,13 +330,13 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
 
                 <Separator />
 
-                {/* <FormField
+                <FormField
                     control={form.control}
                     name="description"
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <RichEditor
+                                <RichTextEditor
                                     value={field.value ?? ''}
                                     onChange={field.onChange}
                                 />
@@ -343,7 +344,7 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                             <FormMessage className="text-xs" />
                         </FormItem>
                     )}
-                /> */}
+                />
 
                 <div className="flex gap-2 justify-end">
                     <Button

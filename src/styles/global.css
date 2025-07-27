@@ -70,7 +70,7 @@
     }
 
     .modal-form {
-        @apply space-y-6 min-w-[60vw] bg-white rounded-lg py-10 p-20;
+        @apply space-y-3 min-w-[60vw] bg-white rounded-lg py-10 p-20;
     }
 }
 
