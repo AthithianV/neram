@@ -20,6 +20,23 @@
     --kanban-column-height: calc(var(--kanban-height) - 7rem);
 }
 
+[role='checkbox'] {
+    @apply flex items-center gap-2 min-h-[2rem] relative;
+}
+
+[role='checkbox']::before {
+    content: '';
+    @apply inline-block w-4 h-4 border-2 border-gray-400 rounded bg-white flex-shrink-0;
+}
+
+[role='checkbox'][aria-checked='true']::before {
+    background-color: #3b82f6;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 20 20' fill='white' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' d='M16.704 5.292a1 1 0 0 1 0 1.414l-8.005 8.005a1 1 0 0 1-1.414 0l-4.005-4.005a1 1 0 1 1 1.414-1.414L8 12.586l7.296-7.296a1 1 0 0 1 1.408 0z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
 .title-bar-height {
     height: var(--title-bar-height);
 }

@@ -1,10 +1,10 @@
 import {
     BarChart,
     Calendar,
+    Folder,
     LayoutDashboard,
-    RotateCcw,
     Settings,
-    Tag,
+    Timer,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -18,7 +18,7 @@ export const SIDEBAR_BODY_LINKS = [
         <span>Session</span>
     </Link>,
     <Link to="/project" key="Project" className="flex items-center gap-2">
-        <Tag size={16} />
+        <Folder size={16} />
         <span>Project</span>
     </Link>,
     <Link to="/analytics" key="Analytics" className="flex items-center gap-2">
@@ -26,7 +26,7 @@ export const SIDEBAR_BODY_LINKS = [
         <span>Analytics</span>
     </Link>,
     <Link to="/pomodoro" key="Pomodoro" className="flex items-center gap-2">
-        <RotateCcw size={16} />
+        <Timer size={16} />
         <span>Pomodoro</span>
     </Link>,
 ];

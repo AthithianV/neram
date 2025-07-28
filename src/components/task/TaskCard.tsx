@@ -100,14 +100,14 @@ const TaskCard = ({ task, isDragged }: PropType) => {
                 </CardHeader>
 
                 <CardContent className="space-y-2 px-2">
-                    {task.description && (
+                    {/* {task.description && (
                         <div
-                            className="text-xs text-muted-foreground line-clamp-2"
+                            className="w-full text-wrap text-xs text-muted-foreground line-clamp-2"
                             dangerouslySetInnerHTML={{
                                 __html: task.description,
                             }}
                         />
-                    )}
+                    )} */}
 
                     <div className="flex gap-1 flex-wrap item-center">
                         <TaskAttribute

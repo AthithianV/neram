@@ -37,7 +37,6 @@ import { toDBTime } from '@/lib/time';
 import dayjs from 'dayjs';
 import { useParams } from 'react-router-dom';
 import DurationElement from '../form/DurationElement';
-import RichTextEditor from '../form/Editor';
 import Selector from '../form/Selector';
 import LoaderWrapper from '../layouts/Loader';
 import ProjectPicker from '../session/ProjectPicker';
@@ -46,6 +45,7 @@ import { Skeleton } from '../ui/skeleton';
 
 const Title = React.lazy(() => import('../form/Title'));
 const DatePicker = React.lazy(() => import('../form/DatePicker'));
+const Editor = React.lazy(() => import('../editor/Editor'));
 
 type Prop = {
     status: TaskStatus;
@@ -336,10 +336,12 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <RichTextEditor
-                                    value={field.value ?? ''}
-                                    onChange={field.onChange}
-                                />
+                                <Suspense>
+                                    <Editor
+                                        value={field.value ?? ''}
+                                        onChange={field.onChange}
+                                    />
+                                </Suspense>
                             </FormControl>
                             <FormMessage className="text-xs" />
                         </FormItem>

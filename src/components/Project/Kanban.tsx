@@ -189,7 +189,7 @@ const Column = ({
     return (
         <div
             className={cn(
-                'min-w-[18vw] max-lg:min-w-[25vw] h-fit max-h-full',
+                'w-[18vw] max-lg:w-[25vw] h-fit max-h-full',
                 'rounded-md bg-white shadow-sm p-2 border-2 border-gray-100',
                 overColumn === column.id && 'bg-sky-100',
                 'animate-page-fade-in',
