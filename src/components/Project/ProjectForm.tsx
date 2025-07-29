@@ -36,13 +36,14 @@ import {
 } from '@/constants/project';
 import { useCreateProject, useProjectById, useUpdateProject } from '@/hooks/useProject';
 
+import Editor from '../editor/Editor';
 import ColorPicker from '../form/ColorPicker';
-import Selector from '../form/Selector';
 import LoaderWrapper from '../layouts/Loader';
 import { Skeleton } from '../ui/skeleton';
 
 const Title = React.lazy(() => import('../form/Title'));
 const DatePicker = React.lazy(() => import('../form/DatePicker'));
+const Selector = React.lazy(() => import('../form/Selector'));
 
 type PropType = {
     projectId?: number | null;
@@ -79,8 +80,6 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
             await updateProject({ projectToUpdate: data, projectId });
         } else {
             const projectId = await createProject(data);
-            console.log(projectId);
-
             navigate(`/project/${projectId}`);
         }
         closeModal();
@@ -88,8 +87,8 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
     };
 
     const closeForm = (state: boolean) => {
-        if (state === true) form.reset();
         closeModal();
+        if (state === true) form.reset();
     };
 
     if (isLoading) {
@@ -162,7 +161,6 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                                             onChange={field.onChange}
                                         />
                                     </Suspense>
-                                    ;
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -189,7 +187,6 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                                             onChange={field.onChange}
                                         />
                                     </Suspense>
-                                    ;
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -229,10 +226,12 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                     render={({ field }) => (
                         <FormItem className="w-1/2 flex items-center gap-5">
                             <FormLabel className="font-semibold">Freelancing</FormLabel>
-                            <Switch
-                                checked={field.value ? field.value : false}
-                                onCheckedChange={field.onChange}
-                            />
+                            <FormControl>
+                                <Switch
+                                    checked={field.value ? field.value : false}
+                                    onCheckedChange={field.onChange}
+                                />
+                            </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -249,12 +248,16 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                                         <FormLabel className="min-w-32 font-semibold">
                                             <User size={16} /> Client Name
                                         </FormLabel>
-                                        <Input
-                                            value={field.value ? field.value : undefined}
-                                            onChange={field.onChange}
-                                            placeholder="Enter name..."
-                                            className="input"
-                                        />
+                                        <FormControl>
+                                            <Input
+                                                value={
+                                                    field.value ? field.value : undefined
+                                                }
+                                                onChange={field.onChange}
+                                                placeholder="Enter name..."
+                                                className="input"
+                                            />
+                                        </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -269,21 +272,27 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                                             <Receipt size={16} /> Billing Type
                                         </FormLabel>
                                         <FormControl>
-                                            <Selector
-                                                value={
-                                                    field.value
-                                                        ? field.value
-                                                        : BILLING_TYPE[0].title
+                                            <Suspense
+                                                fallback={
+                                                    <Skeleton className="w-full h-4" />
                                                 }
-                                                onChange={field.onChange}
-                                                items={BILLING_TYPE.map((type) => ({
-                                                    value: type.title,
-                                                    color: type.color,
-                                                    title: type.title,
-                                                }))}
-                                                fallbackText="No Type Available"
-                                                placeholder="Select Billing TYpe"
-                                            />
+                                            >
+                                                <Selector
+                                                    value={
+                                                        field.value
+                                                            ? field.value
+                                                            : BILLING_TYPE[0].title
+                                                    }
+                                                    onChange={field.onChange}
+                                                    items={BILLING_TYPE.map((type) => ({
+                                                        value: type.title,
+                                                        color: type.color,
+                                                        title: type.title,
+                                                    }))}
+                                                    fallbackText="No Type Available"
+                                                    placeholder="Select Billing TYpe"
+                                                />
+                                            </Suspense>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -331,17 +340,25 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                                             <CircleDollarSign size={16} /> Currency
                                         </FormLabel>
                                         <FormControl>
-                                            <Selector
-                                                onChange={field.onChange}
-                                                value={field.value ?? DEFAULT_CURRENCY}
-                                                items={CURRENCT_LIST.map((type) => ({
-                                                    value: `${type.symbol} ${type.code}`,
-                                                    color: COLORS[4].value,
-                                                    title: `${type.symbol} ${type.code}`,
-                                                }))}
-                                                fallbackText="No Type Available"
-                                                placeholder="Select Billing TYpe"
-                                            />
+                                            <Suspense
+                                                fallback={
+                                                    <Skeleton className="w-full h-4" />
+                                                }
+                                            >
+                                                <Selector
+                                                    onChange={field.onChange}
+                                                    value={
+                                                        field.value ?? DEFAULT_CURRENCY
+                                                    }
+                                                    items={CURRENCT_LIST.map((type) => ({
+                                                        value: `${type.symbol} ${type.code}`,
+                                                        color: COLORS[4].value,
+                                                        title: `${type.symbol} ${type.code}`,
+                                                    }))}
+                                                    fallbackText="No Type Available"
+                                                    placeholder="Select Billing TYpe"
+                                                />
+                                            </Suspense>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -353,21 +370,23 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
 
                 <Separator />
 
-                {/* <FormField
+                <FormField
                     control={form.control}
                     name="description"
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <RichEditor
-                                    value={field.value}
-                                    onChange={field.onChange}
-                                />
+                                <Suspense fallback={<Skeleton className="w-full h-4" />}>
+                                    <Editor
+                                        value={field.value ?? ''}
+                                        onChange={field.onChange}
+                                    />
+                                </Suspense>
                             </FormControl>
                             <FormMessage className="text-xs" />
                         </FormItem>
                     )}
-                /> */}
+                />
 
                 <div className="flex justify-end gap-2">
                     <Button
