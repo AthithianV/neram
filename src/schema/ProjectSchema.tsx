@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 const ProjectSchema = z.object({
-    title: z.string().min(1, { message: 'Title is required' }).max(40, 'Only Support 40 Character'),
-    description: z.string().max(1500, 'Only Support 1500 Character').optional(),
+    title: z.string().min(1, { message: 'Title is required' }),
+    description: z.string().optional(),
     color: z.string(),
     started_at: z.string().optional().nullable(),
     deadline: z.string().optional().nullable(),

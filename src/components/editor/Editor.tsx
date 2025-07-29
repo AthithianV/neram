@@ -35,7 +35,7 @@ const Editor = ({ value, onChange, className }: PropType) => {
 
     return (
         <ScrollArea>
-            <div className={cn('h-[30vh] w-full rounded', className)}>
+            <div className={cn('h-[30vh] w-full max-w-[50vw] rounded', className)}>
                 <LexicalComposer initialConfig={initialConfig}>
                     <LoadState content={value} />
                     <EditorToolbar />
@@ -75,12 +75,12 @@ const RichEditor = ({ onChange }: { onChange: (text: string) => void }) => {
 const theme = {
     ltr: 'ltr',
     rtl: 'rtl',
-    paragraph: 'editor-paragraph text-wrap',
+    paragraph: 'editor-paragraph text-wrap my-2',
     quote: 'editor-quote',
     heading: {
         h1: 'editor-heading-h1',
         h2: 'editor-heading-h2',
-        h3: 'text-xl font-bold',
+        h3: 'text-xl font-bold my-2',
         h4: 'editor-heading-h4',
         h5: 'editor-heading-h5',
         h6: 'editor-heading-h6',
@@ -89,11 +89,11 @@ const theme = {
         nested: {
             listitem: 'list-disc',
         },
-        ol: 'list-decimal ms-6 pl-2',
-        ul: 'list-disc ms-6 pl-2',
-        listItem: 'ms-6 pl-2 active:outline-none',
-        listitemChecked: 'flex items-center gap-2 text-gray-400 line-through',
-        listitemUnchecked: 'flex items-center gap-2',
+        ol: 'list-decimal ms-4 pl-2',
+        ul: 'list-disc ms-4 pl-2 flex flex-col gap-3',
+        listItem: '',
+        listitemChecked: 'flex gap-2 text-gray-400 line-through ms-0 pl-0',
+        listitemUnchecked: 'flex gap-2 ms-0 pl-0',
     },
     hashtag: 'editor-hashtag',
     image: 'editor-image',

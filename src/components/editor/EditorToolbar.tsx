@@ -101,8 +101,6 @@ const EditorToolbar = () => {
                         const isEmpty = anchor.getTextContent() === '';
                         const isInsideList = parent && $isListNode(parent);
 
-                        console.log(isAtStart, isEmpty, isInsideList);
-
                         if (isAtStart && isEmpty && isInsideList) {
                             const paragraph = $createParagraphNode();
                             paragraph.select();

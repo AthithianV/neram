@@ -21,7 +21,7 @@
 }
 
 [role='checkbox'] {
-    @apply flex items-center gap-2 min-h-[2rem] relative;
+    @apply flex items-center gap-2 relative;
 }
 
 [role='checkbox']::before {
