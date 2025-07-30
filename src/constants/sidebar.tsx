@@ -1,11 +1,4 @@
-import {
-    BarChart,
-    Calendar,
-    Folder,
-    LayoutDashboard,
-    Settings,
-    Timer,
-} from 'lucide-react';
+import { BarChart, Folder, LayoutDashboard, Settings, Timer, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export const SIDEBAR_BODY_LINKS = [
@@ -14,16 +7,16 @@ export const SIDEBAR_BODY_LINKS = [
         <span>Dashboard</span>
     </Link>,
     <Link to="/session" key="Session" className="flex items-center gap-2">
-        <Calendar size={16} />
+        <Zap size={16} />
         <span>Session</span>
     </Link>,
     <Link to="/project" key="Project" className="flex items-center gap-2">
         <Folder size={16} />
         <span>Project</span>
     </Link>,
-    <Link to="/analytics" key="Analytics" className="flex items-center gap-2">
+    <Link to="/statistic" key="Statistic" className="flex items-center gap-2">
         <BarChart size={16} />
-        <span>Analytics</span>
+        <span>Statistic</span>
     </Link>,
     <Link to="/pomodoro" key="Pomodoro" className="flex items-center gap-2">
         <Timer size={16} />

@@ -1,211 +1,141 @@
+import { useEditorState, type Editor } from '@tiptap/react';
 import {
-    $isListNode,
-    INSERT_CHECK_LIST_COMMAND,
-    INSERT_ORDERED_LIST_COMMAND,
-    INSERT_UNORDERED_LIST_COMMAND,
-    REMOVE_LIST_COMMAND,
-} from '@lexical/list';
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { $createHeadingNode } from '@lexical/rich-text';
-import { $setBlocksType } from '@lexical/selection';
-import { mergeRegister } from '@lexical/utils';
-import {
-    $createParagraphNode,
-    $getSelection,
-    $isRangeSelection,
-    CAN_REDO_COMMAND,
-    CAN_UNDO_COMMAND,
-    COMMAND_PRIORITY_CRITICAL,
-    COMMAND_PRIORITY_LOW,
-    FORMAT_TEXT_COMMAND,
-    KEY_BACKSPACE_COMMAND,
-    REDO_COMMAND,
-    SELECTION_CHANGE_COMMAND,
-    UNDO_COMMAND,
-} from 'lexical';
-
-import { Bold, Hash, Italic, List, ListOrdered, Redo, Square, Undo } from 'lucide-react';
+    Bold,
+    Code,
+    CodeSquare,
+    Eraser,
+    Italic,
+    List,
+    ListOrdered,
+    Quote,
+    Redo,
+    Ruler,
+    Square,
+    Strikethrough,
+    Undo,
+} from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '../ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
-const EditorToolbar = () => {
-    const [editor] = useLexicalComposerContext();
-
-    const toolbarRef = useRef(null);
-    const [canUndo, setCanUndo] = useState(false);
-    const [canRedo, setCanRedo] = useState(false);
-    const [isBold, setIsBold] = useState(false);
-    const [isItalic, setIsItalic] = useState(false);
-
-    const $updateToolbar = useCallback(() => {
-        const selection = $getSelection();
-        if ($isRangeSelection(selection)) {
-            setIsBold(selection.hasFormat('bold'));
-            setIsItalic(selection.hasFormat('italic'));
-        }
-    }, []);
-
-    useEffect(() => {
-        return mergeRegister(
-            editor.registerUpdateListener(
-                ({ editorState, dirtyElements, dirtyLeaves }) => {
-                    editorState.read(() => {
-                        $updateToolbar();
-                    });
-                    if (dirtyElements.size === 0 && dirtyLeaves.size === 0) {
-                        return;
-                    }
-                },
-            ),
-            editor.registerCommand(
-                SELECTION_CHANGE_COMMAND,
-                (_payload, _newEditor) => {
-                    $updateToolbar();
-                    return false;
-                },
-                COMMAND_PRIORITY_LOW,
-            ),
-            editor.registerCommand(
-                CAN_UNDO_COMMAND,
-                (payload) => {
-                    setCanUndo(payload);
-                    return false;
-                },
-                COMMAND_PRIORITY_LOW,
-            ),
-            editor.registerCommand(
-                CAN_REDO_COMMAND,
-                (payload) => {
-                    setCanRedo(payload);
-                    return false;
-                },
-                COMMAND_PRIORITY_LOW,
-            ),
-            editor.registerCommand(
-                KEY_BACKSPACE_COMMAND,
-                () => {
-                    let handled = false;
-
-                    editor.update(() => {
-                        const selection = $getSelection();
-                        if (!$isRangeSelection(selection) || !selection.isCollapsed())
-                            return;
-
-                        const anchor = selection.anchor.getNode();
-                        const parent = anchor.getParent();
-
-                        const isAtStart = selection.anchor.offset === 0;
-                        const isEmpty = anchor.getTextContent() === '';
-                        const isInsideList = parent && $isListNode(parent);
-
-                        if (isAtStart && isEmpty && isInsideList) {
-                            const paragraph = $createParagraphNode();
-                            paragraph.select();
-                            handled = true;
-                        }
-                    });
-
-                    return handled;
-                },
-                COMMAND_PRIORITY_CRITICAL,
-            ),
-        );
-    }, [editor, $updateToolbar]);
-
-    const handleHeading = () => {
-        editor.update(() => {
-            editor.focus();
-            const selection = $getSelection();
-            if ($isRangeSelection(selection)) {
-                $setBlocksType(selection, () => $createHeadingNode('h3'));
-            }
-        });
-    };
-
-    const handleList = (type: 'ORDERED_LIST' | 'UNORDERED_LIST' | 'CHECK_LIST') => {
-        editor.focus();
-        editor.update(() => {
-            const selection = $getSelection();
-
-            if (!$isRangeSelection(selection)) return;
-
-            const nodes = selection.getNodes();
-            const isInsideList = nodes.some((node) => {
-                const parent = node.getParent();
-                return parent && $isListNode(parent);
-            });
-
-            if (isInsideList) {
-                editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
-            } else {
-                switch (type) {
-                    case 'ORDERED_LIST':
-                        editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
-                        break;
-                    case 'UNORDERED_LIST':
-                        editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
-                        break;
-                    case 'CHECK_LIST':
-                        editor.dispatchCommand(INSERT_CHECK_LIST_COMMAND, undefined);
-                        break;
-                }
-            }
-        });
-    };
+const EditorToolbar = ({ editor }: { editor: Editor }) => {
+    const editorState = useEditorState({
+        editor,
+        selector: (ctx) => {
+            return {
+                isBold: ctx.editor.isActive('bold') ?? false,
+                canBold: ctx.editor.can().chain().toggleBold().run() ?? false,
+                isItalic: ctx.editor.isActive('italic') ?? false,
+                canItalic: ctx.editor.can().chain().toggleItalic().run() ?? false,
+                isStrike: ctx.editor.isActive('strike') ?? false,
+                canStrike: ctx.editor.can().chain().toggleStrike().run() ?? false,
+                isCode: ctx.editor.isActive('code') ?? false,
+                canCode: ctx.editor.can().chain().toggleCode().run() ?? false,
+                canClearMarks: ctx.editor.can().chain().unsetAllMarks().run() ?? false,
+                isParagraph: ctx.editor.isActive('paragraph') ?? false,
+                isHeading1: ctx.editor.isActive('heading', { level: 1 }) ?? false,
+                isHeading2: ctx.editor.isActive('heading', { level: 2 }) ?? false,
+                isHeading3: ctx.editor.isActive('heading', { level: 3 }) ?? false,
+                isHeading4: ctx.editor.isActive('heading', { level: 4 }) ?? false,
+                isHeading5: ctx.editor.isActive('heading', { level: 5 }) ?? false,
+                isHeading6: ctx.editor.isActive('heading', { level: 6 }) ?? false,
+                isBulletList: ctx.editor.isActive('bulletList') ?? false,
+                isOrderedList: ctx.editor.isActive('orderedList') ?? false,
+                isCodeBlock: ctx.editor.isActive('codeBlock') ?? false,
+                isBlockquote: ctx.editor.isActive('blockquote') ?? false,
+                canUndo: ctx.editor.can().chain().undo().run() ?? false,
+                canRedo: ctx.editor.can().chain().redo().run() ?? false,
+            };
+        },
+    });
 
     const tools = [
         {
             title: 'Undo',
             icon: <Undo />,
-            handleClick: () => editor.dispatchCommand(UNDO_COMMAND, undefined),
-            disabled: !canUndo,
+            onClick: () => editor.chain().focus().undo().run(),
+            disabled: !editorState.canUndo,
         },
         {
             title: 'Redo',
             icon: <Redo />,
-            handleClick: () => editor.dispatchCommand(REDO_COMMAND, undefined),
-            disabled: !canRedo,
+            onClick: () => editor.chain().focus().redo().run(),
+            disabled: !editorState.canRedo,
         },
         {
             title: 'Bold',
             icon: <Bold />,
-            handleClick: () => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold'),
-            className: isBold ? 'bg-gray-100' : '',
+            onClick: () => editor.chain().focus().toggleBold().run(),
+            disabled: !editorState.canBold,
+            className: editorState.isBold ? 'is-active' : '',
         },
         {
             title: 'Italic',
             icon: <Italic />,
-            handleClick: () => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic'),
-            className: isItalic ? 'bg-gray-100' : '',
+            onClick: () => editor.chain().focus().toggleItalic().run(),
+            disabled: !editorState.canItalic,
+            className: editorState.isItalic ? 'is-active' : '',
         },
         {
-            title: 'Heading',
-            icon: <Hash />,
-            handleClick: handleHeading,
+            title: 'Strick Through',
+            icon: <Strikethrough />,
+            onClick: () => editor.chain().focus().toggleStrike().run(),
+            disabled: !editorState.canStrike,
+            className: editorState.isStrike ? 'is-active' : '',
+        },
+        {
+            title: 'Code',
+            icon: <Code />,
+            onClick: () => editor.chain().focus().toggleCode().run(),
+            disabled: !editorState.canCode,
+            className: editorState.isCode ? 'is-active' : '',
+        },
+        {
+            title: 'Number List',
+            icon: <ListOrdered />,
+            onClick: () => editor.chain().focus().toggleOrderedList().run(),
+            className: editor.isActive('orderedList') ? 'is-active' : '',
         },
         {
             title: 'Bullet List',
             icon: <List />,
-            handleClick: () => handleList('UNORDERED_LIST'),
+            onClick: () => editor.chain().focus().toggleBulletList().run(),
+            className: editor.isActive('orderedList') ? 'is-active' : '',
         },
         {
-            title: 'Numbered List',
-            icon: <ListOrdered />,
-            handleClick: () => handleList('ORDERED_LIST'),
-        },
-        {
-            title: 'Todo List',
+            title: 'Check List',
             icon: <Square />,
-            handleClick: () => handleList('CHECK_LIST'),
+            onClick: () => editor.chain().focus().toggleTaskList().run(),
+            className: editor.isActive('orderedList') ? 'is-active' : '',
+        },
+        {
+            title: 'Clear Nodes',
+            icon: <Eraser />,
+            onClick: () => editor.chain().focus().clearNodes().run(),
+        },
+        {
+            title: 'Code Block',
+            icon: <CodeSquare />,
+            onClick: () => editor.chain().focus().toggleCodeBlock().run(),
+            className: editorState.isCodeBlock ? 'is-active' : '',
+        },
+        {
+            title: 'Block Quote',
+            icon: <Quote />,
+            onClick: () => editor.chain().focus().toggleBlockquote().run(),
+            className: editorState.isBlockquote ? 'is-active' : '',
+        },
+        {
+            title: 'Horizontal rule',
+            icon: <Ruler />,
+            onClick: () => editor.chain().focus().setHorizontalRule().run(),
         },
     ];
 
     return (
-        <ul className="space-y-2 mb-2 border-2 rounded-md w-fit flex" ref={toolbarRef}>
-            {tools.map(({ title, icon, handleClick, className, disabled }, index) => (
+        <ul className="space-y-2 mb-2 border-2 rounded-md w-fit flex">
+            {tools.map(({ title, icon, onClick, className, disabled }, index) => (
                 <li key={index} className="mb-0">
                     <Tooltip key={index}>
                         <TooltipTrigger asChild>
@@ -218,7 +148,7 @@ const EditorToolbar = () => {
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     e.preventDefault();
-                                    handleClick();
+                                    onClick();
                                 }}
                             >
                                 {icon}
