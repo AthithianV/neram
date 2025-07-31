@@ -1,7 +1,9 @@
 import { Suspense, lazy } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-// Styles
+import LoadingPage from './components/layouts/LoadingPage';
+
+// // Styles
 import './styles/global.css';
 
 // Layout
@@ -21,7 +23,7 @@ const Kanban = lazy(() => import('./components/project/Kanban'));
 
 export default function App() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<LoadingPage />}>
             <Routes>
                 <Route element={<AppLayout />}>
                     <Route path="/" element={<Navigate to="/dashboard" />} />
