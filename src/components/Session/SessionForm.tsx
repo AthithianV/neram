@@ -29,6 +29,7 @@ import { toDBTime } from '@/lib/time';
 import dayjs from 'dayjs';
 import { Calendar, CalendarMinus, CalendarPlus, Clock, Folder, Tag } from 'lucide-react';
 import { toast } from 'sonner';
+import Editor from '../editor/Editor';
 import DurationElement from '../form/DurationElement';
 import TimeElement from '../form/TimeElement';
 import LoaderWrapper from '../layouts/Loader';
@@ -371,21 +372,23 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                     </div>
                 )}
 
-                {/* <FormField
+                <Separator />
+
+                <FormField
                     control={form.control}
                     name="description"
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <RichEditor
-                                    value={field.value ? field.value : undefined}
+                                <Editor
+                                    value={field.value ?? ''}
                                     onChange={field.onChange}
                                 />
                             </FormControl>
                             <FormMessage className="text-xs" />
                         </FormItem>
                     )}
-                /> */}
+                />
 
                 <div className="flex justify-center items-center gap-2">
                     <Button

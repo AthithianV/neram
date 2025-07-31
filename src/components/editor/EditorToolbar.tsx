@@ -4,6 +4,7 @@ import {
     Code,
     CodeSquare,
     Eraser,
+    Hash,
     Italic,
     List,
     ListOrdered,
@@ -17,6 +18,7 @@ import {
 
 import { cn } from '@/lib/utils';
 import { Button } from '../ui/button';
+import { Separator } from '../ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 const EditorToolbar = ({ editor }: { editor: Editor }) => {
@@ -64,98 +66,121 @@ const EditorToolbar = ({ editor }: { editor: Editor }) => {
             disabled: !editorState.canRedo,
         },
         {
+            break: true,
+        },
+        {
             title: 'Bold',
             icon: <Bold />,
             onClick: () => editor.chain().focus().toggleBold().run(),
             disabled: !editorState.canBold,
-            className: editorState.isBold ? 'is-active' : '',
+            className: editorState.isBold ? 'bg-gray-200' : '',
         },
         {
             title: 'Italic',
             icon: <Italic />,
             onClick: () => editor.chain().focus().toggleItalic().run(),
             disabled: !editorState.canItalic,
-            className: editorState.isItalic ? 'is-active' : '',
+            className: editorState.isItalic ? 'bg-gray-200' : '',
         },
         {
             title: 'Strick Through',
             icon: <Strikethrough />,
             onClick: () => editor.chain().focus().toggleStrike().run(),
             disabled: !editorState.canStrike,
-            className: editorState.isStrike ? 'is-active' : '',
+            className: editorState.isStrike ? 'bg-gray-200' : '',
         },
         {
             title: 'Code',
             icon: <Code />,
             onClick: () => editor.chain().focus().toggleCode().run(),
             disabled: !editorState.canCode,
-            className: editorState.isCode ? 'is-active' : '',
+            className: editorState.isCode ? 'bg-gray-200' : '',
+        },
+
+        {
+            break: true,
+        },
+        {
+            title: 'Heading',
+            icon: <Hash />,
+            onClick: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
+            disabled: !editorState.canCode,
+            className: editor.isActive('heading', { level: 1 }) ? 'bg-gray-200' : '',
         },
         {
             title: 'Number List',
             icon: <ListOrdered />,
             onClick: () => editor.chain().focus().toggleOrderedList().run(),
-            className: editor.isActive('orderedList') ? 'is-active' : '',
+            className: editor.isActive('orderedList') ? 'bg-gray-200' : '',
         },
         {
             title: 'Bullet List',
             icon: <List />,
             onClick: () => editor.chain().focus().toggleBulletList().run(),
-            className: editor.isActive('orderedList') ? 'is-active' : '',
+            className: editor.isActive('bulletList') ? 'bg-gray-200' : '',
         },
         {
             title: 'Check List',
             icon: <Square />,
             onClick: () => editor.chain().focus().toggleTaskList().run(),
-            className: editor.isActive('orderedList') ? 'is-active' : '',
-        },
-        {
-            title: 'Clear Nodes',
-            icon: <Eraser />,
-            onClick: () => editor.chain().focus().clearNodes().run(),
+            className: editor.isActive('taskList') ? 'bg-gray-200' : '',
         },
         {
             title: 'Code Block',
             icon: <CodeSquare />,
             onClick: () => editor.chain().focus().toggleCodeBlock().run(),
-            className: editorState.isCodeBlock ? 'is-active' : '',
+            className: editorState.isCodeBlock ? 'bg-gray-200' : '',
         },
         {
             title: 'Block Quote',
             icon: <Quote />,
             onClick: () => editor.chain().focus().toggleBlockquote().run(),
-            className: editorState.isBlockquote ? 'is-active' : '',
+            className: editorState.isBlockquote ? 'bg-gray-200' : '',
+        },
+
+        {
+            break: true,
         },
         {
             title: 'Horizontal rule',
             icon: <Ruler />,
             onClick: () => editor.chain().focus().setHorizontalRule().run(),
         },
+
+        {
+            title: 'Clear Nodes',
+            icon: <Eraser />,
+            onClick: () => editor.chain().focus().clearNodes().run(),
+        },
     ];
 
     return (
         <ul className="space-y-2 mb-2 border-2 rounded-md w-fit flex">
-            {tools.map(({ title, icon, onClick, className, disabled }, index) => (
+            {tools.map((tool, index) => (
                 <li key={index} className="mb-0">
-                    <Tooltip key={index}>
-                        <TooltipTrigger asChild>
-                            <Button
-                                disabled={disabled}
-                                size={'icon'}
-                                variant="ghost"
-                                type="button"
-                                className={cn('rounded-xs', className)}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    onClick();
-                                }}
-                            >
-                                {icon}
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>{title}</TooltipContent>
-                    </Tooltip>
+                    {tool.break ? (
+                        <Separator orientation="vertical" />
+                    ) : (
+                        <Tooltip key={index}>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    disabled={tool.disabled}
+                                    size={'icon'}
+                                    variant="ghost"
+                                    type="button"
+                                    className={cn('rounded-xs', tool.className)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        tool.onClick && tool.onClick();
+                                    }}
+                                >
+                                    {tool.icon}
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>{tool.title}</TooltipContent>
+                        </Tooltip>
+                    )}
                 </li>
             ))}
         </ul>
