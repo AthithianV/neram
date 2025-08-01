@@ -30,9 +30,9 @@ impl<'a> SessionRepository<'a> {
             title: Set(session.title.clone()),
             description: Set(session.description.clone()),
             project_id: Set(session.project_id),
-            date: Set(session.date.to_string()),
-            start_time: Set(session.start_time.to_string()),
-            end_time: Set(session.end_time.map(|t| t.to_string())),
+            date: Set(session.date),
+            start_time: Set(session.start_time),
+            end_time: Set(session.end_time.map(|t| t)),
             session_duration_sec: Set(session.session_duration_sec),
             break_duration_sec: Set(session.break_duration_sec),
             created_at: Set(now()),
@@ -102,16 +102,16 @@ impl<'a> SessionRepository<'a> {
         }
 
         if let Some(ref date) = session_to_update.date {
-            session.date = Set(date.clone().to_string());
+            session.date = Set(date.clone());
         }
 
         if let Some(ref start_time) = session_to_update.start_time {
-            session.start_time = Set(start_time.clone().to_string());
+            session.start_time = Set(start_time.clone());
         }
 
         if let Some(ref end_time) = session_to_update.end_time {
             if let Some(end_time) = end_time {
-                session.end_time = Set(Some(end_time.clone().to_string()));
+                session.end_time = Set(Some(end_time.clone()));
             } else {
                 session.end_time = Set(None);
             }
@@ -163,17 +163,14 @@ impl<'a> SessionRepository<'a> {
     ) -> Result<bool, DbErr> {
         let mut cond = Condition::all();
 
-        let formatted_start = new_start.format("%Y-%m-%d %H:%M:%S").to_string();
-        let formatted_end = new_end.map(|dt| dt.format("%Y-%m-%d %H:%M:%S").to_string());
-
         // existing.start_time < new_end AND (existing.end_time IS NULL OR existing.end_time > new_start)
-        if let Some(formatted_end) = formatted_end {
+        if let Some(new_end) = new_end {
             cond = cond
-                .add(Expr::col(SessionColumn::StartTime).lte(formatted_end.clone()))
+                .add(Expr::col(SessionColumn::StartTime).lte(new_end.clone()))
                 .add(
                     Condition::any()
                         .add(Expr::col(SessionColumn::EndTime).is_null())
-                        .add(Expr::col(SessionColumn::EndTime).gte(formatted_start.clone())),
+                        .add(Expr::col(SessionColumn::EndTime).gte(new_start.clone())),
                 );
         } else {
             // If new_end is None, session runs indefinitely → any session that overlaps new_start
@@ -181,9 +178,9 @@ impl<'a> SessionRepository<'a> {
                 .add(
                     Expr::col(SessionColumn::EndTime)
                         .is_null()
-                        .or(Expr::col(SessionColumn::EndTime).gte(formatted_start.clone())),
+                        .or(Expr::col(SessionColumn::EndTime).gte(new_start.clone())),
                 )
-                .add(Expr::col(SessionColumn::StartTime).lte(formatted_start.clone()));
+                .add(Expr::col(SessionColumn::StartTime).lte(new_start.clone()));
         }
 
         cond = cond.add(Expr::col(SessionColumn::Id).ne(session_id));

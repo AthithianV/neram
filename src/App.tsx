@@ -10,7 +10,7 @@ import './styles/global.css';
 import { AppLayout } from './components/layouts/AppLayout';
 
 // Lazy-loaded pages
-const Statistic = lazy(() => import('./pages/Statistic'));
+const Statistics = lazy(() => import('./pages/Statistics'));
 const Pomodoro = lazy(() => import('./pages/Pomodaro'));
 const CloudSync = lazy(() => import('./pages/CloudSync'));
 const Settings = lazy(() => import('./pages/Settings'));
@@ -33,7 +33,7 @@ export default function App() {
                         <Route path=":projectId" element={<Kanban />} />
                     </Route>
                     <Route path="pomodoro" element={<Pomodoro />} />
-                    <Route path="statistic" element={<Statistic />} />
+                    <Route path="statistic" element={<Statistics />} />
                     <Route path="cloud-sync" element={<CloudSync />} />
                     <Route path="settings" element={<Settings />} />
                 </Route>

@@ -1,4 +1,5 @@
 use ::entity::projects;
+use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -8,9 +9,9 @@ pub struct ReadProjectModel {
     pub description: Option<String>,
     pub color: String,
     pub client_name: Option<String>,
-    pub started_at: Option<String>,
-    pub deadline: Option<String>,
-    pub completed_at: Option<String>,
+    pub started_at: Option<NaiveDateTime>,
+    pub deadline: Option<NaiveDateTime>,
+    pub completed_at: Option<NaiveDateTime>,
     pub is_billable: Option<bool>,
     pub billing_type: Option<String>,
     pub hourly_rate: Option<i32>,
@@ -44,9 +45,9 @@ pub struct CreateProjectModel {
     pub description: Option<String>,
     pub color: String,
     pub client_name: Option<String>,
-    pub started_at: Option<String>,
-    pub deadline: Option<String>,
-    pub completed_at: Option<String>,
+    pub started_at: Option<NaiveDateTime>,
+    pub deadline: Option<NaiveDateTime>,
+    pub completed_at: Option<NaiveDateTime>,
     pub is_billable: Option<bool>,
     pub billing_type: Option<String>,
     pub hourly_rate: Option<i32>,

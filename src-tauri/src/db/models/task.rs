@@ -1,4 +1,5 @@
 use ::entity::tasks;
+use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -9,12 +10,12 @@ pub struct ReadTaskModel {
     pub project_id: i32,
     pub status: String,
     pub priority: Option<String>,
-    pub deadline: Option<String>,
-    pub started_at: String,
-    pub completed_at: Option<String>,
+    pub deadline: Option<NaiveDateTime>,
+    pub started_at: NaiveDateTime,
+    pub completed_at: Option<NaiveDateTime>,
     pub estimated_time: Option<i32>,
-    pub created_at: String,
-    pub updated_at: String,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
 }
 
 impl From<tasks::Model> for ReadTaskModel {
@@ -43,8 +44,8 @@ pub struct CreateTaskModel {
     pub project_id: i32,
     pub status: String,
     pub priority: Option<String>,
-    pub deadline: Option<String>,
-    pub started_at: String,
-    pub completed_at: Option<String>,
+    pub deadline: Option<NaiveDateTime>,
+    pub started_at: NaiveDateTime,
+    pub completed_at: Option<NaiveDateTime>,
     pub estimated_time: Option<i32>,
 }

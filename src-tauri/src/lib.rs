@@ -4,6 +4,7 @@ mod utils;
 
 use commands::project::*;
 use commands::session::*;
+use commands::statistics::*;
 use commands::tag::*;
 use commands::task::*;
 use commands::timer::*;
@@ -67,7 +68,9 @@ pub async fn run() {
             stop_timer,
             get_elapsed_time,
             pause_timer,
-            resume_timer
+            resume_timer,
+            // Statistics
+            get_statistics
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

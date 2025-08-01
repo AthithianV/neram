@@ -89,7 +89,6 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
             } else {
                 createTask({ ...data, project_id: Number(projectId) });
             }
-            form.reset();
         }
         closeModal();
     };

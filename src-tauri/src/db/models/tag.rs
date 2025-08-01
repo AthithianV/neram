@@ -1,5 +1,6 @@
 use ::entity::tags;
-use serde::{ Deserialize, Serialize };
+use chrono::NaiveDateTime;
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ReadTagModel {
@@ -7,8 +8,8 @@ pub struct ReadTagModel {
     pub title: String,
     pub description: Option<String>,
     pub color: String,
-    pub created_at: String,
-    pub updated_at: String,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]

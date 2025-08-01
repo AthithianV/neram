@@ -13,10 +13,14 @@ export const useTask = (projectId: number) => {
     return useQuery({
         queryKey: ['tasks', projectId],
         queryFn: async () => {
-            const data = await invoke('get_all_tasks', {
-                projectId,
-            });
-            return data as ReadTask[];
+            try {
+                const data = await invoke('get_all_tasks', {
+                    projectId,
+                });
+                return data as ReadTask[];
+            } catch (err) {
+                console.log(err);
+            }
         },
         enabled: projectId !== 0,
         refetchOnWindowFocus: true,

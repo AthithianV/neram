@@ -1,4 +1,3 @@
-use crate::time::{parse_time, parse_time_with_option};
 use ::entity::{
     projects::Model as ProjectModel, sessions::Model as SessionModel, tags::Model as TagModel,
 };
@@ -75,9 +74,9 @@ impl From<(SessionModel, Option<ProjectModel>, Vec<TagModel>)> for FullSessionMo
             title: session.title,
             description: session.description,
             tags,
-            date: parse_time(session.date),
-            start_time: parse_time(session.start_time),
-            end_time: parse_time_with_option(session.end_time),
+            date: session.date,
+            start_time: session.start_time,
+            end_time: session.end_time,
             session_duration_sec: session.session_duration_sec,
             break_duration_sec: session.break_duration_sec,
             project: project.unwrap(),
