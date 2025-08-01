@@ -53,6 +53,7 @@ const StartButton = () => {
                                     e.stopPropagation();
                                     handleStart(project.id);
                                 }}
+                                key={project.id}
                             >
                                 {project.title}
                             </DropdownMenuItem>

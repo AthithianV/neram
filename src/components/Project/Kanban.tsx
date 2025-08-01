@@ -1,6 +1,7 @@
 import {
     DndContext,
     DragEndEvent,
+    DragOverEvent,
     DragOverlay,
     DragStartEvent,
     closestCorners,
@@ -8,7 +9,7 @@ import {
 } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Plus } from 'lucide-react';
-import React, { Suspense, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 
 import { Badge } from '@/components/ui/badge';
@@ -68,6 +69,10 @@ const Kanban = () => {
             setActiveTask(task);
         }
     };
+
+    const handleDragOver = useCallback((event: DragOverEvent) => {
+        setOverColumn((event.over?.id as TaskStatus | null) ?? null);
+    }, []);
 
     const handleDragEnd = async (event: DragEndEvent) => {
         const { active, over } = event;
@@ -146,9 +151,7 @@ const Kanban = () => {
                 collisionDetection={closestCorners}
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
-                onDragOver={({ over }) =>
-                    setOverColumn((over?.id as TaskStatus | null) ?? null)
-                }
+                onDragOver={handleDragOver}
             >
                 <div className="flex gap-1 h-[var(--kanban-height)]">
                     {columns.map((column) => (

@@ -2,14 +2,14 @@ import { useQuery } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
 import { MinimalProject } from './useProject';
 
-type StatisticsFilter = {
+export type StatisticsFilter = {
     start_date: string;
     end_date: string;
     project_ids?: number[];
     tag_ids?: number[];
 };
 
-type Statistics = {
+export type Statistics = {
     date: string;
     projects: {
         project: MinimalProject;
@@ -18,12 +18,14 @@ type Statistics = {
     total_seconds: number;
 };
 
-export const useStatistics = (data: StatisticsFilter) => {
+export const useStatistics = (filter: StatisticsFilter) => {
     return useQuery({
-        queryKey: ['statistics'],
+        queryKey: ['statistics', filter],
         queryFn: async () => {
             try {
-                const result = await invoke('get_statistics', data);
+                const result = await invoke('get_statistics', {
+                    statisticsFilter: filter,
+                });
                 return result as Statistics[];
             } catch (err) {
                 console.log(err);

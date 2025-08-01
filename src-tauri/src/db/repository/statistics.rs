@@ -1,6 +1,6 @@
 use std::collections::{BTreeMap, HashMap};
 
-use chrono::NaiveDateTime;
+use chrono::{Duration, NaiveDate};
 use sea_orm::*;
 
 use crate::models::{
@@ -56,38 +56,43 @@ impl<'a> StatisticsRepository<'a> {
         let all_sessions = query.all(self.db).await?;
 
         // Step 2: Group by day
-        let mut day_map: BTreeMap<NaiveDateTime, Vec<SessionModel>> = BTreeMap::new();
+        let mut day_map: BTreeMap<NaiveDate, Vec<SessionModel>> = BTreeMap::new();
 
         for session in all_sessions {
-            let date = session.date;
+            let date = session.date.date(); // Extract only the date part
             day_map.entry(date).or_default().push(session);
         }
 
+        // Generate all dates in the range
         let mut result = Vec::new();
+        let mut current_date = start_date.date();
+        let end_date = end_date.date();
 
-        // Step 3: For each day, group by project
-        for (date, sessions_on_day) in day_map {
+        while current_date <= end_date {
+            let sessions_on_day = day_map.get(&current_date);
+
             let mut project_map: HashMap<i32, (MinimalProjectModel, i64)> = HashMap::new();
 
-            for session in &sessions_on_day {
-                let duration = session.session_duration_sec as i64;
+            if let Some(sessions) = sessions_on_day {
+                for session in sessions {
+                    let duration = session.session_duration_sec as i64;
 
-                if let Some((_, total)) = project_map.get_mut(&session.project_id) {
-                    *total += duration;
-                } else {
-                    // You might want to batch fetch all projects ahead of time for performance
-                    let project = Project::find_by_id(session.project_id)
-                        .one(self.db)
-                        .await?
-                        .ok_or(DbErr::Custom(format!(
-                            "Project not found: {}",
-                            session.project_id
-                        )))?;
+                    if let Some((_, total)) = project_map.get_mut(&session.project_id) {
+                        *total += duration;
+                    } else {
+                        let project = Project::find_by_id(session.project_id)
+                            .one(self.db)
+                            .await?
+                            .ok_or(DbErr::Custom(format!(
+                                "Project not found: {}",
+                                session.project_id
+                            )))?;
 
-                    project_map.insert(
-                        session.project_id,
-                        (MinimalProjectModel::from(project), duration),
-                    );
+                        project_map.insert(
+                            session.project_id,
+                            (MinimalProjectModel::from(project), duration),
+                        );
+                    }
                 }
             }
 
@@ -103,10 +108,12 @@ impl<'a> StatisticsRepository<'a> {
             }
 
             result.push(DayStat {
-                date,
+                date: current_date.and_hms_opt(0, 0, 0).unwrap(), // Use midnight time
                 projects,
                 total_seconds: day_total,
             });
+
+            current_date += Duration::days(1);
         }
 
         Ok(result)
