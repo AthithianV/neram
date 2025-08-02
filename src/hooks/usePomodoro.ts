@@ -41,7 +41,7 @@ export const useUpdatePomodoroSettings = () => {
             }
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['tags'] });
+            queryClient.invalidateQueries({ queryKey: ['pomodoro_settings'] });
         },
     });
 };

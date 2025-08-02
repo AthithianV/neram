@@ -24,8 +24,7 @@ export const useTimer = () => {
 export const useStartTimer = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (data: { sessionId?: number }) =>
-            invoke('start_timer', data),
+        mutationFn: (data: { sessionId?: number }) => invoke('start_timer', data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['timer'] });
         },
