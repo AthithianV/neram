@@ -7,6 +7,8 @@ pub struct ReadPomodoroSettings {
     pub break_duration: i32,
     pub auto_start: bool,
     pub sync_with_time_tracking: bool,
+    pub session_completed: i32,
+    pub break_completed: i32,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -16,4 +18,6 @@ pub struct UpdatePomodoroSettings {
     pub break_duration: Option<i32>,
     pub auto_start: Option<bool>,
     pub sync_with_time_tracking: Option<bool>,
+    pub session_completed: Option<i32>,
+    pub break_completed: Option<i32>,
 }

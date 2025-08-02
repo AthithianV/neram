@@ -22,6 +22,8 @@ impl<'a> PomodoroSettingsRepository<'a> {
             break_duration: 300,
             auto_start: true,
             sync_with_time_tracking: true,
+            session_completed: 0,
+            break_completed: 0,
         };
 
         if let Some(settings) = settings {
@@ -30,6 +32,8 @@ impl<'a> PomodoroSettingsRepository<'a> {
             result.break_duration = settings.break_duration;
             result.auto_start = settings.auto_start;
             result.sync_with_time_tracking = settings.sync_with_time_tracking;
+            result.session_completed = settings.session_completed;
+            result.break_completed = settings.break_completed;
         }
 
         Ok(result)
@@ -45,6 +49,8 @@ impl<'a> PomodoroSettingsRepository<'a> {
             break_duration,
             auto_start,
             sync_with_time_tracking,
+            session_completed,
+            break_completed,
         } = settings_to_update;
 
         if let Some(session_duration) = session_duration {
@@ -65,6 +71,14 @@ impl<'a> PomodoroSettingsRepository<'a> {
 
         if let Some(sync_with_time_tracking) = sync_with_time_tracking {
             active_pomodoro_settings.sync_with_time_tracking = Set(sync_with_time_tracking);
+        }
+
+        if let Some(session_completed) = session_completed {
+            active_pomodoro_settings.session_completed = Set(session_completed);
+        }
+
+        if let Some(break_completed) = break_completed {
+            active_pomodoro_settings.break_completed = Set(break_completed);
         }
 
         active_pomodoro_settings.update(self.db).await?;

@@ -12,6 +12,8 @@ pub struct Model {
     pub break_duration: i32,
     pub auto_start: bool,
     pub sync_with_time_tracking: bool,
+    pub session_completed: i32,
+    pub break_completed: i32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
