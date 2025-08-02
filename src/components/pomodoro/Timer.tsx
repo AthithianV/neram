@@ -26,10 +26,6 @@ const Timer = () => {
         updatePomodoro({ session_completed: 0, break_completed: 0 });
     };
 
-    const calculateTime = (count: number, totalElapsed: number, duration: number) => {
-        return totalElapsed - count * duration;
-    };
-
     useEffect(() => {
         if (!timer || !pomodoroSettings) {
             return;
@@ -43,32 +39,20 @@ const Timer = () => {
                 session_duration,
                 session_count,
             } = pomodoroSettings;
-            const { is_session, is_break, session_time_elapsed, break_time_elapsed } =
-                timer;
+            const { is_session, is_break } = timer;
 
             if (session_count <= session_completed) {
                 stopPomodoro();
                 return;
             }
 
-            if (
-                is_session &&
-                calculateTime(
-                    session_completed,
-                    session_time_elapsed,
-                    session_duration,
-                ) === session_duration
-            ) {
+            if (is_session && timer.timer === session_duration) {
                 await pauseTimer();
                 await updatePomodoro({ session_completed: session_completed + 1 });
                 return;
             }
 
-            if (
-                is_break &&
-                calculateTime(break_completed, break_time_elapsed, break_duration) ===
-                    break_duration
-            ) {
+            if (is_break && timer.timer === break_duration) {
                 await resumeTimer();
                 await updatePomodoro({ break_completed: break_completed + 1 });
             }
@@ -88,25 +72,15 @@ const Timer = () => {
                         ? pomodoroSettings.break_duration
                         : pomodoroSettings.session_duration
                 }
-                currentDuration={
-                    timer.is_break
-                        ? calculateTime(
-                              pomodoroSettings.break_completed,
-                              timer.break_time_elapsed,
-                              pomodoroSettings.break_duration,
-                          )
-                        : calculateTime(
-                              pomodoroSettings.session_completed,
-                              timer.session_time_elapsed,
-                              pomodoroSettings.session_duration,
-                          )
-                }
+                currentDuration={timer.timer_type === 'Pomodoro' ? timer.timer : 0}
             />
             <div className="flex-center gap-3 my-2 text-2xl text-white">
-                {!timer.is_session && !timer.is_break ? (
+                {(!timer.is_session && !timer.is_break) ||
+                timer.timer_type !== 'Pomodoro' ? (
                     <Button
-                        onClick={() => startTimer({})}
+                        onClick={() => startTimer({ timerType: 'Pomodoro' })}
                         className="py-2 px-4 rounded bg-green-500 hover:bg-green-600"
+                        disabled={timer.timer > 0 && timer.timer_type !== 'Pomodoro'}
                     >
                         <Play fill="currentColor" />
                     </Button>

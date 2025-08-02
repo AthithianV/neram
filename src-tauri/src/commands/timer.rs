@@ -1,8 +1,14 @@
-use serde::{ Deserialize, Serialize };
-use std::time::{ Instant };
+use serde::{Deserialize, Serialize};
+use std::time::Instant;
 use tauri::State;
 
 use crate::AppState;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum TimerType {
+    Session,
+    Pomodoro,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TimerState {
@@ -15,6 +21,7 @@ pub struct TimerState {
     pub session_id: Option<i32>,
     pub is_session: bool,
     pub is_break: bool,
+    pub timer_type: TimerType,
 }
 
 impl Default for TimerState {
@@ -27,6 +34,7 @@ impl Default for TimerState {
             session_id: None,
             is_session: false,
             is_break: false,
+            timer_type: TimerType::Session,
         }
     }
 }
@@ -39,12 +47,17 @@ impl Default for TimerState {
 #[tauri::command]
 pub async fn start_timer(
     state: State<'_, AppState>,
-    session_id: Option<i32>
+    session_id: Option<i32>,
+    timer_type: Option<TimerType>,
 ) -> Result<(), String> {
     let mut timer = state.timer.lock().await;
     timer.session_start_time = Some(Instant::now());
     timer.session_id = session_id;
     timer.is_session = true;
+
+    if let Some(timer_type) = timer_type {
+        timer.timer_type = timer_type;
+    }
 
     Ok(())
 }
@@ -97,19 +110,28 @@ pub struct TimerResponse {
     pub session_id: Option<i32>,
     pub is_session: bool,
     pub is_break: bool,
+    pub timer: i32,
+    pub timer_type: TimerType,
 }
 
 #[tauri::command]
 pub async fn get_elapsed_time(state: State<'_, AppState>) -> Result<TimerResponse, String> {
     let timer = state.timer.lock().await;
 
+    let mut current_time = 0;
     let current_session_time_elapsed = match timer.session_start_time {
-        Some(start) => timer.session_time_elapsed + start.elapsed().as_secs() as i32,
+        Some(start) => {
+            current_time = start.elapsed().as_secs() as i32;
+            timer.session_time_elapsed + current_time
+        }
         None => timer.session_time_elapsed,
     };
 
     let current_break_time_elapsed = match timer.break_start_time {
-        Some(start) => timer.break_time_elapsed + start.elapsed().as_secs() as i32,
+        Some(start) => {
+            current_time = start.elapsed().as_secs() as i32;
+            timer.break_time_elapsed + current_time
+        }
         None => timer.break_time_elapsed,
     };
 
@@ -119,5 +141,7 @@ pub async fn get_elapsed_time(state: State<'_, AppState>) -> Result<TimerRespons
         session_id: timer.session_id,
         is_session: timer.is_session,
         is_break: timer.is_break,
+        timer: current_time,
+        timer_type: timer.timer_type,
     })
 }

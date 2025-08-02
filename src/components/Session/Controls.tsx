@@ -1,5 +1,6 @@
 import { useUpdateSession } from '@/hooks/useSession';
 import { usePauseTimer, useResumeTimer, useStopTimer, useTimer } from '@/hooks/useTimer';
+import { toDBTime } from '@/lib/time';
 import dayjs from 'dayjs';
 import { Pause, Play, PlusIcon, Square } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
@@ -43,17 +44,11 @@ const Controls = () => {
 
     const handleStop = async () => {
         if (timer.session_id) {
-            console.log({
-                session_duration_sec: timer.session_time_elapsed,
-                break_duration_sec: timer.break_time_elapsed,
-                end_time: dayjs().format('YYYY-MM-DDTHH:mm:ss'),
-            });
-
             await updateSession({
                 sessionToUpdate: {
                     session_duration_sec: timer.session_time_elapsed,
                     break_duration_sec: timer.break_time_elapsed,
-                    end_time: dayjs().format('YYYY-MM-DDTHH:mm:ss'),
+                    end_time: toDBTime(dayjs().toString()),
                 },
                 sessionId: timer.session_id,
             });
@@ -63,7 +58,7 @@ const Controls = () => {
 
     return (
         <div className="flex gap-2">
-            {timer.is_session ? (
+            {timer.is_session && timer.timer_type !== 'Pomodoro' ? (
                 <Button
                     variant={'default'}
                     className="flex items-center gap-1 bg-yellow-500 hover:bg-yellow-600 cursor-pointer"
@@ -72,7 +67,7 @@ const Controls = () => {
                     <Pause fill="currentColor" className="w-4 h-4" />
                     <span>Pause</span>
                 </Button>
-            ) : timer.is_break ? (
+            ) : timer.is_break && timer.timer_type !== 'Pomodoro' ? (
                 <Button
                     variant={'default'}
                     className="flex items-center gap-1 bg-green-500 hover:bg-green-600 cursor-pointer"
@@ -85,17 +80,16 @@ const Controls = () => {
                 <StartButton />
             )}
 
-            {timer.is_session ||
-                (timer.is_break && (
-                    <Button
-                        variant={'default'}
-                        className="flex items-center gap-1 bg-red-500 hover:bg-red-600 cursor-pointer"
-                        onClick={handleStop}
-                    >
-                        <Square fill="currentColor" className="w-4 h-4" />
-                        <span>Stop</span>
-                    </Button>
-                ))}
+            {(timer.is_session || timer.is_break) && timer.timer_type !== 'Pomodoro' && (
+                <Button
+                    variant={'default'}
+                    className="flex items-center gap-1 bg-red-500 hover:bg-red-600 cursor-pointer"
+                    onClick={handleStop}
+                >
+                    <Square fill="currentColor" className="w-4 h-4" />
+                    <span>Stop</span>
+                </Button>
+            )}
 
             <Button
                 variant={'default'}
