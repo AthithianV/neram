@@ -18,6 +18,7 @@
         var(--main-content-height) - var(--project-tab-height)
     );
     --kanban-column-height: calc(var(--kanban-height) - 7rem);
+    --tomato: #ff6347;
 }
 
 [contenteditable]:focus {

@@ -7,6 +7,8 @@ export interface ReadPomodoroSettings {
     break_duration: number;
     auto_start: boolean;
     sync_with_time_tracking: boolean;
+    session_completed: number;
+    break_completed: number;
 }
 
 export type UpdatePomodoroSettings = Partial<ReadPomodoroSettings>;
@@ -15,8 +17,12 @@ export const usePomodoroSettings = () => {
     return useQuery({
         queryKey: ['pomodoro_settings'],
         queryFn: async () => {
-            const settings = await invoke('get_pomodoro_settings');
-            return settings as ReadPomodoroSettings;
+            try {
+                const settings = await invoke('get_pomodoro_settings');
+                return settings as ReadPomodoroSettings;
+            } catch (err) {
+                console.log(err);
+            }
         },
         refetchOnWindowFocus: true,
         refetchOnMount: true,
@@ -28,7 +34,11 @@ export const useUpdatePomodoroSettings = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (settingsToUpdate: UpdatePomodoroSettings) => {
-            return await invoke('update_pomodoro_settings', { settingsToUpdate });
+            try {
+                return await invoke('update_pomodoro_settings', { settingsToUpdate });
+            } catch (err) {
+                console.log(err);
+            }
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tags'] });
