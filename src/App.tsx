@@ -9,6 +9,9 @@ import './styles/global.css';
 // Layout
 import { AppLayout } from './components/layouts/AppLayout';
 
+// Constant
+import { SETTINGS_TAB } from './constants/settings';
+
 // Lazy-loaded pages
 const Statistics = lazy(() => import('./pages/Statistics'));
 const Pomodoro = lazy(() => import('./pages/Pomodaro'));
@@ -35,7 +38,15 @@ export default function App() {
                     <Route path="pomodoro" element={<Pomodoro />} />
                     <Route path="statistic" element={<Statistics />} />
                     <Route path="cloud-sync" element={<CloudSync />} />
-                    <Route path="settings" element={<Settings />} />
+                    <Route path="settings" element={<Settings />}>
+                        {SETTINGS_TAB.map((tab) => (
+                            <Route
+                                path={tab.path}
+                                element={<tab.element />}
+                                key={tab.title}
+                            />
+                        ))}
+                    </Route>
                 </Route>
             </Routes>
         </Suspense>
