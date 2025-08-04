@@ -53,7 +53,7 @@ const ProjectTabs = () => {
                         <div
                             key={id}
                             className={cn(
-                                `py-2 px-4  cursor-pointer text-sm  min-w-fit`,
+                                `py-2 px-4  cursor-pointer text-sm`,
                                 'flex gap-2 items-center',
                                 `${
                                     isSelected(id)
