@@ -37,8 +37,8 @@ const Title = React.forwardRef<HTMLDivElement, PropType>(
                 onInput={handleInput}
                 className={cn(
                     'outline-none word-wrap',
-                    'text-xl font-semibold text-black placeholder:text-gray-400',
-                    'max-w-full',
+                    'text-xl font-semibold placeholder:text-gray-400',
+                    'w-full',
                 )}
                 data-placeholder={placeholder}
             />

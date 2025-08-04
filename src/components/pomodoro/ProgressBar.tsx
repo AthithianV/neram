@@ -1,12 +1,13 @@
+import { useTheme } from '@/components/theme/ThemeProvider'; // adjust if path differs
 import { formatDuration } from '@/lib/time';
 import React from 'react';
 
 type CircularProgressProps = {
-    size?: number; // Diameter of the circle
+    size?: number;
     strokeWidth?: number;
-    totalDuration: number; // e.g., 1500 for 25 minutes in seconds
-    currentDuration: number; // elapsed or remaining time
-    showText?: boolean; // optionally show % inside
+    totalDuration: number;
+    currentDuration: number;
+    showText?: boolean;
 };
 
 const CircularProgress: React.FC<CircularProgressProps> = ({
@@ -16,11 +17,21 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
     currentDuration,
     showText = true,
 }) => {
+    const { theme } = useTheme();
+
     const radius = (size - strokeWidth) / 2;
     const circumference = 2 * Math.PI * radius;
-
     const progress = Math.min(currentDuration / totalDuration, 1);
     const strokeDashoffset = circumference * (1 - progress);
+
+    // Determine effective theme (handle 'system')
+    const isDark =
+        theme === 'dark' ||
+        (theme === 'system' &&
+            window.matchMedia?.('(prefers-color-scheme: dark)').matches);
+
+    const bgStroke = isDark ? '#333' : '#e6e6e6';
+    const textColor = isDark ? '#fff' : '#333';
 
     return (
         <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
@@ -28,7 +39,7 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
                 cx={size / 2}
                 cy={size / 2}
                 r={radius}
-                stroke="#e6e6e6"
+                stroke={bgStroke}
                 fill="transparent"
                 strokeWidth={strokeWidth}
             />
@@ -36,7 +47,7 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
                 cx={size / 2}
                 cy={size / 2}
                 r={radius}
-                stroke="#ff6347" // tomato color for Pomodoro
+                stroke="#ff6347"
                 fill="transparent"
                 strokeWidth={strokeWidth}
                 strokeDasharray={circumference}
@@ -49,9 +60,9 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
                     y="50%"
                     textAnchor="middle"
                     dominantBaseline="central"
-                    fill="#333"
+                    fill={textColor}
                     fontSize="18"
-                    transform="rotate(90, 75, 75)" // rotate back text
+                    transform={`rotate(90, ${size / 2}, ${size / 2})`}
                 >
                     {formatDuration(totalDuration - currentDuration)}
                 </text>

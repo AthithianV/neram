@@ -39,13 +39,29 @@ export default function App() {
                     <Route path="statistic" element={<Statistics />} />
                     <Route path="cloud-sync" element={<CloudSync />} />
                     <Route path="settings" element={<Settings />}>
-                        {SETTINGS_TAB.map((tab) => (
-                            <Route
-                                path={tab.path}
-                                element={<tab.element />}
-                                key={tab.title}
-                            />
-                        ))}
+                        {SETTINGS_TAB.map((tab) =>
+                            tab.index ? (
+                                <Route
+                                    index
+                                    element={
+                                        <Suspense fallback={<div>Loading...</div>}>
+                                            <tab.element />
+                                        </Suspense>
+                                    }
+                                    key={tab.title}
+                                />
+                            ) : (
+                                <Route
+                                    path={tab.path}
+                                    element={
+                                        <Suspense fallback={<div>Loading...</div>}>
+                                            <tab.element />
+                                        </Suspense>
+                                    }
+                                    key={tab.title}
+                                />
+                            ),
+                        )}
                     </Route>
                 </Route>
             </Routes>

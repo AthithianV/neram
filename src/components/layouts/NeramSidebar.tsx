@@ -37,7 +37,7 @@ const NeramSidebar = () => {
                                             className={cn(
                                                 pathname.startsWith(link.props.to) &&
                                                     'bg-sidebar-accent font-semibold text-theme hover:text-theme',
-                                                'px-4 !h-auto text-[0.9rem] rounded-md',
+                                                'px-4 !h-auto text-[0.9rem] rounded-md active:text-none',
                                             )}
                                         >
                                             {link}
@@ -79,8 +79,8 @@ const Header = () => {
     return (
         <SidebarHeader
             className={cn(
-                'title-bar-height bg-white',
-                open ? 'border-b-2 border-gray-100' : '',
+                'title-bar-height bg-background',
+                open ? 'border-b-1 border-border' : '',
             )}
         >
             <SidebarMenu>

@@ -19,7 +19,7 @@ const Settings = () => {
                             to={tab.path}
                             key={tab.title}
                             className={cn(
-                                location.pathname === tab.path
+                                location.pathname.endsWith(tab.path)
                                     ? 'text-theme border-b-2 border-theme font-bold'
                                     : 'text-gary-400',
                                 'py-2 px-2 flex gap-2 text-sm items-center mb-[-2px]',

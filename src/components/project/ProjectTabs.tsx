@@ -57,8 +57,8 @@ const ProjectTabs = () => {
                                 'flex gap-2 items-center',
                                 `${
                                     isSelected(id)
-                                        ? `bg-white border-b-2 font-bold`
-                                        : 'hover:bg-gray-100'
+                                        ? `bg-background border-b-2 font-bold`
+                                        : 'hover:bg-gray-100 dark:hover:bg-gray-800'
                                 }`,
                             )}
                             style={

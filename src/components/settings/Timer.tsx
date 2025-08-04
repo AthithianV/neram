@@ -1,5 +1,11 @@
+import { Card, CardContent } from '../ui/card';
+
 const Timer = () => {
-    return <div>Timer</div>;
+    return (
+        <Card>
+            <CardContent>Under Construction</CardContent>
+        </Card>
+    );
 };
 
 export default Timer;

@@ -194,7 +194,7 @@ const TaskAttribute = ({
                 <Badge
                     className={cn(
                         'flex items-center justify-between',
-                        'bg-transparent text-gray-700 border-gray-200',
+                        'bg-transparent text-gray-700 border-border',
                         'text-xs py-1',
                         'font-semibold',
                         'rounded-sm gap-[2px] h-full',

@@ -86,7 +86,7 @@ const Timer = () => {
                     </Button>
                 ) : (
                     <Button
-                        className="py-2 px-4 rounded bg-red-500 hover:bg-red-600"
+                        className="py-2 px-4 rounded bg-red-500 hover:bg-red-600 text-white"
                         onClick={() => stopPomodoro()}
                     >
                         <Square fill="currentColor" />

@@ -24,8 +24,8 @@ export function AppLayout() {
                 <ModalLayout />
             </Suspense>
 
-            <main className="flex flex-col text-foreground overflow-hidden h-full w-full bg-gray-50">
-                <div className="title-bar-height bg-white border-b-2 border-gray-100">
+            <main className="flex flex-col text-foreground overflow-hidden h-full w-full">
+                <div className="title-bar-height bg-background border-b-1 border-border">
                     <Suspense fallback={<Skeleton className="title-bar-height w-full" />}>
                         <TitleBar />
                     </Suspense>

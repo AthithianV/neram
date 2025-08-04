@@ -1,5 +1,11 @@
+import { Card, CardContent } from '../ui/card';
+
 const BackUp = () => {
-    return <div>BackUp</div>;
+    return (
+        <Card>
+            <CardContent>Under Construction</CardContent>
+        </Card>
+    );
 };
 
 export default BackUp;

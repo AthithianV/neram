@@ -76,7 +76,7 @@
     }
 
     .modal-form {
-        @apply space-y-3 min-w-[60vw] bg-white rounded-lg py-10 p-20;
+        @apply space-y-3 min-w-[60vw] bg-background rounded-lg py-10 p-20 border-2 border-border;
     }
 
     .tiptap {
@@ -84,7 +84,7 @@
             @apply mt-0;
         }
 
-        @apply bg-slate-100 p-2 py-5 rounded-md max-h-[40vh] max-w-[50vw] h-[30vh] overflow-y-auto;
+        @apply bg-background border-2 border-border p-2 py-5 rounded-md max-h-[40vh] max-w-[50vw] h-[30vh] overflow-y-auto;
 
         /* List styles */
 

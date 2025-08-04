@@ -11,9 +11,10 @@ const Personalization = React.lazy(
 export const SETTINGS_TAB = [
     {
         title: 'General',
-        path: '/settings/general',
+        path: '/settings',
         element: General,
         icon: <ShipWheel className="h-4 w-4" />,
+        index: true,
     },
     {
         title: 'Back Up',

@@ -43,7 +43,7 @@ const StartButton = () => {
             <DropdownMenuTrigger asChild>
                 <Button
                     variant={'default'}
-                    className="flex items-center gap-1 bg-emerald-500 hover:bg-emerald-600"
+                    className="flex items-center gap-1 bg-emerald-500 hover:bg-emerald-600 text-white"
                     disabled={timer.timer > 0 && timer.timer_type !== 'Session'}
                 >
                     <Play fill="currentColor" className="w-4 h-4" />

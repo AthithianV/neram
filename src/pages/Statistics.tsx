@@ -26,7 +26,7 @@ const Statistics = () => {
     return (
         <PageAnimation>
             <div className="p-2">
-                <div className="flex items-center bg-white shadow-md rounded-md w-fit my-2">
+                <div className="flex items-center border-2 border-border shadow-md rounded-md w-fit my-2">
                     {/* Prev Button */}
                     <Button
                         onClick={handlePrev}

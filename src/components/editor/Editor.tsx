@@ -41,7 +41,7 @@ export default ({
                 <EditorContent
                     editor={editor}
                     data-placeholder="Start typing..."
-                    className="text-wrap border-none rounded-md border-2 focus:outline-none"
+                    className="text-wrap rounded-md border-2"
                     style={{ whiteSpace: 'pre-wrap', userSelect: 'text' }}
                 />
             </ScrollArea>

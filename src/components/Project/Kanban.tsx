@@ -191,8 +191,8 @@ const Column = ({
         <div
             className={cn(
                 'w-[18vw] max-lg:w-[25vw] h-fit max-h-full',
-                'rounded-md bg-white shadow-sm p-2 border-2 border-gray-100',
-                overColumn === column.id && 'bg-sky-100',
+                'rounded-md bg-sidebar shadow-sm p-2 border-2 border-border',
+                overColumn === column.id && 'bg-sky-100 dark:bg-sky-800',
                 'animate-page-fade-in',
             )}
             ref={setNodeRef}
@@ -230,7 +230,7 @@ const Column = ({
                 </SortableContext>
 
                 <Button
-                    className="!h-8 cursor-pointer hover:bg-gray-100 !w-fit !text-gray-700 text-xs"
+                    className="!h-8 cursor-pointer !w-fit text-xs"
                     variant={'ghost'}
                     onClick={() =>
                         setSearchParams({

@@ -10,7 +10,7 @@ const queryClient = new QueryClient();
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <QueryClientProvider client={queryClient}>
         <React.StrictMode>
-            <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+            <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
                 <BrowserRouter>
                     <App />
                 </BrowserRouter>
