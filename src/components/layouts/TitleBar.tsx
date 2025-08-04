@@ -2,6 +2,7 @@ import { getCurrentWindow } from '@tauri-apps/api/window';
 import { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
 
+import { useStopTimer } from '@/hooks/useTimer';
 import Close from '../icons/Close';
 import Minimize from '../icons/Minimize';
 import RestoreDown from '../icons/RestoreDown';
@@ -9,6 +10,7 @@ import RestoreUp from '../icons/RestoreUp';
 
 const TitleBar = () => {
     const [isMaximized, setIsMaximized] = useState(false);
+    const { mutateAsync: stopTimer } = useStopTimer();
 
     useEffect(() => {
         const setupWindow = async () => {
@@ -44,6 +46,7 @@ const TitleBar = () => {
     };
 
     const handleClose = async () => {
+        await stopTimer();
         const appWindow = getCurrentWindow();
         await appWindow.close();
     };
