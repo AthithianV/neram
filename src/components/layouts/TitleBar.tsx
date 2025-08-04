@@ -87,7 +87,7 @@ const TitleBar = () => {
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="px-6 h-full rounded-none hover:bg-red-500"
+                        className="px-6 h-full rounded-none hover:bg-red-500 dark:hover:bg-red-800"
                         onClick={handleClose}
                     >
                         <Close />

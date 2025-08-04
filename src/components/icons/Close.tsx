@@ -10,14 +10,14 @@ const Close = () => {
             <g id="SVGRepo_iconCarrier">
                 <path
                     d="M18 6L6 18"
-                    stroke="#33363F"
+                    stroke="currentColor"
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                 ></path>
                 <path
                     d="M6 6L18 18"
-                    stroke="#33363F"
+                    stroke="currentColor"
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
