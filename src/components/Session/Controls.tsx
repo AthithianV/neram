@@ -1,7 +1,4 @@
-import { useUpdateSession } from '@/hooks/useSession';
 import { usePauseTimer, useResumeTimer, useStopTimer, useTimer } from '@/hooks/useTimer';
-import { toDBTime } from '@/lib/time';
-import dayjs from 'dayjs';
 import { Pause, Play, PlusIcon, Square } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { Button } from '../ui/button';
@@ -11,48 +8,21 @@ const Controls = () => {
     const [_, setSearchParams] = useSearchParams();
 
     const { data: timer } = useTimer();
-    const { mutateAsync: updateSession } = useUpdateSession();
-    const { mutate: stopTimer } = useStopTimer();
+    const { mutateAsync: stopTimer } = useStopTimer();
     const { mutateAsync: pauseTimer } = usePauseTimer();
     const { mutateAsync: resumeTimer } = useResumeTimer();
 
     if (!timer) return null;
 
     const handlePause = async () => {
-        if (timer.session_id) {
-            await updateSession({
-                sessionToUpdate: {
-                    session_duration_sec: timer.session_time_elapsed,
-                },
-                sessionId: timer.session_id,
-            });
-        }
-        pauseTimer();
+        await pauseTimer();
     };
 
     const handleResume = async () => {
-        if (timer.session_id) {
-            await updateSession({
-                sessionToUpdate: {
-                    break_duration_sec: timer.break_time_elapsed,
-                },
-                sessionId: timer.session_id,
-            });
-        }
-        resumeTimer();
+        await resumeTimer();
     };
 
     const handleStop = async () => {
-        if (timer.session_id) {
-            await updateSession({
-                sessionToUpdate: {
-                    session_duration_sec: timer.session_time_elapsed,
-                    break_duration_sec: timer.break_time_elapsed,
-                    end_time: toDBTime(dayjs().toString()),
-                },
-                sessionId: timer.session_id,
-            });
-        }
         stopTimer();
     };
 

@@ -1,6 +1,9 @@
+import { toDBTime } from '@/lib/time';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
+import dayjs from 'dayjs';
 import { toast } from 'sonner';
+import { useUpdateSession } from './useSession';
 
 export type TimerResponse = {
     session_time_elapsed: number;
@@ -43,8 +46,22 @@ export const useStartTimer = () => {
 
 export const usePauseTimer = () => {
     const queryClient = useQueryClient();
+    const { data: timer } = useTimer();
+    const { mutateAsync: updateSession } = useUpdateSession();
     return useMutation({
-        mutationFn: () => invoke('pause_timer'),
+        mutationFn: async () => {
+            if (timer) {
+                if (timer.session_id) {
+                    await updateSession({
+                        sessionToUpdate: {
+                            session_duration_sec: timer.session_time_elapsed,
+                        },
+                        sessionId: timer.session_id,
+                    });
+                }
+                await invoke('pause_timer');
+            }
+        },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['timer'] });
         },
@@ -55,9 +72,23 @@ export const usePauseTimer = () => {
 };
 
 export const useResumeTimer = () => {
+    const { data: timer } = useTimer();
+    const { mutateAsync: updateSession } = useUpdateSession();
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: () => invoke('resume_timer'),
+        mutationFn: async () => {
+            if (timer) {
+                if (timer.session_id) {
+                    await updateSession({
+                        sessionToUpdate: {
+                            break_duration_sec: timer.break_time_elapsed,
+                        },
+                        sessionId: timer.session_id,
+                    });
+                }
+                invoke('resume_timer');
+            }
+        },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['timer'] });
         },
@@ -68,9 +99,25 @@ export const useResumeTimer = () => {
 };
 
 export const useStopTimer = () => {
+    const { data: timer } = useTimer();
+    const { mutateAsync: updateSession } = useUpdateSession();
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: () => invoke('stop_timer'),
+        mutationFn: async () => {
+            if (timer) {
+                if (timer.session_id) {
+                    await updateSession({
+                        sessionToUpdate: {
+                            session_duration_sec: timer.session_time_elapsed,
+                            break_duration_sec: timer.break_time_elapsed,
+                            end_time: toDBTime(dayjs().toString()),
+                        },
+                        sessionId: timer.session_id,
+                    });
+                }
+                await invoke('stop_timer');
+            }
+        },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['timer'] });
         },
