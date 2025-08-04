@@ -7,10 +7,11 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useProjectById } from '@/hooks/useProject';
+import { useProject, useProjectById } from '@/hooks/useProject';
 import { Edit, Settings, Trash } from 'lucide-react';
 import { useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
+import { toast } from 'sonner';
 import LoaderWrapper from '../layouts/Loader';
 import DeleteProject from './DeleteProject';
 
@@ -21,6 +22,7 @@ const ProjectSettings = () => {
 
     const [_, setSearchParams] = useSearchParams();
     const { data: project } = useProjectById(Number(projectId) ?? 0);
+    const { data: projects } = useProject();
 
     if (!project || !projectId) {
         return <LoaderWrapper />;
@@ -36,6 +38,12 @@ const ProjectSettings = () => {
     const handleDelete = (e: React.MouseEvent<HTMLDivElement>) => {
         e.stopPropagation();
         e.preventDefault();
+        if (projects && projects.length <= 1) {
+            toast.warning(
+                'Create more project to delete Current!🥺 Project Page cannot be empty👉👈',
+            );
+            return;
+        }
         setOpen(false);
         setAlertOpen(true);
     };
