@@ -47,8 +47,6 @@ const Kanban = () => {
         setTasks([...tasksData]);
     }, [tasksData]);
 
-    if (!projectId) return null;
-
     const columns: KanbanColumn[] = useMemo(
         () =>
             TASK_STATUS.map((taskTitle) => ({
@@ -141,7 +139,7 @@ const Kanban = () => {
         setActiveTask(null);
     };
 
-    if (isLoading) {
+    if (isLoading || !projectId) {
         return <LoaderWrapper />;
     }
 
