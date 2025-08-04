@@ -112,7 +112,7 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                         control={form.control}
                         name="title"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="flex items-center gap-5 max-w-[50vw]">
                                 <FormControl>
                                     <Title
                                         ref={field.ref}

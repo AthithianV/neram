@@ -107,7 +107,7 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                         control={form.control}
                         name="title"
                         render={({ field }) => (
-                            <FormItem className="w-1/2 flex items-center gap-5">
+                            <FormItem className="flex items-center gap-5 max-w-[50vw]">
                                 <FormControl>
                                     <Title
                                         ref={field.ref}
