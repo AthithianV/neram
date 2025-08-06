@@ -5,6 +5,7 @@ mod utils;
 use commands::pomodoro_settings::*;
 use commands::project::*;
 use commands::session::*;
+use commands::settings::*;
 use commands::statistics::*;
 use commands::tag::*;
 use commands::task::*;
@@ -74,7 +75,9 @@ pub async fn run() {
             get_statistics,
             // Pomodoro
             update_pomodoro_settings,
-            get_pomodoro_settings
+            get_pomodoro_settings,
+            // Settings
+            get_settings
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

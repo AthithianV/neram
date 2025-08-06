@@ -2,6 +2,8 @@ use ::entity::settings::{
     ActiveModel as SettingsActiveModel, Entity as Settings, Model as SettingsModel,
 };
 use sea_orm::*;
+
+use crate::models::settings::ReadSettingsModel;
 // use crate::models::settings::Theme;
 
 pub struct SettingsRepository<'a> {
@@ -13,12 +15,17 @@ impl<'a> SettingsRepository<'a> {
         Self { db }
     }
 
-    pub async fn get_settings(&self) -> Result<Option<SettingsModel>, DbErr> {
+    pub async fn get(&self) -> Result<ReadSettingsModel, DbErr> {
         let settings = Settings::find().one(self.db).await?;
-        Ok(settings)
+
+        if let Some(s) = settings {
+            Ok(ReadSettingsModel::from(s))
+        } else {
+            Err(DbErr::Custom("Cannot Find Settings".into()))
+        }
     }
 
-    pub async fn update_settings(&self, settings: &SettingsModel) -> Result<SettingsModel, DbErr> {
+    pub async fn update(&self, settings: &SettingsModel) -> Result<SettingsModel, DbErr> {
         // Since there's no primary key, we'll update the first record or create one
         let existing = Settings::find().one(self.db).await?;
 
