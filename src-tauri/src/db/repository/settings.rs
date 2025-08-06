@@ -1,9 +1,7 @@
-use ::entity::settings::{
-    ActiveModel as SettingsActiveModel, Entity as Settings, Model as SettingsModel,
-};
+use ::entity::settings::{ActiveModel as SettingsActiveModel, Entity as Settings};
 use sea_orm::*;
 
-use crate::models::settings::ReadSettingsModel;
+use crate::models::settings::{ReadSettingsModel, UpdateSettingsModel};
 // use crate::models::settings::Theme;
 
 pub struct SettingsRepository<'a> {
@@ -16,41 +14,31 @@ impl<'a> SettingsRepository<'a> {
     }
 
     pub async fn get(&self) -> Result<ReadSettingsModel, DbErr> {
-        let settings = Settings::find().one(self.db).await?;
-
-        if let Some(s) = settings {
-            Ok(ReadSettingsModel::from(s))
-        } else {
-            Err(DbErr::Custom("Cannot Find Settings".into()))
-        }
+        let settings = Settings::find().all(self.db).await?;
+        Ok(ReadSettingsModel::from(settings.first().unwrap()))
     }
 
-    pub async fn update(&self, settings: &SettingsModel) -> Result<SettingsModel, DbErr> {
-        // Since there's no primary key, we'll update the first record or create one
-        let existing = Settings::find().one(self.db).await?;
+    pub async fn update(&self, settings_to_update: UpdateSettingsModel) -> Result<(), DbErr> {
+        let settings = Settings::find().all(self.db).await?;
+        let setting_model = settings
+            .first()
+            .ok_or(DbErr::Custom("Settings not found".into()))?
+            .clone();
+        let mut current_setting: SettingsActiveModel = setting_model.into();
 
-        if let Some(_) = existing {
-            // Update existing settings
-            let active_model = SettingsActiveModel {
-                theme: Set(settings.theme.clone()),
-                date_format: Set(settings.date_format.clone()),
-                time_format: Set(settings.time_format.clone()),
-                ..Default::default()
-            };
-
-            let model = active_model.update(self.db).await?;
-            Ok(model)
-        } else {
-            // Create new settings
-            let active_model = SettingsActiveModel {
-                theme: Set(settings.theme.clone()),
-                date_format: Set(settings.date_format.clone()),
-                time_format: Set(settings.time_format.clone()),
-                ..Default::default()
-            };
-
-            let model = active_model.insert(self.db).await?;
-            Ok(model)
+        if let Some(theme) = settings_to_update.theme {
+            current_setting.theme = Set(theme);
         }
+
+        if let Some(date_format) = settings_to_update.date_format {
+            current_setting.date_format = Set(date_format);
+        }
+
+        if let Some(time_format) = settings_to_update.time_format {
+            current_setting.time_format = Set(time_format);
+        }
+
+        current_setting.update(self.db).await?;
+        Ok(())
     }
 }

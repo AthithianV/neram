@@ -77,7 +77,8 @@ pub async fn run() {
             update_pomodoro_settings,
             get_pomodoro_settings,
             // Settings
-            get_settings
+            get_settings,
+            update_settings
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

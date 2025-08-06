@@ -15,12 +15,19 @@ pub struct ReadSettingsModel {
     pub time_format: String,
 }
 
-impl From<Settings> for ReadSettingsModel {
-    fn from(settings: Settings) -> Self {
+impl From<&Settings> for ReadSettingsModel {
+    fn from(settings: &Settings) -> Self {
         ReadSettingsModel {
-            theme: settings.theme,
-            date_format: settings.date_format,
-            time_format: settings.time_format,
+            theme: settings.theme.clone(),
+            date_format: settings.date_format.clone(),
+            time_format: settings.time_format.clone(),
         }
     }
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct UpdateSettingsModel {
+    pub theme: Option<String>,
+    pub date_format: Option<String>,
+    pub time_format: Option<String>,
 }
