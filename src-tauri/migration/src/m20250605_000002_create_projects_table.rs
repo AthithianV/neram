@@ -76,7 +76,7 @@ impl MigrationTrait for Migration {
             .execute(
                 Statement::from_string(
                     manager.get_database_backend(),
-                    format!("INSERT INTO projects (title, description, color, created_at, updated_at) VALUES ('Neram', 'Demo Project', '#222222', {}, {})", now, now)
+                    format!("INSERT INTO projects (title, description, color, created_at, updated_at) VALUES ('Neram', 'Demo Project', '#222222', '{}', '{}');", now, now)
                 )
             ).await?;
 

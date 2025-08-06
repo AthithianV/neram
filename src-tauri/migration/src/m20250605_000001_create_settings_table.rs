@@ -40,7 +40,7 @@ impl MigrationTrait for Migration {
             .execute(
                 Statement::from_string(
                     manager.get_database_backend(),
-                    format!("INSERT INTO settings (theme, date_format, time_format) VALUES ('Light', 'DD/MM/YYYY', 'hh:mm:ss A')"),
+                    format!("INSERT INTO settings (theme, date_format, time_format) VALUES ('Light', 'DD/MM/YYYY', 'hh:mm:ss A');"),
                 )
             ).await?;
 
