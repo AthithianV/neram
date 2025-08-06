@@ -1,5 +1,5 @@
-import { DB_DATE_TIME, TIME_FORMAT } from '@/constants/session';
-import dayjs from 'dayjs';
+import { DB_DATE_TIME } from '@/constants/session';
+import dayjs, { Dayjs } from 'dayjs';
 
 export const formatDuration = (seconds: number) => {
     return `${Math.floor(seconds / 3600)
@@ -14,14 +14,17 @@ export const calcualteDuration = (time: string) => {
     return hh * 3600 + mm * 60 + ss;
 };
 
-export const toDBTime = (date: string | Date, shouldClearTime?: boolean) => {
+export const formatDate = (
+    date: string | Date | Dayjs,
+    options: {
+        format?: string;
+        shouldClearTime?: boolean;
+    } = { format: DB_DATE_TIME, shouldClearTime: false },
+) => {
+    const { format = DB_DATE_TIME, shouldClearTime = false } = options;
     let dateFormat = dayjs(date);
     if (shouldClearTime) {
         dateFormat = dateFormat.startOf('day');
     }
-    return dateFormat.format(DB_DATE_TIME);
-};
-
-export const makeTimeDisplay = (time: string) => {
-    return dayjs(time).format(TIME_FORMAT);
+    return dateFormat.format(format);
 };

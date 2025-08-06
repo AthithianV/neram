@@ -15,7 +15,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { TASK_STATUS, TASK_STATUS_COLOR, TaskStatus } from '@/constants/task';
 import { ReadTask, useTask, useUpdateTask } from '@/hooks/useTask';
-import { toDBTime } from '@/lib/time';
+import { formatDate } from '@/lib/time';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
 import LoaderWrapper from '../layouts/Loader';
@@ -107,7 +107,7 @@ const Kanban = () => {
                         status: newStatus,
                         completed_at:
                             newStatus === 'Completed'
-                                ? toDBTime(dayjs().toString())
+                                ? formatDate(dayjs(), { shouldClearTime: true })
                                 : undefined,
                     },
                     taskId: activeTask.id,

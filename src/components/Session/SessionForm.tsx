@@ -25,7 +25,7 @@ import React, { Suspense, useEffect } from 'react';
 
 import { useSessionCollision } from '@/hooks/useSession';
 import { useTimer } from '@/hooks/useTimer';
-import { toDBTime } from '@/lib/time';
+import { formatDate } from '@/lib/time';
 import dayjs from 'dayjs';
 import { Calendar, CalendarMinus, CalendarPlus, Clock, Folder, Tag } from 'lucide-react';
 import { toast } from 'sonner';
@@ -94,14 +94,14 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
             .hour(startTime.hour())
             .minute(startTime.minute())
             .second(startTime.second());
-        form.setValue('start_time', toDBTime(newStartTime.toString()));
+        form.setValue('start_time', formatDate(newStartTime));
 
         if (endTime.isValid()) {
             let newEndTime = dayjs(date)
                 .hour(endTime.hour())
                 .minute(endTime.minute())
                 .second(endTime.second());
-            form.setValue('end_time', toDBTime(newEndTime.toString()));
+            form.setValue('end_time', formatDate(newEndTime));
         }
     };
 

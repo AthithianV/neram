@@ -2,7 +2,8 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 
 import { DB_DATE_FORMAT, TIME_FORMAT } from '@/constants/session';
-import { toDBTime } from '@/lib/time';
+import { useSettings } from '@/hooks/useSettings';
+import { formatDate } from '@/lib/time';
 import { useEffect, useState } from 'react';
 import { Input } from '../ui/input';
 
@@ -25,8 +26,10 @@ const TimeElement = ({
 }: TimeElementProps) => {
     dayjs.extend(customParseFormat);
 
+    const { data: settings } = useSettings();
+
     const [time, setTime] = useState<string>(
-        value ? dayjs(value).format(TIME_FORMAT) : '',
+        value ? formatDate(value, { format: settings?.time_format }) : '',
     );
 
     const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,11 +37,11 @@ const TimeElement = ({
     };
 
     useEffect(() => {
-        setTime(value ? dayjs(value).format(TIME_FORMAT) : '');
+        setTime(value ? formatDate(value, { format: settings?.time_format }) : '');
     }, [value]);
 
     const handleTimeValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const parsedTime = dayjs(e.target.value, TIME_FORMAT, true);
+        const parsedTime = dayjs(e.target.value, settings?.time_format, true);
         if (!parsedTime.isValid()) {
             setError('Invalid time format');
         } else {
@@ -52,7 +55,7 @@ const TimeElement = ({
                 `${DB_DATE_FORMAT} ${TIME_FORMAT}`,
             ).toString();
 
-            setValue(toDBTime(result));
+            setValue(formatDate(result));
         }
         adjustDuration && adjustDuration();
     };

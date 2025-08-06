@@ -2,7 +2,7 @@ import PageAnimation from '@/components/layouts/PageAnimation';
 import DurationBarChart from '@/components/statistics/BarChart';
 import { Button } from '@/components/ui/button';
 import { useStatistics } from '@/hooks/useStatistics';
-import { toDBTime } from '@/lib/time';
+import { formatDate } from '@/lib/time';
 import dayjs from 'dayjs';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
@@ -10,8 +10,8 @@ import { useState } from 'react';
 const Statistics = () => {
     const [currentMonth, setCurrentMonth] = useState(dayjs());
     const { data } = useStatistics({
-        start_date: toDBTime(currentMonth.startOf('month').toDate()),
-        end_date: toDBTime(currentMonth.endOf('month').toDate()),
+        start_date: formatDate(currentMonth.startOf('month')),
+        end_date: formatDate(currentMonth.endOf('month')),
     });
 
     const handlePrev = () => {

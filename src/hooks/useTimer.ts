@@ -1,4 +1,4 @@
-import { toDBTime } from '@/lib/time';
+import { formatDate } from '@/lib/time';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
 import dayjs from 'dayjs';
@@ -110,7 +110,7 @@ export const useStopTimer = () => {
                         sessionToUpdate: {
                             session_duration_sec: timer.session_time_elapsed,
                             break_duration_sec: timer.break_time_elapsed,
-                            end_time: toDBTime(dayjs().toString()),
+                            end_time: formatDate(dayjs()),
                         },
                         sessionId: timer.session_id,
                     });

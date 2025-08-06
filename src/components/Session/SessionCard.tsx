@@ -1,7 +1,9 @@
 import { Badge } from '@/components/ui/badge';
+import { DATE_FORMAT } from '@/constants/session';
 import { SessionType, useDeleteSession } from '@/hooks/useSession';
+import { useSettings } from '@/hooks/useSettings';
 import { TimerResponse } from '@/hooks/useTimer';
-import { formatDuration, makeTimeDisplay } from '@/lib/time';
+import { formatDate, formatDuration } from '@/lib/time';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
 import { Clock9, Coffee, Loader2, Trash } from 'lucide-react';
@@ -33,6 +35,7 @@ const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
         sessionWithTaskAndTag;
 
     const [isHovered, setIsHovered] = useState(false);
+    const { data: settings } = useSettings();
 
     return (
         <li
@@ -103,11 +106,23 @@ const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
                                         : session_duration_sec,
                                 )}
                             </span>
-                            <div className="text-xs text-gray-500 dark:text-gray-400 flex flex-col items-end">
-                                <span>{date && dayjs(date).format('DD MMM YYYY')} </span>
+                            <div className="text-xs text-gray-500 dark:text-gray-400 flex flex-col gap-1 items-end">
                                 <span>
-                                    {makeTimeDisplay(start_time)} -{' '}
-                                    {end_time ? makeTimeDisplay(end_time) : 'Now'}
+                                    {date &&
+                                        dayjs(date).format(
+                                            settings?.date_format ?? DATE_FORMAT,
+                                        )}{' '}
+                                </span>
+                                <span>
+                                    {formatDate(start_time, {
+                                        format: settings?.time_format,
+                                    })}{' '}
+                                    -{' '}
+                                    {end_time
+                                        ? formatDate(end_time, {
+                                              format: settings?.time_format,
+                                          })
+                                        : 'Now'}
                                 </span>
                             </div>
                         </div>
