@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useDb } from '../../hooks/useDb';
+import { ThemeProvider } from '../theme/ThemeProvider';
 import { Skeleton } from '../ui/skeleton';
 import { Toaster } from '../ui/sonner';
 
@@ -15,23 +16,27 @@ export function AppLayout() {
     if (error) return <div>Error: {error.toString()}</div>;
 
     return (
-        <div className="flex h-screen w-full fixed top-0 overflow-hidden">
-            <Suspense fallback={<Skeleton className="h-full" />}>
-                <NeramSidebar />
-            </Suspense>
-            <Toaster position="bottom-center" richColors />
-            <Suspense fallback={<Skeleton />}>
-                <ModalLayout />
-            </Suspense>
+        <ThemeProvider>
+            <div className="flex h-screen w-full fixed top-0 overflow-hidden">
+                <Suspense fallback={<Skeleton className="h-full" />}>
+                    <NeramSidebar />
+                </Suspense>
+                <Toaster position="bottom-center" richColors />
+                <Suspense fallback={<Skeleton />}>
+                    <ModalLayout />
+                </Suspense>
 
-            <main className="flex flex-col text-foreground overflow-hidden h-full w-full">
-                <div className="title-bar-height bg-background border-b-1 border-border">
-                    <Suspense fallback={<Skeleton className="title-bar-height w-full" />}>
-                        <TitleBar />
-                    </Suspense>
-                </div>
-                <Outlet />
-            </main>
-        </div>
+                <main className="flex flex-col text-foreground overflow-hidden h-full w-full">
+                    <div className="title-bar-height bg-background border-b-1 border-border">
+                        <Suspense
+                            fallback={<Skeleton className="title-bar-height w-full" />}
+                        >
+                            <TitleBar />
+                        </Suspense>
+                    </div>
+                    <Outlet />
+                </main>
+            </div>
+        </ThemeProvider>
     );
 }

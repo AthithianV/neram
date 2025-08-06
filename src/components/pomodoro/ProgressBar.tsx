@@ -26,8 +26,8 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
 
     // Determine effective theme (handle 'system')
     const isDark =
-        theme === 'dark' ||
-        (theme === 'system' &&
+        theme === 'Dark' ||
+        (theme === 'System' &&
             window.matchMedia?.('(prefers-color-scheme: dark)').matches);
 
     const bgStroke = isDark ? '#333' : '#e6e6e6';

@@ -74,12 +74,12 @@ const Timer = () => {
                 }
                 currentDuration={timer.timer_type === 'Pomodoro' ? timer.timer : 0}
             />
-            <div className="flex-center gap-3 my-2 text-2xl text-white">
+            <div className="flex-center gap-3 my-2 text-2xl">
                 {(!timer.is_session && !timer.is_break) ||
                 timer.timer_type !== 'Pomodoro' ? (
                     <Button
                         onClick={() => startTimer({ timerType: 'Pomodoro' })}
-                        className="py-2 px-4 rounded bg-green-500 hover:bg-green-600"
+                        className="py-2 px-4 rounded bg-green-500 hover:bg-green-600 text-white"
                         disabled={timer.timer > 0 && timer.timer_type !== 'Pomodoro'}
                     >
                         <Play fill="currentColor" />
