@@ -1,6 +1,6 @@
 import { useDeleteProject } from '@/hooks/useProject';
 import { Loader2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -13,17 +13,20 @@ import {
 } from '../ui/alert-dialog';
 
 type PropType = {
-    projectId: number;
     isAlertOpen: boolean;
     setAlertOpen: (state: boolean) => void;
 };
 
-const DeleteProject = ({ projectId, setAlertOpen, isAlertOpen }: PropType) => {
+const DeleteProject = ({ setAlertOpen, isAlertOpen }: PropType) => {
     const navigate = useNavigate();
     const { mutateAsync: deleteProject, isPending } = useDeleteProject();
+    const [searchParams] = useSearchParams();
 
     const handleDelete = async () => {
-        await deleteProject(projectId);
+        const projectId = Number(searchParams.get('project_id'));
+        if (projectId && !isNaN(projectId)) {
+            await deleteProject(projectId);
+        }
         setAlertOpen(false);
         navigate('/project');
     };
@@ -51,7 +54,11 @@ const DeleteProject = ({ projectId, setAlertOpen, isAlertOpen }: PropType) => {
                         disabled={isPending}
                         className="bg-red-500 hover:bg-red-600 cursor-pointer"
                     >
-                        {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Delete'}
+                        {isPending ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                            'Delete'
+                        )}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

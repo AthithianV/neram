@@ -4,7 +4,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import LoaderWrapper from '@/components/layouts/Loader';
 import { cn } from '@/lib/utils';
 import { Edit, Folder, Plus, SquareArrowOutUpRight, Trash } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '../ui/button';
 import {
@@ -14,12 +14,14 @@ import {
     ContextMenuTrigger,
 } from '../ui/context-menu';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
-import ProjectSettings from './ProjectSettings';
+import DeleteProject from './DeleteProject';
 
 const ProjectTabs = () => {
+    const [openDeleteAlert, setDeleteAlertOpen] = useState(false);
     const [_, setSearchParams] = useSearchParams();
     const { data: projects, isLoading } = useProject();
     const navigate = useNavigate();
+    const { projectId } = useParams();
 
     const handleAdd = async () => {
         if (projects && projects.length >= 5) {
@@ -35,9 +37,24 @@ const ProjectTabs = () => {
         }
     }, [projects]);
 
-    if (isLoading || !projects) {
+    if (isLoading || !projects || !projectId) {
         return <LoaderWrapper />;
     }
+
+    const handleEdit = () => {
+        setSearchParams({ id: projectId, modal: 'edit_project' });
+    };
+
+    const handleDelete = (projectId: number) => {
+        if (projects && projects.length <= 1) {
+            toast.warning(
+                'Create more project to delete Current!🥺 Project Page cannot be empty👉👈',
+            );
+            return;
+        }
+        setSearchParams({ project_id: projectId.toString() });
+        setDeleteAlertOpen(true);
+    };
 
     return (
         <div className="flex items-center h-[var(--project-tab-height)]">
@@ -50,17 +67,20 @@ const ProjectTabs = () => {
                 )}
             >
                 <div className="flex gap-1">
-                    {projects?.map(({ id, title, color }) => (
+                    {projects?.map((project) => (
                         <ContextMenu>
                             <ContextMenuTrigger>
-                                <ProjectTab id={id} title={title} color={color} />
+                                <ProjectTab
+                                    project={project}
+                                    activeProjectId={Number(projectId)}
+                                />
                             </ContextMenuTrigger>
                             <ContextMenuContent className="border">
-                                <ContextMenuItem>
+                                <ContextMenuItem onClick={() => handleEdit()}>
                                     <Edit className="text-sky-500" />
                                     Edit
                                 </ContextMenuItem>
-                                <ContextMenuItem>
+                                <ContextMenuItem onClick={() => handleDelete(project.id)}>
                                     <Trash className="text-red-500" />
                                     Delete
                                 </ContextMenuItem>
@@ -82,46 +102,54 @@ const ProjectTabs = () => {
             >
                 <Plus className="w-4 h-4" />
             </Button>
-            <ProjectSettings />
+            <DeleteProject
+                isAlertOpen={openDeleteAlert}
+                setAlertOpen={setDeleteAlertOpen}
+            />
         </div>
     );
 };
 
-const ProjectTab = ({ id, color, title }: MinimalProject) => {
-    const { projectId } = useParams();
+const ProjectTab = ({
+    project,
+    activeProjectId,
+}: {
+    project: MinimalProject;
+    activeProjectId: number;
+}) => {
     const navigate = useNavigate();
 
     const isSelected = (tabId: number) => {
-        return projectId && tabId === Number(projectId);
+        return tabId === Number(activeProjectId);
     };
 
     return (
         <div
-            key={id}
+            key={project.id}
             className={cn(
                 `py-2 px-4  cursor-pointer text-sm`,
                 'flex gap-2 items-center',
                 `${
-                    isSelected(id)
+                    isSelected(project.id)
                         ? `bg-background border-b-2 font-bold`
                         : 'hover:bg-gray-100 dark:hover:bg-gray-800'
                 }`,
             )}
             style={
-                isSelected(id)
+                isSelected(project.id)
                     ? {
-                          borderColor: color,
-                          color: color,
+                          borderColor: project.color,
+                          color: project.color,
                       }
-                    : { color: color }
+                    : { color: project.color }
             }
-            onClick={() => navigate(`/project/${id}`)}
+            onClick={() => navigate(`/project/${project.id}`)}
         >
             <Folder
                 className="h-4 w-4"
-                fill={isSelected(id) ? 'currentColor' : 'transparent'}
+                fill={isSelected(project.id) ? 'currentColor' : 'transparent'}
             />
-            {title}
+            {project.title}
         </div>
     );
 };
