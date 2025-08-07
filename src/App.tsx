@@ -1,4 +1,4 @@
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy, useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import LoadingPage from './components/layouts/LoadingPage';
@@ -25,6 +25,35 @@ const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Kanban = lazy(() => import('./components/project/Kanban'));
 
 export default function App() {
+    useEffect(() => {
+        const handleContextMenu = (e: MouseEvent) => {
+            e.preventDefault();
+        };
+
+        window.addEventListener('contextmenu', handleContextMenu);
+        return () => {
+            window.removeEventListener('contextmenu', handleContextMenu);
+        };
+    }, []);
+
+    useEffect(() => {
+        const blockDevTools = (e: KeyboardEvent) => {
+            if (
+                (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+                (e.ctrlKey && e.shiftKey && e.key === 'J') ||
+                (e.ctrlKey && e.key === 'U') ||
+                e.key === 'F12'
+            ) {
+                e.preventDefault();
+            }
+        };
+
+        window.addEventListener('keydown', blockDevTools);
+        return () => {
+            window.removeEventListener('keydown', blockDevTools);
+        };
+    }, []);
+
     return (
         <Suspense fallback={<LoadingPage />}>
             <Routes>
