@@ -10,7 +10,7 @@ const SessionForm = React.lazy(() => import('../session/SessionForm'));
 const TaskForm = React.lazy(() => import('../task/TaskForm'));
 
 export const ModalOverlay = ({ children }: { children: React.ReactNode }) => (
-    <div className="fixed inset-0 bg-gray-800/30 flex justify-center items-center z-50">
+    <div className="fixed inset-0 bg-[rgba(0,0,0,0.5)] flex justify-center items-center z-50">
         <div className={cn('')}>{children}</div>
     </div>
 );

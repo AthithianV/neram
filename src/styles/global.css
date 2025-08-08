@@ -19,6 +19,7 @@
     );
     --kanban-column-height: calc(var(--kanban-height) - 7rem);
     --tomato: #ff6347;
+    --overlay: rgba(0, 0, 0, 0.5);
 }
 
 [contenteditable]:focus {
