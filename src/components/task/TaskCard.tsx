@@ -1,12 +1,39 @@
-import { TASK_PRIORITY_COLOR, TaskPriority } from '@/constants/task';
-import { ReadTask } from '@/hooks/useTask';
+import {
+    TASK_PRIORITY_COLOR,
+    TASK_STATUS,
+    TASK_STATUS_COLOR,
+    TaskPriority,
+    TaskStatus,
+} from '@/constants/task';
+import { ReadTask, useUpdateTask } from '@/hooks/useTask';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
-import { AlarmCheck, Calendar, Flame, GripVertical, Trash2 } from 'lucide-react';
-import { ReactNode, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import {
+    AlarmCheck,
+    Calendar,
+    CircleEllipsis,
+    Edit,
+    Flame,
+    GripVertical,
+    Move,
+    Play,
+    Trash2,
+} from 'lucide-react';
+import React, { ReactNode, useState } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
+
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuPortal,
+    DropdownMenuSeparator,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
@@ -86,23 +113,7 @@ const TaskCard = ({ task, isDragged }: PropType) => {
                         <CardTitle className="text-sm font-semibold py-0">
                             {task.title}
                         </CardTitle>
-                        <Button
-                            variant="ghost"
-                            className={cn(
-                                isHovered ? 'opacity-100' : 'opacity-0',
-                                'transition ease-in-out delay-10',
-                                'text-red-500 !h-6 hover:bg-transparent hover:text-red-600',
-                            )}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setSearchParams({
-                                    task_id: task.id.toString(),
-                                    alert: 'TASK',
-                                });
-                            }}
-                        >
-                            <Trash2 className="w-4 h-4" />
-                        </Button>
+                        <TaskMoreOptions task={task} />
                     </div>
                 </CardHeader>
 
@@ -205,6 +216,81 @@ const TaskAttribute = ({
             </TooltipTrigger>
             <TooltipContent>{title}</TooltipContent>
         </Tooltip>
+    );
+};
+
+const TaskMoreOptions = ({ task }: { task: ReadTask }) => {
+    const { projectId } = useParams();
+
+    const [_, setSearchParams] = useSearchParams();
+    const { mutateAsync: updateTask } = useUpdateTask(Number(projectId));
+
+    const handleEdit = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setSearchParams({
+            task_status: task.status,
+            modal: 'edit_task',
+            id: String(task.id),
+        });
+    };
+
+    const handleDelete = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setSearchParams({
+            task_id: task.id.toString(),
+            alert: 'TASK',
+        });
+    };
+
+    const updateTaskStatus = (e: React.MouseEvent, status: TaskStatus) => {
+        e.stopPropagation();
+        updateTask({ taskId: task.id, taskToUpdate: { ...task, status } });
+    };
+
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger>
+                <CircleEllipsis className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align={'end'}>
+                <DropdownMenuItem>
+                    <Play className="text-green-500" />
+                    Start Timer
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={(e) => handleEdit(e)}>
+                    <Edit className="text-blue-500" />
+                    Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={(e) => handleDelete(e)}>
+                    <Trash2 className="text-red-500" />
+                    Delete
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuSub>
+                    <DropdownMenuSubTrigger className="flex gap-2">
+                        <Move className="text-pink-500 h-4 w-4" />
+                        Status
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuPortal>
+                        <DropdownMenuSubContent>
+                            {TASK_STATUS.map((status) => (
+                                <DropdownMenuItem
+                                    onClick={(e) => updateTaskStatus(e, status)}
+                                >
+                                    <span
+                                        style={{
+                                            backgroundColor: TASK_STATUS_COLOR[status],
+                                        }}
+                                        className="w-3 h-3 rounded"
+                                    ></span>
+                                    {status}
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuSubContent>
+                    </DropdownMenuPortal>
+                </DropdownMenuSub>
+            </DropdownMenuContent>
+        </DropdownMenu>
     );
 };
 

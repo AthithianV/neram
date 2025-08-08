@@ -73,15 +73,21 @@ const ProjectTabs = () => {
                                 />
                             </ContextMenuTrigger>
                             <ContextMenuContent className="border">
-                                <ContextMenuItem onClick={() => handleEdit()}>
+                                <ContextMenuItem
+                                    className="gap-2 pe-20"
+                                    onClick={() => handleEdit()}
+                                >
                                     <Edit className="text-sky-500" />
                                     Edit
                                 </ContextMenuItem>
-                                <ContextMenuItem onClick={() => handleDelete(project.id)}>
+                                <ContextMenuItem
+                                    className="gap-2 pe-20"
+                                    onClick={() => handleDelete(project.id)}
+                                >
                                     <Trash className="text-red-500" />
                                     Delete
                                 </ContextMenuItem>
-                                <ContextMenuItem>
+                                <ContextMenuItem className="gap-2 pe-20">
                                     <SquareArrowOutUpRight className="text-green-500" />
                                     Export
                                 </ContextMenuItem>
