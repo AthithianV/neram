@@ -1,5 +1,6 @@
 import { useDeleteTask } from '@/hooks/useTask';
 import { Loader2 } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -12,17 +13,20 @@ import {
 } from '../ui/alert-dialog';
 
 type PropType = {
-    taskId: number;
     isAlertOpen: boolean;
     setAlertOpen: (state: boolean) => void;
 };
 
-const DeleteTask = ({ taskId, setAlertOpen, isAlertOpen }: PropType) => {
+const DeleteTask = ({ setAlertOpen, isAlertOpen }: PropType) => {
     const { mutateAsync: deleteTask, isPending } = useDeleteTask();
+    const [searchParam] = useSearchParams();
 
     const handleDelete = async () => {
-        await deleteTask(taskId);
-        setAlertOpen(false);
+        const taskId = Number(searchParam.get('task_id'));
+        if (taskId && !isNaN(taskId)) {
+            await deleteTask(taskId);
+            setAlertOpen(false);
+        }
     };
 
     return (

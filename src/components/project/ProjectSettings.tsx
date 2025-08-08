@@ -73,11 +73,7 @@ const ProjectSettings = () => {
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
-            <DeleteProject
-                projectId={project.id}
-                isAlertOpen={isAlertOpen}
-                setAlertOpen={setAlertOpen}
-            />
+            <DeleteProject isAlertOpen={isAlertOpen} setAlertOpen={setAlertOpen} />
         </div>
     );
 };

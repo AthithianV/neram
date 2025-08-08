@@ -2,14 +2,13 @@ import { TASK_PRIORITY_COLOR, TaskPriority } from '@/constants/task';
 import { ReadTask } from '@/hooks/useTask';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
-import { AlarmCheck, Calendar, Flame, Trash2 } from 'lucide-react';
+import { AlarmCheck, Calendar, Flame, GripVertical, Trash2 } from 'lucide-react';
 import { ReactNode, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
-import DeleteTask from './DeleteTask';
 
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -22,7 +21,6 @@ const TaskCard = ({ task, isDragged }: PropType) => {
     const [_, setSearchParams] = useSearchParams();
     const [isHovered, setIsHovered] = useState(false);
     const [isHeaderHovered, setIsHeaderHovered] = useState(false);
-    const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
         id: task.id,
@@ -54,7 +52,7 @@ const TaskCard = ({ task, isDragged }: PropType) => {
         <div ref={setNodeRef} style={style}>
             <Card
                 className={cn(
-                    'transition-all hover:shadow-md rounded-md gap-0 py-3 px-2 w-full z-800',
+                    'transition-all hover:shadow-md rounded-md gap-0 py-3 px-4 w-full z-800',
                     'cursor-pointer',
                     getOpacity(),
                     isHeaderHovered ? 'border-2 border-sky-500' : '',
@@ -70,16 +68,22 @@ const TaskCard = ({ task, isDragged }: PropType) => {
                 onMouseLeave={() => setIsHovered(false)}
                 draggable
             >
-                <CardHeader className="px-2">
-                    <div className="flex items-center justify-between gap-2">
-                        <CardTitle
-                            className="text-sm font-semibold cursor-grab"
-                            {...attributes}
-                            {...listeners}
+                <CardHeader className="px-0">
+                    <div className="flex items-start justify-between gap-2 overflow-visible relative">
+                        <div
+                            className={cn(
+                                'cursor-grab left-[-15px] top-[2px] absolute ',
+                                isHovered ? 'block' : 'hidden',
+                            )}
                             onClick={(e) => e.stopPropagation()}
                             onMouseEnter={() => setIsHeaderHovered(true)}
                             onMouseLeave={() => setIsHeaderHovered(false)}
+                            {...attributes}
+                            {...listeners}
                         >
+                            <GripVertical className="h-4 w-4" />
+                        </div>
+                        <CardTitle className="text-sm font-semibold py-0">
                             {task.title}
                         </CardTitle>
                         <Button
@@ -91,7 +95,10 @@ const TaskCard = ({ task, isDragged }: PropType) => {
                             )}
                             onClick={(e) => {
                                 e.stopPropagation();
-                                setOpenDeleteModal(true);
+                                setSearchParams({
+                                    task_id: task.id.toString(),
+                                    alert: 'TASK',
+                                });
                             }}
                         >
                             <Trash2 className="w-4 h-4" />
@@ -99,48 +106,43 @@ const TaskCard = ({ task, isDragged }: PropType) => {
                     </div>
                 </CardHeader>
 
-                <CardContent className="space-y-2 px-2">
-                    {/* {task.description && (
-                        <div
-                            className="w-full text-wrap text-xs text-muted-foreground line-clamp-2"
-                            dangerouslySetInnerHTML={{
-                                __html: task.description,
-                            }}
-                        />
-                    )} */}
-
-                    <div className="flex gap-1 flex-wrap item-center">
-                        <TaskAttribute
-                            title="Deadline"
-                            text={task.deadline ? formatDeadLine(task.deadline) : null}
-                            icon={<Calendar />}
-                            className={
-                                dayjs(task.deadline).isBefore(dayjs())
-                                    ? 'text-red-500'
-                                    : 'text-blue-600'
-                            }
-                        />
-
-                        <TaskAttribute
-                            title="Estimated Time"
-                            text={
-                                task.estimated_time !== 0 && task.estimated_time
-                                    ? `${(task.estimated_time / 3600).toFixed(0)} h`
-                                    : null
-                            }
-                            icon={<AlarmCheck className="h-4 w-4" />}
-                        />
-
-                        {task.priority && (
+                <CardContent className="space-y-2 px-0">
+                    {!['Completed', 'Cancelled'].includes(task.status) && (
+                        <div className="flex gap-1 flex-wrap item-center">
                             <TaskAttribute
-                                title="Priority"
-                                text={task.priority}
-                                icon={<Flame fill="currentColor" />}
-                                style={getPriorityStyle(task.priority)}
-                                className="text-white border-none px-0"
+                                title="Deadline"
+                                text={
+                                    task.deadline ? formatDeadLine(task.deadline) : null
+                                }
+                                icon={<Calendar />}
+                                className={
+                                    dayjs(task.deadline).isBefore(dayjs())
+                                        ? 'text-red-500'
+                                        : 'text-blue-600'
+                                }
                             />
-                        )}
-                    </div>
+
+                            <TaskAttribute
+                                title="Estimated Time"
+                                text={
+                                    task.estimated_time !== 0 && task.estimated_time
+                                        ? `${(task.estimated_time / 3600).toFixed(0)} h`
+                                        : null
+                                }
+                                icon={<AlarmCheck className="h-4 w-4" />}
+                            />
+
+                            {task.priority && (
+                                <TaskAttribute
+                                    title="Priority"
+                                    text={task.priority}
+                                    icon={<Flame fill="currentColor" />}
+                                    style={getPriorityStyle(task.priority)}
+                                    className="text-white border-none px-0"
+                                />
+                            )}
+                        </div>
+                    )}
 
                     <div className="flex items-center justify-between gap-1">
                         <Tooltip>
@@ -166,11 +168,6 @@ const TaskCard = ({ task, isDragged }: PropType) => {
                     </div>
                 </CardContent>
             </Card>
-            <DeleteTask
-                taskId={task.id}
-                isAlertOpen={openDeleteModal}
-                setAlertOpen={setOpenDeleteModal}
-            />
         </div>
     );
 };

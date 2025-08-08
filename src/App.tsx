@@ -40,7 +40,7 @@ export default function App() {
         const blockDevTools = (e: KeyboardEvent) => {
             if (
                 (e.ctrlKey && e.shiftKey && e.key === 'I') ||
-                (e.ctrlKey && e.shiftKey && e.key === 'J') ||
+                // (e.ctrlKey && e.shiftKey && e.key === 'J') ||
                 (e.ctrlKey && e.key === 'U') ||
                 e.key === 'F12'
             ) {

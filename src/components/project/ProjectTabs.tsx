@@ -4,7 +4,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import LoaderWrapper from '@/components/layouts/Loader';
 import { cn } from '@/lib/utils';
 import { Edit, Folder, Plus, SquareArrowOutUpRight, Trash } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { Button } from '../ui/button';
 import {
@@ -14,10 +14,8 @@ import {
     ContextMenuTrigger,
 } from '../ui/context-menu';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
-import DeleteProject from './DeleteProject';
 
 const ProjectTabs = () => {
-    const [openDeleteAlert, setDeleteAlertOpen] = useState(false);
     const [_, setSearchParams] = useSearchParams();
     const { data: projects, isLoading } = useProject();
     const navigate = useNavigate();
@@ -52,8 +50,7 @@ const ProjectTabs = () => {
             );
             return;
         }
-        setSearchParams({ project_id: projectId.toString() });
-        setDeleteAlertOpen(true);
+        setSearchParams({ project_id: projectId.toString(), alert: 'PROJECT' });
     };
 
     return (
@@ -68,7 +65,7 @@ const ProjectTabs = () => {
             >
                 <div className="flex gap-1">
                     {projects?.map((project) => (
-                        <ContextMenu>
+                        <ContextMenu key={project.id}>
                             <ContextMenuTrigger>
                                 <ProjectTab
                                     project={project}
@@ -102,10 +99,6 @@ const ProjectTabs = () => {
             >
                 <Plus className="w-4 h-4" />
             </Button>
-            <DeleteProject
-                isAlertOpen={openDeleteAlert}
-                setAlertOpen={setDeleteAlertOpen}
-            />
         </div>
     );
 };
