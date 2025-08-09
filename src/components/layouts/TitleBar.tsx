@@ -64,9 +64,8 @@ const TitleBar = () => {
         <div className="w-full h-full flex flex-col items-center">
             <div
                 onMouseDown={handleStartDragging}
-                className="w-full flex justify-between items-center h-full"
+                className="w-full flex justify-end items-center h-full"
             >
-                <div></div>
                 <div className="flex items-center h-full">
                     <Button
                         variant="ghost"

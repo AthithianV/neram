@@ -1,4 +1,3 @@
-import NeramLogo from '@/assets/logo.png';
 import {
     Sidebar,
     SidebarContent,
@@ -10,7 +9,6 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
     SidebarProvider,
-    SidebarTrigger,
     useSidebar,
 } from '@/components/ui/sidebar';
 import { SIDEBAR_BODY_LINKS, SIDEBAR_FOOTER_LINKS } from '@/constants/sidebar';
@@ -25,7 +23,6 @@ const NeramSidebar = () => {
         <SidebarProvider className="h-full w-fit">
             <Sidebar collapsible="icon" className="h-full">
                 <Header />
-                {/* Body */}
                 <SidebarContent className="h-full">
                     <SidebarGroup>
                         <SidebarGroupContent>
@@ -77,28 +74,14 @@ const Header = () => {
     const { open } = useSidebar();
 
     return (
-        <SidebarHeader
-            className={cn(
-                'title-bar-height bg-background',
-                open ? 'border-b-1 border-border' : '',
-            )}
-        >
+        <SidebarHeader className={cn('title-bar-height')}>
             <SidebarMenu>
                 <SidebarMenuItem
                     className={`${
                         open ? 'flex-row' : 'flex-col'
-                    } flex gap-2 px-2 justify-between items-center`}
+                    } flex gap-2 px-4 items-center`}
                 >
-                    {open ? (
-                        <Brand />
-                    ) : (
-                        <img
-                            src={NeramLogo}
-                            alt="Neram Logo"
-                            className="h-4 w-4 rounded-md"
-                        />
-                    )}
-                    <SidebarTrigger />
+                    <Brand />
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarHeader>
