@@ -54,7 +54,7 @@ const ProjectTabs = () => {
     };
 
     return (
-        <div className="flex items-center h-[var(--project-tab-height)]">
+        <div className="flex items-center h-[var(--project-tab-height)] mb-1">
             <ScrollArea
                 className={cn(
                     'max-w-[92%] max-xl:max-w-[88%]',

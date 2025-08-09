@@ -27,7 +27,7 @@ const Project = () => {
 
     return (
         <PageAnimation>
-            <div className="h-full">
+            <div className="h-full  px-2">
                 <ProjectTabs />
                 <DeleteTask isAlertOpen={taskAlert} setAlertOpen={setTaskAlert} />
                 <DeleteProject
