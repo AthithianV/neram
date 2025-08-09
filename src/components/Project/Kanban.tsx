@@ -44,7 +44,15 @@ const Kanban = () => {
     const [overColumn, setOverColumn] = useState<TaskStatus | null>(null);
 
     useEffect(() => {
-        setTasks([...tasksData]);
+        setTasks((prev) => {
+            const isSame =
+                prev.length === tasksData.length &&
+                prev.every(
+                    (t, i) =>
+                        t.id === tasksData[i]?.id && t.status === tasksData[i]?.status,
+                );
+            return isSame ? prev : [...tasksData];
+        });
     }, [tasksData]);
 
     const columns: KanbanColumn[] = useMemo(
@@ -151,7 +159,7 @@ const Kanban = () => {
                 onDragEnd={handleDragEnd}
                 onDragOver={handleDragOver}
             >
-                <div className="flex gap-1 h-[var(--kanban-height)]">
+                <div className="flex gap-2 h-[var(--kanban-height)]">
                     {columns.map((column) => (
                         <Column
                             key={column.id}
@@ -190,14 +198,15 @@ const Column = ({
     return (
         <div
             className={cn(
+                'kanban',
                 'w-[18vw] max-lg:w-[25vw] h-fit max-h-full',
-                'rounded-md bg-sidebar shadow-sm p-2 border-2 border-border',
+                'rounded-md bg-sidebar shadow-sm py-2 ps-2',
                 overColumn === column.id && 'bg-sky-100 dark:bg-sky-800',
-                'animate-page-fade-in',
+                'animate-page-fade-in bg-sidebar',
             )}
             ref={setNodeRef}
         >
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between pe-2">
                 <Badge
                     className={cn('font-semibold rounded text-white')}
                     style={column.style}
@@ -215,7 +224,7 @@ const Column = ({
                     strategy={verticalListSortingStrategy}
                 >
                     <ScrollArea>
-                        <div className="space-y-1 max-h-[var(--kanban-column-height)]">
+                        <div className="space-y-1 max-h-[var(--kanban-column-height)] pe-2">
                             {column.tasks.map((task) => (
                                 <Suspense
                                     fallback={<Skeleton className="flex-1 h-12" />}

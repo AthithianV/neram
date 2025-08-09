@@ -6,8 +6,8 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-    --title-bar-height: 3rem;
-    --main-content-height: calc(100vh - 3rem);
+    --title-bar-height: 2.5rem;
+    --main-content-height: calc(100vh - var(--title-bar-height));
     --session-controls-height: 2.5rem;
     --session-list-height: calc(
         100vh - var(--session-controls-height) - 4.3rem
@@ -181,28 +181,10 @@
     pointer-events: none;
 }
 
-/* Targeting WebKit-based browsers */
-.custom-scrollbar::-webkit-scrollbar {
-    width: 4px; /* for vertical scroll */
-    height: 4px; /* for horizontal scroll */
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: rgba(100, 100, 100, 0.1);
-    border-radius: 6px;
-    border: 1px solid transparent;
-}
-
-.custom-scrollbar:hover::-webkit-scrollbar-thumb {
-    background-color: rgba(100, 100, 100, 0.4);
-}
-
-.scrollbar-hidden::-webkit-scrollbar {
-    display: none;
+.kanban div[data-orientation='vertical'] {
+    width: 8px;
+    position: absolute;
+    right: 0px;
 }
 
 @theme inline {
@@ -273,7 +255,7 @@
     --chart-4: oklch(0.828 0.189 84.429);
     --chart-5: oklch(0.769 0.188 70.08);
     --main-color: oklch(0.99 0 0);
-    --sidebar: oklch(1 0 0);
+    --sidebar: #fafaf9;
     --sidebar-foreground: oklch(0.145 0 0);
     --sidebar-primary: oklch(0.205 0 0);
     --sidebar-primary-foreground: oklch(0.985 0 0);
