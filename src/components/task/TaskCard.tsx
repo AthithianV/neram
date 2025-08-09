@@ -37,6 +37,9 @@ import { Badge } from '../ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
+import { formatDate } from '@/lib/time';
+
+import { useSettings } from '@/hooks/useSettings';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -48,6 +51,8 @@ const TaskCard = ({ task, isDragged }: PropType) => {
     const [_, setSearchParams] = useSearchParams();
     const [isHovered, setIsHovered] = useState(false);
     const [isHeaderHovered, setIsHeaderHovered] = useState(false);
+
+    const { data: settings } = useSettings();
 
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
         id: task.id,
@@ -160,7 +165,9 @@ const TaskCard = ({ task, isDragged }: PropType) => {
                             <TooltipTrigger>
                                 <span className="text-muted-foreground text-xs font-semibold">
                                     {task.started_at &&
-                                        dayjs(task.started_at).format('DD MMM YYYY')}
+                                        formatDate(task.started_at, {
+                                            format: settings?.date_format,
+                                        })}
                                 </span>
                             </TooltipTrigger>
                             <TooltipContent>Started At</TooltipContent>
@@ -170,7 +177,9 @@ const TaskCard = ({ task, isDragged }: PropType) => {
                             <Tooltip>
                                 <TooltipTrigger>
                                     <span className="text-muted-foreground text-xs font-semibold">
-                                        {dayjs(task.completed_at).format('DD MMM YYYY')}
+                                        {formatDate(task.completed_at, {
+                                            format: settings?.date_format,
+                                        })}
                                     </span>
                                 </TooltipTrigger>
                                 <TooltipContent>Completed At</TooltipContent>
@@ -276,6 +285,7 @@ const TaskMoreOptions = ({ task }: { task: ReadTask }) => {
                             {TASK_STATUS.map((status) => (
                                 <DropdownMenuItem
                                     onClick={(e) => updateTaskStatus(e, status)}
+                                    key={status}
                                 >
                                     <span
                                         style={{
