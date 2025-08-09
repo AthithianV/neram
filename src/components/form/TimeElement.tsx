@@ -1,11 +1,11 @@
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 
-import { DB_DATE_FORMAT, TIME_FORMAT } from '@/constants/session';
 import { useSettings } from '@/hooks/useSettings';
 import { formatDate } from '@/lib/time';
 import { useEffect, useState } from 'react';
 import { Input } from '../ui/input';
+import { Skeleton } from '../ui/skeleton';
 
 export interface TimeElementProps {
     value: string | undefined;
@@ -40,20 +40,26 @@ const TimeElement = ({
         setTime(value ? formatDate(value, { format: settings?.time_format }) : '');
     }, [value]);
 
+    if (!settings) {
+        return <Skeleton />;
+    }
+
     const handleTimeValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const parsedTime = dayjs(e.target.value, settings?.time_format, true);
+        const parsedTime = dayjs(e.target.value, settings.time_format, true);
         if (!parsedTime.isValid()) {
             setError('Invalid time format');
         } else {
             setError('');
 
             const setDate =
-                dayjs(date).format(DB_DATE_FORMAT) || dayjs().format(DB_DATE_FORMAT);
+                dayjs(date).format(settings.date_format) ||
+                dayjs().format(settings.date_format);
 
             const result = dayjs(
                 `${setDate} ${e.target.value}`,
-                `${DB_DATE_FORMAT} ${TIME_FORMAT}`,
+                `${settings.date_format} ${settings.time_format}`,
             ).toString();
+            console.log(result);
 
             setValue(formatDate(result));
         }

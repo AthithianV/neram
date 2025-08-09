@@ -198,7 +198,7 @@ const Column = ({
     return (
         <div
             className={cn(
-                'kanban',
+                'kanban border-1',
                 'w-[18vw] max-lg:w-[25vw] h-fit max-h-full',
                 'rounded-md bg-sidebar shadow-sm py-2 ps-2',
                 overColumn === column.id && 'bg-sky-100 dark:bg-sky-800',
