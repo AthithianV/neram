@@ -21,9 +21,9 @@ const NeramSidebar = () => {
 
     return (
         <SidebarProvider className="h-full w-fit">
-            <Sidebar collapsible="icon" className="h-full">
+            <Sidebar collapsible="icon" className="h-full border-none">
                 <Header />
-                <SidebarContent className="h-full">
+                <SidebarContent className="h-full border-e-1">
                     <SidebarGroup>
                         <SidebarGroupContent>
                             <SidebarMenu>
@@ -47,7 +47,7 @@ const NeramSidebar = () => {
                 </SidebarContent>
 
                 {/*Footer*/}
-                <SidebarFooter>
+                <SidebarFooter className="border-e-1">
                     <SidebarMenu>
                         {SIDEBAR_FOOTER_LINKS.map((link, index) => (
                             <SidebarMenuItem key={index}>

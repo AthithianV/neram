@@ -61,7 +61,7 @@ const TitleBar = () => {
     };
 
     return (
-        <div className="w-full h-full flex flex-col items-center">
+        <div className="w-full h-full flex flex-col items-center bg-sidebar">
             <div
                 onMouseDown={handleStartDragging}
                 className="w-full flex justify-end items-center h-full"
