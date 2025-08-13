@@ -152,7 +152,7 @@ const Kanban = () => {
     }
 
     return (
-        <ScrollArea className="">
+        <ScrollArea>
             <DndContext
                 collisionDetection={closestCorners}
                 onDragStart={handleDragStart}

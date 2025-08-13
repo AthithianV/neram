@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 
 export interface ReadTask extends Task {
     id: number;
+    total_duration_sec?: number;
     created_at: string;
     updated_at: string;
 }
@@ -36,10 +37,15 @@ export const useTaskById = (taskId?: number | null) => {
             if (!taskId) {
                 return null;
             }
-            const data = await invoke('get_task_by_id', {
-                taskId,
-            });
-            return data as ReadTask | null;
+            try {
+                const data = await invoke('get_task_by_id', {
+                    taskId,
+                });
+                return data as ReadTask | null;
+            } catch (err) {
+                console.log(err);
+                return null;
+            }
         },
         enabled: taskId !== 0,
         refetchOnWindowFocus: true,

@@ -1,5 +1,7 @@
+import { Checkbox } from '@/components/ui/checkbox';
 import { useDeleteTask } from '@/hooks/useTask';
 import { Loader2 } from 'lucide-react';
+import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
     AlertDialog,
@@ -20,6 +22,7 @@ type PropType = {
 const DeleteTask = ({ setAlertOpen, isAlertOpen }: PropType) => {
     const { mutateAsync: deleteTask, isPending } = useDeleteTask();
     const [searchParam] = useSearchParams();
+    const [shouldDeleteSessions, setShouldDeleteSessions] = useState(false);
 
     const handleDelete = async () => {
         const taskId = Number(searchParam.get('task_id'));
@@ -40,6 +43,14 @@ const DeleteTask = ({ setAlertOpen, isAlertOpen }: PropType) => {
                         All session related to this task will also be deleted.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
+                <AlertDialogContent>
+                    <Checkbox
+                        checked={shouldDeleteSessions}
+                        onCheckedChange={(val) =>
+                            setShouldDeleteSessions(val === 'indeterminate' ? false : val)
+                        }
+                    />
+                </AlertDialogContent>
                 <AlertDialogFooter>
                     <AlertDialogCancel
                         className="cursor-pointer"

@@ -17,6 +17,7 @@ dependencies = [
  "tauri-plugin-fs",
  "tauri-plugin-opener",
  "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -1234,6 +1235,8 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "sea-orm",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

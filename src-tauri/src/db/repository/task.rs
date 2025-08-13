@@ -1,8 +1,13 @@
-use ::entity::tasks::{
-    ActiveModel as TaskActiveModel, Column as TaskColumn, Entity as Task, Model as TaskModel,
-};
 use ::entity::tasks_tags::{ActiveModel as TaskTagsActiveModel, Entity as TaskTags};
+use ::entity::{
+    sessions::{Column as SessionColumn, Entity as Session, Relation as SessionRelation},
+    tasks::{
+        ActiveModel as TaskActiveModel, Column as TaskColumn, Entity as Task, Model as TaskModel,
+        Relation as TaskRelation,
+    },
+};
 use sea_orm::*;
+use sea_orm::{sea_query::Expr, ColumnTrait, DbErr, EntityTrait, QueryFilter, QueryOrder};
 
 use crate::models::task::{CreateTaskModel, ReadTaskModel};
 use crate::time::now;
@@ -36,38 +41,110 @@ impl<'a> TaskRepository<'a> {
         Ok(model)
     }
 
-    pub async fn find_by_id(&self, id: i32) -> Result<Option<ReadTaskModel>, DbErr> {
-        let task_opt = Task::find_by_id(id).one(self.db).await?;
-        let task = match task_opt {
-            Some(t) => Some(ReadTaskModel::from(t)),
-            None => None,
-        };
-        Ok(task)
+    pub async fn find_by_id(&self, task_id: i32) -> Result<Option<ReadTaskModel>, DbErr> {
+        let task_with_duration = Task::find()
+            .filter(TaskColumn::Id.eq(task_id))
+            .join(JoinType::LeftJoin, TaskRelation::Sessions.def())
+            .column_as(
+                Expr::col((Session, SessionColumn::SessionDurationSec)).sum(),
+                "total_duration_sec",
+            )
+            .group_by(TaskColumn::Id)
+            .into_model::<ReadTaskModel>()
+            .one(self.db)
+            .await?;
+
+        Ok(task_with_duration)
     }
 
     pub async fn find_all(&self) -> Result<Vec<ReadTaskModel>, DbErr> {
-        let tasks = Task::find().all(self.db).await?;
-        let tasks = tasks
+        // 1. Fetch all tasks for this project
+        let tasks = Task::find()
+            .column_as(Expr::value(0), "total_duration_sec")
+            .order_by_asc(TaskColumn::Deadline)
+            .order_by_asc(TaskColumn::Priority)
+            .order_by_desc(TaskColumn::UpdatedAt)
+            .into_model::<ReadTaskModel>()
+            .all(self.db)
+            .await?;
+
+        // 2. Fetch durations grouped by task_id
+        let durations: Vec<(i32, Option<i64>)> = Session::find()
+            .select_only()
+            .column(SessionColumn::TaskId)
+            .column_as(
+                Expr::col(SessionColumn::SessionDurationSec).sum(),
+                "total_duration_sec",
+            )
+            .filter(SessionColumn::TaskId.is_in(tasks.iter().map(|t| t.id)))
+            .group_by(SessionColumn::TaskId)
+            .into_tuple()
+            .all(self.db)
+            .await?;
+
+        // 3. Map durations into a lookup
+        let duration_map: std::collections::HashMap<i32, i64> = durations
             .into_iter()
-            .map(|task| ReadTaskModel::from(task))
+            .map(|(task_id, total)| (task_id, total.unwrap_or(0)))
             .collect();
-        Ok(tasks)
+
+        // 4. Merge into the tasks list
+        let tasks_with_durations = tasks
+            .into_iter()
+            .map(|mut t| {
+                t.total_duration_sec = duration_map.get(&t.id).and_then(|&dur| Some(dur));
+                t
+            })
+            .collect::<Vec<_>>();
+
+        Ok(tasks_with_durations)
     }
 
     pub async fn find_all_by_project_id(
         &self,
         project_id: i32,
     ) -> Result<Vec<ReadTaskModel>, DbErr> {
+        // 1. Fetch all tasks for this project
         let tasks = Task::find()
+            .column_as(Expr::value(0), "total_duration_sec")
             .filter(TaskColumn::ProjectId.eq(project_id))
+            .order_by_asc(TaskColumn::Deadline)
+            .order_by_asc(TaskColumn::Priority)
             .order_by_desc(TaskColumn::UpdatedAt)
+            .into_model::<ReadTaskModel>()
             .all(self.db)
             .await?;
-        let tasks = tasks
+
+        // 2. Fetch durations grouped by task_id
+        let durations: Vec<(i32, Option<i64>)> = Session::find()
+            .select_only()
+            .column(SessionColumn::TaskId)
+            .column_as(
+                Expr::col(SessionColumn::SessionDurationSec).sum(),
+                "total_duration_sec",
+            )
+            .filter(SessionColumn::TaskId.is_in(tasks.iter().map(|t| t.id)))
+            .group_by(SessionColumn::TaskId)
+            .into_tuple()
+            .all(self.db)
+            .await?;
+
+        // 3. Map durations into a lookup
+        let duration_map: std::collections::HashMap<i32, i64> = durations
             .into_iter()
-            .map(|task| ReadTaskModel::from(task))
+            .map(|(task_id, total)| (task_id, total.unwrap_or(0)))
             .collect();
-        Ok(tasks)
+
+        // 4. Merge into the tasks list
+        let tasks_with_durations = tasks
+            .into_iter()
+            .map(|mut t| {
+                t.total_duration_sec = duration_map.get(&t.id).and_then(|&dur| Some(dur));
+                t
+            })
+            .collect::<Vec<_>>();
+
+        Ok(tasks_with_durations)
     }
 
     pub async fn update(&self, task_id: i32, task: &CreateTaskModel) -> Result<(), DbErr> {
@@ -89,7 +166,27 @@ impl<'a> TaskRepository<'a> {
         Ok(())
     }
 
-    pub async fn delete(&self, id: i32) -> Result<DeleteResult, DbErr> {
+    pub async fn delete(
+        &self,
+        id: i32,
+        should_delete_sessions: bool,
+    ) -> Result<DeleteResult, DbErr> {
+        if should_delete_sessions {
+            Session::delete_many()
+                .filter(<Session as EntityTrait>::Column::TaskId.eq(id))
+                .exec(self.db)
+                .await?;
+        } else {
+            Session::update_many()
+                .col_expr(
+                    <Session as EntityTrait>::Column::TaskId,
+                    sea_orm::prelude::Expr::value(None::<i32>),
+                )
+                .filter(<Session as EntityTrait>::Column::TaskId.eq(id))
+                .exec(self.db)
+                .await?;
+        }
+
         let result = Task::delete_by_id(id).exec(self.db).await?;
         Ok(result)
     }

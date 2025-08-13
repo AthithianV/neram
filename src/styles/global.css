@@ -5,23 +5,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-:root {
-    --title-bar-height: 2.5rem;
-    --main-content-height: calc(100vh - var(--title-bar-height));
-    --session-controls-height: 2.5rem;
-    --session-list-height: calc(
-        100vh - var(--session-controls-height) - 4.3rem
-    );
-    --project-tab-height: 2.5rem;
-    --page-padding: 0.5rem;
-    --kanban-height: calc(
-        var(--main-content-height) - var(--project-tab-height)
-    );
-    --kanban-column-height: calc(var(--kanban-height) - 7rem);
-    --tomato: #ff6347;
-    --overlay: rgba(0, 0, 0, 0.5);
-}
-
 [contenteditable]:focus {
     outline: none;
     border: none;
@@ -229,6 +212,21 @@
 }
 
 :root {
+    --title-bar-height: 2.5rem;
+    --main-content-height: calc(100vh - var(--title-bar-height));
+    --session-controls-height: 2.5rem;
+    --session-list-height: calc(
+        100vh - var(--session-controls-height) - 4.3rem
+    );
+    --project-tab-height: 2.5rem;
+    --page-padding: 0.5rem;
+    --kanban-height: calc(
+        var(--main-content-height) - var(--project-tab-height)
+    );
+    --kanban-column-height: calc(var(--kanban-height) - 7rem);
+    --tomato: #ff6347;
+    --overlay: rgba(0, 0, 0, 0.5);
+
     --radius: 0.625rem;
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
@@ -304,6 +302,6 @@
         @apply border-border outline-ring/50;
     }
     body {
-        @apply bg-background text-foreground;
+        @apply bg-background text-foreground dark:text-gray-300;
     }
 }

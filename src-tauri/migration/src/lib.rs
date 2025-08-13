@@ -1,5 +1,4 @@
 use chrono::{NaiveDateTime, Timelike, Utc};
-pub use sea_orm;
 pub use sea_orm_migration::prelude::*;
 
 mod m20250605_000001_create_pomodaro_table;

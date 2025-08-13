@@ -65,7 +65,6 @@ pub async fn get_all_tasks(
 // /// # Returns
 // /// A `Result` containing an `Option<TaskModel>` (Some if found, None if not) on success,
 // /// or a `String` error message.
-
 #[command]
 pub async fn get_task_by_id(
     app_state: State<'_, AppState>,
@@ -119,12 +118,16 @@ pub async fn update_task(
 // /// # Returns
 // /// A `Result` indicating success (`()`) or a `String` error message.
 #[command]
-pub async fn delete_task(app_state: State<'_, AppState>, id: i32) -> Result<(), String> {
+pub async fn delete_task(
+    app_state: State<'_, AppState>,
+    id: i32,
+    should_delete_sessions: bool,
+) -> Result<(), String> {
     let db = app_state.conn.lock().await;
 
     let task_repository = TaskRepository::new(&db);
     task_repository
-        .delete(id)
+        .delete(id, should_delete_sessions)
         .await
         .map_err(|e| e.to_string())?;
     Ok(())
