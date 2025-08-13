@@ -13,6 +13,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '../ui/alert-dialog';
+import { Label } from '../ui/label';
 
 type PropType = {
     isAlertOpen: boolean;
@@ -39,18 +40,19 @@ const DeleteTask = ({ setAlertOpen, isAlertOpen }: PropType) => {
                     <AlertDialogTitle>
                         Are you sure you want to delete this task?
                     </AlertDialogTitle>
-                    <AlertDialogDescription>
-                        All session related to this task will also be deleted.
+                    <AlertDialogDescription className="flex gap-2 my-2 items-center">
+                        <Checkbox
+                            checked={shouldDeleteSessions}
+                            onCheckedChange={(val) =>
+                                setShouldDeleteSessions(
+                                    val === 'indeterminate' ? false : val,
+                                )
+                            }
+                            className="shadow border-1 border-black"
+                        />
+                        <Label>Should Delete all Associated Sessions</Label>
                     </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogContent>
-                    <Checkbox
-                        checked={shouldDeleteSessions}
-                        onCheckedChange={(val) =>
-                            setShouldDeleteSessions(val === 'indeterminate' ? false : val)
-                        }
-                    />
-                </AlertDialogContent>
                 <AlertDialogFooter>
                     <AlertDialogCancel
                         className="cursor-pointer"

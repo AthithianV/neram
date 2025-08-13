@@ -17,6 +17,7 @@ import {
     GripVertical,
     Move,
     Play,
+    Timer,
     Trash2,
 } from 'lucide-react';
 import React, { ReactNode, useState } from 'react';
@@ -161,14 +162,11 @@ const TaskCard = ({ task, isDragged }: PropType) => {
                     )}
 
                     {task.total_duration_sec && (
-                        <Tooltip>
-                            <TooltipTrigger>
-                                <Badge variant="outline" className="rounded-sm">
-                                    {formatDuration(task.total_duration_sec)}
-                                </Badge>
-                            </TooltipTrigger>
-                            <TooltipContent>Time Spanned</TooltipContent>
-                        </Tooltip>
+                        <TaskAttribute
+                            title="Total Time Spanned"
+                            text={formatDuration(task.total_duration_sec)}
+                            icon={<Timer />}
+                        />
                     )}
 
                     <div className="flex items-center justify-between gap-1">
