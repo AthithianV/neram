@@ -27,7 +27,7 @@ export function AppLayout() {
                 </Suspense>
 
                 <main className="flex flex-col text-foreground overflow-hidden h-full w-full">
-                    <div className="title-bar-height bg-background border-b-1 border-border">
+                    <div className="title-bar-height bg-background border-border">
                         <Suspense
                             fallback={<Skeleton className="title-bar-height w-full" />}
                         >

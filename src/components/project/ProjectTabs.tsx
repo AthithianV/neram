@@ -54,7 +54,7 @@ const ProjectTabs = () => {
     };
 
     return (
-        <div className="flex items-center h-[var(--project-tab-height)] mb-1">
+        <div className="flex items-center h-[var(--project-tab-height)] mb-1 bg-sidebar">
             <ScrollArea
                 className={cn(
                     'max-w-[92%] max-xl:max-w-[88%]',
@@ -124,31 +124,39 @@ const ProjectTab = ({
 
     return (
         <div
-            key={project.id}
             className={cn(
-                `py-2 px-4  cursor-pointer text-sm`,
-                'flex gap-2 items-center',
+                'flex gap-2 items-center rounded-t-sm',
+                'px-2',
                 `${
                     isSelected(project.id)
-                        ? `bg-background border-b-2 font-bold`
+                        ? `bg-background h-full`
                         : 'hover:bg-gray-100 dark:hover:bg-gray-800'
                 }`,
             )}
-            style={
-                isSelected(project.id)
-                    ? {
-                          borderColor: project.color,
-                          color: project.color,
-                      }
-                    : { color: project.color }
-            }
-            onClick={() => navigate(`/project/${project.id}`)}
         >
-            <Folder
-                className="h-4 w-4"
-                fill={isSelected(project.id) ? 'currentColor' : 'transparent'}
-            />
-            {project.title}
+            <div
+                key={project.id}
+                className={cn(
+                    `cursor-pointer text-sm`,
+                    'flex gap-2 items-center py-2',
+                    `${isSelected(project.id) ? `border-b-2 font-bold` : ''}`,
+                )}
+                style={
+                    isSelected(project.id)
+                        ? {
+                              borderColor: project.color,
+                              color: project.color,
+                          }
+                        : { color: project.color }
+                }
+                onClick={() => navigate(`/project/${project.id}`)}
+            >
+                <Folder
+                    className="h-4 w-4"
+                    fill={isSelected(project.id) ? 'currentColor' : 'transparent'}
+                />
+                {project.title}
+            </div>
         </div>
     );
 };

@@ -15,7 +15,10 @@ async fn test_find_all_by_project_id() {
 
     // Create repo instance (assuming you have a constructor or use directly if methods are static)
     let repo = TaskRepository::new(&db);
-    let result = repo.find_all_by_project_id(1).await.unwrap();
+    let result = repo
+        .find_all(Some(1), Some("To Do".to_string()))
+        .await
+        .unwrap();
 
     println!("{:#?}", result);
 }

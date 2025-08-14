@@ -57,58 +57,25 @@ impl<'a> TaskRepository<'a> {
         Ok(task_with_duration)
     }
 
-    pub async fn find_all(&self) -> Result<Vec<ReadTaskModel>, DbErr> {
-        // 1. Fetch all tasks for this project
-        let tasks = Task::find()
-            .column_as(Expr::value(0), "total_duration_sec")
-            .order_by_asc(TaskColumn::Deadline)
-            .order_by_asc(TaskColumn::Priority)
-            .order_by_desc(TaskColumn::UpdatedAt)
-            .into_model::<ReadTaskModel>()
-            .all(self.db)
-            .await?;
-
-        // 2. Fetch durations grouped by task_id
-        let durations: Vec<(i32, Option<i64>)> = Session::find()
-            .select_only()
-            .column(SessionColumn::TaskId)
-            .column_as(
-                Expr::col(SessionColumn::SessionDurationSec).sum(),
-                "total_duration_sec",
-            )
-            .filter(SessionColumn::TaskId.is_in(tasks.iter().map(|t| t.id)))
-            .filter(SessionColumn::EndTime.is_not_null())
-            .group_by(SessionColumn::TaskId)
-            .into_tuple()
-            .all(self.db)
-            .await?;
-
-        // 3. Map durations into a lookup
-        let duration_map: std::collections::HashMap<i32, i64> = durations
-            .into_iter()
-            .map(|(task_id, total)| (task_id, total.unwrap_or(0)))
-            .collect();
-
-        // 4. Merge into the tasks list
-        let tasks_with_durations = tasks
-            .into_iter()
-            .map(|mut t| {
-                t.total_duration_sec = duration_map.get(&t.id).and_then(|&dur| Some(dur));
-                t
-            })
-            .collect::<Vec<_>>();
-
-        Ok(tasks_with_durations)
-    }
-
-    pub async fn find_all_by_project_id(
+    pub async fn find_all(
         &self,
-        project_id: i32,
+        project_id: Option<i32>,
+        status: Option<String>,
     ) -> Result<Vec<ReadTaskModel>, DbErr> {
-        // 1. Fetch all tasks for this project
+        let mut cond = Condition::all();
+
+        if let Some(project_id) = project_id {
+            cond = cond.add(TaskColumn::ProjectId.eq(project_id));
+        }
+
+        if let Some(status) = status {
+            cond = cond.add(TaskColumn::Status.eq(status));
+        }
+
         let tasks = Task::find()
             .column_as(Expr::value(0), "total_duration_sec")
-            .filter(TaskColumn::ProjectId.eq(project_id))
+            .filter(cond)
+            .order_by_asc(Expr::cust("Deadline IS NULL"))
             .order_by_asc(TaskColumn::Deadline)
             .order_by_asc(TaskColumn::Priority)
             .order_by_desc(TaskColumn::UpdatedAt)
@@ -116,7 +83,6 @@ impl<'a> TaskRepository<'a> {
             .all(self.db)
             .await?;
 
-        // 2. Fetch durations grouped by task_id
         let durations: Vec<(i32, Option<i64>)> = Session::find()
             .select_only()
             .column(SessionColumn::TaskId)
@@ -131,13 +97,11 @@ impl<'a> TaskRepository<'a> {
             .all(self.db)
             .await?;
 
-        // 3. Map durations into a lookup
         let duration_map: std::collections::HashMap<i32, i64> = durations
             .into_iter()
             .map(|(task_id, total)| (task_id, total.unwrap_or(0)))
             .collect();
 
-        // 4. Merge into the tasks list
         let tasks_with_durations = tasks
             .into_iter()
             .map(|mut t| {

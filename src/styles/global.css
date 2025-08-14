@@ -135,7 +135,7 @@
 
         /* Code and preformatted text styles */
         code {
-            @apply bg-gray-100 rounded-xs text-red-500 px-1 py-1;
+            @apply bg-gray-200 rounded-xs text-sm font-semibold text-red-500 px-1 py-[0.5px] italic;
         }
 
         pre {

@@ -28,7 +28,7 @@ const DeleteTask = ({ setAlertOpen, isAlertOpen }: PropType) => {
     const handleDelete = async () => {
         const taskId = Number(searchParam.get('task_id'));
         if (taskId && !isNaN(taskId)) {
-            await deleteTask(taskId);
+            await deleteTask({ id: taskId, shouldDeleteSessions });
             setAlertOpen(false);
         }
     };

@@ -285,12 +285,15 @@ const TaskMoreOptions = ({ task }: { task: ReadTask }) => {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuSub>
-                    <DropdownMenuSubTrigger className="flex gap-2">
+                    <DropdownMenuSubTrigger
+                        className="flex gap-2"
+                        onClick={(e) => e.stopPropagation()}
+                    >
                         <Move className="text-pink-500 h-4 w-4" />
                         Status
                     </DropdownMenuSubTrigger>
                     <DropdownMenuPortal>
-                        <DropdownMenuSubContent>
+                        <DropdownMenuSubContent asChild>
                             {TASK_STATUS.map((status) => (
                                 <DropdownMenuItem
                                     onClick={(e) => updateTaskStatus(e, status)}

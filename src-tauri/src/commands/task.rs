@@ -41,18 +41,15 @@ pub async fn create_task(
 pub async fn get_all_tasks(
     app_state: State<'_, AppState>,
     project_id: Option<i32>,
+    status: Option<String>,
 ) -> Result<Vec<ReadTaskModel>, String> {
     let db = app_state.conn.lock().await;
 
     let task_repository = TaskRepository::new(&db);
-    if let Some(project_id) = project_id {
-        task_repository
-            .find_all_by_project_id(project_id)
-            .await
-            .map_err(|e| e.to_string())
-    } else {
-        task_repository.find_all().await.map_err(|e| e.to_string())
-    }
+    task_repository
+        .find_all(project_id, status)
+        .await
+        .map_err(|e| e.to_string())
 }
 
 // /// Retrieves a single Task record by its ID.
