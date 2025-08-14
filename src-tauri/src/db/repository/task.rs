@@ -1,6 +1,6 @@
 use ::entity::tasks_tags::{ActiveModel as TaskTagsActiveModel, Entity as TaskTags};
 use ::entity::{
-    sessions::{Column as SessionColumn, Entity as Session, Relation as SessionRelation},
+    sessions::{Column as SessionColumn, Entity as Session},
     tasks::{
         ActiveModel as TaskActiveModel, Column as TaskColumn, Entity as Task, Model as TaskModel,
         Relation as TaskRelation,
@@ -77,6 +77,7 @@ impl<'a> TaskRepository<'a> {
                 "total_duration_sec",
             )
             .filter(SessionColumn::TaskId.is_in(tasks.iter().map(|t| t.id)))
+            .filter(SessionColumn::EndTime.is_not_null())
             .group_by(SessionColumn::TaskId)
             .into_tuple()
             .all(self.db)
@@ -124,6 +125,7 @@ impl<'a> TaskRepository<'a> {
                 "total_duration_sec",
             )
             .filter(SessionColumn::TaskId.is_in(tasks.iter().map(|t| t.id)))
+            .filter(SessionColumn::EndTime.is_not_null())
             .group_by(SessionColumn::TaskId)
             .into_tuple()
             .all(self.db)
