@@ -10,6 +10,7 @@ import {
 import { useProject } from '@/hooks/useProject';
 import { useCreateSession } from '@/hooks/useSession';
 import { useStartTimer, useTimer } from '@/hooks/useTimer';
+import { formatDate } from '@/lib/time';
 import dayjs from 'dayjs';
 import { Play } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
@@ -25,8 +26,8 @@ const StartButton = () => {
         const id = await createSession({
             title: 'UNTITLED',
             project_id: projectId,
-            date: dayjs().startOf('day').format('YYYY-MM-DDTHH:mm:ss'),
-            start_time: dayjs().format('YYYY-MM-DDTHH:mm:ss'),
+            date: formatDate(dayjs(), { shouldClearTime: true }),
+            start_time: formatDate(dayjs()),
             session_duration_sec: 0,
             break_duration_sec: 0,
             tags: [],

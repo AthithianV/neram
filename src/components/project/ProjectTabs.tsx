@@ -55,7 +55,7 @@ const ProjectTabs = () => {
 
     return (
         <div className="h-[var(--project-tab-height)] mb-1 bg-sidebar">
-            <div className="bg-slate-100 flex items-center w-fit rounded-t-sm">
+            <div className="bg-slate-100 dark:bg-slate-900 flex items-center w-fit rounded-t-sm">
                 <ScrollArea
                     className={cn(
                         'max-w-[92%] max-xl:max-w-[88%]',
@@ -129,10 +129,10 @@ const ProjectTab = ({
             className={cn(
                 'flex gap-2 items-center',
                 'px-3',
-                'h-[var(--project-tab-height)]',
+                'h-[var(--project-tab-height)] rounded-t-sm',
                 `${
                     isSelected(project.id)
-                        ? `bg-background h-full rounded-t-sm`
+                        ? `bg-background h-full`
                         : 'hover:bg-gray-100 dark:hover:bg-gray-800'
                 }`,
             )}
