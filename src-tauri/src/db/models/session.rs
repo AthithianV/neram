@@ -9,6 +9,7 @@ pub struct CreateSessionModel {
     pub title: Option<String>,
     pub description: Option<String>,
     pub project_id: i32,
+    pub task_id: Option<i32>,
     pub date: NaiveDateTime,
     pub start_time: NaiveDateTime,
     pub end_time: Option<NaiveDateTime>,

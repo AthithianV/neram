@@ -54,57 +54,59 @@ const ProjectTabs = () => {
     };
 
     return (
-        <div className="flex items-center h-[var(--project-tab-height)] mb-1 bg-sidebar">
-            <ScrollArea
-                className={cn(
-                    'max-w-[92%] max-xl:max-w-[88%]',
-                    ' max-lg:max-w-[82%] max-md:max-w-[80%]',
-                    'h-full',
-                    'whitespace-nowrap',
-                )}
-            >
-                <div className="flex gap-1">
-                    {projects?.map((project) => (
-                        <ContextMenu key={project.id}>
-                            <ContextMenuTrigger>
-                                <ProjectTab
-                                    project={project}
-                                    activeProjectId={Number(projectId)}
-                                />
-                            </ContextMenuTrigger>
-                            <ContextMenuContent className="border">
-                                <ContextMenuItem
-                                    className="gap-2 pe-20"
-                                    onClick={() => handleEdit()}
-                                >
-                                    <Edit className="text-sky-500" />
-                                    Edit
-                                </ContextMenuItem>
-                                <ContextMenuItem
-                                    className="gap-2 pe-20"
-                                    onClick={() => handleDelete(project.id)}
-                                >
-                                    <Trash className="text-red-500" />
-                                    Delete
-                                </ContextMenuItem>
-                                <ContextMenuItem className="gap-2 pe-20">
-                                    <SquareArrowOutUpRight className="text-green-500" />
-                                    Export
-                                </ContextMenuItem>
-                            </ContextMenuContent>
-                        </ContextMenu>
-                    ))}
-                </div>
-                <ScrollBar orientation="horizontal" />
-            </ScrollArea>
+        <div className="h-[var(--project-tab-height)] mb-1 bg-sidebar">
+            <div className="bg-slate-100 flex items-center w-fit rounded-t-sm">
+                <ScrollArea
+                    className={cn(
+                        'max-w-[92%] max-xl:max-w-[88%]',
+                        ' max-lg:max-w-[82%] max-md:max-w-[80%]',
+                        'h-full',
+                        'whitespace-nowrap',
+                    )}
+                >
+                    <div className="flex">
+                        {projects?.map((project) => (
+                            <ContextMenu key={project.id}>
+                                <ContextMenuTrigger>
+                                    <ProjectTab
+                                        project={project}
+                                        activeProjectId={Number(projectId)}
+                                    />
+                                </ContextMenuTrigger>
+                                <ContextMenuContent className="border">
+                                    <ContextMenuItem
+                                        className="gap-2 pe-20"
+                                        onClick={() => handleEdit()}
+                                    >
+                                        <Edit className="text-sky-500" />
+                                        Edit
+                                    </ContextMenuItem>
+                                    <ContextMenuItem
+                                        className="gap-2 pe-20"
+                                        onClick={() => handleDelete(project.id)}
+                                    >
+                                        <Trash className="text-red-500" />
+                                        Delete
+                                    </ContextMenuItem>
+                                    <ContextMenuItem className="gap-2 pe-20">
+                                        <SquareArrowOutUpRight className="text-green-500" />
+                                        Export
+                                    </ContextMenuItem>
+                                </ContextMenuContent>
+                            </ContextMenu>
+                        ))}
+                    </div>
+                    <ScrollBar orientation="horizontal" />
+                </ScrollArea>
 
-            <Button
-                className="cursor-pointer h-full"
-                variant={'ghost'}
-                onClick={handleAdd}
-            >
-                <Plus className="w-4 h-4" />
-            </Button>
+                <Button
+                    className="cursor-pointer h-[var(--project-tab-height)] rounded-t-sm"
+                    variant={'ghost'}
+                    onClick={handleAdd}
+                >
+                    <Plus className="w-4 h-4" />
+                </Button>
+            </div>
         </div>
     );
 };
@@ -125,11 +127,12 @@ const ProjectTab = ({
     return (
         <div
             className={cn(
-                'flex gap-2 items-center rounded-t-sm',
-                'px-2',
+                'flex gap-2 items-center',
+                'px-3',
+                'h-[var(--project-tab-height)]',
                 `${
                     isSelected(project.id)
-                        ? `bg-background h-full`
+                        ? `bg-background h-full rounded-t-sm`
                         : 'hover:bg-gray-100 dark:hover:bg-gray-800'
                 }`,
             )}

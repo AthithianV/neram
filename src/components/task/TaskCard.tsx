@@ -17,6 +17,7 @@ import {
     GripVertical,
     Move,
     Play,
+    Square,
     Timer,
     Trash2,
 } from 'lucide-react';
@@ -40,7 +41,9 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 import { formatDate, formatDuration } from '@/lib/time';
 
+import { useCreateSession } from '@/hooks/useSession';
 import { useSettings } from '@/hooks/useSettings';
+import { useStartTimer, useStopTimer, useTimer } from '@/hooks/useTimer';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -161,13 +164,7 @@ const TaskCard = ({ task, isDragged }: PropType) => {
                         </div>
                     )}
 
-                    {task.total_duration_sec && (
-                        <TaskAttribute
-                            title="Total Time Spanned"
-                            text={formatDuration(task.total_duration_sec)}
-                            icon={<Timer />}
-                        />
-                    )}
+                    <TaskTimer task={task} />
 
                     <div className="flex items-center justify-between gap-1">
                         <Tooltip>
@@ -242,6 +239,32 @@ const TaskMoreOptions = ({ task }: { task: ReadTask }) => {
 
     const [_, setSearchParams] = useSearchParams();
     const { mutateAsync: updateTask } = useUpdateTask(Number(projectId));
+    const { data: timer } = useTimer();
+    const { mutateAsync: createSession } = useCreateSession();
+    const { mutateAsync: startTimer } = useStartTimer();
+    const { mutateAsync: stopTimer } = useStopTimer();
+
+    const handleStart = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const id = await createSession({
+            title: 'UNTITLED',
+            project_id: Number(projectId),
+            task_id: task.id,
+            date: formatDate(dayjs(), { shouldClearTime: true }),
+            start_time: formatDate(dayjs()),
+            session_duration_sec: 0,
+            break_duration_sec: 0,
+            tags: [],
+        });
+        await startTimer({ sessionId: id, taskId: task.id, timerType: 'Session' });
+    };
+
+    const handleStop = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        stopTimer();
+    };
 
     const handleEdit = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -271,10 +294,18 @@ const TaskMoreOptions = ({ task }: { task: ReadTask }) => {
                 <CircleEllipsis className="h-4 w-4 text-gray-400 dark:text-gray-500" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align={'end'}>
-                <DropdownMenuItem>
-                    <Play className="text-green-500" />
-                    Start Timer
-                </DropdownMenuItem>
+                {!(timer && timer.session_time_elapsed > 0) && (
+                    <DropdownMenuItem onClick={handleStart}>
+                        <Play className="text-green-500" />
+                        Start Timer
+                    </DropdownMenuItem>
+                )}
+                {timer && timer.task_id === task.id && (
+                    <DropdownMenuItem onClick={handleStop}>
+                        <Square className="text-red-500" />
+                        Stop Timer
+                    </DropdownMenuItem>
+                )}
                 <DropdownMenuItem onClick={(e) => handleEdit(e)}>
                     <Edit className="text-blue-500" />
                     Edit
@@ -313,6 +344,30 @@ const TaskMoreOptions = ({ task }: { task: ReadTask }) => {
                 </DropdownMenuSub>
             </DropdownMenuContent>
         </DropdownMenu>
+    );
+};
+
+const TaskTimer = ({ task }: { task: ReadTask }) => {
+    const { data: timer } = useTimer();
+
+    return (
+        task.total_duration_sec && (
+            <TaskAttribute
+                title="Total Time Spanned"
+                text={formatDuration(
+                    task.total_duration_sec +
+                        (timer && timer.task_id === task.id
+                            ? timer.session_time_elapsed
+                            : 0),
+                )}
+                icon={<Timer />}
+                className={
+                    timer && timer.task_id === task.id
+                        ? 'bg-emerald-500 border-2 border-black'
+                        : ''
+                }
+            />
+        )
     );
 };
 

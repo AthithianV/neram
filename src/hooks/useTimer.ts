@@ -9,6 +9,7 @@ export type TimerResponse = {
     session_time_elapsed: number;
     break_time_elapsed: number;
     session_id?: number;
+    task_id?: number;
     is_session: boolean;
     is_break: boolean;
     timer: number;
@@ -17,6 +18,7 @@ export type TimerResponse = {
 
 export type StartTimerData = {
     sessionId?: number;
+    taskId?: number;
     timerType?: 'Session' | 'Pomodoro';
 };
 
@@ -114,6 +116,7 @@ export const useStopTimer = () => {
                         },
                         sessionId: timer.session_id,
                     });
+                    queryClient.invalidateQueries({ queryKey: ['sessions', 'tasks'] });
                 }
                 await invoke('stop_timer');
             }
