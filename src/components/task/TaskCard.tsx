@@ -366,8 +366,10 @@ const TaskTimer = ({ task }: { task: ReadTask }) => {
             text={formatDuration(duration)}
             icon={<Timer />}
             className={`${
-                isTimerRunning ? 'bg-emerald-500 border-2 border-black' : 'bg-emerald-200'
-            } min-w-24 flex justify-around`}
+                isTimerRunning
+                    ? ' bg-emerald-500 text-white min-w-[85px]'
+                    : 'text-emerald-500'
+            } flex justify-around px-1 border-1`}
         />
     );
 };
