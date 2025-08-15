@@ -131,7 +131,7 @@ export const useStopTimer = () => {
     const { mutateAsync: updateSession } = useUpdateSession();
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (data: { projectId?: String }) => {
+        mutationFn: async () => {
             if (timer) {
                 if (timer.session_id) {
                     await updateSession({
@@ -141,9 +141,6 @@ export const useStopTimer = () => {
                             end_time: formatDate(dayjs()),
                         },
                         sessionId: timer.session_id,
-                    });
-                    queryClient.invalidateQueries({
-                        queryKey: ['tasks', data.projectId],
                     });
                     queryClient.invalidateQueries({
                         queryKey: ['sessions'],

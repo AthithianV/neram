@@ -21,7 +21,7 @@ import {
     Timer,
     Trash2,
 } from 'lucide-react';
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 
 import {
@@ -246,7 +246,6 @@ const TaskMoreOptions = ({ task }: { task: ReadTask }) => {
 
     const handleStart = async (e: React.MouseEvent) => {
         e.stopPropagation();
-        e.preventDefault();
         await startTimer({
             timerData: {
                 taskId: task.id,
@@ -260,8 +259,7 @@ const TaskMoreOptions = ({ task }: { task: ReadTask }) => {
 
     const handleStop = async (e: React.MouseEvent) => {
         e.stopPropagation();
-        e.preventDefault();
-        stopTimer({ projectId });
+        stopTimer();
     };
 
     const handleEdit = (e: React.MouseEvent) => {
@@ -347,23 +345,29 @@ const TaskMoreOptions = ({ task }: { task: ReadTask }) => {
 
 const TaskTimer = ({ task }: { task: ReadTask }) => {
     const { data: timer } = useTimer();
+    const [duration, setDuration] = useState(0);
+
+    useEffect(() => {
+        setDuration(task.total_duration_sec || 0);
+    }, []);
+
+    useEffect(() => {
+        const isTimerRunning = timer && timer.task_id === task.id && timer.is_running;
+        if (isTimerRunning) {
+            const startingTime = task.total_duration_sec || 0;
+            setDuration(startingTime + (isTimerRunning ? timer.session_time_elapsed : 0));
+        }
+    }, [timer]);
 
     return (
         <TaskAttribute
             title="Total Time Spanned"
-            text={formatDuration(
-                task.total_duration_sec
-                    ? task.total_duration_sec
-                    : 0 +
-                          (timer && timer.task_id === task.id
-                              ? timer.session_time_elapsed
-                              : 0),
-            )}
+            text={formatDuration(duration)}
             icon={<Timer />}
             className={
                 timer && timer.task_id === task.id
                     ? 'bg-emerald-500 border-2 border-black'
-                    : ''
+                    : 'bg-emerald-200'
             }
         />
     );
