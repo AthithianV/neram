@@ -1,9 +1,10 @@
+import { formatDate } from '@/lib/time';
 import dayjs from 'dayjs';
 
 export const TASK_INTIAL_VALUE = {
     priority: 'Low',
     title: 'Untitled',
-    started_at: dayjs().startOf('day').toString(),
+    started_at: formatDate(dayjs(), { shouldClearTime: true }),
     estimated_time: 0,
 };
 

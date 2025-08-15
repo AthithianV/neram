@@ -24,4 +24,6 @@ dist-ssr
 *.sln
 *.sw?
 
+database
 playground
+stats.html

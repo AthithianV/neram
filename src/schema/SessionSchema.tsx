@@ -5,6 +5,7 @@ const BaseSessionSchema = z.object({
     title: z.string().optional(),
     description: z.string().optional().nullable(),
     project_id: z.number(),
+    task_id: z.number().optional().nullable(),
     date: z.string(),
     start_time: z.string(),
     end_time: z.string().optional().nullable(),

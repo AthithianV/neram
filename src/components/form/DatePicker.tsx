@@ -1,10 +1,11 @@
-import { toDBTime } from '@/lib/time';
+import { formatDate } from '@/lib/time';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
 import { useState } from 'react';
 
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useSettings } from '@/hooks/useSettings';
 import { Input } from '../ui/input';
 
 type PropsType = {
@@ -16,9 +17,10 @@ type PropsType = {
 
 const DatePicker = ({ dateValue, onChange, setDateToTimes, disable }: PropsType) => {
     const [open, setOpen] = useState(false);
+    const { data: settings } = useSettings();
 
     const handleSelect = (date: Date | undefined) => {
-        date && onChange(toDBTime(date));
+        date && onChange(formatDate(date));
         setOpen(false);
         setDateToTimes && setDateToTimes();
     };
@@ -33,7 +35,9 @@ const DatePicker = ({ dateValue, onChange, setDateToTimes, disable }: PropsType)
                         open && 'border-b-2 border-sky-500',
                     )}
                     value={
-                        dateValue ? dayjs(dateValue).format('DD/MM/YYYY') : 'Pick a date'
+                        dateValue
+                            ? formatDate(dateValue, { format: settings?.date_format })
+                            : 'Pick a date'
                     }
                     disabled={disable}
                 />

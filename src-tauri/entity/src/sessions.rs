@@ -9,6 +9,7 @@ pub struct Model {
     pub title: Option<String>,
     pub description: Option<String>,
     pub project_id: i32,
+    pub task_id: Option<i32>,
     pub date: NaiveDateTime,
     pub start_time: NaiveDateTime,
     pub end_time: Option<NaiveDateTime>,
@@ -28,6 +29,14 @@ pub enum Relation {
         on_delete = "Cascade"
     )]
     Projects,
+    #[sea_orm(
+        belongs_to = "super::tasks::Entity",
+        from = "Column::TaskId",
+        to = "super::tasks::Column::Id",
+        on_update = "Cascade",
+        on_delete = "Cascade"
+    )]
+    Tasks,
     #[sea_orm(has_many = "super::sessions_tags::Entity")]
     SessionsTags,
 }
@@ -35,6 +44,12 @@ pub enum Relation {
 impl Related<super::projects::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Projects.def()
+    }
+}
+
+impl Related<super::tasks::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Tasks.def()
     }
 }
 

@@ -35,7 +35,9 @@ const TagPicker = ({
         if (value && allTags) {
             setSelectedTags(
                 new Map(
-                    allTags.filter((tag) => value.includes(tag.id)).map((tag) => [tag.id, tag]),
+                    allTags
+                        .filter((tag) => value.includes(tag.id))
+                        .map((tag) => [tag.id, tag]),
                 ),
             );
         }
@@ -67,7 +69,12 @@ const TagPicker = ({
                     handleRemoveTag={handleSelectTag}
                 />
             </PopoverTrigger>
-            <PopoverContent className="w-full p-0" align="end" side="top" sideOffset={10}>
+            <PopoverContent
+                className="w-full p-0"
+                align="end"
+                side="bottom"
+                sideOffset={10}
+            >
                 <Command>
                     <CommandInput placeholder="Search Tags..." className="h-9" />
                     <CommandList>
@@ -86,7 +93,9 @@ const TagPicker = ({
                                         }}
                                     ></div>
                                     {tag.title}
-                                    {selectedTags.has(tag.id) && <Check className="ml-auto" />}
+                                    {selectedTags.has(tag.id) && (
+                                        <Check className="ml-auto" />
+                                    )}
                                 </CommandItem>
                             ))}
                         </CommandGroup>
@@ -104,7 +113,7 @@ const SelectedTags = ({
     handleRemoveTag: (tag: Tag) => void;
 }) => {
     return (
-        <ScrollArea className="bg-white border rounded-md">
+        <ScrollArea className=" border rounded-md">
             <div className="flex items-center gap-1  p-2 rounded-md flex-1 w-45 !h-8">
                 {Array.from(selectedTags).length > 0 ? (
                     Array.from(selectedTags).map((tag) => (

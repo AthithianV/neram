@@ -83,6 +83,7 @@ const DurationBarChart: React.FC<Props> = ({ statistics }) => {
 
                             return {
                                 text: label,
+                                fontColor: dataset.backgroundColor,
                                 fillStyle: dataset.backgroundColor,
                                 strokeStyle: dataset.backgroundColor,
                                 lineWidth: 0,

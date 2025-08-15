@@ -1,4 +1,3 @@
-import NeramLogo from '@/assets/logo.png';
 import {
     Sidebar,
     SidebarContent,
@@ -10,7 +9,6 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
     SidebarProvider,
-    SidebarTrigger,
     useSidebar,
 } from '@/components/ui/sidebar';
 import { SIDEBAR_BODY_LINKS, SIDEBAR_FOOTER_LINKS } from '@/constants/sidebar';
@@ -23,9 +21,8 @@ const NeramSidebar = () => {
 
     return (
         <SidebarProvider className="h-full w-fit">
-            <Sidebar collapsible="icon" className="h-full">
+            <Sidebar collapsible="icon" className="h-full border-none">
                 <Header />
-                {/* Body */}
                 <SidebarContent className="h-full">
                     <SidebarGroup>
                         <SidebarGroupContent>
@@ -37,7 +34,7 @@ const NeramSidebar = () => {
                                             className={cn(
                                                 pathname.startsWith(link.props.to) &&
                                                     'bg-sidebar-accent font-semibold text-theme hover:text-theme',
-                                                'px-4 !h-auto text-[0.9rem] rounded-md',
+                                                'px-4 !h-auto text-[0.9rem] rounded-md active:text-none',
                                             )}
                                         >
                                             {link}
@@ -77,28 +74,14 @@ const Header = () => {
     const { open } = useSidebar();
 
     return (
-        <SidebarHeader
-            className={cn(
-                'title-bar-height bg-white',
-                open ? 'border-b-2 border-gray-100' : '',
-            )}
-        >
+        <SidebarHeader className={cn('title-bar-height')}>
             <SidebarMenu>
                 <SidebarMenuItem
                     className={`${
                         open ? 'flex-row' : 'flex-col'
-                    } flex gap-2 px-2 justify-between items-center`}
+                    } flex gap-2 px-4 items-center`}
                 >
-                    {open ? (
-                        <Brand />
-                    ) : (
-                        <img
-                            src={NeramLogo}
-                            alt="Neram Logo"
-                            className="h-4 w-4 rounded-md"
-                        />
-                    )}
-                    <SidebarTrigger />
+                    <Brand />
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarHeader>

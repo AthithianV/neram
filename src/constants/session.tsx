@@ -8,8 +8,8 @@ export const TIME_FORMAT = 'hh:mm a';
 export const DATE_FORMAT = 'DD/MM/YYYY';
 
 export const DEFAULT_SESSION_VALUES: CreateSession = {
-    title: '',
-    description: '',
+    title: 'Untitled',
+    description: 'Type More here...',
     project_id: 1,
     date: dayjs().startOf('day').format(DB_DATE_TIME),
     start_time: dayjs().subtract(1, 'hours').format(DB_DATE_TIME),

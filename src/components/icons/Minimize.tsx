@@ -10,7 +10,7 @@ const Minimize = () => {
             <g id="SVGRepo_iconCarrier">
                 <path
                     d="M6 12L18 12"
-                    stroke="#000000"
+                    stroke="currentColor"
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"

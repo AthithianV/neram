@@ -15,7 +15,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { TASK_STATUS, TASK_STATUS_COLOR, TaskStatus } from '@/constants/task';
 import { ReadTask, useTask, useUpdateTask } from '@/hooks/useTask';
-import { toDBTime } from '@/lib/time';
+import { formatDate } from '@/lib/time';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
 import LoaderWrapper from '../layouts/Loader';
@@ -44,10 +44,16 @@ const Kanban = () => {
     const [overColumn, setOverColumn] = useState<TaskStatus | null>(null);
 
     useEffect(() => {
-        setTasks([...tasksData]);
+        setTasks((prev) => {
+            const isSame =
+                prev.length === tasksData.length &&
+                prev.every(
+                    (t, i) =>
+                        t.id === tasksData[i]?.id && t.status === tasksData[i]?.status,
+                );
+            return isSame ? prev : [...tasksData];
+        });
     }, [tasksData]);
-
-    if (!projectId) return null;
 
     const columns: KanbanColumn[] = useMemo(
         () =>
@@ -109,7 +115,7 @@ const Kanban = () => {
                         status: newStatus,
                         completed_at:
                             newStatus === 'Completed'
-                                ? toDBTime(dayjs().toString())
+                                ? formatDate(dayjs(), { shouldClearTime: true })
                                 : undefined,
                     },
                     taskId: activeTask.id,
@@ -141,19 +147,19 @@ const Kanban = () => {
         setActiveTask(null);
     };
 
-    if (isLoading) {
+    if (isLoading || !projectId) {
         return <LoaderWrapper />;
     }
 
     return (
-        <ScrollArea className="">
+        <ScrollArea>
             <DndContext
                 collisionDetection={closestCorners}
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
                 onDragOver={handleDragOver}
             >
-                <div className="flex gap-1 h-[var(--kanban-height)]">
+                <div className="flex gap-2 h-[var(--kanban-height)]">
                     {columns.map((column) => (
                         <Column
                             key={column.id}
@@ -192,14 +198,15 @@ const Column = ({
     return (
         <div
             className={cn(
+                'kanban border-1',
                 'w-[18vw] max-lg:w-[25vw] h-fit max-h-full',
-                'rounded-md bg-white shadow-sm p-2 border-2 border-gray-100',
-                overColumn === column.id && 'bg-sky-100',
-                'animate-page-fade-in',
+                'rounded-md bg-sidebar shadow-sm py-2 ps-2',
+                overColumn === column.id && 'bg-sky-100 dark:bg-sky-800',
+                'animate-page-fade-in bg-sidebar',
             )}
             ref={setNodeRef}
         >
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between pe-2">
                 <Badge
                     className={cn('font-semibold rounded text-white')}
                     style={column.style}
@@ -217,7 +224,7 @@ const Column = ({
                     strategy={verticalListSortingStrategy}
                 >
                     <ScrollArea>
-                        <div className="space-y-1 max-h-[var(--kanban-column-height)]">
+                        <div className="space-y-1 max-h-[var(--kanban-column-height)] pe-2">
                             {column.tasks.map((task) => (
                                 <Suspense
                                     fallback={<Skeleton className="flex-1 h-12" />}
@@ -232,7 +239,7 @@ const Column = ({
                 </SortableContext>
 
                 <Button
-                    className="!h-8 cursor-pointer hover:bg-gray-100 !w-fit !text-gray-700 text-xs"
+                    className="!h-8 cursor-pointer !w-fit text-xs"
                     variant={'ghost'}
                     onClick={() =>
                         setSearchParams({

@@ -1,12 +1,14 @@
 import { Badge } from '@/components/ui/badge';
+import { DATE_FORMAT } from '@/constants/session';
 import { SessionType, useDeleteSession } from '@/hooks/useSession';
+import { useSettings } from '@/hooks/useSettings';
 import { TimerResponse } from '@/hooks/useTimer';
-import { formatDuration, makeTimeDisplay } from '@/lib/time';
+import { formatDate, formatDuration } from '@/lib/time';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
 import { Clock9, Coffee, Loader2, Trash } from 'lucide-react';
 import React, { useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -19,6 +21,7 @@ import {
     AlertDialogTrigger,
 } from '../ui/alert-dialog';
 import { Button } from '../ui/button';
+import { Card, CardContent } from '../ui/card';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 
 interface SessionCardProps {
@@ -27,99 +30,118 @@ interface SessionCardProps {
 }
 
 const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
-    const { sessionId } = useParams();
     const [_, setSearchParams] = useSearchParams();
     const { id, title, project, tags, session_duration_sec, start_time, end_time, date } =
         sessionWithTaskAndTag;
 
     const [isHovered, setIsHovered] = useState(false);
+    const { data: settings } = useSettings();
 
     return (
         <li
-            className={cn(
-                'flex items-center justify-between',
-                'py-3 pe-3 border shadow rounded-md cursor-pointer',
-                'bg-white',
-                id === parseInt(sessionId || '0') ? 'bg-blue-300' : 'hover:bg-gray-50',
-            )}
             onClick={() => {
                 setSearchParams({ modal: 'edit_session', id: id.toString() });
             }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            <div className="flex items-center gap-4 flex-1">
-                <div
-                    className={cn('px-[0.2rem] rounded-e-md bg-gray-50', 'h-14')}
-                    style={{
-                        backgroundColor: project.color,
-                    }}
-                ></div>
-                <div className="flex flex-col gap-2 flex-1">
-                    <h3 className="text-sm font-semibold">{title || 'Untitled'}</h3>
-                    <ScrollArea className="max-w-5/6">
-                        <ul className="flex gap-2">
-                            {tags && tags.length > 0 ? (
-                                tags.map((tag) => (
-                                    <li key={tag.title}>
-                                        <Badge
-                                            style={{
-                                                backgroundColor: tag.color,
-                                            }}
-                                            className="text-[0.6rem] px-2 rounded-[0.3rem]"
-                                        >
-                                            {tag.title}
-                                        </Badge>
-                                    </li>
-                                ))
-                            ) : (
-                                <li className="text-sm text-gray-500 opacity-40">
-                                    <Badge className="bg-gray-200 text-gray-500">
-                                        No tags
-                                    </Badge>
-                                </li>
-                            )}
-                        </ul>
-                        <ScrollBar orientation="horizontal" hidden />
-                    </ScrollArea>
-                </div>
-            </div>
-            <div className="flex items-center gap-2">
-                <div className="flex gap-1 text-sm flex-col items-end">
-                    <span
-                        className={cn(
-                            'font-semibold',
-                            timer && timer.session_id === id ? 'text-blue-500' : '',
-                        )}
-                    >
-                        {formatDuration(
-                            timer && timer.session_id === id
-                                ? timer.session_time_elapsed
-                                : session_duration_sec,
-                        )}
-                    </span>
-                    <div className="text-xs text-gray-500 flex flex-col items-end">
-                        <span>{date && dayjs(date).format('DD MMM YYYY')} </span>
-                        <span>
-                            {makeTimeDisplay(start_time)} -{' '}
-                            {end_time ? makeTimeDisplay(end_time) : 'Now'}
-                        </span>
+            <Card className="py-4 px-0 rounded-sm my-[1px]">
+                <CardContent
+                    className={cn(
+                        'flex items-center justify-between w-full',
+                        'py-0 px-0 pe-5',
+                    )}
+                >
+                    <div className="flex items-center gap-4 flex-1">
+                        <div
+                            className={cn('px-[0.2rem] rounded-e-md', 'h-14')}
+                            style={{
+                                backgroundColor: project.color,
+                            }}
+                        ></div>
+                        <div className="flex flex-col gap-2 flex-1">
+                            <h3 className="text-sm font-semibold">
+                                {title || 'Untitled'}
+                            </h3>
+                            <ScrollArea className="max-w-5/6">
+                                <ul className="flex gap-2">
+                                    {tags && tags.length > 0 ? (
+                                        tags.map((tag) => (
+                                            <li key={tag.title}>
+                                                <Badge
+                                                    style={{
+                                                        backgroundColor: tag.color,
+                                                    }}
+                                                    className="text-[0.6rem] px-2 rounded-[0.3rem]"
+                                                >
+                                                    {tag.title}
+                                                </Badge>
+                                            </li>
+                                        ))
+                                    ) : (
+                                        <li className="text-sm text-gray-500 opacity-40">
+                                            <Badge className="bg-gray-200 text-gray-500">
+                                                No tags
+                                            </Badge>
+                                        </li>
+                                    )}
+                                </ul>
+                                <ScrollBar orientation="horizontal" hidden />
+                            </ScrollArea>
+                        </div>
                     </div>
-                </div>
+                    <div className="flex items-center gap-2">
+                        <div className="flex gap-1 text-sm flex-col items-end">
+                            <span
+                                className={cn(
+                                    'font-semibold',
+                                    timer && timer.session_id === id
+                                        ? 'text-blue-500'
+                                        : '',
+                                )}
+                            >
+                                {formatDuration(
+                                    timer && timer.session_id === id
+                                        ? timer.session_time_elapsed
+                                        : session_duration_sec,
+                                )}
+                            </span>
+                            <div className="text-xs text-gray-500 dark:text-gray-400 flex flex-col gap-1 items-end">
+                                <span>
+                                    {date &&
+                                        dayjs(date).format(
+                                            settings?.date_format ?? DATE_FORMAT,
+                                        )}{' '}
+                                </span>
+                                <span>
+                                    {formatDate(start_time, {
+                                        format: settings?.time_format,
+                                    })}{' '}
+                                    -{' '}
+                                    {end_time
+                                        ? formatDate(end_time, {
+                                              format: settings?.time_format,
+                                          })
+                                        : 'Now'}
+                                </span>
+                            </div>
+                        </div>
 
-                <SessionCard.DELETE
-                    show={isHovered && timer?.session_id !== id}
-                    sessionId={id}
-                />
+                        <SessionCard.DELETE
+                            show={isHovered && timer?.session_id !== id}
+                            sessionId={id}
+                        />
 
-                {timer &&
-                    timer.session_id === id &&
-                    (timer.is_session ? (
-                        <Clock9 className="h-4 text-blue-400" />
-                    ) : (
-                        <Coffee className="h-4 text-blue-500" />
-                    ))}
-            </div>
+                        {timer &&
+                            timer.session_id === id &&
+                            (timer.is_session ? (
+                                <Clock9 className="h-4 text-blue-400" />
+                            ) : (
+                                <Coffee className="h-4 text-blue-500" />
+                            ))}
+                    </div>
+                </CardContent>
+            </Card>
         </li>
     );
 };

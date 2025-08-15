@@ -10,6 +10,7 @@ enum Sessions {
     Title,
     Description,
     ProjectId,
+    TaskId,
     Date,
     StartTime,
     EndTime,
@@ -21,6 +22,12 @@ enum Sessions {
 
 #[derive(DeriveIden)]
 enum Projects {
+    Table,
+    Id,
+}
+
+#[derive(DeriveIden)]
+enum Tasks {
     Table,
     Id,
 }
@@ -43,6 +50,7 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(Sessions::Title).string().null())
                     .col(ColumnDef::new(Sessions::Description).string().null())
                     .col(ColumnDef::new(Sessions::ProjectId).integer().not_null())
+                    .col(ColumnDef::new(Sessions::TaskId).integer().null())
                     .col(
                         ColumnDef::new(Sessions::Date)
                             .string()
@@ -80,6 +88,14 @@ impl MigrationTrait for Migration {
                             .name("fk_sessions_project_id")
                             .from(Sessions::Table, Sessions::ProjectId)
                             .to(Projects::Table, Projects::Id)
+                            .on_delete(ForeignKeyAction::Cascade)
+                            .on_update(ForeignKeyAction::Cascade),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_sessions_task_id")
+                            .from(Sessions::Table, Sessions::TaskId)
+                            .to(Tasks::Table, Tasks::Id)
                             .on_delete(ForeignKeyAction::Cascade)
                             .on_update(ForeignKeyAction::Cascade),
                     )

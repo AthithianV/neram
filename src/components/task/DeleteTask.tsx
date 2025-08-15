@@ -1,5 +1,8 @@
+import { Checkbox } from '@/components/ui/checkbox';
 import { useDeleteTask } from '@/hooks/useTask';
 import { Loader2 } from 'lucide-react';
+import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -10,19 +13,24 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '../ui/alert-dialog';
+import { Label } from '../ui/label';
 
 type PropType = {
-    taskId: number;
     isAlertOpen: boolean;
     setAlertOpen: (state: boolean) => void;
 };
 
-const DeleteTask = ({ taskId, setAlertOpen, isAlertOpen }: PropType) => {
+const DeleteTask = ({ setAlertOpen, isAlertOpen }: PropType) => {
     const { mutateAsync: deleteTask, isPending } = useDeleteTask();
+    const [searchParam] = useSearchParams();
+    const [shouldDeleteSessions, setShouldDeleteSessions] = useState(false);
 
     const handleDelete = async () => {
-        await deleteTask(taskId);
-        setAlertOpen(false);
+        const taskId = Number(searchParam.get('task_id'));
+        if (taskId && !isNaN(taskId)) {
+            await deleteTask({ id: taskId, shouldDeleteSessions });
+            setAlertOpen(false);
+        }
     };
 
     return (
@@ -32,8 +40,17 @@ const DeleteTask = ({ taskId, setAlertOpen, isAlertOpen }: PropType) => {
                     <AlertDialogTitle>
                         Are you sure you want to delete this task?
                     </AlertDialogTitle>
-                    <AlertDialogDescription>
-                        All session related to this task will also be deleted.
+                    <AlertDialogDescription className="flex gap-2 my-2 items-center">
+                        <Checkbox
+                            checked={shouldDeleteSessions}
+                            onCheckedChange={(val) =>
+                                setShouldDeleteSessions(
+                                    val === 'indeterminate' ? false : val,
+                                )
+                            }
+                            className="shadow border-1 border-black"
+                        />
+                        <Label>Should Delete all Associated Sessions</Label>
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

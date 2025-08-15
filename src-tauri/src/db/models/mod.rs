@@ -1,4 +1,4 @@
-pub mod pomadoro_settings;
+pub mod pomodoro_settings;
 pub mod project;
 pub mod session;
 pub mod settings;

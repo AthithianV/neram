@@ -12,6 +12,7 @@ const RestoreUp = () => {
                 id="SVGRepo_tracerCarrier"
                 strokeLinecap="round"
                 strokeLinejoin="round"
+                stroke="currentColor"
             ></g>
             <g id="SVGRepo_iconCarrier">
                 {' '}
@@ -21,7 +22,7 @@ const RestoreUp = () => {
                     width="14"
                     height="14"
                     rx="2"
-                    stroke="#000000"
+                    stroke="currentColor"
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"

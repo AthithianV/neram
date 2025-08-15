@@ -41,18 +41,15 @@ pub async fn create_task(
 pub async fn get_all_tasks(
     app_state: State<'_, AppState>,
     project_id: Option<i32>,
+    status: Option<String>,
 ) -> Result<Vec<ReadTaskModel>, String> {
     let db = app_state.conn.lock().await;
 
     let task_repository = TaskRepository::new(&db);
-    if let Some(project_id) = project_id {
-        task_repository
-            .find_all_by_project_id(project_id)
-            .await
-            .map_err(|e| e.to_string())
-    } else {
-        task_repository.find_all().await.map_err(|e| e.to_string())
-    }
+    task_repository
+        .find_all(project_id, status)
+        .await
+        .map_err(|e| e.to_string())
 }
 
 // /// Retrieves a single Task record by its ID.
@@ -65,7 +62,6 @@ pub async fn get_all_tasks(
 // /// # Returns
 // /// A `Result` containing an `Option<TaskModel>` (Some if found, None if not) on success,
 // /// or a `String` error message.
-
 #[command]
 pub async fn get_task_by_id(
     app_state: State<'_, AppState>,
@@ -119,12 +115,16 @@ pub async fn update_task(
 // /// # Returns
 // /// A `Result` indicating success (`()`) or a `String` error message.
 #[command]
-pub async fn delete_task(app_state: State<'_, AppState>, id: i32) -> Result<(), String> {
+pub async fn delete_task(
+    app_state: State<'_, AppState>,
+    id: i32,
+    should_delete_sessions: bool,
+) -> Result<(), String> {
     let db = app_state.conn.lock().await;
 
     let task_repository = TaskRepository::new(&db);
     task_repository
-        .delete(id)
+        .delete(id, should_delete_sessions)
         .await
         .map_err(|e| e.to_string())?;
     Ok(())

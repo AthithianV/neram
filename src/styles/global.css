@@ -5,21 +5,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-:root {
-    --title-bar-height: 3rem;
-    --main-content-height: calc(100vh - 3rem);
-    --session-controls-height: 2.5rem;
-    --session-list-height: calc(
-        100vh - var(--session-controls-height) - 4.3rem
-    );
-    --project-tab-height: 2.5rem;
-    --page-padding: 0.5rem;
-    --kanban-height: calc(
-        var(--main-content-height) - var(--project-tab-height)
-    );
-    --kanban-column-height: calc(var(--kanban-height) - 7rem);
-}
-
 [contenteditable]:focus {
     outline: none;
     border: none;
@@ -43,10 +28,9 @@
 }
 
 @layer utilities {
-    [contenteditable]:empty:before {
+    [contenteditable]:empty::before {
         content: attr(data-placeholder);
-        @apply text-gray-400;
-        pointer-events: none;
+        @apply text-gray-400 block h-0 pointer-events-none;
     }
 }
 
@@ -76,7 +60,7 @@
     }
 
     .modal-form {
-        @apply space-y-3 min-w-[60vw] bg-white rounded-lg py-10 p-20;
+        @apply space-y-3 min-w-[60vw] bg-background rounded-lg py-10 p-20 border-2 border-border;
     }
 
     .tiptap {
@@ -84,7 +68,7 @@
             @apply mt-0;
         }
 
-        @apply bg-slate-100 p-2 py-5 rounded-md max-h-[40vh] max-w-[50vw] h-[30vh] overflow-y-auto;
+        @apply bg-background border-2 border-border p-2 py-5 rounded-md max-h-[40vh] max-w-[50vw] h-[30vh] overflow-y-auto;
 
         /* List styles */
 
@@ -151,7 +135,7 @@
 
         /* Code and preformatted text styles */
         code {
-            @apply bg-gray-100 rounded-xs text-red-500 px-1 py-1;
+            @apply bg-gray-200 rounded-xs text-sm font-semibold text-red-500 px-1 py-[0.5px] italic;
         }
 
         pre {
@@ -180,28 +164,10 @@
     pointer-events: none;
 }
 
-/* Targeting WebKit-based browsers */
-.custom-scrollbar::-webkit-scrollbar {
-    width: 4px; /* for vertical scroll */
-    height: 4px; /* for horizontal scroll */
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: rgba(100, 100, 100, 0.1);
-    border-radius: 6px;
-    border: 1px solid transparent;
-}
-
-.custom-scrollbar:hover::-webkit-scrollbar-thumb {
-    background-color: rgba(100, 100, 100, 0.4);
-}
-
-.scrollbar-hidden::-webkit-scrollbar {
-    display: none;
+.kanban div[data-orientation='vertical'] {
+    width: 8px;
+    position: absolute;
+    right: 0px;
 }
 
 @theme inline {
@@ -246,6 +212,21 @@
 }
 
 :root {
+    --title-bar-height: 2.5rem;
+    --main-content-height: calc(100vh - var(--title-bar-height));
+    --session-controls-height: 2.5rem;
+    --session-list-height: calc(
+        100vh - var(--session-controls-height) - 4.3rem
+    );
+    --project-tab-height: 2.5rem;
+    --page-padding: 0.5rem;
+    --kanban-height: calc(
+        var(--main-content-height) - var(--project-tab-height)
+    );
+    --kanban-column-height: calc(var(--kanban-height) - 7rem);
+    --tomato: #ff6347;
+    --overlay: rgba(0, 0, 0, 0.5);
+
     --radius: 0.625rem;
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
@@ -272,7 +253,7 @@
     --chart-4: oklch(0.828 0.189 84.429);
     --chart-5: oklch(0.769 0.188 70.08);
     --main-color: oklch(0.99 0 0);
-    --sidebar: oklch(1 0 0);
+    --sidebar: #fafaf9;
     --sidebar-foreground: oklch(0.145 0 0);
     --sidebar-primary: oklch(0.205 0 0);
     --sidebar-primary-foreground: oklch(0.985 0 0);
@@ -321,6 +302,6 @@
         @apply border-border outline-ring/50;
     }
     body {
-        @apply bg-background text-foreground;
+        @apply bg-background text-foreground dark:text-gray-300;
     }
 }

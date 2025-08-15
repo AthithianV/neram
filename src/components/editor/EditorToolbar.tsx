@@ -171,7 +171,6 @@ const EditorToolbar = ({ editor }: { editor: Editor }) => {
                                     className={cn('rounded-xs', tool.className)}
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        e.preventDefault();
                                         tool.onClick && tool.onClick();
                                     }}
                                 >

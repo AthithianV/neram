@@ -33,7 +33,7 @@ import {
     TaskStatus,
 } from '@/constants/task';
 import { useCreateTask, useTaskById, useUpdateTask } from '@/hooks/useTask';
-import { toDBTime } from '@/lib/time';
+import { formatDate } from '@/lib/time';
 import dayjs from 'dayjs';
 import { useParams } from 'react-router-dom';
 import DurationElement from '../form/DurationElement';
@@ -76,7 +76,7 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
 
     useEffect(() => {
         if (form.getValues('status') === 'Completed') {
-            form.setValue('completed_at', toDBTime(dayjs().startOf('day').toString()));
+            form.setValue('completed_at', formatDate(dayjs(), { shouldClearTime: true }));
         } else {
             form.setValue('completed_at', null);
         }
@@ -85,9 +85,19 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
     const onSubmit = (data: Task) => {
         if (projectId) {
             if (taskId) {
-                updateTask({ taskToUpdate: data, taskId });
+                updateTask({
+                    taskToUpdate: {
+                        ...data,
+                        status: data.completed_at ? 'Completed' : data.status,
+                    },
+                    taskId,
+                });
             } else {
-                createTask({ ...data, project_id: Number(projectId) });
+                createTask({
+                    ...data,
+                    project_id: Number(projectId),
+                    status: data.completed_at ? 'Completed' : data.status,
+                });
             }
         }
         closeModal();
@@ -112,7 +122,7 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                         control={form.control}
                         name="title"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="flex items-center gap-5 max-w-[50vw]">
                                 <FormControl>
                                     <Title
                                         ref={field.ref}
