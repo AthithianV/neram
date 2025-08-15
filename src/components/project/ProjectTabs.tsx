@@ -54,16 +54,16 @@ const ProjectTabs = () => {
     };
 
     return (
-        <div className="h-[var(--project-tab-height)] mb-1 bg-sidebar">
-            <div className="bg-slate-100 dark:bg-slate-900 flex items-center w-fit rounded-t-sm">
-                <ScrollArea
-                    className={cn(
-                        'max-w-[92%] max-xl:max-w-[88%]',
-                        ' max-lg:max-w-[82%] max-md:max-w-[80%]',
-                        'h-full',
-                        'whitespace-nowrap',
-                    )}
-                >
+        <div className="h-[var(--project-tab-height)] mb-1 bg-sidebar flex">
+            <ScrollArea
+                className={cn(
+                    'max-w-[92%] max-xl:max-w-[88%]',
+                    ' max-lg:max-w-[82%] max-md:max-w-[80%]',
+                    'h-full',
+                    'whitespace-nowrap',
+                )}
+            >
+                <div className="bg-slate-100 dark:bg-slate-900 flex items-center w-fit rounded-t-sm">
                     <div className="flex">
                         {projects?.map((project) => (
                             <ContextMenu key={project.id}>
@@ -96,17 +96,18 @@ const ProjectTabs = () => {
                             </ContextMenu>
                         ))}
                     </div>
-                    <ScrollBar orientation="horizontal" />
-                </ScrollArea>
+                </div>
 
-                <Button
-                    className="cursor-pointer h-[var(--project-tab-height)] rounded-t-sm"
-                    variant={'ghost'}
-                    onClick={handleAdd}
-                >
-                    <Plus className="w-4 h-4" />
-                </Button>
-            </div>
+                <ScrollBar orientation="horizontal" className="h-1" />
+            </ScrollArea>
+
+            <Button
+                className="cursor-pointer h-[var(--project-tab-height)] rounded-t-sm"
+                variant={'ghost'}
+                onClick={handleAdd}
+            >
+                <Plus className="w-4 h-4" />
+            </Button>
         </div>
     );
 };

@@ -23,6 +23,7 @@ pub struct TimerState {
     pub is_session: bool,
     pub is_break: bool,
     pub timer_type: TimerType,
+    pub is_running: bool,
 }
 
 impl Default for TimerState {
@@ -37,6 +38,7 @@ impl Default for TimerState {
             is_session: false,
             is_break: false,
             timer_type: TimerType::Session,
+            is_running: false
         }
     }
 }
@@ -58,6 +60,7 @@ pub async fn start_timer(
     timer.session_id = session_id;
     timer.task_id = task_id;
     timer.is_session = true;
+    timer.is_running = true;
 
     if let Some(timer_type) = timer_type {
         timer.timer_type = timer_type;
@@ -116,6 +119,7 @@ pub struct TimerResponse {
     pub is_session: bool,
     pub is_break: bool,
     pub timer: i32,
+    pub is_running: bool,
     pub timer_type: TimerType,
 }
 
@@ -149,5 +153,6 @@ pub async fn get_elapsed_time(state: State<'_, AppState>) -> Result<TimerRespons
         is_break: timer.is_break,
         timer: current_time,
         timer_type: timer.timer_type,
+        is_running: timer.is_running
     })
 }
