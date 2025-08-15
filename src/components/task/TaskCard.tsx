@@ -351,8 +351,9 @@ const TaskTimer = ({ task }: { task: ReadTask }) => {
         setDuration(task.total_duration_sec || 0);
     }, []);
 
+    const isTimerRunning = timer && timer.task_id === task.id && timer.is_running;
+
     useEffect(() => {
-        const isTimerRunning = timer && timer.task_id === task.id && timer.is_running;
         if (isTimerRunning) {
             const startingTime = task.total_duration_sec || 0;
             setDuration(startingTime + (isTimerRunning ? timer.session_time_elapsed : 0));
@@ -364,11 +365,9 @@ const TaskTimer = ({ task }: { task: ReadTask }) => {
             title="Total Time Spanned"
             text={formatDuration(duration)}
             icon={<Timer />}
-            className={
-                timer && timer.task_id === task.id
-                    ? 'bg-emerald-500 border-2 border-black'
-                    : 'bg-emerald-200'
-            }
+            className={`${
+                isTimerRunning ? 'bg-emerald-500 border-2 border-black' : 'bg-emerald-200'
+            } min-w-24 flex justify-around`}
         />
     );
 };
