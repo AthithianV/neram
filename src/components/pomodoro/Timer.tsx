@@ -22,7 +22,7 @@ const Timer = () => {
     const { data: pomodoroSettings } = usePomodoroSettings();
 
     const stopPomodoro = () => {
-        stopTimer({});
+        stopTimer();
         updatePomodoro({ session_completed: 0, break_completed: 0 });
     };
 

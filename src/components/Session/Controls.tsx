@@ -24,7 +24,7 @@ const Controls = () => {
     };
 
     const handleStop = async () => {
-        stopTimer({});
+        stopTimer();
     };
 
     return (
