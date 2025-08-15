@@ -22,7 +22,7 @@ const Timer = () => {
     const { data: pomodoroSettings } = usePomodoroSettings();
 
     const stopPomodoro = () => {
-        stopTimer();
+        stopTimer({});
         updatePomodoro({ session_completed: 0, break_completed: 0 });
     };
 
@@ -64,6 +64,15 @@ const Timer = () => {
         return <Skeleton className="h-5" />;
     }
 
+    const handleStart = async () => {
+        await startTimer({
+            timerData: {
+                timerType: 'Pomodoro',
+            },
+            shouldCreateSession: false,
+        });
+    };
+
     return (
         <div className="flex flex-col gap-5">
             <CircularProgress
@@ -78,7 +87,7 @@ const Timer = () => {
                 {(!timer.is_session && !timer.is_break) ||
                 timer.timer_type !== 'Pomodoro' ? (
                     <Button
-                        onClick={() => startTimer({ timerType: 'Pomodoro' })}
+                        onClick={() => handleStart()}
                         className="py-2 px-4 rounded bg-green-500 hover:bg-green-600 text-white"
                         disabled={timer.timer > 0 && timer.timer_type !== 'Pomodoro'}
                     >

@@ -8,9 +8,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useProject } from '@/hooks/useProject';
-import { useCreateSession } from '@/hooks/useSession';
 import { useStartTimer, useTimer } from '@/hooks/useTimer';
-import dayjs from 'dayjs';
 import { Play } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
 
@@ -18,20 +16,17 @@ const StartButton = () => {
     const { data: projects } = useProject();
 
     const { data: timer } = useTimer();
-    const { mutateAsync: createSession } = useCreateSession();
     const { mutateAsync: startTimer } = useStartTimer();
 
     const handleStart = async (projectId: number) => {
-        const id = await createSession({
-            title: 'UNTITLED',
-            project_id: projectId,
-            date: dayjs().startOf('day').format('YYYY-MM-DDTHH:mm:ss'),
-            start_time: dayjs().format('YYYY-MM-DDTHH:mm:ss'),
-            session_duration_sec: 0,
-            break_duration_sec: 0,
-            tags: [],
+        await startTimer({
+            timerData: {
+                timerType: 'Session',
+                projectId: Number(projectId),
+            },
+            shouldCreateSession: true,
+            sessionData: { title: `Untitled` },
         });
-        await startTimer({ sessionId: id });
     };
 
     if (!timer) {

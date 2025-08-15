@@ -17,6 +17,7 @@ import {
     GripVertical,
     Move,
     Play,
+    Square,
     Timer,
     Trash2,
 } from 'lucide-react';
@@ -41,8 +42,11 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import { formatDate, formatDuration } from '@/lib/time';
 
 import { useSettings } from '@/hooks/useSettings';
+import { useStartTimer, useStopTimer, useTimer } from '@/hooks/useTimer';
+
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+
 import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 
@@ -161,13 +165,7 @@ const TaskCard = ({ task, isDragged }: PropType) => {
                         </div>
                     )}
 
-                    {task.total_duration_sec && (
-                        <TaskAttribute
-                            title="Total Time Spanned"
-                            text={formatDuration(task.total_duration_sec)}
-                            icon={<Timer />}
-                        />
-                    )}
+                    <TaskTimer task={task} />
 
                     <div className="flex items-center justify-between gap-1">
                         <Tooltip>
@@ -242,6 +240,29 @@ const TaskMoreOptions = ({ task }: { task: ReadTask }) => {
 
     const [_, setSearchParams] = useSearchParams();
     const { mutateAsync: updateTask } = useUpdateTask(Number(projectId));
+    const { data: timer } = useTimer();
+    const { mutateAsync: startTimer } = useStartTimer();
+    const { mutateAsync: stopTimer } = useStopTimer();
+
+    const handleStart = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        await startTimer({
+            timerData: {
+                taskId: task.id,
+                timerType: 'Session',
+                projectId: Number(projectId),
+            },
+            shouldCreateSession: true,
+            sessionData: { title: `Session for "${task.title}"` },
+        });
+    };
+
+    const handleStop = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        stopTimer({ projectId });
+    };
 
     const handleEdit = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -271,10 +292,18 @@ const TaskMoreOptions = ({ task }: { task: ReadTask }) => {
                 <CircleEllipsis className="h-4 w-4 text-gray-400 dark:text-gray-500" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align={'end'}>
-                <DropdownMenuItem>
-                    <Play className="text-green-500" />
-                    Start Timer
-                </DropdownMenuItem>
+                {!(timer && timer.is_running) && (
+                    <DropdownMenuItem onClick={handleStart}>
+                        <Play className="text-green-500" />
+                        Start Timer
+                    </DropdownMenuItem>
+                )}
+                {timer && timer.task_id === task.id && (
+                    <DropdownMenuItem onClick={handleStop}>
+                        <Square className="text-red-500" />
+                        Stop Timer
+                    </DropdownMenuItem>
+                )}
                 <DropdownMenuItem onClick={(e) => handleEdit(e)}>
                     <Edit className="text-blue-500" />
                     Edit
@@ -285,12 +314,15 @@ const TaskMoreOptions = ({ task }: { task: ReadTask }) => {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuSub>
-                    <DropdownMenuSubTrigger className="flex gap-2">
+                    <DropdownMenuSubTrigger
+                        className="flex gap-2"
+                        onClick={(e) => e.stopPropagation()}
+                    >
                         <Move className="text-pink-500 h-4 w-4" />
                         Status
                     </DropdownMenuSubTrigger>
                     <DropdownMenuPortal>
-                        <DropdownMenuSubContent>
+                        <DropdownMenuSubContent asChild>
                             {TASK_STATUS.map((status) => (
                                 <DropdownMenuItem
                                     onClick={(e) => updateTaskStatus(e, status)}
@@ -310,6 +342,30 @@ const TaskMoreOptions = ({ task }: { task: ReadTask }) => {
                 </DropdownMenuSub>
             </DropdownMenuContent>
         </DropdownMenu>
+    );
+};
+
+const TaskTimer = ({ task }: { task: ReadTask }) => {
+    const { data: timer } = useTimer();
+
+    return (
+        <TaskAttribute
+            title="Total Time Spanned"
+            text={formatDuration(
+                task.total_duration_sec
+                    ? task.total_duration_sec
+                    : 0 +
+                          (timer && timer.task_id === task.id
+                              ? timer.session_time_elapsed
+                              : 0),
+            )}
+            icon={<Timer />}
+            className={
+                timer && timer.task_id === task.id
+                    ? 'bg-emerald-500 border-2 border-black'
+                    : ''
+            }
+        />
     );
 };
 

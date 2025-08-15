@@ -104,8 +104,12 @@ export const useUpdateTask = (projectId: number) => {
 export const useDeleteTask = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (id: number) => {
-            return await invoke('delete_task', { id });
+        mutationFn: async (data: { id: number; shouldDeleteSessions: boolean }) => {
+            try {
+                return await invoke('delete_task', data);
+            } catch (err) {
+                console.log(err);
+            }
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tasks'] });

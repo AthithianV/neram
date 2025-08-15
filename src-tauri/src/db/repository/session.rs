@@ -30,6 +30,7 @@ impl<'a> SessionRepository<'a> {
             title: Set(session.title.clone()),
             description: Set(session.description.clone()),
             project_id: Set(session.project_id),
+            task_id: Set(session.task_id),
             date: Set(session.date),
             start_time: Set(session.start_time),
             end_time: Set(session.end_time.map(|t| t)),

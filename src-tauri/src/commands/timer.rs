@@ -19,9 +19,11 @@ pub struct TimerState {
     pub break_start_time: Option<Instant>,
     pub break_time_elapsed: i32,
     pub session_id: Option<i32>,
+    pub task_id: Option<i32>,
     pub is_session: bool,
     pub is_break: bool,
     pub timer_type: TimerType,
+    pub is_running: bool,
 }
 
 impl Default for TimerState {
@@ -32,9 +34,11 @@ impl Default for TimerState {
             break_start_time: None,
             break_time_elapsed: 0,
             session_id: None,
+            task_id: None,
             is_session: false,
             is_break: false,
             timer_type: TimerType::Session,
+            is_running: false
         }
     }
 }
@@ -48,12 +52,15 @@ impl Default for TimerState {
 pub async fn start_timer(
     state: State<'_, AppState>,
     session_id: Option<i32>,
+    task_id: Option<i32>,
     timer_type: Option<TimerType>,
 ) -> Result<(), String> {
     let mut timer = state.timer.lock().await;
     timer.session_start_time = Some(Instant::now());
     timer.session_id = session_id;
+    timer.task_id = task_id;
     timer.is_session = true;
+    timer.is_running = true;
 
     if let Some(timer_type) = timer_type {
         timer.timer_type = timer_type;
@@ -108,9 +115,11 @@ pub struct TimerResponse {
     pub session_time_elapsed: i32,
     pub break_time_elapsed: i32,
     pub session_id: Option<i32>,
+    pub task_id: Option<i32>,
     pub is_session: bool,
     pub is_break: bool,
     pub timer: i32,
+    pub is_running: bool,
     pub timer_type: TimerType,
 }
 
@@ -139,9 +148,11 @@ pub async fn get_elapsed_time(state: State<'_, AppState>) -> Result<TimerRespons
         session_time_elapsed: current_session_time_elapsed,
         break_time_elapsed: current_break_time_elapsed,
         session_id: timer.session_id,
+        task_id: timer.task_id,
         is_session: timer.is_session,
         is_break: timer.is_break,
         timer: current_time,
         timer_type: timer.timer_type,
+        is_running: timer.is_running
     })
 }
