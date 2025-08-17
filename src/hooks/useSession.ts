@@ -14,6 +14,12 @@ export type SessionType = Omit<Session, 'project_id' | 'tags'> & {
     tags: Related[];
 };
 
+export type GroupedSession = {
+    title: string;
+    total_duration_sec: number;
+    sessions: SessionType[];
+};
+
 export type UpdateSessionType = {
     title?: string;
     description?: string | null;
@@ -25,12 +31,14 @@ export type UpdateSessionType = {
     break_duration_sec?: number;
 };
 
-export const useSession = () => {
+type SessionGroupType = 'Date' | 'Week' | 'Month' | 'Year';
+
+export const useSession = (data: { groupBy: SessionGroupType }) => {
     return useQuery({
         queryKey: ['sessions'],
         queryFn: async () => {
-            const sessions = await invoke('get_all_sessions');
-            return sessions as SessionType[];
+            const sessions = await invoke('get_all_sessions', data);
+            return sessions as GroupedSession[];
         },
         refetchOnWindowFocus: true,
         refetchOnMount: true,

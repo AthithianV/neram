@@ -1,9 +1,14 @@
+use std::collections::HashMap;
+
+use chrono::Datelike;
 use chrono::NaiveDateTime;
 use migration::Expr;
 use sea_orm::*;
 
 use crate::{
-    models::session::{CreateSessionModel, FullSessionModel, UpdateSessionModel},
+    models::session::{
+        CreateSessionModel, FullSessionModel, GroupedSessions, SessionGroupType, UpdateSessionModel,
+    },
     time::now,
 };
 use ::entity::{
@@ -61,7 +66,10 @@ impl<'a> SessionRepository<'a> {
         }
     }
 
-    pub async fn find_all(&self) -> Result<Vec<FullSessionModel>, DbErr> {
+    pub async fn find_all(
+        &self,
+        group_by: SessionGroupType,
+    ) -> Result<Vec<GroupedSessions>, DbErr> {
         let sessions = Session::find()
             .find_also_related(Project)
             .order_by_desc(SessionColumn::Date)
@@ -69,15 +77,64 @@ impl<'a> SessionRepository<'a> {
             .all(self.db)
             .await?;
 
-        let mut results = Vec::new();
+        // (group_by → (sessions, total_duration, title))
+        let mut grouped: HashMap<String, (Vec<FullSessionModel>, i64, String)> = HashMap::new();
 
         for session in sessions {
             let (session_model, project_model) = session;
 
+            let date = session_model.date;
+            let duration = session_model.session_duration_sec as i64;
+
             let tags = session_model.find_related(Tag).all(self.db).await?;
             let full_session = FullSessionModel::from((session_model, project_model, tags));
-            results.push(full_session);
+
+            // Generate group key
+            let key = match group_by {
+                SessionGroupType::Date => date.date().to_string(),
+                SessionGroupType::Week => {
+                    let iso_week = date.iso_week();
+                    format!("{}-W{}", iso_week.year(), iso_week.week())
+                }
+                SessionGroupType::Month => format!("{}-{:02}", date.year(), date.month()),
+                SessionGroupType::Year => date.year().to_string(),
+            };
+
+            let title = match group_by {
+                SessionGroupType::Date => date.format("%A, %d %B %Y").to_string(),
+                // → "Sunday, 17 August 2025"
+                SessionGroupType::Week => {
+                    let iso_week = date.iso_week();
+                    format!("Week {} of {}", iso_week.week(), iso_week.year())
+                }
+                // → "Week 33 of 2025"
+                SessionGroupType::Month => date.format("%B %Y").to_string(),
+                // → "August 2025"
+                SessionGroupType::Year => date.format("%Y").to_string(),
+                // → "2025"
+            };
+
+            // Insert into group and add duration
+            let entry = grouped.entry(key).or_insert_with(|| (Vec::new(), 0, title));
+            entry.0.push(full_session);
+            entry.1 += duration;
         }
+
+        // Convert HashMap into Vec<GroupedSessions>
+        let mut results: Vec<GroupedSessions> = grouped
+            .into_iter()
+            .map(
+                |(group_by, (sessions, total_duration_sec, title))| GroupedSessions {
+                    group_by,
+                    total_duration_sec,
+                    sessions,
+                    title,
+                },
+            )
+            .collect();
+
+        // Sort groups (newest first)
+        results.sort_by(|a, b| b.group_by.cmp(&a.group_by));
 
         Ok(results)
     }
