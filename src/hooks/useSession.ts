@@ -31,11 +31,11 @@ export type UpdateSessionType = {
     break_duration_sec?: number;
 };
 
-type SessionGroupType = 'Date' | 'Week' | 'Month' | 'Year';
+export type SessionGroupType = 'Date' | 'Week' | 'Month' | 'Year';
 
 export const useSession = (data: { groupBy: SessionGroupType }) => {
     return useQuery({
-        queryKey: ['sessions'],
+        queryKey: ['sessions', data.groupBy],
         queryFn: async () => {
             const sessions = await invoke('get_all_sessions', data);
             return sessions as GroupedSession[];
