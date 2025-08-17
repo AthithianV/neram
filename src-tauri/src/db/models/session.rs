@@ -1,7 +1,7 @@
-use ::entity::{
+use chrono::NaiveDateTime;
+use entity::{
     projects::Model as ProjectModel, sessions::Model as SessionModel, tags::Model as TagModel,
 };
-use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -83,4 +83,20 @@ impl From<(SessionModel, Option<ProjectModel>, Vec<TagModel>)> for FullSessionMo
             project: project.unwrap(),
         }
     }
+}
+
+#[derive(Serialize, Deserialize)]
+pub enum SessionGroupType {
+    Date,
+    Week,
+    Month,
+    Year,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct GroupedSessions {
+    pub title: String,
+    pub group_by: String,
+    pub total_duration_sec: i64,
+    pub sessions: Vec<FullSessionModel>,
 }

@@ -1,7 +1,9 @@
 use chrono::NaiveDateTime;
 use tauri::{command, State};
 
-use crate::models::session::{CreateSessionModel, FullSessionModel, UpdateSessionModel};
+use crate::models::session::{
+    CreateSessionModel, FullSessionModel, GroupedSessions, SessionGroupType, UpdateSessionModel,
+};
 use crate::repository::session::SessionRepository;
 use crate::AppState;
 
@@ -40,12 +42,13 @@ pub async fn create_session(
 #[command]
 pub async fn get_all_sessions(
     app_state: State<'_, AppState>,
-) -> Result<Vec<FullSessionModel>, String> {
+    group_by: SessionGroupType,
+) -> Result<Vec<GroupedSessions>, String> {
     let db = app_state.conn.lock().await;
 
     let session_repository = SessionRepository::new(&db);
     session_repository
-        .find_all()
+        .find_all(group_by)
         .await
         .map_err(|e| e.to_string())
 }
