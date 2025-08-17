@@ -319,7 +319,7 @@ const TaskMoreOptions = ({ task }: { task: ReadTask }) => {
                         Status
                     </DropdownMenuSubTrigger>
                     <DropdownMenuPortal>
-                        <DropdownMenuSubContent asChild>
+                        <DropdownMenuSubContent>
                             {TASK_STATUS.map((status) => (
                                 <DropdownMenuItem
                                     onClick={(e) => updateTaskStatus(e, status)}
