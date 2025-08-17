@@ -139,7 +139,7 @@ const TaskCard = ({ task, isDragged }: PropType) => {
                                 className={
                                     dayjs(task.deadline).isBefore(dayjs())
                                         ? 'text-red-500'
-                                        : 'text-blue-600'
+                                        : 'text-cyan-400'
                                 }
                             />
 
@@ -157,12 +157,9 @@ const TaskCard = ({ task, isDragged }: PropType) => {
                         <TaskTimer task={task} />
                         <TaskAttribute
                             title="Estimated Time"
-                            text={
-                                task.estimated_time !== 0 && task.estimated_time
-                                    ? `${(task.estimated_time / 3600).toFixed(2)} h`
-                                    : null
-                            }
+                            text={`${formatDuration(task.estimated_time ?? 0)}`}
                             icon={<AlarmCheck className="h-4 w-4" />}
+                            className="text-blue-500"
                         />
                     </div>
 
