@@ -144,28 +144,27 @@ const TaskCard = ({ task, isDragged }: PropType) => {
                             />
 
                             <TaskAttribute
-                                title="Estimated Time"
-                                text={
-                                    task.estimated_time !== 0 && task.estimated_time
-                                        ? `${(task.estimated_time / 3600).toFixed(0)} h`
-                                        : null
-                                }
-                                icon={<AlarmCheck className="h-4 w-4" />}
+                                title="Priority"
+                                text={task.priority ?? 'Low'}
+                                icon={<Flame fill="currentColor" />}
+                                style={getPriorityStyle(task.priority)}
+                                className="text-white border-none px-0"
                             />
-
-                            {task.priority && (
-                                <TaskAttribute
-                                    title="Priority"
-                                    text={task.priority}
-                                    icon={<Flame fill="currentColor" />}
-                                    style={getPriorityStyle(task.priority)}
-                                    className="text-white border-none px-0"
-                                />
-                            )}
                         </div>
                     )}
 
-                    <TaskTimer task={task} />
+                    <div className="flex gap-2">
+                        <TaskTimer task={task} />
+                        <TaskAttribute
+                            title="Estimated Time"
+                            text={
+                                task.estimated_time !== 0 && task.estimated_time
+                                    ? `${(task.estimated_time / 3600).toFixed(2)} h`
+                                    : null
+                            }
+                            icon={<AlarmCheck className="h-4 w-4" />}
+                        />
+                    </div>
 
                     <div className="flex items-center justify-between gap-1">
                         <Tooltip>
