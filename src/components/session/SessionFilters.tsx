@@ -17,17 +17,18 @@ type PropType = {
 const SessionFilter = ({ groupBy, setGroupBy }: PropType) => {
     return (
         <DropdownMenu>
-            <DropdownMenuTrigger className="px-4 py-2 text-sm rounded-sm flex gap-1 items-center">
-                <Component size={15} /> Group By
+            <DropdownMenuTrigger className="px-4 py-2 text-sm font-semibold rounded-sm flex gap-1 items-center border">
+                <Component size={12} /> Group By
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
                 {groups.map((currentGroup, index) => (
                     <DropdownMenuItem
                         key={index}
                         onClick={() => setGroupBy(currentGroup)}
+                        className="flex justify-between"
                     >
-                        {groupBy === currentGroup && <Check />}
                         {currentGroup}
+                        {groupBy === currentGroup && <Check />}
                     </DropdownMenuItem>
                 ))}
             </DropdownMenuContent>
