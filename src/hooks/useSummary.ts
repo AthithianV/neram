@@ -31,8 +31,13 @@ export const useDaySummary = (date: string) => {
     return useQuery({
         queryKey: ['daySummary', date],
         queryFn: async () => {
-            const data = await invoke('get_day_summary', { date });
-            return data as DaySummary;
+            console.log(date);
+            try {
+                const data = await invoke('get_day_summary', { date });
+                return data as DaySummary;
+            } catch (err) {
+                console.log(err);
+            }
         },
         enabled: !!date,
         refetchOnWindowFocus: false,

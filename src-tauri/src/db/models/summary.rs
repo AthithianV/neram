@@ -2,8 +2,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct DaySummary {
-    pub count: i32,
-    pub total_duration_sec: i32,
+    pub count: i64,
+    pub total_duration_sec: i64,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

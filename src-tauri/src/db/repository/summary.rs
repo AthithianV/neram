@@ -52,7 +52,7 @@ impl<'a> SummaryRepository<'a> {
             .select_only()
             .column_as(Expr::count(Expr::col(SessionColumn::Id)), "count")
             .column_as(
-                Expr::sum(Expr::col(SessionColumn::BreakDurationSec)),
+                Expr::cust("COALESCE(SUM(session_duration_sec), 0)"),
                 "total_duration_sec",
             )
             .into_tuple()
@@ -62,8 +62,8 @@ impl<'a> SummaryRepository<'a> {
         let (count, total_duration_sec) = row.unwrap_or((0, 0));
 
         Ok(DaySummary {
-            count: count as i32,
-            total_duration_sec: total_duration_sec as i32,
+            count: count,
+            total_duration_sec: total_duration_sec,
         })
     }
 
