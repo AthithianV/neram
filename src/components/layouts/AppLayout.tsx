@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useDb } from '../../hooks/useDb';
 import { ThemeProvider } from '../theme/ThemeProvider';
+import { ScrollArea } from '../ui/scroll-area';
 import { Skeleton } from '../ui/skeleton';
 import { Toaster } from '../ui/sonner';
 
@@ -34,7 +35,9 @@ export function AppLayout() {
                             <TitleBar />
                         </Suspense>
                     </div>
-                    <Outlet />
+                    <ScrollArea className="h-[var(--main-content-height)]">
+                        <Outlet />
+                    </ScrollArea>
                 </main>
             </div>
         </ThemeProvider>

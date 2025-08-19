@@ -128,6 +128,7 @@ impl<'a> SummaryRepository<'a> {
                 Expr::cust("COUNT(DISTINCT DATE(date))"),
                 "focused_day_count",
             )
+            .filter(SessionColumn::EndTime.is_not_null())
             .into_model::<SessionSummary>()
             .one(self.db)
             .await?
@@ -184,13 +185,13 @@ impl<'a> SummaryRepository<'a> {
             .column_as(Expr::cust("DATE(date)"), "date")
             .column_as(Expr::col(SessionColumn::Id).count(), "session_count")
             .column_as(
-                Expr::col(SessionColumn::SessionDurationSec).sum(),
+                Expr::cust("COALESCE(SUM(session_duration_sec), 0)"),
                 "total_duration_sec",
             )
             .filter(SessionColumn::Date.gte(start.and_hms_opt(0, 0, 0).unwrap()))
             .filter(SessionColumn::Date.lt(end.and_hms_opt(0, 0, 0).unwrap()))
+            .filter(SessionColumn::EndTime.is_not_null())
             .group_by(Expr::cust("DATE(date)"))
-            .order_by_asc(SessionColumn::Date)
             .into_model::<DailySessionSummary>()
             .all(self.db)
             .await?;
@@ -199,51 +200,53 @@ impl<'a> SummaryRepository<'a> {
         let tasks = Task::find()
             .select_only()
             .column_as(Expr::cust("DATE(completed_at)"), "date")
-            .column_as(Expr::col(TaskColumn::Id).count(), "completed_task_count")
+            .column_as(Expr::cust("COUNT(id)"), "completed_task_count")
             .filter(TaskColumn::CompletedAt.gte(start.and_hms_opt(0, 0, 0).unwrap()))
             .filter(TaskColumn::CompletedAt.lt(end.and_hms_opt(0, 0, 0).unwrap()))
             .group_by(Expr::cust("DATE(completed_at)"))
-            .order_by_asc(TaskColumn::CompletedAt)
             .into_model::<DailyTaskSummary>()
             .all(self.db)
             .await?;
 
-        // --- 4. Merge session + task data by date ---
-        let mut map: HashMap<NaiveDate, MonthlySummary> = HashMap::new();
+        // --- 4. Build maps for fast lookup ---
+        let session_map: HashMap<NaiveDate, (i64, i64)> = sessions
+            .into_iter()
+            .map(|s| {
+                (
+                    s.date,
+                    (
+                        s.session_count.unwrap_or(0),
+                        s.total_duration_sec.unwrap_or(0),
+                    ),
+                )
+            })
+            .collect();
 
-        for s in sessions {
-            map.insert(
-                s.date,
-                MonthlySummary {
-                    date: (s.date.year() as i64) * 10_000
-                        + (s.date.month() as i64) * 100
-                        + (s.date.day() as i64),
-                    session_count: s.session_count.unwrap_or(0),
-                    total_duration_sec: s.total_duration_sec.unwrap_or(0),
-                    completed_task_count: 0,
-                },
-            );
+        let task_map: HashMap<NaiveDate, i64> = tasks
+            .into_iter()
+            .map(|t| (t.date, t.completed_task_count.unwrap_or(0)))
+            .collect();
+
+        // --- 5. Generate all days in month ---
+        let mut summaries = Vec::new();
+        let mut current = start;
+        while current < end {
+            let (session_count, total_duration_sec) =
+                session_map.get(&current).cloned().unwrap_or((0, 0));
+            let completed_task_count = task_map.get(&current).cloned().unwrap_or(0);
+
+            summaries.push(MonthlySummary {
+                date: (current.year() as i64) * 10_000
+                    + (current.month() as i64) * 100
+                    + (current.day() as i64),
+                session_count,
+                total_duration_sec,
+                completed_task_count,
+            });
+
+            current = current.succ_opt().unwrap(); // move to next day
         }
 
-        for t in tasks {
-            map.entry(t.date)
-                .and_modify(|ms| {
-                    ms.completed_task_count = t.completed_task_count.unwrap_or(0);
-                })
-                .or_insert(MonthlySummary {
-                    date: (t.date.year() as i64) * 10_000
-                        + (t.date.month() as i64) * 100
-                        + (t.date.day() as i64),
-                    session_count: 0,
-                    total_duration_sec: 0,
-                    completed_task_count: t.completed_task_count.unwrap_or(0),
-                });
-        }
-
-        // --- 5. Return sorted vector ---
-        let mut result: Vec<_> = map.into_values().collect();
-        result.sort_by_key(|r| r.date);
-
-        Ok(result)
+        Ok(summaries)
     }
 }

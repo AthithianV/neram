@@ -43,7 +43,7 @@ const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            <Card className="py-2 px-0 rounded-sm my-[1px] bg-neutral-50">
+            <Card className="py-2 px-0 rounded-sm my-[1px] bg-neutral-50 dark:bg-neutral-900">
                 <CardContent
                     className={cn(
                         'flex items-center justify-between w-full',

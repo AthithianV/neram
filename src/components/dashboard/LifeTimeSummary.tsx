@@ -1,7 +1,16 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useLifeTimeSummary } from '@/hooks/useSummary';
+import { formatDuration } from '@/lib/time';
 import { Target } from 'lucide-react';
+import { Skeleton } from '../ui/skeleton';
 
 const LifeTimeSummary = () => {
+    const { data: lifeTimeSummary, isLoading } = useLifeTimeSummary();
+
+    if (isLoading || !lifeTimeSummary) {
+        return <Skeleton className="h-50" />;
+    }
+
     return (
         <Card className="lg:col-span-3">
             <CardHeader>
@@ -15,15 +24,19 @@ const LifeTimeSummary = () => {
             </CardHeader>
             <CardContent className="flex gap-4">
                 <div className="flex-1 rounded-lg bg-muted p-4 text-center">
-                    <p className="text-2xl font-bold">278h 37m</p>
+                    <p className="text-2xl font-bold">
+                        {formatDuration(lifeTimeSummary.duration_sec)}
+                    </p>
                     <p className="text-sm text-muted-foreground">Total Focus Time</p>
                 </div>
                 <div className="flex-1 rounded-lg bg-muted p-4 text-center">
-                    <p className="text-2xl font-bold">350</p>
+                    <p className="text-2xl font-bold">{lifeTimeSummary.session_count}</p>
                     <p className="text-sm text-muted-foreground">Total Sessions</p>
                 </div>
                 <div className="flex-1 rounded-lg bg-muted p-4 text-center">
-                    <p className="text-2xl font-bold">50</p>
+                    <p className="text-2xl font-bold">
+                        {lifeTimeSummary.focused_day_count}
+                    </p>
                     <p className="text-sm text-muted-foreground">Focus Days</p>
                 </div>
             </CardContent>

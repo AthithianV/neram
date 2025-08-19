@@ -1,7 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useMonthlySummary } from '@/hooks/useSummary';
 import { Calendar } from 'lucide-react';
+import { useEffect } from 'react';
 
 const MonthlySummary = () => {
+    const { data } = useMonthlySummary(2025, 8);
+    useEffect(() => {
+        console.log(data);
+    }, [data]);
+
     return (
         <Card className="flex flex-col col-span-2">
             <CardHeader>
@@ -16,7 +23,7 @@ const MonthlySummary = () => {
                     {Array.from({ length: 30 }, (_, i) => (
                         <div
                             key={i}
-                            className={`w-16 h-16 rounded-md flex items-center justify-center text-xs font-medium
+                            className={`w-[110px] h-[110px] rounded-md flex items-center justify-center text-xs font-medium
                 ${i < 19 ? 'bg-green-600 text-white' : 'bg-muted text-muted-foreground'}`}
                         >
                             {i + 1}
