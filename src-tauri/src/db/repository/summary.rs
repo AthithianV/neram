@@ -1,18 +1,44 @@
-use crate::models::summary::{CountResult, DaySummary, LifeTimeSummary, SessionSummary, Streak};
+use crate::models::summary::{DaySummary, LifeTimeSummary, MonthlySummary, Streak};
 use sea_orm::{
-    sea_query::Expr, ColumnTrait, DatabaseConnection, DbErr, EntityTrait, QueryFilter, QueryOrder,
-    QuerySelect,
+    sea_query::Expr, ColumnTrait, DatabaseConnection, DbErr, EntityTrait, FromQueryResult,
+    QueryFilter, QueryOrder, QuerySelect,
 };
+use std::collections::HashMap;
 
 use ::entity::{
     projects::{Column as ProjectColumn, Entity as Project},
     sessions::{Column as SessionColumn, Entity as Session},
     tasks::{Column as TaskColumn, Entity as Task},
 };
-use chrono::{Duration, Local, NaiveDate, NaiveDateTime};
+use chrono::{Datelike, Duration, Local, NaiveDate, NaiveDateTime};
 
 pub struct SummaryRepository<'a> {
     db: &'a DatabaseConnection,
+}
+
+#[derive(Debug, FromQueryResult)]
+struct DailySessionSummary {
+    date: NaiveDate,
+    session_count: Option<i64>,
+    total_duration_sec: Option<i64>,
+}
+
+#[derive(Debug, FromQueryResult)]
+struct DailyTaskSummary {
+    date: NaiveDate,
+    completed_task_count: Option<i64>,
+}
+
+#[derive(Debug, FromQueryResult)]
+struct SessionSummary {
+    duration_sec: Option<i64>,
+    session_count: Option<i64>,
+    focused_day_count: Option<i64>,
+}
+
+#[derive(Debug, FromQueryResult)]
+struct CountResult {
+    count: Option<i64>,
 }
 
 impl<'a> SummaryRepository<'a> {
@@ -137,5 +163,87 @@ impl<'a> SummaryRepository<'a> {
             completed_task_count: task_count.count.unwrap_or(0),
             project_count: project_count.count.unwrap_or(0),
         })
+    }
+
+    pub async fn get_monthly_summary(
+        &self,
+        year: i32,
+        month: u32,
+    ) -> Result<Vec<MonthlySummary>, DbErr> {
+        // --- 1. Find start and end date of month ---
+        let start = NaiveDate::from_ymd_opt(year, month, 1).unwrap();
+        let end = if month == 12 {
+            NaiveDate::from_ymd_opt(year + 1, 1, 1).unwrap()
+        } else {
+            NaiveDate::from_ymd_opt(year, month + 1, 1).unwrap()
+        };
+
+        // --- 2. Query sessions grouped by day ---
+        let sessions = Session::find()
+            .select_only()
+            .column_as(Expr::cust("DATE(date)"), "date")
+            .column_as(Expr::col(SessionColumn::Id).count(), "session_count")
+            .column_as(
+                Expr::col(SessionColumn::SessionDurationSec).sum(),
+                "total_duration_sec",
+            )
+            .filter(SessionColumn::Date.gte(start.and_hms_opt(0, 0, 0).unwrap()))
+            .filter(SessionColumn::Date.lt(end.and_hms_opt(0, 0, 0).unwrap()))
+            .group_by(Expr::cust("DATE(date)"))
+            .order_by_asc(SessionColumn::Date)
+            .into_model::<DailySessionSummary>()
+            .all(self.db)
+            .await?;
+
+        // --- 3. Query completed tasks grouped by day ---
+        let tasks = Task::find()
+            .select_only()
+            .column_as(Expr::cust("DATE(completed_at)"), "date")
+            .column_as(Expr::col(TaskColumn::Id).count(), "completed_task_count")
+            .filter(TaskColumn::CompletedAt.gte(start.and_hms_opt(0, 0, 0).unwrap()))
+            .filter(TaskColumn::CompletedAt.lt(end.and_hms_opt(0, 0, 0).unwrap()))
+            .group_by(Expr::cust("DATE(completed_at)"))
+            .order_by_asc(TaskColumn::CompletedAt)
+            .into_model::<DailyTaskSummary>()
+            .all(self.db)
+            .await?;
+
+        // --- 4. Merge session + task data by date ---
+        let mut map: HashMap<NaiveDate, MonthlySummary> = HashMap::new();
+
+        for s in sessions {
+            map.insert(
+                s.date,
+                MonthlySummary {
+                    date: (s.date.year() as i64) * 10_000
+                        + (s.date.month() as i64) * 100
+                        + (s.date.day() as i64),
+                    session_count: s.session_count.unwrap_or(0),
+                    total_duration_sec: s.total_duration_sec.unwrap_or(0),
+                    completed_task_count: 0,
+                },
+            );
+        }
+
+        for t in tasks {
+            map.entry(t.date)
+                .and_modify(|ms| {
+                    ms.completed_task_count = t.completed_task_count.unwrap_or(0);
+                })
+                .or_insert(MonthlySummary {
+                    date: (t.date.year() as i64) * 10_000
+                        + (t.date.month() as i64) * 100
+                        + (t.date.day() as i64),
+                    session_count: 0,
+                    total_duration_sec: 0,
+                    completed_task_count: t.completed_task_count.unwrap_or(0),
+                });
+        }
+
+        // --- 5. Return sorted vector ---
+        let mut result: Vec<_> = map.into_values().collect();
+        result.sort_by_key(|r| r.date);
+
+        Ok(result)
     }
 }

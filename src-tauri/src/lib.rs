@@ -83,6 +83,8 @@ pub async fn run() {
             // Summary
             get_day_summary,
             get_streaks,
+            get_life_time_summary,
+            get_monthly_summary
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
