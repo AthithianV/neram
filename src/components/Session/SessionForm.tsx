@@ -25,7 +25,6 @@ import React, { Suspense, useEffect } from 'react';
 
 import { useSessionCollision } from '@/hooks/useSession';
 import { useTimer } from '@/hooks/useTimer';
-import { formatDate } from '@/lib/time';
 import dayjs from 'dayjs';
 import { Calendar, CalendarMinus, CalendarPlus, Clock, Folder, Tag } from 'lucide-react';
 import { toast } from 'sonner';
@@ -82,26 +81,6 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                 return;
             }
             form.setValue('session_duration_sec', duration - breakDuration);
-        }
-    };
-
-    const setDateToTimes = () => {
-        const startTime = dayjs(form.getValues('start_time'));
-        const endTime = dayjs(form.getValues('end_time'));
-        const date = form.getValues('date');
-
-        let newStartTime = dayjs(date)
-            .hour(startTime.hour())
-            .minute(startTime.minute())
-            .second(startTime.second());
-        form.setValue('start_time', formatDate(newStartTime));
-
-        if (endTime.isValid()) {
-            let newEndTime = dayjs(date)
-                .hour(endTime.hour())
-                .minute(endTime.minute())
-                .second(endTime.second());
-            form.setValue('end_time', formatDate(newEndTime));
         }
     };
 
@@ -232,7 +211,6 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                                         <DatePicker
                                             dateValue={field.value}
                                             onChange={field.onChange}
-                                            setDateToTimes={setDateToTimes}
                                             disable={
                                                 session !== null &&
                                                 sessionId === timer?.session_id
@@ -268,7 +246,6 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                                               })
                                             : form.clearErrors('start_time')
                                     }
-                                    date={form.getValues('date')}
                                     isDisable={
                                         session !== null &&
                                         sessionId === timer?.session_id
@@ -300,7 +277,6 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                                                   })
                                                 : form.clearErrors('end_time')
                                         }
-                                        date={form.getValues('date')}
                                         adjustDuration={adjustDuration}
                                     />
                                     <FormMessage className="text-xs" />

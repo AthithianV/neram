@@ -91,7 +91,7 @@ impl<'a> SessionRepository<'a> {
 
             // Generate group key
             let key = match group_by {
-                SessionGroupType::Date => date.date().to_string(),
+                SessionGroupType::Date => date.to_string(),
                 SessionGroupType::Week => {
                     let iso_week = date.iso_week();
                     format!("{}-W{}", iso_week.year(), iso_week.week())

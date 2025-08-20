@@ -1,9 +1,11 @@
-use crate::models::summary::{CalendarWeek, DaySummary, LifeTimeSummary, MonthlySummary, Streak};
+use crate::models::summary::{
+    CalendarView, DaySummary, LifeTimeSummary, MonthlyReport, MonthlySummary, Streak,
+};
 use sea_orm::{
     sea_query::Expr, ColumnTrait, DatabaseConnection, DbErr, EntityTrait, FromQueryResult,
     QueryFilter, QueryOrder, QuerySelect,
 };
-use std::collections::HashMap;
+use std::{collections::HashMap, vec};
 
 use ::entity::{
     projects::{Column as ProjectColumn, Entity as Project},
@@ -59,10 +61,22 @@ impl<'a> SummaryRepository<'a> {
             .one(self.db)
             .await?;
 
-        let (count, total_duration_sec) = row.unwrap_or((0, 0));
+        let (session_count, total_duration_sec) = row.unwrap_or((0, 0));
+
+        let task_row: Option<i64> = Task::find()
+            .filter(TaskColumn::CompletedAt.eq(date))
+            .select_only()
+            .column_as(Expr::count(Expr::col(TaskColumn::Id)), "count")
+            .into_tuple()
+            .one(self.db)
+            .await?;
+
+        let (completed_task_count) = task_row.unwrap_or(0);
 
         Ok(DaySummary {
-            count: count,
+            date: date.date(),
+            session_count,
+            completed_task_count,
             total_duration_sec: total_duration_sec,
         })
     }
@@ -166,19 +180,11 @@ impl<'a> SummaryRepository<'a> {
         })
     }
 
-    pub async fn get_monthly_summary(
+    pub async fn get_daily_summary(
         &self,
-        year: i32,
-        month: u32,
-    ) -> Result<Vec<MonthlySummary>, DbErr> {
-        // --- 1. Find start and end date of month ---
-        let start = NaiveDate::from_ymd_opt(year, month, 1).unwrap();
-        let end = if month == 12 {
-            NaiveDate::from_ymd_opt(year + 1, 1, 1).unwrap()
-        } else {
-            NaiveDate::from_ymd_opt(year, month + 1, 1).unwrap()
-        };
-
+        start: NaiveDate,
+        end: NaiveDate,
+    ) -> Result<Vec<DaySummary>, DbErr> {
         // --- 2. Query sessions grouped by day ---
         let sessions = Session::find()
             .select_only()
@@ -188,8 +194,8 @@ impl<'a> SummaryRepository<'a> {
                 Expr::cust("COALESCE(SUM(session_duration_sec), 0)"),
                 "total_duration_sec",
             )
-            .filter(SessionColumn::Date.gte(start.and_hms_opt(0, 0, 0).unwrap()))
-            .filter(SessionColumn::Date.lt(end.and_hms_opt(0, 0, 0).unwrap()))
+            .filter(SessionColumn::Date.gte(start))
+            .filter(SessionColumn::Date.lt(end))
             .filter(SessionColumn::EndTime.is_not_null())
             .group_by(Expr::cust("DATE(date)"))
             .into_model::<DailySessionSummary>()
@@ -235,7 +241,7 @@ impl<'a> SummaryRepository<'a> {
                 session_map.get(&current).cloned().unwrap_or((0, 0));
             let completed_task_count = task_map.get(&current).cloned().unwrap_or(0);
 
-            summaries.push(MonthlySummary {
+            summaries.push(DaySummary {
                 date: current,
                 session_count,
                 total_duration_sec,
@@ -248,33 +254,78 @@ impl<'a> SummaryRepository<'a> {
         Ok(summaries)
     }
 
-    pub async fn get_monthly_calendar(
+    pub async fn get_monthly_summary(
         &self,
-        year: i32,
-        month: u32,
-    ) -> Result<Vec<CalendarWeek>, DbErr> {
-        let summaries = self.get_monthly_summary(year, month).await?;
+        start: NaiveDate,
+        end: NaiveDate,
+    ) -> Result<MonthlySummary, DbErr> {
+        let sessions_summary: Option<(i64, i64)> = Session::find()
+            .select_only()
+            .column_as(
+                Expr::cust("COUNT(DISTINCT DATE(date))"),
+                "total_days_worked",
+            )
+            .column_as(
+                Expr::cust("COALESCE(SUM(session_duration_sec), 0)"),
+                "total_duration_sec",
+            )
+            .filter(SessionColumn::Date.gte(start))
+            .filter(SessionColumn::Date.lt(end))
+            .filter(SessionColumn::EndTime.is_not_null())
+            .group_by(Expr::cust("DATE(date)"))
+            .into_tuple()
+            .one(self.db)
+            .await?;
 
-        if summaries.is_empty() {
-            return Ok(vec![]);
+        let (total_days_worked, total_duration_sec) = sessions_summary.unwrap_or((0, 0));
+
+        let avg_duration_per_day = if total_days_worked > 0 {
+            total_duration_sec as f64 / total_days_worked as f64
+        } else {
+            0.0
+        };
+
+        let result = MonthlySummary {
+            total_days_worked,
+            total_duration_sec,
+            avg_duration_per_day,
+            session_count: 0,
+        };
+
+        Ok(result)
+    }
+
+    pub async fn get_monthly_report(&self, year: i32, month: u32) -> Result<MonthlyReport, DbErr> {
+        let start = NaiveDate::from_ymd_opt(year, month, 1).unwrap();
+        let end = if month == 12 {
+            NaiveDate::from_ymd_opt(year + 1, 1, 1).unwrap()
+        } else {
+            NaiveDate::from_ymd_opt(year, month + 1, 1).unwrap()
+        };
+
+        let monthly_summary = self.get_monthly_summary(start, end).await?;
+
+        let daily_summaries = self.get_daily_summary(start, end).await?;
+        if daily_summaries.is_empty() {
+            return Ok(MonthlyReport {
+                calendar_view: vec![],
+                monthly_summary,
+            });
         }
 
         // --- Parse date of first & last ---
-        let first_date = summaries.first().unwrap().date;
+        let first_date = daily_summaries.first().unwrap().date;
 
         let first_weekday = first_date.weekday().num_days_from_sunday() as usize;
-        // if you want Monday-start calendar:
-        // let first_weekday = first_date.weekday().num_days_from_monday() as usize;
-
-        let mut calendar: Vec<Option<MonthlySummary>> = Vec::new();
+        let mut calendar: Vec<Option<DaySummary>> = Vec::new();
 
         // --- Leading blanks ---
         for _ in 0..first_weekday {
             calendar.push(None);
         }
 
-        // --- Fill summaries ---
-        for s in summaries {
+        // --- Fill daily_summaries ---
+        for s in daily_summaries {
             calendar.push(Some(s));
         }
 
@@ -284,13 +335,16 @@ impl<'a> SummaryRepository<'a> {
         }
 
         // --- Chunk into weeks ---
-        let weeks: Vec<CalendarWeek> = calendar
+        let weeks: Vec<CalendarView> = calendar
             .chunks(7)
-            .map(|chunk| CalendarWeek {
+            .map(|chunk| CalendarView {
                 days: chunk.to_vec(),
             })
             .collect();
 
-        Ok(weeks)
+        Ok(MonthlyReport {
+            calendar_view: weeks,
+            monthly_summary: monthly_summary,
+        })
     }
 }

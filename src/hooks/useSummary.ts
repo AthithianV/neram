@@ -19,14 +19,26 @@ export interface LifeTimeSummary {
     project_count: number;
 }
 
-export interface MonthlySummary {
-    date: number; // YYYYMMDD (e.g. 20250819)
+export interface DailySummary {
+    date: string;
     session_count: number;
     total_duration_sec: number;
     completed_task_count: number;
 }
 
-type CalendarWeek = { days: (MonthlySummary | null)[] };
+export interface MonthlySummary {
+    total_days_worked: number;
+    avg_duration_per_day: number;
+    total_duration_sec: number;
+    session_count: number;
+}
+
+type CalendarView = { days: (DailySummary | null)[] };
+
+export interface MonthlyReport {
+    calendar_view: CalendarView[];
+    monthly_summary: MonthlySummary;
+}
 
 // 🔹 Hook: Get summary for a specific day
 export const useDaySummary = (date: string) => {
@@ -78,7 +90,7 @@ export const useMonthlySummary = (year: number, month: number) => {
         queryKey: ['monthlySummary', year, month],
         queryFn: async () => {
             const data = await invoke('get_monthly_summary', { year, month });
-            return data as CalendarWeek[];
+            return data as MonthlyReport;
         },
         enabled: year > 0 && month > 0,
         refetchOnWindowFocus: false,

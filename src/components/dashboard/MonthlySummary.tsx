@@ -1,12 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useMonthlySummary } from '@/hooks/useSummary';
+import { formatDuration } from '@/lib/time';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
 import { Calendar } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 const MonthlySummary = () => {
-    const { data: weeks, isLoading } = useMonthlySummary(2025, 8);
+    const { data: monthlyReport, isLoading } = useMonthlySummary(2025, 8);
 
     function getLevel(durationSec: number): number {
         if (durationSec === 0) return 0;
@@ -33,7 +35,7 @@ const MonthlySummary = () => {
         'bg-green-900',
     ];
 
-    if (isLoading || !weeks) {
+    if (isLoading || !monthlyReport) {
         return <Skeleton className="h-50" />;
     }
 
@@ -53,32 +55,52 @@ const MonthlySummary = () => {
                             <div key={d}>{d}</div>
                         ))}
                     </div>
-                    {weeks.map((week, i) => (
+                    {monthlyReport.calendar_view.map((week, i) => (
                         <div key={i} className="grid grid-cols-7 gap-1">
                             {week.days.map((day, j) =>
                                 day ? (
-                                    <div
-                                        key={j}
-                                        className={cn(
-                                            'w-[80px] h-[80px]',
-                                            'rounded-md',
-                                            'flex items-center justify-center',
-                                            'text-xs font-medium',
-                                            'text-gray-800',
-                                            levelColors[getLevel(day.total_duration_sec)],
-                                        )}
-                                    >
-                                        <h3 className="text-sm">
-                                            {dayjs(day.date).date()}
-                                        </h3>
-                                        {/* <div>{day.date % 100}</div>
-                                        <div className="text-gray-500">
-                                            S: {day.session_count}
-                                        </div>
-                                        <div className="text-gray-500">
-                                            T: {day.completed_task_count}
-                                        </div> */}
-                                    </div>
+                                    <Tooltip key={j}>
+                                        <TooltipTrigger>
+                                            <div
+                                                className={cn(
+                                                    'w-[80px] h-[80px]',
+                                                    'rounded-md',
+                                                    'flex items-center justify-center',
+                                                    'text-xs font-medium',
+                                                    'text-gray-800',
+                                                    levelColors[
+                                                        getLevel(day.total_duration_sec)
+                                                    ],
+                                                )}
+                                            >
+                                                <h3 className="text-sm">
+                                                    {dayjs(day.date).date()}
+                                                </h3>
+                                            </div>
+                                        </TooltipTrigger>
+                                        <TooltipContent className="flex flex-col gap-2">
+                                            <h5 className="flex gap-2">
+                                                <span>Focus Hours:</span>
+                                                <span className="font-bold">
+                                                    {formatDuration(
+                                                        day.total_duration_sec,
+                                                    ) ?? 0}
+                                                </span>
+                                            </h5>
+                                            <h5 className="flex gap-2">
+                                                <span>Number of Sessions: </span>
+                                                <span className="font-bold">
+                                                    {day.session_count ?? 0}
+                                                </span>
+                                            </h5>
+                                            <h5 className="flex gap-2">
+                                                <span>Task Completed:</span>
+                                                <span className="font-bold">
+                                                    {day.completed_task_count ?? 0}
+                                                </span>
+                                            </h5>
+                                        </TooltipContent>
+                                    </Tooltip>
                                 ) : (
                                     <div key={j}></div>
                                 ),
@@ -89,15 +111,25 @@ const MonthlySummary = () => {
                 {/* Stats */}
                 <div className="flex justify-between text-center text-sm">
                     <div>
-                        <p className="font-bold">19 of 19</p>
+                        <p className="font-bold">
+                            {monthlyReport.monthly_summary.total_days_worked} of 19
+                        </p>
                         <p className="text-muted-foreground">Days Focused</p>
                     </div>
                     <div>
-                        <p className="font-bold">5h 18m</p>
+                        <p className="font-bold">
+                            {formatDuration(
+                                monthlyReport.monthly_summary.avg_duration_per_day,
+                            )}
+                        </p>
                         <p className="text-muted-foreground">Avg Focus Day</p>
                     </div>
                     <div>
-                        <p className="font-bold">100h 47m</p>
+                        <p className="font-bold">
+                            {formatDuration(
+                                monthlyReport.monthly_summary.total_duration_sec,
+                            )}
+                        </p>
                         <p className="text-muted-foreground">Total Focus</p>
                     </div>
                 </div>
