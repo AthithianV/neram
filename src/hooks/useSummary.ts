@@ -26,12 +26,13 @@ export interface MonthlySummary {
     completed_task_count: number;
 }
 
+type CalendarWeek = { days: (MonthlySummary | null)[] };
+
 // 🔹 Hook: Get summary for a specific day
 export const useDaySummary = (date: string) => {
     return useQuery({
         queryKey: ['daySummary', date],
         queryFn: async () => {
-            console.log(date);
             try {
                 const data = await invoke('get_day_summary', { date });
                 return data as DaySummary;
@@ -77,7 +78,7 @@ export const useMonthlySummary = (year: number, month: number) => {
         queryKey: ['monthlySummary', year, month],
         queryFn: async () => {
             const data = await invoke('get_monthly_summary', { year, month });
-            return data as MonthlySummary[];
+            return data as CalendarWeek[];
         },
         enabled: year > 0 && month > 0,
         refetchOnWindowFocus: false,

@@ -1,3 +1,4 @@
+use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -23,8 +24,13 @@ pub struct LifeTimeSummary {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct MonthlySummary {
-    pub date: i64,
+    pub date: NaiveDate,
     pub session_count: i64,
     pub total_duration_sec: i64,
     pub completed_task_count: i64,
+}
+
+#[derive(Debug, Serialize)]
+pub struct CalendarWeek {
+    pub days: Vec<Option<MonthlySummary>>, // 7 items
 }

@@ -2,7 +2,7 @@ use chrono::NaiveDateTime;
 use tauri::{command, State};
 
 use crate::{
-    models::summary::{DaySummary, LifeTimeSummary, MonthlySummary, Streak},
+    models::summary::{CalendarWeek, DaySummary, LifeTimeSummary, MonthlySummary, Streak},
     repository::summary::SummaryRepository,
     AppState,
 };
@@ -56,12 +56,12 @@ pub async fn get_monthly_summary(
     app_state: State<'_, AppState>,
     year: i32,
     month: u32,
-) -> Result<Vec<MonthlySummary>, String> {
+) -> Result<Vec<CalendarWeek>, String> {
     let db = app_state.conn.lock().await;
 
     let summary_repository = SummaryRepository::new(&db);
     let result = summary_repository
-        .get_monthly_summary(year, month)
+        .get_monthly_calendar(year, month)
         .await
         .map_err(|e| {
             println!("Error creating session: {:?}", e);

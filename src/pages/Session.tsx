@@ -20,33 +20,35 @@ const Session = () => {
 
     return (
         <PageAnimation>
-            <div className="flex flex-col overflow-hidden p-2">
-                <div className="flex items-center justify-between pb-2 pe-2 box-border">
-                    <Controls />
-                    <SessionFilter groupBy={groupBy} setGroupBy={setGroupBy} />
-                </div>
-                <ScrollArea
-                    className={cn(
-                        location.pathname !== '/dashboard' && 'max-sm:hidden',
-                        'max-md:w-full',
-                    )}
-                >
-                    <ul className="flex flex-col gap-1 max-h-[var(--session-list-height)]">
-                        {groupedSessions && groupedSessions.length > 0 ? (
-                            groupedSessions.map((group, index) => (
-                                <li key={index}>
-                                    <SessionGroup group={group} />
-                                </li>
-                            ))
-                        ) : (
-                            <h1 className="font-semibold text-center my-2 text-gray-500 text-sm">
-                                {' '}
-                                No Session to Display
-                            </h1>
+            <ScrollArea className="h-[var(--main-content-height)]">
+                <div className="flex flex-col overflow-hidden p-2">
+                    <div className="flex items-center justify-between pb-2 pe-2 box-border">
+                        <Controls />
+                        <SessionFilter groupBy={groupBy} setGroupBy={setGroupBy} />
+                    </div>
+                    <ScrollArea
+                        className={cn(
+                            location.pathname !== '/dashboard' && 'max-sm:hidden',
+                            'max-md:w-full',
                         )}
-                    </ul>
-                </ScrollArea>
-            </div>
+                    >
+                        <ul className="flex flex-col gap-1 max-h-[var(--session-list-height)]">
+                            {groupedSessions && groupedSessions.length > 0 ? (
+                                groupedSessions.map((group, index) => (
+                                    <li key={index}>
+                                        <SessionGroup group={group} />
+                                    </li>
+                                ))
+                            ) : (
+                                <h1 className="font-semibold text-center my-2 text-gray-500 text-sm">
+                                    {' '}
+                                    No Session to Display
+                                </h1>
+                            )}
+                        </ul>
+                    </ScrollArea>
+                </div>
+            </ScrollArea>
         </PageAnimation>
     );
 };

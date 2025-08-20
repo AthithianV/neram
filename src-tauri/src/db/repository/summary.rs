@@ -1,4 +1,4 @@
-use crate::models::summary::{DaySummary, LifeTimeSummary, MonthlySummary, Streak};
+use crate::models::summary::{CalendarWeek, DaySummary, LifeTimeSummary, MonthlySummary, Streak};
 use sea_orm::{
     sea_query::Expr, ColumnTrait, DatabaseConnection, DbErr, EntityTrait, FromQueryResult,
     QueryFilter, QueryOrder, QuerySelect,
@@ -236,9 +236,7 @@ impl<'a> SummaryRepository<'a> {
             let completed_task_count = task_map.get(&current).cloned().unwrap_or(0);
 
             summaries.push(MonthlySummary {
-                date: (current.year() as i64) * 10_000
-                    + (current.month() as i64) * 100
-                    + (current.day() as i64),
+                date: current,
                 session_count,
                 total_duration_sec,
                 completed_task_count,
@@ -248,5 +246,51 @@ impl<'a> SummaryRepository<'a> {
         }
 
         Ok(summaries)
+    }
+
+    pub async fn get_monthly_calendar(
+        &self,
+        year: i32,
+        month: u32,
+    ) -> Result<Vec<CalendarWeek>, DbErr> {
+        let summaries = self.get_monthly_summary(year, month).await?;
+
+        if summaries.is_empty() {
+            return Ok(vec![]);
+        }
+
+        // --- Parse date of first & last ---
+        let first_date = summaries.first().unwrap().date;
+
+        let first_weekday = first_date.weekday().num_days_from_sunday() as usize;
+        // if you want Monday-start calendar:
+        // let first_weekday = first_date.weekday().num_days_from_monday() as usize;
+
+        let mut calendar: Vec<Option<MonthlySummary>> = Vec::new();
+
+        // --- Leading blanks ---
+        for _ in 0..first_weekday {
+            calendar.push(None);
+        }
+
+        // --- Fill summaries ---
+        for s in summaries {
+            calendar.push(Some(s));
+        }
+
+        // --- Trailing blanks ---
+        while calendar.len() % 7 != 0 {
+            calendar.push(None);
+        }
+
+        // --- Chunk into weeks ---
+        let weeks: Vec<CalendarWeek> = calendar
+            .chunks(7)
+            .map(|chunk| CalendarWeek {
+                days: chunk.to_vec(),
+            })
+            .collect();
+
+        Ok(weeks)
     }
 }
