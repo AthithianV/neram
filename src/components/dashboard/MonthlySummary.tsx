@@ -3,12 +3,19 @@ import { useMonthlySummary } from '@/hooks/useSummary';
 import { formatDuration } from '@/lib/time';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
-import { Calendar } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState } from 'react';
+import { Button } from '../ui/button';
 import { Skeleton } from '../ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 const MonthlySummary = () => {
-    const { data: monthlyReport, isLoading } = useMonthlySummary(2025, 8);
+    const [month, setMonth] = useState(dayjs());
+
+    const { data: monthlyReport, isLoading } = useMonthlySummary(
+        month.get('year'),
+        month.get('month') + 1,
+    );
 
     function getLevel(durationSec: number): number {
         if (durationSec === 0) return 0;
@@ -36,18 +43,41 @@ const MonthlySummary = () => {
     ];
 
     if (isLoading || !monthlyReport) {
-        return <Skeleton className="h-50" />;
+        return <Skeleton className="h-168 col-span-2" />;
     }
+
+    const incrementMonth = () => {
+        if (month.get('month') === dayjs().get('month')) {
+            return;
+        }
+        setMonth(month.add(1, 'month'));
+    };
+
+    const decrementMonth = () => {
+        setMonth(month.subtract(1, 'month'));
+    };
 
     return (
         <Card className="flex flex-col col-span-2">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
+                    <Button variant={'ghost'} onClick={decrementMonth}>
+                        <ChevronLeft />
+                    </Button>
                     <Calendar className="h-5 w-5 text-primary" />
-                    June 2025
+                    <span>{month.format('MMMM YYYY')}</span>
+                    <Button
+                        variant={'ghost'}
+                        onClick={incrementMonth}
+                        disabled={month.get('month') === dayjs().get('month')}
+                    >
+                        <ChevronRight />
+                    </Button>
                 </CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col flex-1 px-25 py-2 gap-5">
+            <CardContent
+                className={cn('flex flex-col flex-1 gap-5', 'py-2 px-25 max-xl:px-5')}
+            >
                 {/* Calendar Grid */}
                 <div className="space-y-2">
                     <div className="grid grid-cols-7 text-center font-semibold">
@@ -63,7 +93,7 @@ const MonthlySummary = () => {
                                         <TooltipTrigger>
                                             <div
                                                 className={cn(
-                                                    'w-[80px] h-[80px]',
+                                                    'w-[80px] h-[80px] max-lg:w-[60px] max-lg:h-[60px]',
                                                     'rounded-md',
                                                     'flex items-center justify-center',
                                                     'text-xs font-medium',
@@ -109,7 +139,7 @@ const MonthlySummary = () => {
                     ))}
                 </div>
                 {/* Stats */}
-                <div className="flex justify-between text-center text-sm">
+                {/* <div className="flex justify-between text-center text-sm">
                     <div>
                         <p className="font-bold">
                             {monthlyReport.monthly_summary.total_days_worked} of 19
@@ -132,7 +162,7 @@ const MonthlySummary = () => {
                         </p>
                         <p className="text-muted-foreground">Total Focus</p>
                     </div>
-                </div>
+                </div> */}
             </CardContent>
         </Card>
     );

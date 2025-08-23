@@ -71,7 +71,7 @@ impl<'a> SummaryRepository<'a> {
             .one(self.db)
             .await?;
 
-        let (completed_task_count) = task_row.unwrap_or(0);
+        let completed_task_count = task_row.unwrap_or(0);
 
         Ok(DaySummary {
             date: date.date(),
@@ -89,11 +89,11 @@ impl<'a> SummaryRepository<'a> {
             .select_only()
             .column(sessions::Column::Date)
             .order_by_asc(sessions::Column::Date)
-            .into_tuple::<NaiveDateTime>() // extract DateTime
+            .into_tuple::<NaiveDate>()
             .all(self.db)
             .await?
             .into_iter()
-            .map(|dt| dt.date()) // convert to NaiveDate
+            .map(|dt| dt)
             .collect();
 
         dates.dedup(); // ensure distinct days

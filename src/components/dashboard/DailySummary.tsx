@@ -33,7 +33,7 @@ const DailySummary = () => {
                     <p className="text-sm text-muted-foreground">Focus Time</p>
                 </div>
                 <div className="flex-1 rounded-lg bg-muted p-4 text-center">
-                    <p className="text-2xl font-bold">{dailySummary?.count}</p>
+                    <p className="text-2xl font-bold">{dailySummary.count || 0}</p>
                     <p className="text-sm text-muted-foreground">Sessions</p>
                 </div>
             </CardContent>

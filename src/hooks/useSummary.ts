@@ -63,8 +63,12 @@ export const useStreaks = () => {
     return useQuery({
         queryKey: ['streaks'],
         queryFn: async () => {
-            const data = await invoke('get_streaks');
-            return data as Streak;
+            try {
+                const data = await invoke('get_streaks');
+                return data as Streak;
+            } catch (err) {
+                console.log(err);
+            }
         },
         refetchOnWindowFocus: false,
         refetchOnMount: true,
@@ -89,8 +93,12 @@ export const useMonthlySummary = (year: number, month: number) => {
     return useQuery({
         queryKey: ['monthlySummary', year, month],
         queryFn: async () => {
-            const data = await invoke('get_monthly_summary', { year, month });
-            return data as MonthlyReport;
+            try {
+                const data = await invoke('get_monthly_summary', { year, month });
+                return data as MonthlyReport;
+            } catch (err) {
+                console.log(err);
+            }
         },
         enabled: year > 0 && month > 0,
         refetchOnWindowFocus: false,
