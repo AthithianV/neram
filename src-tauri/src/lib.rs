@@ -7,6 +7,7 @@ use commands::project::*;
 use commands::session::*;
 use commands::settings::*;
 use commands::statistics::*;
+use commands::summary::*;
 use commands::tag::*;
 use commands::task::*;
 use commands::timer::*;
@@ -78,7 +79,12 @@ pub async fn run() {
             get_pomodoro_settings,
             // Settings
             get_settings,
-            update_settings
+            update_settings,
+            // Summary
+            get_day_summary,
+            get_streaks,
+            get_life_time_summary,
+            get_monthly_summary
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -59,7 +59,7 @@ impl<'a> StatisticsRepository<'a> {
         let mut day_map: BTreeMap<NaiveDate, Vec<SessionModel>> = BTreeMap::new();
 
         for session in all_sessions {
-            let date = session.date.date(); // Extract only the date part
+            let date = session.date; // Extract only the date part
             day_map.entry(date).or_default().push(session);
         }
 

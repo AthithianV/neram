@@ -9,7 +9,6 @@ import { Skeleton } from '../ui/skeleton';
 
 export interface TimeElementProps {
     value: string | undefined;
-    date: string;
     setValue: (val: string) => void;
     setError: (error: string) => void;
     isDisable?: boolean;
@@ -20,7 +19,6 @@ const TimeElement = ({
     value,
     setValue,
     setError,
-    date,
     isDisable,
     adjustDuration,
 }: TimeElementProps) => {
@@ -50,18 +48,7 @@ const TimeElement = ({
             setError('Invalid time format');
         } else {
             setError('');
-
-            const setDate =
-                dayjs(date).format(settings.date_format) ||
-                dayjs().format(settings.date_format);
-
-            const result = dayjs(
-                `${setDate} ${e.target.value}`,
-                `${settings.date_format} ${settings.time_format}`,
-            ).toString();
-            console.log(result);
-
-            setValue(formatDate(result));
+            setValue(formatDate(e.target.value));
         }
         adjustDuration && adjustDuration();
     };
