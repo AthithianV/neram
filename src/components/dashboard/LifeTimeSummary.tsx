@@ -19,7 +19,7 @@ const LifeTimeSummary = () => {
                     Lifetime Focus
                 </CardTitle>
                 <p className="text-sm text-muted-foreground">
-                    Your total focus achievements since you started using Kairu.
+                    Your total focus achievements since you started using Neram.
                 </p>
             </CardHeader>
             <CardContent className="flex gap-4">

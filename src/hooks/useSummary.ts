@@ -1,11 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
 
-export interface DaySummary {
-    count: number;
-    total_duration_sec: number;
-}
-
 export interface Streak {
     current_streak: number;
     total_streak: number;
@@ -47,7 +42,8 @@ export const useDaySummary = (date: string) => {
         queryFn: async () => {
             try {
                 const data = await invoke('get_day_summary', { date });
-                return data as DaySummary;
+                console.log(data);
+                return data as DailySummary;
             } catch (err) {
                 console.log(err);
             }

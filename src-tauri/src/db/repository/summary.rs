@@ -12,7 +12,7 @@ use ::entity::{
     sessions::{Column as SessionColumn, Entity as Session},
     tasks::{Column as TaskColumn, Entity as Task},
 };
-use chrono::{Datelike, Duration, Local, NaiveDate, NaiveDateTime};
+use chrono::{Datelike, Duration, Local, NaiveDate};
 
 pub struct SummaryRepository<'a> {
     db: &'a DatabaseConnection,
@@ -48,7 +48,7 @@ impl<'a> SummaryRepository<'a> {
         Self { db }
     }
 
-    pub async fn get_day_summary(&self, date: NaiveDateTime) -> Result<DaySummary, DbErr> {
+    pub async fn get_day_summary(&self, date: NaiveDate) -> Result<DaySummary, DbErr> {
         let row: Option<(i64, i64)> = Session::find()
             .filter(SessionColumn::Date.eq(date))
             .select_only()
@@ -74,7 +74,7 @@ impl<'a> SummaryRepository<'a> {
         let completed_task_count = task_row.unwrap_or(0);
 
         Ok(DaySummary {
-            date: date.date(),
+            date: date,
             session_count,
             completed_task_count,
             total_duration_sec: total_duration_sec,

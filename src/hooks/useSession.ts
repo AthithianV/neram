@@ -25,8 +25,8 @@ export type UpdateSessionType = {
     description?: string | null;
     project_id?: number;
     date?: string;
-    start_time?: string;
-    end_time?: string | null;
+    start_time?: number;
+    end_time?: number | null;
     session_duration_sec?: number;
     break_duration_sec?: number;
 };
@@ -171,8 +171,8 @@ export const useAddTagToSession = () => {
 export const useSessionCollision = () => {
     return useMutation({
         mutationFn: async (data: {
-            startTime: string;
-            endTime: string | null;
+            startTime: number;
+            endTime: number | null;
             sessionId: number;
         }) => {
             const isSessionCollides = await invoke<boolean>(

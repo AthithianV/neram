@@ -2,8 +2,9 @@ import { Badge } from '@/components/ui/badge';
 import { SessionType, useDeleteSession } from '@/hooks/useSession';
 import { useSettings } from '@/hooks/useSettings';
 import { TimerResponse } from '@/hooks/useTimer';
-import { formatDate, formatDuration } from '@/lib/time';
+import { formatDuration } from '@/lib/time';
 import { cn } from '@/lib/utils';
+import dayjs from 'dayjs';
 import { Clock9, Coffee, Loader2, Trash } from 'lucide-react';
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -106,14 +107,9 @@ const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
                             </span>
                             <div className="text-xs text-gray-500 dark:text-gray-400 flex flex-col gap-1 items-end">
                                 <span>
-                                    {formatDate(start_time, {
-                                        format: settings?.time_format,
-                                    })}{' '}
-                                    -{' '}
+                                    {dayjs(start_time).format(settings?.time_format)} -{' '}
                                     {end_time
-                                        ? formatDate(end_time, {
-                                              format: settings?.time_format,
-                                          })
+                                        ? dayjs(end_time).format(settings?.time_format)
                                         : 'Now'}
                                 </span>
                             </div>

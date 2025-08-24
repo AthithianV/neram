@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 use chrono::Datelike;
-use chrono::NaiveDateTime;
 use migration::Expr;
 use sea_orm::*;
 
@@ -215,8 +214,8 @@ impl<'a> SessionRepository<'a> {
 
     pub async fn collides_on_day(
         &self,
-        new_start: NaiveDateTime,
-        new_end: Option<NaiveDateTime>,
+        new_start: i64,
+        new_end: Option<i64>,
         session_id: i32,
     ) -> Result<bool, DbErr> {
         let mut cond = Condition::all();

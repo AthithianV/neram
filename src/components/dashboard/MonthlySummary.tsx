@@ -21,25 +21,24 @@ const MonthlySummary = () => {
         if (durationSec === 0) return 0;
         const hours = durationSec / 3600;
 
-        if (hours < 1) return 0;
-        if (hours < 2) return 1;
-        if (hours < 3) return 2;
-        if (hours < 4) return 3;
-        if (hours < 5) return 4;
-        if (hours < 6) return 5;
-        if (hours < 7) return 6;
+        if (hours < 1) return 1;
+        if (hours < 2) return 2;
+        if (hours < 3) return 3;
+        if (hours < 4) return 4;
+        if (hours < 5) return 5;
+        if (hours < 6) return 6;
         return 7;
     }
 
     const levelColors = [
         'bg-gray-200 dark:bg-gray-700 text-gray-300',
+        'bg-green-200',
         'bg-green-300',
         'bg-green-400',
         'bg-green-500',
         'bg-green-600',
         'bg-green-700',
         'bg-green-800',
-        'bg-green-900',
     ];
 
     if (isLoading || !monthlyReport) {

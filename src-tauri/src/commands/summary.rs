@@ -1,4 +1,4 @@
-use chrono::NaiveDateTime;
+use chrono::NaiveDate;
 use tauri::{command, State};
 
 use crate::{
@@ -10,7 +10,7 @@ use crate::{
 #[command]
 pub async fn get_day_summary(
     app_state: State<'_, AppState>,
-    date: NaiveDateTime,
+    date: NaiveDate,
 ) -> Result<DaySummary, String> {
     let db = app_state.conn.lock().await;
 

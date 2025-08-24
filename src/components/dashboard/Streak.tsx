@@ -18,7 +18,7 @@ const Streak = () => {
                     Streaks
                 </CardTitle>
                 <p className="text-sm text-green-500">
-                    Today’s focus goal complete! Streak is secure.
+                    Track your consistency with focus streaks.
                 </p>
             </CardHeader>
             <CardContent className="flex gap-4">

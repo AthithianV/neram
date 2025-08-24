@@ -13,7 +13,7 @@ import {
 
 import ProjectPicker from '@/components/session/ProjectPicker';
 import TagPicker from '@/components/session/TagPicker';
-import { DEFAULT_SESSION_VALUES } from '@/constants/session';
+import { DB_DATE_FORMAT, DEFAULT_SESSION_VALUES } from '@/constants/session';
 import { useCreateSession, useSessionById, useUpdateSession } from '@/hooks/useSession';
 import {
     CreateSession,
@@ -66,6 +66,28 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
         }
         form.setFocus('title');
     }, [session]);
+
+    useEffect(() => {
+        const pickedDate = dayjs(form.getValues('date'));
+        const d = pickedDate.get('date');
+        const m = pickedDate.get('month');
+        const y = pickedDate.get('year');
+
+        const startTime = dayjs(form.getValues('start_time'))
+            .set('month', m)
+            .set('date', d)
+            .set('year', y)
+            .valueOf();
+        const endTime = dayjs(form.getValues('end_time'))
+            .set('month', m)
+            .set('date', d)
+            .set('year', y)
+            .valueOf();
+
+        form.setValue('date', pickedDate.format(DB_DATE_FORMAT));
+        form.setValue('start_time', startTime);
+        form.setValue('end_time', endTime);
+    }, [form.watch('date')]);
 
     const adjustDuration = () => {
         const breakDuration = form.getValues('break_duration_sec') ?? 0;
@@ -251,6 +273,7 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                                         sessionId === timer?.session_id
                                     }
                                     adjustDuration={adjustDuration}
+                                    date={form.watch('date')}
                                 />
                                 <FormMessage className="text-xs" />
                             </FormItem>
@@ -277,6 +300,7 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                                                   })
                                                 : form.clearErrors('end_time')
                                         }
+                                        date={form.watch('date')}
                                         adjustDuration={adjustDuration}
                                     />
                                     <FormMessage className="text-xs" />

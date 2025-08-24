@@ -65,8 +65,8 @@ impl<'a> StatisticsRepository<'a> {
 
         // Generate all dates in the range
         let mut result = Vec::new();
-        let mut current_date = start_date.date();
-        let end_date = end_date.date();
+        let mut current_date = start_date;
+        let end_date = end_date;
 
         while current_date <= end_date {
             let sessions_on_day = day_map.get(&current_date);
@@ -108,7 +108,7 @@ impl<'a> StatisticsRepository<'a> {
             }
 
             result.push(DayStat {
-                date: current_date.and_hms_opt(0, 0, 0).unwrap(), // Use midnight time
+                date: current_date,
                 projects,
                 total_seconds: day_total,
             });

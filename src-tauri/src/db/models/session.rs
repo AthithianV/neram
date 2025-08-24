@@ -1,4 +1,4 @@
-use chrono::{NaiveDate, NaiveTime};
+use chrono::NaiveDate;
 use entity::{
     projects::Model as ProjectModel, sessions::Model as SessionModel, tags::Model as TagModel,
 };
@@ -11,8 +11,8 @@ pub struct CreateSessionModel {
     pub project_id: i32,
     pub task_id: Option<i32>,
     pub date: NaiveDate,
-    pub start_time: NaiveTime,
-    pub end_time: Option<NaiveTime>,
+    pub start_time: i64,
+    pub end_time: Option<i64>,
     pub session_duration_sec: i32,
     pub break_duration_sec: i32,
     pub tags: Vec<i32>,
@@ -24,8 +24,8 @@ pub struct UpdateSessionModel {
     pub description: Option<String>,
     pub project_id: Option<i32>,
     pub date: Option<NaiveDate>,
-    pub start_time: Option<NaiveTime>,
-    pub end_time: Option<Option<NaiveTime>>,
+    pub start_time: Option<i64>,
+    pub end_time: Option<Option<i64>>,
     pub session_duration_sec: Option<i32>,
     pub break_duration_sec: Option<i32>,
 }
@@ -45,8 +45,8 @@ pub struct FullSessionModel {
     pub project: Extra,
     pub tags: Vec<Extra>,
     pub date: NaiveDate,
-    pub start_time: NaiveTime,
-    pub end_time: Option<NaiveTime>,
+    pub start_time: i64,
+    pub end_time: Option<i64>,
     pub session_duration_sec: i32,
     pub break_duration_sec: i32,
 }

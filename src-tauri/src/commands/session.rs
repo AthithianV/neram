@@ -1,4 +1,3 @@
-use chrono::NaiveDateTime;
 use tauri::{command, State};
 
 use crate::models::session::{
@@ -180,8 +179,8 @@ pub async fn remove_tag_from_session(
 #[command]
 pub async fn check_session_collision(
     app_state: State<'_, AppState>,
-    start_time: NaiveDateTime,
-    end_time: Option<NaiveDateTime>,
+    start_time: i64,
+    end_time: Option<i64>,
     session_id: i32,
 ) -> Result<bool, String> {
     let pool = app_state.conn.lock().await;
