@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 const TagSchema = z.object({
-    id: z.number(),
+    id: z.number().optional(),
     title: z.string(),
     description: z.string().optional(),
     color: z.string(),

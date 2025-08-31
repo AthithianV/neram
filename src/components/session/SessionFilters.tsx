@@ -5,7 +5,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SessionGroupType } from '@/hooks/useSession';
-import { Check, Component } from 'lucide-react';
+import { Check, List } from 'lucide-react';
 
 const groups: SessionGroupType[] = ['Date', 'Week', 'Month', 'Year'];
 
@@ -17,8 +17,8 @@ type PropType = {
 const SessionFilter = ({ groupBy, setGroupBy }: PropType) => {
     return (
         <DropdownMenu>
-            <DropdownMenuTrigger className="px-4 py-2 text-sm font-semibold rounded-sm flex gap-1 items-center border">
-                <Component size={12} /> Group By
+            <DropdownMenuTrigger className="text-sm font-semibold rounded-sm flex gap-1 items-center cursor-pointer p-2 hover:bg-gray-100">
+                <List size={16} /> Group By
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
                 {groups.map((currentGroup, index) => (
