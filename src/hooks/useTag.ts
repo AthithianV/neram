@@ -38,13 +38,8 @@ export const useCreateTag = () => {
 export const useUpdateTag = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (tag: {
-            title: string;
-            description?: string;
-            color: string;
-            is_default: boolean;
-        }) => {
-            return await invoke('update_tag', tag);
+        mutationFn: async (data: { tagId: number; tagToUpdate: Tag }) => {
+            return await invoke('update_tag', data);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tags'] });

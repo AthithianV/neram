@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dialog';
 
 import { useTag } from '@/hooks/useTag';
+import { Tag } from '@/schema/TagSchema';
 import { Plus, TagIcon } from 'lucide-react';
 import { useState } from 'react';
 import { Badge } from '../ui/badge';
@@ -18,6 +19,12 @@ const TagModal = () => {
     const { data: tags, isLoading } = useTag();
 
     const [showForm, setShowForm] = useState(false);
+    const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
+
+    const openForm = (tag: Tag | null) => {
+        setShowForm(true);
+        setSelectedTag(tag);
+    };
 
     return (
         <Dialog>
@@ -39,7 +46,11 @@ const TagModal = () => {
                             ) : (
                                 <ul className="flex gap-1 pb-2 items-center">
                                     {tags?.map((tag) => (
-                                        <li key={tag.title}>
+                                        <li
+                                            key={tag.title}
+                                            onClick={() => openForm(tag)}
+                                            className="cursor-pointer"
+                                        >
                                             <Badge
                                                 style={{
                                                     backgroundColor: tag.color,
@@ -50,7 +61,11 @@ const TagModal = () => {
                                             </Badge>
                                         </li>
                                     ))}
-                                    <li onClick={() => setShowForm(true)}>
+                                    <li
+                                        onClick={() => {
+                                            openForm(null);
+                                        }}
+                                    >
                                         <Button variant={'ghost'} className="h-8">
                                             <Plus />
                                         </Button>
@@ -60,7 +75,12 @@ const TagModal = () => {
                         </div>
 
                         {/* Add Tag Form */}
-                        {showForm && <TagForm setShowForm={setShowForm} />}
+                        {showForm && (
+                            <TagForm
+                                selectedTag={selectedTag}
+                                setShowForm={setShowForm}
+                            />
+                        )}
                     </div>
                 </DialogHeader>
             </DialogContent>

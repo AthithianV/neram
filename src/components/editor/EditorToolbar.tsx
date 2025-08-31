@@ -73,28 +73,28 @@ const EditorToolbar = ({ editor }: { editor: Editor }) => {
             icon: <Bold />,
             onClick: () => editor.chain().focus().toggleBold().run(),
             disabled: !editorState.canBold,
-            className: editorState.isBold ? 'bg-gray-200' : '',
+            className: editorState.isBold ? 'bg-gray-200 dark:bg-gray-800' : '',
         },
         {
             title: 'Italic',
             icon: <Italic />,
             onClick: () => editor.chain().focus().toggleItalic().run(),
             disabled: !editorState.canItalic,
-            className: editorState.isItalic ? 'bg-gray-200' : '',
+            className: editorState.isItalic ? 'bg-gray-200 dark:bg-gray-800' : '',
         },
         {
             title: 'Strick Through',
             icon: <Strikethrough />,
             onClick: () => editor.chain().focus().toggleStrike().run(),
             disabled: !editorState.canStrike,
-            className: editorState.isStrike ? 'bg-gray-200' : '',
+            className: editorState.isStrike ? 'bg-gray-200 dark:bg-gray-800' : '',
         },
         {
             title: 'Code',
             icon: <Code />,
             onClick: () => editor.chain().focus().toggleCode().run(),
             disabled: !editorState.canCode,
-            className: editorState.isCode ? 'bg-gray-200' : '',
+            className: editorState.isCode ? 'bg-gray-200 dark:bg-gray-800' : '',
         },
 
         {
@@ -105,37 +105,43 @@ const EditorToolbar = ({ editor }: { editor: Editor }) => {
             icon: <Hash />,
             onClick: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
             disabled: !editorState.canCode,
-            className: editor.isActive('heading', { level: 1 }) ? 'bg-gray-200' : '',
+            className: editor.isActive('heading', { level: 1 })
+                ? 'bg-gray-200 dark:bg-gray-800'
+                : '',
         },
         {
             title: 'Number List',
             icon: <ListOrdered />,
             onClick: () => editor.chain().focus().toggleOrderedList().run(),
-            className: editor.isActive('orderedList') ? 'bg-gray-200' : '',
+            className: editor.isActive('orderedList')
+                ? 'bg-gray-200 dark:bg-gray-800'
+                : '',
         },
         {
             title: 'Bullet List',
             icon: <List />,
             onClick: () => editor.chain().focus().toggleBulletList().run(),
-            className: editor.isActive('bulletList') ? 'bg-gray-200' : '',
+            className: editor.isActive('bulletList')
+                ? 'bg-gray-200 dark:bg-gray-800'
+                : '',
         },
         {
             title: 'Check List',
             icon: <Square />,
             onClick: () => editor.chain().focus().toggleTaskList().run(),
-            className: editor.isActive('taskList') ? 'bg-gray-200' : '',
+            className: editor.isActive('taskList') ? 'bg-gray-200 dark:bg-gray-800' : '',
         },
         {
             title: 'Code Block',
             icon: <CodeSquare />,
             onClick: () => editor.chain().focus().toggleCodeBlock().run(),
-            className: editorState.isCodeBlock ? 'bg-gray-200' : '',
+            className: editorState.isCodeBlock ? 'bg-gray-200 dark:bg-gray-800' : '',
         },
         {
             title: 'Block Quote',
             icon: <Quote />,
             onClick: () => editor.chain().focus().toggleBlockquote().run(),
-            className: editorState.isBlockquote ? 'bg-gray-200' : '',
+            className: editorState.isBlockquote ? 'bg-gray-200 dark:bg-gray-800' : '',
         },
 
         {
