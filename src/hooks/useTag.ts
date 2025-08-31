@@ -50,8 +50,8 @@ export const useUpdateTag = () => {
 export const useDeleteTag = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (title: string) => {
-            return await invoke('delete_tag', { title });
+        mutationFn: async (id: number) => {
+            return await invoke('delete_tag', { id });
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tags'] });

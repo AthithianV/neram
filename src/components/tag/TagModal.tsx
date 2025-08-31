@@ -13,6 +13,7 @@ import { Tag } from '@/schema/TagSchema';
 import { Plus, TagIcon } from 'lucide-react';
 import { useState } from 'react';
 import { Badge } from '../ui/badge';
+import DeleteTag from './DeleteTag';
 import TagForm from './TagForm';
 
 const TagModal = () => {
@@ -44,23 +45,27 @@ const TagModal = () => {
                             {isLoading ? (
                                 <p className="text-sm text-gray-500">Loading...</p>
                             ) : (
-                                <ul className="flex gap-1 pb-2 items-center">
-                                    {tags?.map((tag) => (
-                                        <li
-                                            key={tag.title}
-                                            onClick={() => openForm(tag)}
-                                            className="cursor-pointer"
-                                        >
-                                            <Badge
-                                                style={{
-                                                    backgroundColor: tag.color,
-                                                }}
-                                                className="text-sm px-2 rounded-[0.3rem]"
-                                            >
-                                                {tag.title}
-                                            </Badge>
-                                        </li>
-                                    ))}
+                                <ul className="flex gap-1 pb-2 items-center flex-wrap">
+                                    {tags?.map(
+                                        (tag) =>
+                                            tag.id && (
+                                                <li
+                                                    key={tag.title}
+                                                    onClick={() => openForm(tag)}
+                                                    className="cursor-pointer"
+                                                >
+                                                    <Badge
+                                                        style={{
+                                                            backgroundColor: tag.color,
+                                                        }}
+                                                        className="text-sm px-2 rounded-[0.3rem]"
+                                                    >
+                                                        {tag.title}
+                                                        <DeleteTag tagId={tag.id} />
+                                                    </Badge>
+                                                </li>
+                                            ),
+                                    )}
                                     <li
                                         onClick={() => {
                                             openForm(null);

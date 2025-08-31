@@ -1,3 +1,4 @@
+use ::entity::sessions_tags::Entity as SessionTag;
 use ::entity::tags::{ActiveModel as TagActiveModel, Entity as Tag};
 use sea_orm::*;
 
@@ -59,6 +60,10 @@ impl<'a> TagRepository<'a> {
     }
 
     pub async fn delete(&self, id: i32) -> Result<DeleteResult, DbErr> {
+        <SessionTag as EntityTrait>::delete_many()
+            .filter(<SessionTag as EntityTrait>::Column::TagId.eq(id))
+            .exec(self.db)
+            .await?;
         let result = Tag::delete_by_id(id).exec(self.db).await?;
         Ok(result)
     }
