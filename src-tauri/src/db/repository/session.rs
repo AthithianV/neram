@@ -46,6 +46,16 @@ impl<'a> SessionRepository<'a> {
         };
 
         let model = active_model.insert(self.db).await?;
+
+        for &tag_id in &session.tags {
+            let session_tag_active_model = SessionTagsActiveModel {
+                tag_id: Set(tag_id),
+                session_id: Set(model.id),
+            };
+
+            let _ = session_tag_active_model.insert(self.db).await?;
+        }
+
         Ok(model)
     }
 
