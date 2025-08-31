@@ -1,7 +1,10 @@
-use ::entity::tags::{ActiveModel as TagActiveModel, Entity as Tag, Model as TagModel};
+use ::entity::tags::{ActiveModel as TagActiveModel, Entity as Tag};
 use sea_orm::*;
 
-use crate::{models::tag::ReadTagModel, time::now};
+use crate::{
+    models::tag::{CreateTagModel, ReadTagModel},
+    time::now,
+};
 
 pub struct TagRepository<'a> {
     db: &'a DatabaseConnection,
@@ -12,7 +15,7 @@ impl<'a> TagRepository<'a> {
         Self { db }
     }
 
-    pub async fn create(&self, tag: &TagModel) -> Result<TagModel, DbErr> {
+    pub async fn create(&self, tag: &CreateTagModel) -> Result<(), DbErr> {
         let active_model = TagActiveModel {
             title: Set(tag.title.clone()),
             description: Set(tag.description.clone()),
@@ -22,36 +25,37 @@ impl<'a> TagRepository<'a> {
             ..Default::default()
         };
 
-        let model = active_model.insert(self.db).await?;
-        Ok(model)
+        let _ = active_model.insert(self.db).await?;
+        Ok(())
     }
 
-    pub async fn find_by_id(&self, id: i32) -> Result<Option<TagModel>, DbErr> {
-        let tag = Tag::find_by_id(id).one(self.db).await?;
+    pub async fn find_by_id(&self, id: i32) -> Result<Option<ReadTagModel>, DbErr> {
+        let tag_model = Tag::find_by_id(id).one(self.db).await?;
+        let tag = tag_model.map(ReadTagModel::from);
+
         Ok(tag)
     }
 
     pub async fn find_all(&self) -> Result<Vec<ReadTagModel>, DbErr> {
         let tags = Tag::find().all(self.db).await?;
-        let minimal_tags = tags
+        let read_tags = tags
             .into_iter()
             .map(|tag| ReadTagModel::from(tag))
             .collect();
-        Ok(minimal_tags)
+        Ok(read_tags)
     }
 
-    pub async fn update(&self, tag: &TagModel) -> Result<TagModel, DbErr> {
-        let active_model = TagActiveModel {
-            id: Set(tag.id),
-            title: Set(tag.title.clone()),
-            description: Set(tag.description.clone()),
-            color: Set(tag.color.clone()),
-            updated_at: Set(now()),
-            ..Default::default()
-        };
+    pub async fn update(&self, tag_id: i32, tag_to_update: &CreateTagModel) -> Result<(), DbErr> {
+        let tag_model = Tag::find_by_id(tag_id).one(self.db).await?;
+        let mut active_tag_model: TagActiveModel = tag_model.unwrap().into();
 
-        let model = active_model.update(self.db).await?;
-        Ok(model)
+        active_tag_model.title = Set(tag_to_update.title.clone());
+        active_tag_model.color = Set(tag_to_update.color.clone());
+        active_tag_model.description = Set(tag_to_update.description.clone());
+        active_tag_model.updated_at = Set(now());
+
+        let _ = active_tag_model.update(self.db).await?;
+        Ok(())
     }
 
     pub async fn delete(&self, id: i32) -> Result<DeleteResult, DbErr> {

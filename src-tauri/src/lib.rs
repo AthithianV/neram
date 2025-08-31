@@ -60,11 +60,11 @@ pub async fn run() {
             add_tag_to_project,
             remove_tag_from_project,
             // // Tag commands
-            // create_tag,
+            create_tag,
             get_all_tags,
-            // get_tag_by_id,
-            // update_tag,
-            // delete_tag,
+            get_tag_by_id,
+            update_tag,
+            delete_tag,
 
             // Timer commands
             start_timer,

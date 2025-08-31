@@ -17,14 +17,14 @@ export const useTag = () => {
 export const useCreateTag = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (tag: {
+        mutationFn: async (newTag: {
             title: string;
             description?: string;
             color: string;
             is_default: boolean;
         }) => {
             try {
-                return await invoke('create_tag', tag);
+                return await invoke('create_tag', { newTag });
             } catch (e) {
                 console.log(e);
             }
