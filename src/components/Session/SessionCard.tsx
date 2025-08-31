@@ -30,7 +30,7 @@ interface SessionCardProps {
 
 const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
     const [_, setSearchParams] = useSearchParams();
-    const { id, title, project, tags, session_duration_sec, start_time, end_time, date } =
+    const { id, title, project, tags, session_duration_sec, start_time, end_time } =
         sessionWithTaskAndTag;
 
     const [isHovered, setIsHovered] = useState(false);

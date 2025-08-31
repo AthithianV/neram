@@ -8,6 +8,7 @@ import LoaderWrapper from '@/components/layouts/Loader';
 import PageAnimation from '@/components/layouts/PageAnimation';
 import SessionFilter from '@/components/session/SessionFilters';
 import SessionGroup from '@/components/session/SessionGroup';
+import TagModal from '@/components/tag/TagModal';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 
@@ -24,7 +25,10 @@ const Session = () => {
                 <div className="flex flex-col overflow-hidden p-2">
                     <div className="flex items-center justify-between pb-2 pe-2 box-border">
                         <Controls />
-                        <SessionFilter groupBy={groupBy} setGroupBy={setGroupBy} />
+                        <div className="flex gap-2">
+                            <SessionFilter groupBy={groupBy} setGroupBy={setGroupBy} />
+                            <TagModal />
+                        </div>
                     </div>
                     <ScrollArea
                         className={cn(

@@ -1,0 +1,65 @@
+name: 'Build & Release Neram App'
+
+on:
+    push:
+        tags:
+            - 'v*' # e.g., v1.0.0 triggers a release build
+    workflow_dispatch: # allow manual runs
+
+jobs:
+    build:
+        strategy:
+            fail-fast: false
+            matrix:
+                platform: [windows-latest, ubuntu-latest, macos-latest]
+
+        runs-on: ${{ matrix.platform }}
+
+        steps:
+            # 1. Checkout code
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            # 2. Setup Node.js (adjust version to match your project)
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+                  cache: 'npm'
+
+            # 3. Setup Rust
+            - name: Setup Rust
+              uses: actions-rs/toolchain@v1
+              with:
+                  toolchain: stable
+                  override: true
+
+            # 4. Cache Rust dependencies
+            - name: Cache Cargo registry
+              uses: actions/cache@v4
+              with:
+                  path: |
+                      ~/.cargo/registry
+                      ~/.cargo/git
+                      target
+                  key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+            # 5. Install dependencies
+            - name: Install frontend dependencies
+              run: npm install
+
+            # 6. Get version dynamically
+            - name: Extract version
+              id: version
+              run: |
+                  VERSION=$(node -p "require('./package.json').version")
+                  echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+            # 7. Build Tauri app
+            - name: Build with Tauri
+              uses: tauri-apps/tauri-action@v0
+              with:
+                  tagName: v${{ steps.version.outputs.version }}
+                  releaseName: 'App v${{ steps.version.outputs.version }}'
+                  releaseDraft: true
+                  prerelease: false
