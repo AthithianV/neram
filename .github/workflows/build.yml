@@ -28,38 +28,29 @@ jobs:
                   cache: 'npm'
 
             # 3. Setup Rust
-            - name: Setup Rust
-              uses: actions-rs/toolchain@v1
+            - name: install Rust stable
+              uses: dtolnay/rust-toolchain@stable # Set this to dtolnay/rust-toolchain@nightly
               with:
-                  toolchain: stable
-                  override: true
+                  # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
+                  targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
-            # 4. Cache Rust dependencies
-            - name: Cache Cargo registry
-              uses: actions/cache@v4
+            - name: Rust cache
+              uses: swatinem/rust-cache@v2
               with:
-                  path: |
-                      ~/.cargo/registry
-                      ~/.cargo/git
-                      target
-                  key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+                  workspaces: './src-tauri -> target'
 
             # 5. Install dependencies
             - name: Install frontend dependencies
               run: npm install
 
             # 6. Get version dynamically
-            - name: Extract version
-              id: version
-              run: |
-                  VERSION=$(node -p "require('./package.json').version")
-                  echo "version=$VERSION" >> $GITHUB_OUTPUT
-
-            # 7. Build Tauri app
-            - name: Build with Tauri
-              uses: tauri-apps/tauri-action@v0
+            - uses: tauri-apps/tauri-action@v0
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
-                  tagName: v${{ steps.version.outputs.version }}
-                  releaseName: 'App v${{ steps.version.outputs.version }}'
+                  tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
+                  releaseName: 'App v__VERSION__'
+                  releaseBody: 'See the assets to download this version and install.'
                   releaseDraft: true
                   prerelease: false
+                  args: ${{ matrix.args }}
