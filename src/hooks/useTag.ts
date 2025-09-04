@@ -1,6 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { invoke } from '@tauri-apps/api/core';
 import { Tag } from '@/schema/TagSchema';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { invoke } from '@tauri-apps/api/core';
 export const useTag = () => {
     return useQuery({
         queryKey: ['tags'],
@@ -17,30 +17,29 @@ export const useTag = () => {
 export const useCreateTag = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (tag: {
+        mutationFn: async (newTag: {
             title: string;
             description?: string;
             color: string;
             is_default: boolean;
         }) => {
-            return await invoke('create_tag', tag);
+            try {
+                return await invoke('create_tag', { newTag });
+            } catch (e) {
+                console.log(e);
+            }
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tags'] });
-        }
+        },
     });
 };
 
 export const useUpdateTag = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (tag: {
-            title: string;
-            description?: string;
-            color: string;
-            is_default: boolean;
-        }) => {
-            return await invoke('update_tag', tag);
+        mutationFn: async (data: { tagId: number; tagToUpdate: Tag }) => {
+            return await invoke('update_tag', data);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tags'] });
@@ -51,8 +50,8 @@ export const useUpdateTag = () => {
 export const useDeleteTag = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (title: string) => {
-            return await invoke('delete_tag', { title });
+        mutationFn: async (id: number) => {
+            return await invoke('delete_tag', { id });
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tags'] });

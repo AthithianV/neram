@@ -13,7 +13,7 @@ import {
 
 import ProjectPicker from '@/components/session/ProjectPicker';
 import TagPicker from '@/components/session/TagPicker';
-import { DEFAULT_SESSION_VALUES } from '@/constants/session';
+import { DB_DATE_FORMAT, DEFAULT_SESSION_VALUES } from '@/constants/session';
 import { useCreateSession, useSessionById, useUpdateSession } from '@/hooks/useSession';
 import {
     CreateSession,
@@ -25,7 +25,6 @@ import React, { Suspense, useEffect } from 'react';
 
 import { useSessionCollision } from '@/hooks/useSession';
 import { useTimer } from '@/hooks/useTimer';
-import { formatDate } from '@/lib/time';
 import dayjs from 'dayjs';
 import { Calendar, CalendarMinus, CalendarPlus, Clock, Folder, Tag } from 'lucide-react';
 import { toast } from 'sonner';
@@ -68,6 +67,28 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
         form.setFocus('title');
     }, [session]);
 
+    useEffect(() => {
+        const pickedDate = dayjs(form.getValues('date'));
+        const d = pickedDate.get('date');
+        const m = pickedDate.get('month');
+        const y = pickedDate.get('year');
+
+        const startTime = dayjs(form.getValues('start_time'))
+            .set('month', m)
+            .set('date', d)
+            .set('year', y)
+            .valueOf();
+        const endTime = dayjs(form.getValues('end_time'))
+            .set('month', m)
+            .set('date', d)
+            .set('year', y)
+            .valueOf();
+
+        form.setValue('date', pickedDate.format(DB_DATE_FORMAT));
+        form.setValue('start_time', startTime);
+        form.setValue('end_time', endTime);
+    }, [form.watch('date')]);
+
     const adjustDuration = () => {
         const breakDuration = form.getValues('break_duration_sec') ?? 0;
         const startTime = dayjs(form.getValues('start_time'));
@@ -82,26 +103,6 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                 return;
             }
             form.setValue('session_duration_sec', duration - breakDuration);
-        }
-    };
-
-    const setDateToTimes = () => {
-        const startTime = dayjs(form.getValues('start_time'));
-        const endTime = dayjs(form.getValues('end_time'));
-        const date = form.getValues('date');
-
-        let newStartTime = dayjs(date)
-            .hour(startTime.hour())
-            .minute(startTime.minute())
-            .second(startTime.second());
-        form.setValue('start_time', formatDate(newStartTime));
-
-        if (endTime.isValid()) {
-            let newEndTime = dayjs(date)
-                .hour(endTime.hour())
-                .minute(endTime.minute())
-                .second(endTime.second());
-            form.setValue('end_time', formatDate(newEndTime));
         }
     };
 
@@ -232,7 +233,6 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                                         <DatePicker
                                             dateValue={field.value}
                                             onChange={field.onChange}
-                                            setDateToTimes={setDateToTimes}
                                             disable={
                                                 session !== null &&
                                                 sessionId === timer?.session_id
@@ -268,12 +268,12 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                                               })
                                             : form.clearErrors('start_time')
                                     }
-                                    date={form.getValues('date')}
                                     isDisable={
                                         session !== null &&
                                         sessionId === timer?.session_id
                                     }
                                     adjustDuration={adjustDuration}
+                                    date={form.watch('date')}
                                 />
                                 <FormMessage className="text-xs" />
                             </FormItem>
@@ -300,7 +300,7 @@ const SessionForm = ({ sessionId, closeModal }: PropType) => {
                                                   })
                                                 : form.clearErrors('end_time')
                                         }
-                                        date={form.getValues('date')}
+                                        date={form.watch('date')}
                                         adjustDuration={adjustDuration}
                                     />
                                     <FormMessage className="text-xs" />

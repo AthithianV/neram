@@ -2,34 +2,33 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 
 import { useSettings } from '@/hooks/useSettings';
-import { formatDate } from '@/lib/time';
 import { useEffect, useState } from 'react';
 import { Input } from '../ui/input';
 import { Skeleton } from '../ui/skeleton';
 
 export interface TimeElementProps {
-    value: string | undefined;
-    date: string;
-    setValue: (val: string) => void;
+    value: number | undefined;
+    setValue: (val: number) => void;
     setError: (error: string) => void;
     isDisable?: boolean;
     adjustDuration?: () => void;
+    date: string;
 }
 
 const TimeElement = ({
     value,
     setValue,
     setError,
-    date,
     isDisable,
     adjustDuration,
+    date,
 }: TimeElementProps) => {
     dayjs.extend(customParseFormat);
 
     const { data: settings } = useSettings();
 
     const [time, setTime] = useState<string>(
-        value ? formatDate(value, { format: settings?.time_format }) : '',
+        dayjs(value).format(settings?.time_format) ?? '',
     );
 
     const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,7 +36,7 @@ const TimeElement = ({
     };
 
     useEffect(() => {
-        setTime(value ? formatDate(value, { format: settings?.time_format }) : '');
+        setTime(dayjs(value).format(settings?.time_format) ?? '');
     }, [value]);
 
     if (!settings) {
@@ -50,18 +49,16 @@ const TimeElement = ({
             setError('Invalid time format');
         } else {
             setError('');
-
-            const setDate =
-                dayjs(date).format(settings.date_format) ||
-                dayjs().format(settings.date_format);
-
-            const result = dayjs(
-                `${setDate} ${e.target.value}`,
-                `${settings.date_format} ${settings.time_format}`,
-            ).toString();
-            console.log(result);
-
-            setValue(formatDate(result));
+            const pickedDate = dayjs(date);
+            const d = pickedDate.get('date');
+            const m = pickedDate.get('month');
+            const y = pickedDate.get('year');
+            parsedTime
+                .set('month', m)
+                .set('date', d)
+                .set('year', y)
+                .format('DD MMMM YYYY HH:mm:SS');
+            setValue(parsedTime.valueOf());
         }
         adjustDuration && adjustDuration();
     };

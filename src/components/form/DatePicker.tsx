@@ -5,24 +5,24 @@ import { useState } from 'react';
 
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { DB_DATE_FORMAT } from '@/constants/session';
 import { useSettings } from '@/hooks/useSettings';
 import { Input } from '../ui/input';
 
 type PropsType = {
     dateValue?: string | null;
     onChange: (date: string) => void;
-    setDateToTimes?: () => void;
     disable?: boolean;
+    format?: string;
 };
 
-const DatePicker = ({ dateValue, onChange, setDateToTimes, disable }: PropsType) => {
+const DatePicker = ({ dateValue, onChange, disable, format }: PropsType) => {
     const [open, setOpen] = useState(false);
     const { data: settings } = useSettings();
 
     const handleSelect = (date: Date | undefined) => {
-        date && onChange(formatDate(date));
+        date && onChange(formatDate(date, { format: format ? format : DB_DATE_FORMAT }));
         setOpen(false);
-        setDateToTimes && setDateToTimes();
     };
 
     return (

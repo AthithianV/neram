@@ -1,4 +1,4 @@
-use chrono::NaiveDateTime;
+use chrono::{NaiveDate, NaiveDateTime};
 use sea_orm::entity::prelude::*;
 use sea_orm::EnumIter;
 use serde::{Deserialize, Serialize};
@@ -27,8 +27,8 @@ pub struct Model {
     pub status: String,
     pub priority: Option<Priority>,
     pub deadline: Option<NaiveDateTime>,
-    pub started_at: NaiveDateTime,
-    pub completed_at: Option<NaiveDateTime>,
+    pub started_at: NaiveDate,
+    pub completed_at: Option<NaiveDate>,
     pub estimated_time: Option<i32>,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,

@@ -1,7 +1,7 @@
-use ::entity::{
+use chrono::NaiveDate;
+use entity::{
     projects::Model as ProjectModel, sessions::Model as SessionModel, tags::Model as TagModel,
 };
-use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -10,9 +10,9 @@ pub struct CreateSessionModel {
     pub description: Option<String>,
     pub project_id: i32,
     pub task_id: Option<i32>,
-    pub date: NaiveDateTime,
-    pub start_time: NaiveDateTime,
-    pub end_time: Option<NaiveDateTime>,
+    pub date: NaiveDate,
+    pub start_time: i64,
+    pub end_time: Option<i64>,
     pub session_duration_sec: i32,
     pub break_duration_sec: i32,
     pub tags: Vec<i32>,
@@ -23,9 +23,9 @@ pub struct UpdateSessionModel {
     pub title: Option<String>,
     pub description: Option<String>,
     pub project_id: Option<i32>,
-    pub date: Option<NaiveDateTime>,
-    pub start_time: Option<NaiveDateTime>,
-    pub end_time: Option<Option<NaiveDateTime>>,
+    pub date: Option<NaiveDate>,
+    pub start_time: Option<i64>,
+    pub end_time: Option<Option<i64>>,
     pub session_duration_sec: Option<i32>,
     pub break_duration_sec: Option<i32>,
 }
@@ -44,9 +44,9 @@ pub struct FullSessionModel {
     pub description: Option<String>,
     pub project: Extra,
     pub tags: Vec<Extra>,
-    pub date: NaiveDateTime,
-    pub start_time: NaiveDateTime,
-    pub end_time: Option<NaiveDateTime>,
+    pub date: NaiveDate,
+    pub start_time: i64,
+    pub end_time: Option<i64>,
     pub session_duration_sec: i32,
     pub break_duration_sec: i32,
 }
@@ -83,4 +83,20 @@ impl From<(SessionModel, Option<ProjectModel>, Vec<TagModel>)> for FullSessionMo
             project: project.unwrap(),
         }
     }
+}
+
+#[derive(Serialize, Deserialize)]
+pub enum SessionGroupType {
+    Date,
+    Week,
+    Month,
+    Year,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct GroupedSessions {
+    pub title: String,
+    pub group_by: String,
+    pub total_duration_sec: i64,
+    pub sessions: Vec<FullSessionModel>,
 }

@@ -7,6 +7,7 @@ use commands::project::*;
 use commands::session::*;
 use commands::settings::*;
 use commands::statistics::*;
+use commands::summary::*;
 use commands::tag::*;
 use commands::task::*;
 use commands::timer::*;
@@ -59,11 +60,11 @@ pub async fn run() {
             add_tag_to_project,
             remove_tag_from_project,
             // // Tag commands
-            // create_tag,
+            create_tag,
             get_all_tags,
-            // get_tag_by_id,
-            // update_tag,
-            // delete_tag,
+            get_tag_by_id,
+            update_tag,
+            delete_tag,
 
             // Timer commands
             start_timer,
@@ -78,7 +79,12 @@ pub async fn run() {
             get_pomodoro_settings,
             // Settings
             get_settings,
-            update_settings
+            update_settings,
+            // Summary
+            get_day_summary,
+            get_streaks,
+            get_life_time_summary,
+            get_monthly_summary
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

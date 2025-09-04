@@ -59,14 +59,14 @@ impl<'a> StatisticsRepository<'a> {
         let mut day_map: BTreeMap<NaiveDate, Vec<SessionModel>> = BTreeMap::new();
 
         for session in all_sessions {
-            let date = session.date.date(); // Extract only the date part
+            let date = session.date; // Extract only the date part
             day_map.entry(date).or_default().push(session);
         }
 
         // Generate all dates in the range
         let mut result = Vec::new();
-        let mut current_date = start_date.date();
-        let end_date = end_date.date();
+        let mut current_date = start_date;
+        let end_date = end_date;
 
         while current_date <= end_date {
             let sessions_on_day = day_map.get(&current_date);
@@ -108,7 +108,7 @@ impl<'a> StatisticsRepository<'a> {
             }
 
             result.push(DayStat {
-                date: current_date.and_hms_opt(0, 0, 0).unwrap(), // Use midnight time
+                date: current_date,
                 projects,
                 total_seconds: day_total,
             });

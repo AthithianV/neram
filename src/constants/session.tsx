@@ -9,11 +9,11 @@ export const DATE_FORMAT = 'DD/MM/YYYY';
 
 export const DEFAULT_SESSION_VALUES: CreateSession = {
     title: 'Untitled',
-    description: 'Type More here...',
+    description: '',
     project_id: 1,
-    date: dayjs().startOf('day').format(DB_DATE_TIME),
-    start_time: dayjs().subtract(1, 'hours').format(DB_DATE_TIME),
-    end_time: dayjs().format(DB_DATE_TIME),
+    date: dayjs().startOf('day').format(DB_DATE_FORMAT),
+    start_time: dayjs().subtract(1, 'hours').valueOf(),
+    end_time: dayjs().valueOf(),
     session_duration_sec: 60 * 60,
     break_duration_sec: 0,
     tags: [],

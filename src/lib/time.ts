@@ -1,4 +1,4 @@
-import { DB_DATE_TIME } from '@/constants/session';
+import { DB_DATE_FORMAT } from '@/constants/session';
 import dayjs, { Dayjs } from 'dayjs';
 
 export const formatDuration = (seconds: number) => {
@@ -18,13 +18,8 @@ export const formatDate = (
     date: string | Date | Dayjs,
     options: {
         format?: string;
-        shouldClearTime?: boolean;
-    } = { format: DB_DATE_TIME, shouldClearTime: false },
+    } = { format: DB_DATE_FORMAT },
 ) => {
-    const { format = DB_DATE_TIME, shouldClearTime = false } = options;
-    let dateFormat = dayjs(date);
-    if (shouldClearTime) {
-        dateFormat = dateFormat.startOf('day');
-    }
-    return dateFormat.format(format);
+    const { format } = options;
+    return dayjs(date).format(format);
 };

@@ -14,23 +14,31 @@ export type SessionType = Omit<Session, 'project_id' | 'tags'> & {
     tags: Related[];
 };
 
+export type GroupedSession = {
+    title: string;
+    total_duration_sec: number;
+    sessions: SessionType[];
+};
+
 export type UpdateSessionType = {
     title?: string;
     description?: string | null;
     project_id?: number;
     date?: string;
-    start_time?: string;
-    end_time?: string | null;
+    start_time?: number;
+    end_time?: number | null;
     session_duration_sec?: number;
     break_duration_sec?: number;
 };
 
-export const useSession = () => {
+export type SessionGroupType = 'Date' | 'Week' | 'Month' | 'Year';
+
+export const useSession = (data: { groupBy: SessionGroupType }) => {
     return useQuery({
-        queryKey: ['sessions'],
+        queryKey: ['sessions', data.groupBy],
         queryFn: async () => {
-            const sessions = await invoke('get_all_sessions');
-            return sessions as SessionType[];
+            const sessions = await invoke('get_all_sessions', data);
+            return sessions as GroupedSession[];
         },
         refetchOnWindowFocus: true,
         refetchOnMount: true,
@@ -163,8 +171,8 @@ export const useAddTagToSession = () => {
 export const useSessionCollision = () => {
     return useMutation({
         mutationFn: async (data: {
-            startTime: string;
-            endTime: string | null;
+            startTime: number;
+            endTime: number | null;
             sessionId: number;
         }) => {
             const isSessionCollides = await invoke<boolean>(

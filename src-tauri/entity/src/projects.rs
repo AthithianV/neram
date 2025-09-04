@@ -1,4 +1,4 @@
-use chrono::NaiveDateTime;
+use chrono::{NaiveDate, NaiveDateTime};
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
@@ -10,9 +10,9 @@ pub struct Model {
     pub description: Option<String>,
     pub color: String,
     pub client_name: Option<String>,
-    pub started_at: Option<NaiveDateTime>,
+    pub started_at: Option<NaiveDate>,
     pub deadline: Option<NaiveDateTime>,
-    pub completed_at: Option<NaiveDateTime>,
+    pub completed_at: Option<NaiveDate>,
     pub is_billable: Option<bool>,
     pub billing_type: Option<String>,
     pub hourly_rate: Option<i32>,

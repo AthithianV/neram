@@ -1,4 +1,4 @@
-use chrono::NaiveDateTime;
+use chrono::{NaiveDate, NaiveDateTime};
 use entity::tasks::Priority;
 use sea_orm::FromQueryResult;
 use serde::{Deserialize, Serialize};
@@ -12,8 +12,8 @@ pub struct ReadTaskModel {
     pub status: String,
     pub priority: Option<Priority>,
     pub deadline: Option<NaiveDateTime>,
-    pub started_at: NaiveDateTime,
-    pub completed_at: Option<NaiveDateTime>,
+    pub started_at: NaiveDate,
+    pub completed_at: Option<NaiveDate>,
     pub estimated_time: Option<i32>,
     pub total_duration_sec: Option<i64>,
     pub created_at: NaiveDateTime,
@@ -28,7 +28,7 @@ pub struct CreateTaskModel {
     pub status: String,
     pub priority: Option<Priority>,
     pub deadline: Option<NaiveDateTime>,
-    pub started_at: NaiveDateTime,
-    pub completed_at: Option<NaiveDateTime>,
+    pub started_at: NaiveDate,
+    pub completed_at: Option<NaiveDate>,
     pub estimated_time: Option<i32>,
 }

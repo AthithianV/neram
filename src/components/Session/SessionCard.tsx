@@ -1,9 +1,8 @@
 import { Badge } from '@/components/ui/badge';
-import { DATE_FORMAT } from '@/constants/session';
 import { SessionType, useDeleteSession } from '@/hooks/useSession';
 import { useSettings } from '@/hooks/useSettings';
 import { TimerResponse } from '@/hooks/useTimer';
-import { formatDate, formatDuration } from '@/lib/time';
+import { formatDuration } from '@/lib/time';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
 import { Clock9, Coffee, Loader2, Trash } from 'lucide-react';
@@ -31,7 +30,7 @@ interface SessionCardProps {
 
 const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
     const [_, setSearchParams] = useSearchParams();
-    const { id, title, project, tags, session_duration_sec, start_time, end_time, date } =
+    const { id, title, project, tags, session_duration_sec, start_time, end_time } =
         sessionWithTaskAndTag;
 
     const [isHovered, setIsHovered] = useState(false);
@@ -45,7 +44,7 @@ const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            <Card className="py-4 px-0 rounded-sm my-[1px]">
+            <Card className="py-2 px-0 rounded-sm my-[1px] bg-neutral-50 dark:bg-neutral-900">
                 <CardContent
                     className={cn(
                         'flex items-center justify-between w-full',
@@ -108,37 +107,25 @@ const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
                             </span>
                             <div className="text-xs text-gray-500 dark:text-gray-400 flex flex-col gap-1 items-end">
                                 <span>
-                                    {date &&
-                                        dayjs(date).format(
-                                            settings?.date_format ?? DATE_FORMAT,
-                                        )}{' '}
-                                </span>
-                                <span>
-                                    {formatDate(start_time, {
-                                        format: settings?.time_format,
-                                    })}{' '}
-                                    -{' '}
+                                    {dayjs(start_time).format(settings?.time_format)} -{' '}
                                     {end_time
-                                        ? formatDate(end_time, {
-                                              format: settings?.time_format,
-                                          })
+                                        ? dayjs(end_time).format(settings?.time_format)
                                         : 'Now'}
                                 </span>
                             </div>
                         </div>
 
-                        <SessionCard.DELETE
-                            show={isHovered && timer?.session_id !== id}
-                            sessionId={id}
-                        />
-
-                        {timer &&
-                            timer.session_id === id &&
-                            (timer.is_session ? (
+                        {timer && timer.session_id === id ? (
+                            timer.is_session ? (
                                 <Clock9 className="h-4 text-blue-400" />
                             ) : (
                                 <Coffee className="h-4 text-blue-500" />
-                            ))}
+                            )
+                        ) : (
+                            <div className={cn(isHovered ? 'block' : 'hidden')}>
+                                <SessionCard.DELETE sessionId={id} />
+                            </div>
+                        )}
                     </div>
                 </CardContent>
             </Card>
@@ -146,57 +133,55 @@ const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
     );
 };
 
-SessionCard.DELETE = ({ show, sessionId }: { show: boolean; sessionId: number }) => {
+SessionCard.DELETE = ({ sessionId }: { sessionId: number }) => {
     const navigate = useNavigate();
     const { mutateAsync: deleteSession, isPending: isDeleting } = useDeleteSession();
     return (
-        show && (
-            <AlertDialog>
-                <AlertDialogTrigger asChild>
-                    <Button
-                        variant="ghost"
-                        onClick={(e) => e.stopPropagation()}
+        <AlertDialog>
+            <AlertDialogTrigger asChild>
+                <Button
+                    variant="ghost"
+                    onClick={(e) => e.stopPropagation()}
+                    className="cursor-pointer"
+                >
+                    <Trash className="w-4 h-4 text-red-500" />
+                </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>
+                        Are you sure you want to delete this session?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete this
+                        session.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel
                         className="cursor-pointer"
+                        onClick={(e) => e.stopPropagation()}
                     >
-                        <Trash className="w-4 h-4 text-red-500" />
-                    </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>
-                            Are you sure you want to delete this session?
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete
-                            this session.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel
-                            className="cursor-pointer"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            Cancel
-                        </AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={async (e) => {
-                                e.stopPropagation();
-                                sessionId && (await deleteSession(sessionId));
-                                navigate('/session');
-                            }}
-                            disabled={isDeleting}
-                            className="bg-red-500 hover:bg-red-600 cursor-pointer"
-                        >
-                            {isDeleting ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                                'Delete'
-                            )}
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-        )
+                        Cancel
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                        onClick={async (e) => {
+                            e.stopPropagation();
+                            sessionId && (await deleteSession(sessionId));
+                            navigate('/session');
+                        }}
+                        disabled={isDeleting}
+                        className="bg-red-500 hover:bg-red-600 cursor-pointer"
+                    >
+                        {isDeleting ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                            'Delete'
+                        )}
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     );
 };
 

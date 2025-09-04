@@ -23,6 +23,7 @@ import {
     FormMessage,
 } from '../ui/form';
 
+import { DB_DATE_FORMAT } from '@/constants/session';
 import {
     TASK_INTIAL_VALUE,
     TASK_PRIORITY,
@@ -76,7 +77,10 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
 
     useEffect(() => {
         if (form.getValues('status') === 'Completed') {
-            form.setValue('completed_at', formatDate(dayjs(), { shouldClearTime: true }));
+            form.setValue(
+                'completed_at',
+                formatDate(dayjs(), { format: DB_DATE_FORMAT }),
+            );
         } else {
             form.setValue('completed_at', null);
         }

@@ -139,33 +139,29 @@ const TaskCard = ({ task, isDragged }: PropType) => {
                                 className={
                                     dayjs(task.deadline).isBefore(dayjs())
                                         ? 'text-red-500'
-                                        : 'text-blue-600'
+                                        : 'text-cyan-400'
                                 }
                             />
 
                             <TaskAttribute
-                                title="Estimated Time"
-                                text={
-                                    task.estimated_time !== 0 && task.estimated_time
-                                        ? `${(task.estimated_time / 3600).toFixed(0)} h`
-                                        : null
-                                }
-                                icon={<AlarmCheck className="h-4 w-4" />}
+                                title="Priority"
+                                text={task.priority ?? 'Low'}
+                                icon={<Flame fill="currentColor" />}
+                                style={getPriorityStyle(task.priority)}
+                                className="text-white border-none px-0"
                             />
-
-                            {task.priority && (
-                                <TaskAttribute
-                                    title="Priority"
-                                    text={task.priority}
-                                    icon={<Flame fill="currentColor" />}
-                                    style={getPriorityStyle(task.priority)}
-                                    className="text-white border-none px-0"
-                                />
-                            )}
                         </div>
                     )}
 
-                    <TaskTimer task={task} />
+                    <div className="flex gap-2">
+                        <TaskTimer task={task} />
+                        <TaskAttribute
+                            title="Estimated Time"
+                            text={`${formatDuration(task.estimated_time ?? 0)}`}
+                            icon={<AlarmCheck className="h-4 w-4" />}
+                            className="text-blue-500"
+                        />
+                    </div>
 
                     <div className="flex items-center justify-between gap-1">
                         <Tooltip>
@@ -320,7 +316,7 @@ const TaskMoreOptions = ({ task }: { task: ReadTask }) => {
                         Status
                     </DropdownMenuSubTrigger>
                     <DropdownMenuPortal>
-                        <DropdownMenuSubContent asChild>
+                        <DropdownMenuSubContent>
                             {TASK_STATUS.map((status) => (
                                 <DropdownMenuItem
                                     onClick={(e) => updateTaskStatus(e, status)}
@@ -351,8 +347,9 @@ const TaskTimer = ({ task }: { task: ReadTask }) => {
         setDuration(task.total_duration_sec || 0);
     }, []);
 
+    const isTimerRunning = timer && timer.task_id === task.id && timer.is_running;
+
     useEffect(() => {
-        const isTimerRunning = timer && timer.task_id === task.id && timer.is_running;
         if (isTimerRunning) {
             const startingTime = task.total_duration_sec || 0;
             setDuration(startingTime + (isTimerRunning ? timer.session_time_elapsed : 0));
@@ -364,11 +361,11 @@ const TaskTimer = ({ task }: { task: ReadTask }) => {
             title="Total Time Spanned"
             text={formatDuration(duration)}
             icon={<Timer />}
-            className={
-                timer && timer.task_id === task.id
-                    ? 'bg-emerald-500 border-2 border-black'
-                    : 'bg-emerald-200'
-            }
+            className={`${
+                isTimerRunning
+                    ? ' bg-emerald-500 text-white min-w-[85px]'
+                    : 'text-emerald-500'
+            } flex justify-around px-1 border-1`}
         />
     );
 };

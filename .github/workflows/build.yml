@@ -1,0 +1,56 @@
+name: 'Build & Release Neram App'
+
+on:
+    push:
+        tags:
+            - 'v*' # e.g., v1.0.0 triggers a release build
+    workflow_dispatch: # allow manual runs
+
+jobs:
+    build:
+        strategy:
+            fail-fast: false
+            matrix:
+                platform: [macos-latest]
+
+        runs-on: ${{ matrix.platform }}
+
+        steps:
+            # 1. Checkout code
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            # 2. Setup Node.js (adjust version to match your project)
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+                  cache: 'npm'
+
+            # 3. Setup Rust
+            - name: install Rust stable
+              uses: dtolnay/rust-toolchain@nightly # Set this to dtolnay/rust-toolchain@nightly
+              with:
+                  # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
+                  targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+            - name: Rust cache
+              uses: swatinem/rust-cache@v2
+              with:
+                  workspaces: './src-tauri -> target'
+
+            # 5. Install dependencies
+            - name: Install frontend dependencies
+              run: npm install
+
+            # 6. Get version dynamically
+            - uses: tauri-apps/tauri-action@v0
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
+                  releaseName: 'App v__VERSION__'
+                  releaseBody: 'See the assets to download this version and install.'
+                  releaseDraft: true
+                  prerelease: false
+                  args: ${{ matrix.args }}

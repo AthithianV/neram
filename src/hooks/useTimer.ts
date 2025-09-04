@@ -1,4 +1,4 @@
-import { formatDate } from '@/lib/time';
+import { DB_DATE_FORMAT } from '@/constants/session';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
 import dayjs from 'dayjs';
@@ -54,8 +54,8 @@ export const useStartTimer = () => {
                     title: sessionData?.title,
                     project_id: timerData.projectId,
                     task_id: timerData.taskId,
-                    date: formatDate(dayjs(), { shouldClearTime: true }),
-                    start_time: formatDate(dayjs()),
+                    date: dayjs().format(DB_DATE_FORMAT),
+                    start_time: dayjs().valueOf(),
                     session_duration_sec: 0,
                     break_duration_sec: 0,
                     tags: [],
@@ -138,7 +138,7 @@ export const useStopTimer = () => {
                         sessionToUpdate: {
                             session_duration_sec: timer.session_time_elapsed,
                             break_duration_sec: timer.break_time_elapsed,
-                            end_time: formatDate(dayjs()),
+                            end_time: dayjs().valueOf(),
                         },
                         sessionId: timer.session_id,
                     });

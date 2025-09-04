@@ -114,9 +114,7 @@ const Kanban = () => {
                         ...activeTask,
                         status: newStatus,
                         completed_at:
-                            newStatus === 'Completed'
-                                ? formatDate(dayjs(), { shouldClearTime: true })
-                                : undefined,
+                            newStatus === 'Completed' ? formatDate(dayjs()) : undefined,
                     },
                     taskId: activeTask.id,
                 });

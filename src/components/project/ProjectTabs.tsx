@@ -30,7 +30,7 @@ const ProjectTabs = () => {
     };
 
     useEffect(() => {
-        if (projects && projects.length > 0) {
+        if (projects && projects.length > 0 && !projectId) {
             navigate(`/project/${projects[0].id}`);
         }
     }, [projects]);

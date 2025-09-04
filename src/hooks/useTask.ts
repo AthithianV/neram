@@ -73,29 +73,12 @@ export const useUpdateTask = (projectId: number) => {
         mutationFn: async (data: { taskToUpdate: Task; taskId: number }) => {
             return await invoke('update_task', data);
         },
-        onMutate: async ({ taskToUpdate, taskId }) => {
-            await queryClient.cancelQueries({ queryKey: ['tasks', projectId] });
-
-            const previousTasks = queryClient.getQueryData<ReadTask[]>([
-                'tasks',
-                projectId,
-            ]);
-
-            queryClient.setQueryData<ReadTask[]>(['tasks', projectId], (old = []) =>
-                old.map((task) =>
-                    task.id === taskId ? { ...task, ...taskToUpdate } : task,
-                ),
-            );
-
-            return { previousTasks };
-        },
-        onSettled: () => {
+        onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tasks', projectId] });
+            toast.success('Task Updated');
         },
-        onError: (err, _, context) => {
-            if (context?.previousTasks) {
-                queryClient.setQueryData(['tasks'], projectId);
-            }
+        onError: (err) => {
+            queryClient.setQueryData(['tasks'], projectId);
             console.error('Update failed:', err);
         },
     });

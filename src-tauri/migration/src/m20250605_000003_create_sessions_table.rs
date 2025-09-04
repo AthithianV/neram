@@ -57,8 +57,8 @@ impl MigrationTrait for Migration {
                             .not_null()
                             .default(Expr::cust("CURRENT_TIMESTAMP")),
                     )
-                    .col(ColumnDef::new(Sessions::StartTime).string().not_null())
-                    .col(ColumnDef::new(Sessions::EndTime).string().null())
+                    .col(ColumnDef::new(Sessions::StartTime).integer().not_null())
+                    .col(ColumnDef::new(Sessions::EndTime).integer().null())
                     .col(
                         ColumnDef::new(Sessions::SessionDurationSec)
                             .integer()

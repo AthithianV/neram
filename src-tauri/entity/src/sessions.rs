@@ -1,4 +1,4 @@
-use chrono::NaiveDateTime;
+use chrono::{NaiveDate, NaiveDateTime};
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
@@ -10,9 +10,9 @@ pub struct Model {
     pub description: Option<String>,
     pub project_id: i32,
     pub task_id: Option<i32>,
-    pub date: NaiveDateTime,
-    pub start_time: NaiveDateTime,
-    pub end_time: Option<NaiveDateTime>,
+    pub date: NaiveDate,
+    pub start_time: i64,
+    pub end_time: Option<i64>,
     pub session_duration_sec: i32,
     pub break_duration_sec: i32,
     pub created_at: NaiveDateTime,
