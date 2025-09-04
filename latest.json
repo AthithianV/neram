@@ -1,0 +1,19 @@
+{
+    "version": "1.0.0",
+    "notes": "Feature - Session, Project, Task, Tags, Analytics and Pomodoro",
+    "pub_date": "2025-09-05",
+    "platforms": {
+        "linux-x86_64": {
+            "signature": "",
+            "url": ""
+        },
+        "windows-x86_64": {
+            "signature": "base64-encoded-signature",
+            "url": "https://github.com/AthithianV/neram/releases/download/v1.0.0/Neram_0.1.0_x64_en-US.msi"
+        },
+        "darwin-x86_64": {
+            "signature": "",
+            "url": ""
+        }
+    }
+}
