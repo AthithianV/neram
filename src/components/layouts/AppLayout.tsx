@@ -1,3 +1,4 @@
+import { useUpdater } from '@/hooks/useUpdater';
 import React, { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useDb } from '../../hooks/useDb';
@@ -11,6 +12,7 @@ const TitleBar = React.lazy(() => import('./TitleBar'));
 
 export function AppLayout() {
     const { isLoading, error } = useDb();
+    useUpdater();
 
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>Error: {error.toString()}</div>;

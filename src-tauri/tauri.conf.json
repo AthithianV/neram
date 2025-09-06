@@ -40,6 +40,7 @@
     },
     "plugins": {
         "updater": {
+            "active": true,
             "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEZCRTJCQURGNjhBMzRCRDEKUldUUlM2Tm8zN3JpKzZSTnQzTWo1TU9KSktGMUwzM0cvb0dGeURPbmg1M1pKVGY1aUR2bmZxbWYK",
             "endpoints": [
                 "https://github.com/AthithianV/neram/releases/download/latest/latest.json"

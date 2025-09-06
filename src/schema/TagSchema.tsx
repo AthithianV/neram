@@ -1,12 +1,20 @@
 import { z } from 'zod';
 
-const TagSchema = z.object({
-    id: z.number().optional(),
+const BaseTagSchema = z.object({
     title: z.string(),
     description: z.string().optional(),
     color: z.string(),
 });
 
-export type Tag = z.infer<typeof TagSchema>;
+// Tag (with id required)
+export const TagSchema = BaseTagSchema.extend({
+    id: z.number(),
+});
 
-export default TagSchema;
+// CreateTag (id optional)
+export const CreateTagSchema = BaseTagSchema.extend({
+    id: z.number().optional(),
+});
+
+export type Tag = z.infer<typeof TagSchema>;
+export type CreateTag = z.infer<typeof CreateTagSchema>;

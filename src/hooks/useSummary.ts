@@ -42,7 +42,6 @@ export const useDaySummary = (date: string) => {
         queryFn: async () => {
             try {
                 const data = await invoke('get_day_summary', { date });
-                console.log(data);
                 return data as DailySummary;
             } catch (err) {
                 console.log(err);
