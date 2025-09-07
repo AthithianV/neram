@@ -41,3 +41,7 @@ sea-orm = { version = "1.1.12", features = ["sqlx-sqlite", "macros", "runtime-to
 migration = { path = "migration" }
 entity = { path = "entity" }
 tracing = "0.1.41"
+tauri-plugin-process = "2"
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-updater = "2"

@@ -1,6 +1,6 @@
 use tauri::{command, State};
 
-use crate::models::pomodoro_settings::{UpdatePomodoroSettings, ReadPomodoroSettings};
+use crate::models::pomodoro_settings::{ReadPomodoroSettings, UpdatePomodoroSettings};
 use crate::repository::pomodoro_settings::PomodoroSettingsRepository;
 use crate::AppState;
 

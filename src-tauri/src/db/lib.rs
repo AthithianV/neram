@@ -1,10 +1,10 @@
-use sea_orm::{ Database, DatabaseConnection };
-use migration::{ Migrator, MigratorTrait };
-use std::{ path::Path, sync::Arc };
-use tauri::{ AppHandle, Manager };
+use migration::{Migrator, MigratorTrait};
+use sea_orm::{Database, DatabaseConnection};
+use std::{path::Path, sync::Arc};
+use tauri::{AppHandle, Manager};
 use tokio::sync::Mutex;
 
-use crate::{ commands::timer::TimerState, AppState };
+use crate::{commands::timer::TimerState, AppState};
 
 #[tauri::command]
 pub async fn init_db(path: String, app_handle: AppHandle) -> Result<(), String> {
@@ -23,9 +23,9 @@ pub async fn init_db(path: String, app_handle: AppHandle) -> Result<(), String> 
     let db_url = format!("sqlite://{}/neram.db?mode=rwc", path);
     println!("Connecting to database with URL: {}", db_url);
 
-    let db: DatabaseConnection = Database::connect(&db_url).await.map_err(|e|
-        format!("Failed to connect to database: {}", e)
-    )?;
+    let db: DatabaseConnection = Database::connect(&db_url)
+        .await
+        .map_err(|e| format!("Failed to connect to database: {}", e))?;
 
     // Only run migrations if database doesn't exist or has pending migrations
     if !db_exists {
@@ -42,7 +42,10 @@ pub async fn init_db(path: String, app_handle: AppHandle) -> Result<(), String> 
         match Migrator::get_pending_migrations(&db).await {
             Ok(pending) => {
                 if !pending.is_empty() {
-                    println!("Found {} pending migrations, running them...", pending.len());
+                    println!(
+                        "Found {} pending migrations, running them...",
+                        pending.len()
+                    );
                     match Migrator::up(&db, None).await {
                         Ok(_) => println!("Pending migrations completed successfully"),
                         Err(e) => {

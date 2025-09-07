@@ -38,7 +38,7 @@ impl Default for TimerState {
             is_session: false,
             is_break: false,
             timer_type: TimerType::Session,
-            is_running: false
+            is_running: false,
         }
     }
 }
@@ -153,6 +153,6 @@ pub async fn get_elapsed_time(state: State<'_, AppState>) -> Result<TimerRespons
         is_break: timer.is_break,
         timer: current_time,
         timer_type: timer.timer_type,
-        is_running: timer.is_running
+        is_running: timer.is_running,
     })
 }
