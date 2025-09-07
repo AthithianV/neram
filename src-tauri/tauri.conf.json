@@ -1,7 +1,7 @@
 {
     "$schema": "https://schema.tauri.app/config/2",
     "productName": "Neram",
-    "version": "0.1.0",
+    "version": "0.0.1",
     "identifier": "Neram",
     "build": {
         "beforeDevCommand": "npm run dev",
@@ -40,13 +40,13 @@
     },
     "plugins": {
         "updater": {
-            "active": true,
+            "active": false,
             "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEZCRTJCQURGNjhBMzRCRDEKUldUUlM2Tm8zN3JpKzZSTnQzTWo1TU9KSktGMUwzM0cvb0dGeURPbmg1M1pKVGY1aUR2bmZxbWYK",
             "endpoints": [
-                "https://github.com/AthithianV/neram/releases/download/latest/latest.json"
+                "https://athithianv.github.io/neram-updates/latest.json"
             ],
             "windows": {
-                "installMode": "passive"
+                "installMode": "basicUi"
             }
         }
     }
