@@ -1,3 +1,4 @@
+pub mod backup;
 pub mod pomodoro_settings;
 pub mod project;
 pub mod session;

@@ -26,7 +26,7 @@ const Timer = () => {
 
     if (isLoading) {
         return (
-            <Card>
+            <Card className="rounded-sm shadow-none border-none">
                 <CardContent className="flex flex-col gap-4">
                     <Skeleton className="h-[5vh] w-[25vw]" />
                     <Skeleton className="h-[5vh] w-[25vw]" />
@@ -38,7 +38,7 @@ const Timer = () => {
     }
 
     return (
-        <Card>
+        <Card className="rounded-sm shadow-none border-none">
             <CardContent className="grid gap-4">
                 <div className="grid grid-cols-[120px_1fr] items-center gap-5">
                     <Label>Date Format</Label>

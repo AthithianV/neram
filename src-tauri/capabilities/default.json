@@ -18,6 +18,11 @@
         "core:window:allow-hide",
         "core:event:default",
         "core:event:allow-listen",
-        "core:event:allow-unlisten"
+        "core:event:allow-unlisten",
+        "fs:default",
+        {
+            "identifier": "fs:allow-exists",
+            "allow": [{ "path": "$APPDATA/*" }]
+        }
     ]
 }

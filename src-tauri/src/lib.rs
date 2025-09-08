@@ -2,6 +2,7 @@ mod commands;
 mod db;
 mod utils;
 
+use commands::backup::*;
 use commands::pomodoro_settings::*;
 use commands::project::*;
 use commands::session::*;
@@ -28,6 +29,7 @@ struct AppState {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub async fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(Mutex::new(TimerState::default()))
@@ -85,7 +87,9 @@ pub async fn run() {
             get_day_summary,
             get_streaks,
             get_life_time_summary,
-            get_monthly_summary
+            get_monthly_summary,
+            //back up
+            backup_db
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
