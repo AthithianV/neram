@@ -13,7 +13,7 @@ import { useState } from 'react';
 import { Skeleton } from '../ui/skeleton';
 
 const DailySummary = () => {
-    const [date, _] = useState(formatDate(dayjs().subtract(1, 'day')));
+    const [date, _] = useState(formatDate(dayjs()));
     const { data: dailySummary, isLoading } = useDaySummary(date);
 
     if (isLoading || !dailySummary) {
