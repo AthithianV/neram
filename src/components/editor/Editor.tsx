@@ -27,6 +27,10 @@ export default ({
     });
 
     useEffect(() => {
+        editor.commands.setContent(value);
+    }, []);
+
+    useEffect(() => {
         if (editor && editor.isEmpty) {
             editor.commands.setContent(value);
         }

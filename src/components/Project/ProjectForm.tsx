@@ -185,6 +185,7 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                                         <DatePicker
                                             dateValue={field.value}
                                             onChange={field.onChange}
+                                            nullable={true}
                                         />
                                     </Suspense>
                                 </FormControl>

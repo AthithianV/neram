@@ -40,7 +40,10 @@ const Session = () => {
                             {groupedSessions && groupedSessions.length > 0 ? (
                                 groupedSessions.map((group, index) => (
                                     <li key={index}>
-                                        <SessionGroup group={group} />
+                                        <SessionGroup
+                                            group={group}
+                                            isFirst={index === 0}
+                                        />
                                     </li>
                                 ))
                             ) : (
