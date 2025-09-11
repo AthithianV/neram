@@ -89,7 +89,8 @@ pub async fn run() {
             get_life_time_summary,
             get_monthly_summary,
             //back up
-            backup_db
+            backup_db,
+            restore_db
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

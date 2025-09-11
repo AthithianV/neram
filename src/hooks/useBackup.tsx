@@ -14,3 +14,18 @@ export const useLocalBackup = () => {
         },
     });
 };
+
+export const useRestoreData = () => {
+    return useMutation({
+        mutationFn: async () => {
+            const appDataPath = await appDataDir();
+            return await invoke('restore_db', { path: appDataPath });
+        },
+        onSuccess: () => {
+            toast.success('Restored Completed!');
+        },
+        onError: () => {
+            toast.error('Invalid File');
+        },
+    });
+};

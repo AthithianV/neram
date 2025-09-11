@@ -1,3 +1,5 @@
+use migration::{Migrator, MigratorTrait};
+use sea_orm::{Database, DatabaseConnection};
 use std::fs;
 use std::path::Path;
 use tauri::AppHandle;
@@ -33,4 +35,51 @@ pub fn backup_db(path: String, app: AppHandle) -> Result<(), String> {
     } else {
         Err("Save canceled".into())
     }
+}
+
+#[tauri::command]
+pub async fn restore_db(path: String, app: AppHandle) -> Result<(), String> {
+    let app_dir = Path::new(&path);
+    if !app_dir.exists() {
+        std::fs::create_dir_all(app_dir).map_err(|e| e.to_string())?;
+    }
+
+    let db_path = app_dir.join("neram.db");
+
+    // Step 1: Ask user for a sqlite file
+    let file_dialog = app
+        .dialog()
+        .file()
+        .add_filter("SQLite Database", &["sqlite", "db"])
+        .blocking_pick_file();
+
+    let restore_file = match file_dialog {
+        Some(FilePath::Path(path)) => path,
+        Some(FilePath::Url(url)) => {
+            return Err(format!("Got a URL instead of a file path: {}", url))
+        }
+        None => return Err("Restore canceled".into()),
+    };
+
+    // Step 2: Try connecting to the restore db
+    let conn_str = format!("sqlite://{}", restore_file.display());
+    let db: DatabaseConnection = Database::connect(&conn_str)
+        .await
+        .map_err(|e| format!("Failed to connect to database: {}", e))?;
+
+    // Step 3: Validate migrations (attempt to migrate up)
+    if let Err(e) = Migrator::up(&db, None).await {
+        return Err(format!("Database schema validation failed: {}", e));
+    }
+
+    // Step 4: Backup current db before overwrite (safety)
+    if db_path.exists() {
+        let backup_path = db_path.with_extension("db.bak");
+        fs::copy(&db_path, &backup_path).map_err(|e| e.to_string())?;
+    }
+
+    // Step 5: Replace current db with restore file
+    fs::copy(&restore_file, &db_path).map_err(|e| e.to_string())?;
+
+    Ok(())
 }
