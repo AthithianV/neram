@@ -1,11 +1,12 @@
-import { useLocalBackup } from '@/hooks/useBackup';
-import { ArrowBigUpDash, FolderDownIcon } from 'lucide-react';
+import { useLocalBackup, useRestoreData } from '@/hooks/useBackup';
+import { ArrowBigUpDash, FolderDownIcon, RotateCcwIcon } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card, CardContent } from '../ui/card';
 import { Label } from '../ui/label';
 
 const BackUp = () => {
     const { mutateAsync: localBackUp } = useLocalBackup();
+    const { mutateAsync: restoreData } = useRestoreData();
 
     return (
         <Card className="rounded-sm shadow-none border-none">
@@ -18,8 +19,14 @@ const BackUp = () => {
                 </div>
                 <div className="flex gap-6">
                     <Label>Import the data from file:</Label>
-                    <Button onClick={() => localBackUp()} variant="outline">
+                    <Button onClick={() => restoreData()} variant="outline">
                         <FolderDownIcon /> Restore
+                    </Button>
+                </div>
+                <div className="flex gap-6">
+                    <Label>Reset the data:</Label>
+                    <Button variant="destructive">
+                        <RotateCcwIcon /> Reset
                     </Button>
                 </div>
             </CardContent>
