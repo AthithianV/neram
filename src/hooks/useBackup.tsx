@@ -29,3 +29,18 @@ export const useRestoreData = () => {
         },
     });
 };
+
+export const useResetData = () => {
+    return useMutation({
+        mutationFn: async () => {
+            const appDataPath = await appDataDir();
+            return await invoke('reset_db', { path: appDataPath });
+        },
+        onSuccess: () => {
+            toast.success('Reset Completed!');
+        },
+        onError: () => {
+            toast.error('Something Went Wrong');
+        },
+    });
+};
