@@ -1,3 +1,4 @@
+use chrono::Local;
 use migration::{Migrator, MigratorTrait};
 use sea_orm::{Database, DatabaseConnection};
 use std::fs;
@@ -5,7 +6,6 @@ use std::path::Path;
 use tauri::AppHandle;
 use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_fs::FilePath;
-use chrono::Local;
 
 #[tauri::command]
 pub fn backup_db(path: String, app: AppHandle) -> Result<(), String> {
@@ -76,13 +76,13 @@ pub async fn restore_db(path: String, app: AppHandle) -> Result<(), String> {
     // Step 4: Backup current db before overwrite (safety)
     if db_path.exists() {
         let timestamp = Local::now().format("%Y%m%d_%H%M%S");
-            let file_stem = db_path.file_stem().unwrap().to_string_lossy();
-            let parent = db_path.parent().unwrap();
+        let file_stem = db_path.file_stem().unwrap().to_string_lossy();
+        let parent = db_path.parent().unwrap();
 
-            let backup_name = format!("{}_{}.db", file_stem, timestamp);
-            let backup_path = parent.join(backup_name);
+        let backup_name = format!("{}_{}.db", file_stem, timestamp);
+        let backup_path = parent.join(backup_name);
 
-            fs::copy(&db_path, &backup_path).map_err(|e| e.to_string())?;
+        fs::copy(&db_path, &backup_path).map_err(|e| e.to_string())?;
     }
 
     // Step 5: Replace current db with restore file
@@ -92,12 +92,11 @@ pub async fn restore_db(path: String, app: AppHandle) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub async fn reset_db(path: String, app: AppHandle) -> Result<(), String> {
+pub async fn reset_db(path: String) -> Result<(), String> {
     let app_dir = Path::new(&path);
     if !app_dir.exists() {
         std::fs::create_dir_all(app_dir).map_err(|e| e.to_string())?;
     }
-
 
     // Create New Sqlite File and Migrate the default data.
     let new_db_path = Path::new(&path).join("new_neram.db");
@@ -113,18 +112,17 @@ pub async fn reset_db(path: String, app: AppHandle) -> Result<(), String> {
         }
     }
 
-
     // Back Up current DB.
     let db_path = app_dir.join("neram.db");
     if db_path.exists() {
         let timestamp = Local::now().format("%Y%m%d_%H%M%S");
-            let file_stem = db_path.file_stem().unwrap().to_string_lossy();
-            let parent = db_path.parent().unwrap();
+        let file_stem = db_path.file_stem().unwrap().to_string_lossy();
+        let parent = db_path.parent().unwrap();
 
-            let backup_name = format!("{}_{}.db", file_stem, timestamp);
-            let backup_path = parent.join(backup_name);
+        let backup_name = format!("{}_{}.db", file_stem, timestamp);
+        let backup_path = parent.join(backup_name);
 
-            fs::copy(&db_path, &backup_path).map_err(|e| e.to_string())?;
+        fs::copy(&db_path, &backup_path).map_err(|e| e.to_string())?;
     }
 
     // Replace current db with restore file

@@ -1,5 +1,4 @@
 import { Suspense, lazy, useEffect } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import LoadingPage from './components/layouts/LoadingPage';
@@ -11,7 +10,6 @@ import './styles/global.css';
 import { AppLayout } from './components/layouts/AppLayout';
 
 // Constant
-import ErrorFallback from './components/error/MainErrorFallBack';
 import { SETTINGS_TAB } from './constants/settings';
 
 // Lazy-loaded pages
@@ -58,52 +56,44 @@ export default function App() {
 
     return (
         <Suspense fallback={<LoadingPage />}>
-            <ErrorBoundary
-                FallbackComponent={ErrorFallback}
-                onError={(error, info) => {
-                    // Log to Tauri backend or Sentry
-                    console.error('Boundary caught:', error, info);
-                }}
-            >
-                <Routes>
-                    <Route element={<AppLayout />}>
-                        <Route path="/" element={<Navigate to="/dashboard" />} />
-                        <Route path="dashboard" element={<Dashboard />} />
-                        <Route path="session" element={<Session />}></Route>
-                        <Route path="project" element={<Project />}>
-                            <Route path=":projectId" element={<Kanban />} />
-                        </Route>
-                        <Route path="pomodoro" element={<Pomodoro />} />
-                        <Route path="statistic" element={<Statistics />} />
-                        <Route path="cloud-sync" element={<CloudSync />} />
-                        <Route path="settings" element={<Settings />}>
-                            {SETTINGS_TAB.map((tab) =>
-                                tab.index ? (
-                                    <Route
-                                        index
-                                        element={
-                                            <Suspense fallback={<div>Loading...</div>}>
-                                                <tab.element />
-                                            </Suspense>
-                                        }
-                                        key={tab.title}
-                                    />
-                                ) : (
-                                    <Route
-                                        path={tab.path}
-                                        element={
-                                            <Suspense fallback={<div>Loading...</div>}>
-                                                <tab.element />
-                                            </Suspense>
-                                        }
-                                        key={tab.title}
-                                    />
-                                ),
-                            )}
-                        </Route>
+            <Routes>
+                <Route element={<AppLayout />}>
+                    <Route path="/" element={<Navigate to="/dashboard" />} />
+                    <Route path="dashboard" element={<Dashboard />} />
+                    <Route path="session" element={<Session />}></Route>
+                    <Route path="project" element={<Project />}>
+                        <Route path=":projectId" element={<Kanban />} />
                     </Route>
-                </Routes>
-            </ErrorBoundary>
+                    <Route path="pomodoro" element={<Pomodoro />} />
+                    <Route path="statistic" element={<Statistics />} />
+                    <Route path="cloud-sync" element={<CloudSync />} />
+                    <Route path="settings" element={<Settings />}>
+                        {SETTINGS_TAB.map((tab) =>
+                            tab.index ? (
+                                <Route
+                                    index
+                                    element={
+                                        <Suspense fallback={<div>Loading...</div>}>
+                                            <tab.element />
+                                        </Suspense>
+                                    }
+                                    key={tab.title}
+                                />
+                            ) : (
+                                <Route
+                                    path={tab.path}
+                                    element={
+                                        <Suspense fallback={<div>Loading...</div>}>
+                                            <tab.element />
+                                        </Suspense>
+                                    }
+                                    key={tab.title}
+                                />
+                            ),
+                        )}
+                    </Route>
+                </Route>
+            </Routes>
         </Suspense>
     );
 }

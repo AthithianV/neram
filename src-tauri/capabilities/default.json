@@ -20,6 +20,7 @@
         "core:event:allow-listen",
         "core:event:allow-unlisten",
         "fs:default",
+        "log:default",
         {
             "identifier": "fs:allow-exists",
             "allow": [{ "path": "$APPDATA/*" }]

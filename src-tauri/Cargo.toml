@@ -44,5 +44,9 @@ tracing = "0.1.41"
 tauri-plugin-process = "2"
 tauri-plugin-dialog = "2"
 
+# Logging
+tauri-plugin-log = "2"
+log = "0.4"
+
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-updater = "2"

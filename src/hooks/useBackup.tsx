@@ -3,6 +3,8 @@ import { invoke } from '@tauri-apps/api/core';
 import { appDataDir } from '@tauri-apps/api/path';
 import { toast } from 'sonner';
 
+import { error } from '@tauri-apps/plugin-log';
+
 export const useLocalBackup = () => {
     return useMutation({
         mutationFn: async () => {
@@ -11,6 +13,9 @@ export const useLocalBackup = () => {
         },
         onSuccess: () => {
             toast.success('Back up Completed!');
+        },
+        onError: (err) => {
+            error(`${err.message}, ${JSON.stringify(err.stack)}`);
         },
     });
 };
@@ -24,8 +29,9 @@ export const useRestoreData = () => {
         onSuccess: () => {
             toast.success('Restored Completed!');
         },
-        onError: () => {
+        onError: (err) => {
             toast.error('Invalid File');
+            error(`${err.message}, ${JSON.stringify(err.stack)}`);
         },
     });
 };
@@ -39,8 +45,9 @@ export const useResetData = () => {
         onSuccess: () => {
             toast.success('Reset Completed!');
         },
-        onError: () => {
+        onError: (err) => {
             toast.error('Something Went Wrong');
+            error(`${err.message}, ${JSON.stringify(err.stack)}`);
         },
     });
 };
