@@ -31,12 +31,12 @@ pub async fn run() {
     tauri::Builder::default()
         .plugin(
             tauri_plugin_log::Builder::new()
-                .target(tauri_plugin_log::Target::new(
+                .targets([tauri_plugin_log::Target::new(
                     tauri_plugin_log::TargetKind::Folder {
                         path: std::path::PathBuf::from("/logs"),
                         file_name: None,
                     },
-                ))
+                )])
                 .max_file_size(50_000)
                 .rotation_strategy(tauri_plugin_log::RotationStrategy::KeepAll)
                 .build(),
@@ -59,6 +59,7 @@ pub async fn run() {
             add_tag_to_session,
             remove_tag_from_session,
             check_session_collision,
+            update_incomplete_session,
             // Task commands
             create_task,
             get_all_tasks,

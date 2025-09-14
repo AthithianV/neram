@@ -301,7 +301,7 @@ impl<'a> SessionRepository<'a> {
 
     pub async fn update_incomplete_session(&self) -> Result<(), DbErr> {
         let session_model = Session::find()
-            .order_by_asc(SessionColumn::CreatedAt)
+            .order_by_desc(SessionColumn::CreatedAt)
             .one(self.db)
             .await?;
 
@@ -310,17 +310,25 @@ impl<'a> SessionRepository<'a> {
         if let Some(session) = session_model {
             let session_date = session.date.clone();
             let session_end_time = session.end_time.clone();
-            let mut active_session = session.into_active_model();
             if session_end_time.is_none() {
-                if session_date == today {
-                    active_session.end_time = Set(Some(now.timestamp_millis()));
-                } else {
+                let mut new_end_time = now.timestamp_millis();
+                if session_date != today {
                     let end_of_the_day = NaiveTime::from_hms_opt(23, 59, 59).unwrap();
                     let new_datetime = NaiveDateTime::new(session_date, end_of_the_day);
-                    let end_time = Local.from_local_datetime(&new_datetime).unwrap();
-                    active_session.end_time = Set(Some(end_time.timestamp_millis()));
+                    new_end_time = Local
+                        .from_local_datetime(&new_datetime)
+                        .unwrap()
+                        .timestamp_millis();
                 }
+
+                let session_duration_sec =
+                    (new_end_time - session.start_time) as i32 / 1000 - session.break_duration_sec;
+
+                let mut active_session = session.into_active_model();
+                active_session.end_time = Set(Some(new_end_time));
+                active_session.session_duration_sec = Set(session_duration_sec);
                 active_session.updated_at = Set(now.naive_local());
+                active_session.update(self.db).await?;
             }
         }
 

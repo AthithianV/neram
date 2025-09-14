@@ -187,3 +187,22 @@ export const useSessionCollision = () => {
         },
     });
 };
+
+export const useUpdateIncompleteSession = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async () => {
+            try {
+                await invoke('update_incomplete_session');
+            } catch (err) {
+                console.log(err);
+            }
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ['sessions'] });
+        },
+        onError: (err) => {
+            console.error(err);
+        },
+    });
+};
