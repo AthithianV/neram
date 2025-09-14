@@ -1,8 +1,9 @@
+use chrono::{Local, Timelike};
 use serde::{Deserialize, Serialize};
 use std::time::Instant;
 use tauri::State;
 
-use crate::AppState;
+use crate::{repository::session::SessionRepository, AppState};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum TimerType {
@@ -125,7 +126,8 @@ pub struct TimerResponse {
 
 #[tauri::command]
 pub async fn get_elapsed_time(state: State<'_, AppState>) -> Result<TimerResponse, String> {
-    let timer = state.timer.lock().await;
+    let mut timer = state.timer.lock().await;
+    let db = state.conn.lock().await;
 
     let mut current_time = 0;
     let current_session_time_elapsed = match timer.session_start_time {
@@ -143,6 +145,20 @@ pub async fn get_elapsed_time(state: State<'_, AppState>) -> Result<TimerRespons
         }
         None => timer.break_time_elapsed,
     };
+
+    let now = Local::now().time();
+
+    if timer.session_id.is_some() && now.hour() == 19 && now.second() == 14 {
+        println!("{}", now);
+        let session_repository = SessionRepository::new(&db);
+        if let Some(id) = timer.session_id {
+            let new_session_id = session_repository
+                .break_session(id, timer.session_time_elapsed, timer.break_time_elapsed)
+                .await
+                .map_err(|e| e.to_string());
+            timer.session_id = Some(new_session_id.unwrap());
+        }
+    }
 
     Ok(TimerResponse {
         session_time_elapsed: current_session_time_elapsed,
