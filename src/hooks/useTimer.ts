@@ -15,6 +15,7 @@ export type TimerResponse = {
     timer: number;
     timer_type: 'Session' | 'Pomodoro';
     is_running: boolean;
+    is_session_broken: boolean;
 };
 
 export type StartTimerData = {
@@ -30,10 +31,14 @@ export type StartTimerData = {
 };
 
 export const useTimer = () => {
+    const queryClient = useQueryClient();
     return useQuery({
         queryKey: ['timer'],
         queryFn: async () => {
             const data = await invoke<TimerResponse>('get_elapsed_time');
+            if (data.is_session_broken) {
+                queryClient.invalidateQueries({ queryKey: ['sessions'] });
+            }
             return data;
         },
         refetchInterval: 1000,

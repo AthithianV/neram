@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use chrono::{Datelike, Local};
+use chrono::{Datelike, Local, NaiveDateTime, NaiveTime, TimeZone};
 use migration::Expr;
 use sea_orm::*;
 
@@ -275,7 +275,7 @@ impl<'a> SessionRepository<'a> {
                     project_id: session_model.project_id.clone(),
                     task_id: session_model.task_id.clone(),
                     date: now.date_naive(),
-                    start_time: now.timestamp(),
+                    start_time: now.timestamp_millis() + 1000,
                     end_time: None,
                     session_duration_sec: 0,
                     break_duration_sec: 0,
@@ -284,7 +284,7 @@ impl<'a> SessionRepository<'a> {
                 .await?;
 
             let mut session_active_model = session_model.into_active_model();
-            session_active_model.end_time = Set(Some(now.timestamp() + 1000));
+            session_active_model.end_time = Set(Some(now.timestamp_millis()));
             session_active_model.session_duration_sec = Set(session_time_spanned);
             session_active_model.break_duration_sec = Set(break_time_spanned);
             session_active_model.updated_at = Set(now.naive_local());
@@ -297,5 +297,33 @@ impl<'a> SessionRepository<'a> {
                 session_id
             )))
         }
+    }
+
+    pub async fn update_incomplete_session(&self) -> Result<(), DbErr> {
+        let session_model = Session::find()
+            .order_by_asc(SessionColumn::CreatedAt)
+            .one(self.db)
+            .await?;
+
+        let now = Local::now();
+        let today = now.date_naive();
+        if let Some(session) = session_model {
+            let session_date = session.date.clone();
+            let session_end_time = session.end_time.clone();
+            let mut active_session = session.into_active_model();
+            if session_end_time.is_none() {
+                if session_date == today {
+                    active_session.end_time = Set(Some(now.timestamp_millis()));
+                } else {
+                    let end_of_the_day = NaiveTime::from_hms_opt(23, 59, 59).unwrap();
+                    let new_datetime = NaiveDateTime::new(session_date, end_of_the_day);
+                    let end_time = Local.from_local_datetime(&new_datetime).unwrap();
+                    active_session.end_time = Set(Some(end_time.timestamp_millis()));
+                }
+                active_session.updated_at = Set(now.naive_local());
+            }
+        }
+
+        Ok(())
     }
 }
