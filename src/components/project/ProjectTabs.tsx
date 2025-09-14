@@ -4,7 +4,6 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import LoaderWrapper from '@/components/layouts/Loader';
 import { cn } from '@/lib/utils';
 import { Edit, Folder, Plus, SquareArrowOutUpRight, Trash } from 'lucide-react';
-import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { Button } from '../ui/button';
 import {
@@ -18,7 +17,6 @@ import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 const ProjectTabs = () => {
     const [_, setSearchParams] = useSearchParams();
     const { data: projects, isLoading } = useProject();
-    const navigate = useNavigate();
     const { projectId } = useParams();
 
     const handleAdd = async () => {
@@ -29,27 +27,17 @@ const ProjectTabs = () => {
         setSearchParams({ modal: 'add_project' });
     };
 
-    useEffect(() => {
-        if (projects && projects.length > 0 && !projectId) {
-            navigate(`/project/${projects[0].id}`);
-        }
-    }, [projects]);
-
-    if (isLoading || !projects || !projectId) {
+    if (isLoading || !projects) {
         return <LoaderWrapper />;
     }
 
     const handleEdit = () => {
-        setSearchParams({ id: projectId, modal: 'edit_project' });
+        if (projectId) {
+            setSearchParams({ id: projectId, modal: 'edit_project' });
+        }
     };
 
     const handleDelete = (projectId: number) => {
-        if (projects && projects.length <= 1) {
-            toast.warning(
-                'Create more project to delete Current!🥺 Project Page cannot be empty👉👈',
-            );
-            return;
-        }
         setSearchParams({ project_id: projectId.toString(), alert: 'PROJECT' });
     };
 
@@ -128,7 +116,7 @@ const ProjectTab = ({
     return (
         <div
             className={cn(
-                'flex gap-2 items-center',
+                'flex gap-2 items-center cursor-pointer',
                 'px-3',
                 'h-[var(--project-tab-height)] rounded-t-sm',
                 `${
@@ -137,11 +125,12 @@ const ProjectTab = ({
                         : 'hover:bg-gray-100 dark:hover:bg-gray-800'
                 }`,
             )}
+            onClick={() => navigate(`/project/${project.id}`)}
         >
             <div
                 key={project.id}
                 className={cn(
-                    `cursor-pointer text-sm`,
+                    `text-sm`,
                     'flex gap-2 items-center py-2',
                     `${isSelected(project.id) ? `border-b-2 font-bold` : ''}`,
                 )}
@@ -153,7 +142,6 @@ const ProjectTab = ({
                           }
                         : { color: project.color }
                 }
-                onClick={() => navigate(`/project/${project.id}`)}
             >
                 <Folder
                     className="h-4 w-4"
