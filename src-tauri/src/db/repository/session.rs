@@ -315,10 +315,13 @@ impl<'a> SessionRepository<'a> {
                 if session_date != today {
                     let end_of_the_day = NaiveTime::from_hms_opt(23, 59, 59).unwrap();
                     let new_datetime = NaiveDateTime::new(session_date, end_of_the_day);
-                    new_end_time = Local
-                        .from_local_datetime(&new_datetime)
-                        .unwrap()
-                        .timestamp_millis();
+                    if let Some(local_dt) = Local.from_local_datetime(&new_datetime).single() {
+                        new_end_time = local_dt.timestamp_millis();
+                    } else {
+                        // Fallback: use UTC and convert to local
+                        let utc_dt = DateTime::<Utc>::from_utc(new_datetime, Utc);
+                        new_end_time = utc_dt.with_timezone(&Local).timestamp_millis();
+                    }
                 }
 
                 let session_duration_sec =
