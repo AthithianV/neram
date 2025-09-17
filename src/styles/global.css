@@ -87,6 +87,10 @@
             }
         }
 
+        a {
+            @apply text-blue-600 underline cursor-pointer;
+        }
+
         ul[data-type='taskList'] {
             @apply list-none px-0 mx-0;
         }
