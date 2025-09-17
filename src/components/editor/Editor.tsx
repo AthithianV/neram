@@ -24,6 +24,15 @@ export default ({
             const html = editor.getHTML().replace(/<p><\/p>/g, '');
             onChange(html);
         },
+        editorProps: {
+            handleKeyDown(_, event) {
+                if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'b') {
+                    event.stopPropagation(); // ✅ prevent it from bubbling
+                    return false; // let Tiptap handle the bold shortcut
+                }
+                return false; // don't block other shortcuts
+            },
+        },
     });
 
     useEffect(() => {

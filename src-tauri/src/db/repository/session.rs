@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use chrono::{Datelike, Local, NaiveDateTime, NaiveTime, TimeZone};
+use chrono::{DateTime, Datelike, Local, NaiveDateTime, NaiveTime, TimeZone, Utc};
 use migration::Expr;
 use sea_orm::*;
 
@@ -319,7 +319,8 @@ impl<'a> SessionRepository<'a> {
                         new_end_time = local_dt.timestamp_millis();
                     } else {
                         // Fallback: use UTC and convert to local
-                        let utc_dt = DateTime::<Utc>::from_utc(new_datetime, Utc);
+                        let utc_dt: DateTime<Utc> =
+                            DateTime::from_naive_utc_and_offset(new_datetime, Utc);
                         new_end_time = utc_dt.with_timezone(&Local).timestamp_millis();
                     }
                 }

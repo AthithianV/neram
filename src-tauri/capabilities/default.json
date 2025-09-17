@@ -21,6 +21,8 @@
         "core:event:allow-unlisten",
         "fs:default",
         "log:default",
+        "opener:allow-open-url",
+        "opener:allow-default-urls",
         {
             "identifier": "fs:allow-exists",
             "allow": [{ "path": "$APPDATA/*" }]
