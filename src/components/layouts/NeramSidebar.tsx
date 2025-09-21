@@ -13,8 +13,6 @@ import {
 } from '@/components/ui/sidebar';
 import { SIDEBAR_BODY_LINKS, SIDEBAR_FOOTER_LINKS } from '@/constants/sidebar';
 import { cn } from '@/lib/utils';
-import { useViewStore } from '@/state/viewState';
-import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Brand from './Brand';
 
@@ -73,12 +71,7 @@ const NeramSidebar = () => {
 };
 
 const Header = () => {
-    const { setSidebarOpen } = useViewStore();
     const { open } = useSidebar();
-
-    useEffect(() => {
-        setSidebarOpen(open);
-    }, [open]);
 
     return (
         <SidebarHeader className={cn('title-bar-height')}>
