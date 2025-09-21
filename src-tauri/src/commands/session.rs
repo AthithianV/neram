@@ -191,3 +191,18 @@ pub async fn check_session_collision(
         .await
         .map_err(|e| e.to_string())
 }
+
+/// Check whether latest session has end time, if not updates it.
+///
+/// # Arguments
+/// * `app_state` - The Tauri state containing the database connection mutex.
+#[command]
+pub async fn update_incomplete_session(app_state: State<'_, AppState>) -> Result<(), String> {
+    let pool = app_state.conn.lock().await;
+
+    let session_repository = SessionRepository::new(&pool);
+    session_repository
+        .update_incomplete_session()
+        .await
+        .map_err(|e| e.to_string())
+}

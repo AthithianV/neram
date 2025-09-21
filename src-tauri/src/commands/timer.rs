@@ -1,8 +1,9 @@
+use chrono::{Local, Timelike};
 use serde::{Deserialize, Serialize};
 use std::time::Instant;
 use tauri::State;
 
-use crate::AppState;
+use crate::{repository::session::SessionRepository, AppState};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum TimerType {
@@ -24,6 +25,7 @@ pub struct TimerState {
     pub is_break: bool,
     pub timer_type: TimerType,
     pub is_running: bool,
+    pub is_session_broken: bool,
 }
 
 impl Default for TimerState {
@@ -38,7 +40,8 @@ impl Default for TimerState {
             is_session: false,
             is_break: false,
             timer_type: TimerType::Session,
-            is_running: false
+            is_running: false,
+            is_session_broken: false,
         }
     }
 }
@@ -121,11 +124,15 @@ pub struct TimerResponse {
     pub timer: i32,
     pub is_running: bool,
     pub timer_type: TimerType,
+    pub is_session_broken: bool,
 }
 
 #[tauri::command]
 pub async fn get_elapsed_time(state: State<'_, AppState>) -> Result<TimerResponse, String> {
-    let timer = state.timer.lock().await;
+    let mut timer = state.timer.lock().await;
+    let db = state.conn.lock().await;
+
+    timer.is_session_broken = false;
 
     let mut current_time = 0;
     let current_session_time_elapsed = match timer.session_start_time {
@@ -144,6 +151,19 @@ pub async fn get_elapsed_time(state: State<'_, AppState>) -> Result<TimerRespons
         None => timer.break_time_elapsed,
     };
 
+    let now = Local::now().time();
+    if timer.session_id.is_some() && now.hour() == 23 && now.minute() == 59 && now.second() == 00 {
+        let session_repository = SessionRepository::new(&db);
+        if let Some(id) = timer.session_id {
+            let new_session_id = session_repository
+                .break_session(id, current_session_time_elapsed, current_break_time_elapsed)
+                .await
+                .map_err(|e| e.to_string());
+            timer.session_id = Some(new_session_id.unwrap());
+            timer.is_session_broken = true;
+        }
+    }
+
     Ok(TimerResponse {
         session_time_elapsed: current_session_time_elapsed,
         break_time_elapsed: current_break_time_elapsed,
@@ -153,6 +173,7 @@ pub async fn get_elapsed_time(state: State<'_, AppState>) -> Result<TimerRespons
         is_break: timer.is_break,
         timer: current_time,
         timer_type: timer.timer_type,
-        is_running: timer.is_running
+        is_running: timer.is_running,
+        is_session_broken: timer.is_session_broken,
     })
 }

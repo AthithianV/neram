@@ -73,12 +73,16 @@ impl MigrationTrait for Migration {
         // Insert default "General" project
         manager
             .get_connection()
-            .execute(
-                Statement::from_string(
-                    manager.get_database_backend(),
-                    format!("INSERT INTO projects (title, description, color, created_at, updated_at) VALUES ('Neram', 'Demo Project', '#ff00e2', '{}', '{}');", now, now)
-                )
-            ).await?;
+            .execute(Statement::from_string(
+                manager.get_database_backend(),
+                format!(
+                    "INSERT INTO projects
+                        (title, description, color, created_at, updated_at)
+                        VALUES ('Neram', 'Demo Project', '#ff00e2', '{}', '{}');",
+                    now, now
+                ),
+            ))
+            .await?;
 
         Ok(())
     }

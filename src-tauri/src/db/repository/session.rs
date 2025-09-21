@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use chrono::Datelike;
+use chrono::{DateTime, Datelike, Local, NaiveDateTime, NaiveTime, TimeZone, Utc};
 use migration::Expr;
 use sea_orm::*;
 
@@ -254,5 +254,88 @@ impl<'a> SessionRepository<'a> {
 
         let cnt = Session::find().filter(cond).all(self.db).await?;
         Ok(cnt.len() > 0)
+    }
+
+    pub async fn break_session(
+        &self,
+        session_id: i32,
+        session_time_spanned: i32,
+        break_time_spanned: i32,
+    ) -> Result<i32, DbErr> {
+        let session_model = Session::find_by_id(session_id).one(self.db).await?;
+
+        let now = Local::now();
+        if let Some(session_model) = session_model {
+            let tags = session_model.find_related(Tag).all(self.db).await?;
+
+            let new_session = self
+                .create(&CreateSessionModel {
+                    title: session_model.title.clone(),
+                    description: session_model.description.clone(),
+                    project_id: session_model.project_id.clone(),
+                    task_id: session_model.task_id.clone(),
+                    date: now.date_naive(),
+                    start_time: now.timestamp_millis() + 1000,
+                    end_time: None,
+                    session_duration_sec: 0,
+                    break_duration_sec: 0,
+                    tags: tags.iter().map(|t| t.id).collect(),
+                })
+                .await?;
+
+            let mut session_active_model = session_model.into_active_model();
+            session_active_model.end_time = Set(Some(now.timestamp_millis()));
+            session_active_model.session_duration_sec = Set(session_time_spanned);
+            session_active_model.break_duration_sec = Set(break_time_spanned);
+            session_active_model.updated_at = Set(now.naive_local());
+            session_active_model.update(self.db).await?;
+
+            Ok(new_session.id)
+        } else {
+            Err(DbErr::Custom(format!(
+                "There is no session with session Id: {}",
+                session_id
+            )))
+        }
+    }
+
+    pub async fn update_incomplete_session(&self) -> Result<(), DbErr> {
+        let session_model = Session::find()
+            .order_by_desc(SessionColumn::CreatedAt)
+            .one(self.db)
+            .await?;
+
+        let now = Local::now();
+        let today = now.date_naive();
+        if let Some(session) = session_model {
+            let session_date = session.date.clone();
+            let session_end_time = session.end_time.clone();
+            if session_end_time.is_none() {
+                let mut new_end_time = now.timestamp_millis();
+                if session_date != today {
+                    let end_of_the_day = NaiveTime::from_hms_opt(23, 59, 59).unwrap();
+                    let new_datetime = NaiveDateTime::new(session_date, end_of_the_day);
+                    if let Some(local_dt) = Local.from_local_datetime(&new_datetime).single() {
+                        new_end_time = local_dt.timestamp_millis();
+                    } else {
+                        // Fallback: use UTC and convert to local
+                        let utc_dt: DateTime<Utc> =
+                            DateTime::from_naive_utc_and_offset(new_datetime, Utc);
+                        new_end_time = utc_dt.with_timezone(&Local).timestamp_millis();
+                    }
+                }
+
+                let session_duration_sec =
+                    (new_end_time - session.start_time) as i32 / 1000 - session.break_duration_sec;
+
+                let mut active_session = session.into_active_model();
+                active_session.end_time = Set(Some(new_end_time));
+                active_session.session_duration_sec = Set(session_duration_sec);
+                active_session.updated_at = Set(now.naive_local());
+                active_session.update(self.db).await?;
+            }
+        }
+
+        Ok(())
     }
 }

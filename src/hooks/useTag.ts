@@ -1,4 +1,4 @@
-import { Tag } from '@/schema/TagSchema';
+import { CreateTag, Tag } from '@/schema/TagSchema';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
 export const useTag = () => {
@@ -17,12 +17,7 @@ export const useTag = () => {
 export const useCreateTag = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (newTag: {
-            title: string;
-            description?: string;
-            color: string;
-            is_default: boolean;
-        }) => {
+        mutationFn: async (newTag: CreateTag) => {
             try {
                 return await invoke('create_tag', { newTag });
             } catch (e) {
@@ -38,7 +33,7 @@ export const useCreateTag = () => {
 export const useUpdateTag = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (data: { tagId: number; tagToUpdate: Tag }) => {
+        mutationFn: async (data: { tagId: number; tagToUpdate: CreateTag }) => {
             return await invoke('update_tag', data);
         },
         onSuccess: () => {

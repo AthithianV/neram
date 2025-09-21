@@ -4,7 +4,7 @@ import { Label } from '../ui/label';
 
 const Personalization = () => {
     return (
-        <Card>
+        <Card className="rounded-sm shadow-none border-none">
             <CardContent className="grid gap-4">
                 <div className="grid grid-cols-[120px_1fr] items-center gap-5">
                     <Label>Theme</Label>

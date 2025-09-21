@@ -1,12 +1,12 @@
 import dayjs from 'dayjs';
 import { COLORS } from './colors';
-import { DB_DATE_FORMAT, DB_TIME_FORMAT } from './session';
+import { DB_DATE_FORMAT } from './session';
 
 export const PROJECT_INITIAL_VALUES = {
     title: 'UNTITLED',
     description: '',
     color: COLORS[0].value,
-    started_at: dayjs().format(`${DB_DATE_FORMAT}T${DB_TIME_FORMAT}`),
+    started_at: dayjs().format(`${DB_DATE_FORMAT}`),
     is_billable: true,
     billing_type: 'Hourly' as 'Hourly',
     hourly_rate: 0,

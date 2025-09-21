@@ -2,6 +2,7 @@ mod commands;
 mod db;
 mod utils;
 
+use commands::backup::*;
 use commands::pomodoro_settings::*;
 use commands::project::*;
 use commands::session::*;
@@ -28,6 +29,21 @@ struct AppState {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub async fn run() {
     tauri::Builder::default()
+        .plugin(
+            tauri_plugin_log::Builder::new()
+                .targets([tauri_plugin_log::Target::new(
+                    tauri_plugin_log::TargetKind::Folder {
+                        path: std::path::PathBuf::from("/logs"),
+                        file_name: None,
+                    },
+                )])
+                .max_file_size(50_000)
+                .rotation_strategy(tauri_plugin_log::RotationStrategy::KeepAll)
+                .build(),
+        )
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(Mutex::new(TimerState::default()))
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_fs::init())
@@ -43,6 +59,7 @@ pub async fn run() {
             add_tag_to_session,
             remove_tag_from_session,
             check_session_collision,
+            update_incomplete_session,
             // Task commands
             create_task,
             get_all_tasks,
@@ -65,7 +82,6 @@ pub async fn run() {
             get_tag_by_id,
             update_tag,
             delete_tag,
-
             // Timer commands
             start_timer,
             stop_timer,
@@ -84,7 +100,11 @@ pub async fn run() {
             get_day_summary,
             get_streaks,
             get_life_time_summary,
-            get_monthly_summary
+            get_monthly_summary,
+            //back up
+            backup_db,
+            restore_db,
+            reset_db
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

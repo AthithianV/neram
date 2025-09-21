@@ -13,7 +13,7 @@ import Title from '../form/Title';
 
 import { TAG_DEFAULT_VALUE } from '@/constants/tag';
 import { useCreateTag, useTag, useUpdateTag } from '@/hooks/useTag';
-import TagSchema, { Tag } from '@/schema/TagSchema';
+import { CreateTag, CreateTagSchema } from '@/schema/TagSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowBigUpDashIcon, PlusIcon } from 'lucide-react';
 import { useEffect } from 'react';
@@ -24,7 +24,7 @@ import { Skeleton } from '../ui/skeleton';
 
 type PropType = {
     setShowForm: (b: boolean) => void;
-    selectedTag: Tag | null;
+    selectedTag: CreateTag | null;
 };
 
 const TagForm = ({ setShowForm, selectedTag }: PropType) => {
@@ -32,8 +32,8 @@ const TagForm = ({ setShowForm, selectedTag }: PropType) => {
     const createTag = useCreateTag();
     const updateTag = useUpdateTag();
 
-    const form = useForm<Tag>({
-        resolver: zodResolver(TagSchema),
+    const form = useForm<CreateTag>({
+        resolver: zodResolver(CreateTagSchema),
         defaultValues: TAG_DEFAULT_VALUE,
     });
 
@@ -45,9 +45,7 @@ const TagForm = ({ setShowForm, selectedTag }: PropType) => {
         }
     }, [selectedTag]);
 
-    const onSubmit = (values: Tag) => {
-        console.log(values);
-        console.log(selectedTag);
+    const onSubmit = (values: CreateTag) => {
         const tagExists = tags?.find(
             (tag) =>
                 !(selectedTag && selectedTag.id === values.id) &&
@@ -66,7 +64,6 @@ const TagForm = ({ setShowForm, selectedTag }: PropType) => {
             createTag.mutateAsync(
                 {
                     ...values,
-                    is_default: false,
                 },
                 {
                     onSuccess: () => {

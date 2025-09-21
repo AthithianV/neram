@@ -274,6 +274,7 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                                         <DatePicker
                                             dateValue={field.value}
                                             onChange={field.onChange}
+                                            nullable={true}
                                         />
                                     </Suspense>
                                 </FormControl>

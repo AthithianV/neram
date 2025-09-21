@@ -11,17 +11,34 @@ import { GroupedSession } from '@/hooks/useSession';
 import { useTimer } from '@/hooks/useTimer';
 
 import { formatDuration } from '@/lib/time';
+import { cn } from '@/lib/utils';
 
-const SessionGroup = ({ group }: { group: GroupedSession }) => {
+const SessionGroup = ({
+    group,
+    isFirst,
+}: {
+    group: GroupedSession;
+    isFirst: boolean;
+}) => {
     const { data: timer } = useTimer();
 
     return (
         <Accordion type="single" collapsible>
             <AccordionItem value={group.title}>
                 <AccordionTrigger className="shadow p-4 border hover:underline-offset-0">
-                    <div className="flex justify-between w-full font-bold text-md">
+                    <div
+                        className={cn(
+                            'flex justify-between w-full font-bold text-md',
+                            isFirst && timer && timer.is_running && 'text-blue-500',
+                        )}
+                    >
                         <span>{group.title}</span>
-                        <span>{formatDuration(group.total_duration_sec)}</span>
+                        <span>
+                            {formatDuration(
+                                group.total_duration_sec +
+                                    (isFirst && timer ? timer.session_time_elapsed : 0),
+                            )}
+                        </span>
                     </div>
                 </AccordionTrigger>
                 <AccordionContent className="pb-1">

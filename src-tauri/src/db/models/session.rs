@@ -42,6 +42,8 @@ pub struct FullSessionModel {
     pub id: i32,
     pub title: Option<String>,
     pub description: Option<String>,
+    pub project_id: i32,
+    pub task_id: Option<i32>,
     pub project: Extra,
     pub tags: Vec<Extra>,
     pub date: NaiveDate,
@@ -81,6 +83,8 @@ impl From<(SessionModel, Option<ProjectModel>, Vec<TagModel>)> for FullSessionMo
             session_duration_sec: session.session_duration_sec,
             break_duration_sec: session.break_duration_sec,
             project: project.unwrap(),
+            project_id: session.project_id,
+            task_id: session.task_id,
         }
     }
 }
