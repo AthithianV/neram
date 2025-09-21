@@ -8,12 +8,7 @@ on:
 
 jobs:
     build:
-        strategy:
-            fail-fast: false
-            matrix:
-                platform: [macos-latest]
-
-        runs-on: ${{ matrix.platform }}
+        runs-on: macos-latest
 
         steps:
             # 1. Checkout code
@@ -40,7 +35,7 @@ jobs:
               uses: dtolnay/rust-toolchain@nightly # Set this to dtolnay/rust-toolchain@nightly
               with:
                   # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
-                  targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+                  targets: aarch64-apple-darwin,x86_64-apple-darwin
 
             - name: Rust cache
               uses: swatinem/rust-cache@v2
@@ -63,4 +58,6 @@ jobs:
                   releaseBody: 'See the assets to download this version and install.'
                   releaseDraft: true
                   prerelease: false
-                  args: ${{ matrix.args }}
+
+            - name: Remove private key
+              run: rm -f .tauri/private.pem
