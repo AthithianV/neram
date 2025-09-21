@@ -11,8 +11,8 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 
-import ProjectPicker from '@/components/session/ProjectPicker';
-import TagPicker from '@/components/session/TagPicker';
+import ProjectPicker from '@/components/session_temp/ProjectPicker';
+import TagPicker from '@/components/session_temp/TagPicker';
 import { DB_DATE_FORMAT, DEFAULT_SESSION_VALUES } from '@/constants/session';
 import { useCreateSession, useSessionById, useUpdateSession } from '@/hooks/useSession';
 import {

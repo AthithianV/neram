@@ -1,4 +1,4 @@
-import SessionCard from '@/components/session/SessionCard';
+import SessionCard from '@/components/session_temp/SessionCard';
 
 import {
     Accordion,
