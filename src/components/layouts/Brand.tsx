@@ -1,10 +1,7 @@
 import NeramLogo from '@/assets/logo.png';
-import { useViewStore } from '@/state/viewState';
 import { SidebarMenuButton, SidebarMenuItem } from '../ui/sidebar';
 
 const Brand = () => {
-    const { isSidebarOpen } = useViewStore();
-
     return (
         <div className="px-2">
             <SidebarMenuItem>
@@ -18,11 +15,9 @@ const Brand = () => {
                             alt="Neram Logo"
                             className="h-6 w-6 rounded-md"
                         />
-                        {isSidebarOpen && (
-                            <h1 className="text-base font-semibold whitespace-nowrap">
-                                Neram
-                            </h1>
-                        )}
+                        <span className="text-base font-semibold whitespace-nowrap">
+                            Neram
+                        </span>
                     </div>
                 </SidebarMenuButton>
             </SidebarMenuItem>
