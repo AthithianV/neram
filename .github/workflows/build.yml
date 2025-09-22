@@ -6,6 +6,9 @@ on:
             - 'v*' # e.g., v1.0.0 triggers a release build
     workflow_dispatch: # allow manual runs
 
+permissions:
+    contents: write
+
 jobs:
     build:
         runs-on: macos-latest
@@ -32,9 +35,8 @@ jobs:
 
             # 3. Setup Rust
             - name: install Rust stable
-              uses: dtolnay/rust-toolchain@nightly # Set this to dtolnay/rust-toolchain@nightly
+              uses: dtolnay/rust-toolchain@nightly
               with:
-                  # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
                   targets: aarch64-apple-darwin,x86_64-apple-darwin
 
             - name: Rust cache
@@ -46,15 +48,15 @@ jobs:
             - name: Install frontend dependencies
               run: npm install
 
-            # 6. Get version dynamically
+            # 6. Build and Release
             - uses: tauri-apps/tauri-action@v0
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
                   TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
               with:
-                  tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
-                  releaseName: 'App v__VERSION__'
+                  tagName: v__VERSION__ # match your git tag like v0.1.0
+                  releaseName: 'Neram v__VERSION__'
                   releaseBody: 'See the assets to download this version and install.'
                   releaseDraft: true
                   prerelease: false
