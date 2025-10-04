@@ -30,8 +30,15 @@ interface SessionCardProps {
 
 const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
     const [_, setSearchParams] = useSearchParams();
-    const { id, title, project, tags, session_duration_sec, start_time, end_time } =
-        sessionWithTaskAndTag;
+    const {
+        id,
+        title,
+        project,
+        tags,
+        session_duration_sec,
+        start_time,
+        end_time,
+    } = sessionWithTaskAndTag;
 
     const [isHovered, setIsHovered] = useState(false);
     const { data: settings } = useSettings();
@@ -44,7 +51,7 @@ const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            <Card className="py-2 px-0 rounded-sm my-[1px] bg-neutral-50 dark:bg-neutral-900">
+            <Card className="py-2 px-0 rounded-sm my-[1px] bg-sidebar">
                 <CardContent
                     className={cn(
                         'flex items-center justify-between w-full',
@@ -69,7 +76,8 @@ const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
                                             <li key={tag.title}>
                                                 <Badge
                                                     style={{
-                                                        backgroundColor: tag.color,
+                                                        backgroundColor:
+                                                            tag.color,
                                                     }}
                                                     className="text-[0.6rem] px-2 rounded-[0.3rem]"
                                                 >
@@ -107,9 +115,14 @@ const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
                             </span>
                             <div className="text-xs text-gray-500 dark:text-gray-400 flex flex-col gap-1 items-end">
                                 <span>
-                                    {dayjs(start_time).format(settings?.time_format)} -{' '}
+                                    {dayjs(start_time).format(
+                                        settings?.time_format,
+                                    )}{' '}
+                                    -{' '}
                                     {end_time
-                                        ? dayjs(end_time).format(settings?.time_format)
+                                        ? dayjs(end_time).format(
+                                              settings?.time_format,
+                                          )
                                         : 'Now'}
                                 </span>
                             </div>
@@ -135,7 +148,8 @@ const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
 
 SessionCard.DELETE = ({ sessionId }: { sessionId: number }) => {
     const navigate = useNavigate();
-    const { mutateAsync: deleteSession, isPending: isDeleting } = useDeleteSession();
+    const { mutateAsync: deleteSession, isPending: isDeleting } =
+        useDeleteSession();
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -153,8 +167,8 @@ SessionCard.DELETE = ({ sessionId }: { sessionId: number }) => {
                         Are you sure you want to delete this session?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete this
-                        session.
+                        This action cannot be undone. This will permanently
+                        delete this session.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

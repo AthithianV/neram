@@ -37,13 +37,13 @@ const DailySummary = () => {
                 </CardDescription>
             </CardHeader>
             <CardContent className="flex gap-4">
-                <div className="flex-1 rounded-lg bg-muted p-4 text-center">
+                <div className="flex-1 rounded-[5px] bg-muted p-4 text-center">
                     <p className="text-2xl font-bold">
                         {formatDuration(dailySummary.total_duration_sec)}
                     </p>
                     <p className="text-sm text-muted-foreground">Focus Time</p>
                 </div>
-                <div className="flex-1 rounded-lg bg-muted p-4 text-center">
+                <div className="flex-1 rounded-[5px] bg-muted p-4 text-center">
                     <p className="text-2xl font-bold">
                         {dailySummary.session_count || 0}
                     </p>

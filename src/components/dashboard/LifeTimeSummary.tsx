@@ -23,17 +23,23 @@ const LifeTimeSummary = () => {
                 </p>
             </CardHeader>
             <CardContent className="flex gap-4">
-                <div className="flex-1 rounded-lg bg-muted p-4 text-center">
+                <div className="flex-1 rounded-[5px] bg-muted p-4 text-center">
                     <p className="text-2xl font-bold">
                         {formatDuration(lifeTimeSummary.duration_sec)}
                     </p>
-                    <p className="text-sm text-muted-foreground">Total Focus Time</p>
+                    <p className="text-sm text-muted-foreground">
+                        Total Focus Time
+                    </p>
                 </div>
-                <div className="flex-1 rounded-lg bg-muted p-4 text-center">
-                    <p className="text-2xl font-bold">{lifeTimeSummary.session_count}</p>
-                    <p className="text-sm text-muted-foreground">Total Sessions</p>
+                <div className="flex-1 rounded-[5px] bg-muted p-4 text-center">
+                    <p className="text-2xl font-bold">
+                        {lifeTimeSummary.session_count}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                        Total Sessions
+                    </p>
                 </div>
-                <div className="flex-1 rounded-lg bg-muted p-4 text-center">
+                <div className="flex-1 rounded-[5px] bg-muted p-4 text-center">
                     <p className="text-2xl font-bold">
                         {lifeTimeSummary.focused_day_count}
                     </p>

@@ -17,7 +17,7 @@ type PropType = {
 const SessionFilter = ({ groupBy, setGroupBy }: PropType) => {
     return (
         <DropdownMenu>
-            <DropdownMenuTrigger className="text-sm font-semibold rounded-sm flex gap-1 items-center cursor-pointer p-2 hover:bg-gray-100">
+            <DropdownMenuTrigger className="text-sm font-semibold rounded-sm flex gap-1 items-center cursor-pointer p-2 hover:bg-muted">
                 <List size={16} /> Group By
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">

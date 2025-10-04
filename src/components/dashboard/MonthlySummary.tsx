@@ -75,14 +75,19 @@ const MonthlySummary = () => {
                 </CardTitle>
             </CardHeader>
             <CardContent
-                className={cn('flex flex-col flex-1 gap-5', 'py-2 px-25 max-xl:px-5')}
+                className={cn(
+                    'flex flex-col flex-1 gap-5',
+                    'py-2 px-25 max-xl:px-5',
+                )}
             >
                 {/* Calendar Grid */}
                 <div className="space-y-2">
                     <div className="grid grid-cols-7 text-center font-semibold">
-                        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
-                            <div key={d}>{d}</div>
-                        ))}
+                        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(
+                            (d) => (
+                                <div key={d}>{d}</div>
+                            ),
+                        )}
                     </div>
                     {monthlyReport.calendar_view.map((week, i) => (
                         <div key={i} className="grid grid-cols-7 gap-1">
@@ -93,12 +98,14 @@ const MonthlySummary = () => {
                                             <div
                                                 className={cn(
                                                     'w-[80px] h-[80px] max-lg:w-[60px] max-lg:h-[60px]',
-                                                    'rounded-md',
+                                                    'rounded-[5px]',
                                                     'flex items-center justify-center',
                                                     'text-xs font-medium',
                                                     'text-gray-800',
                                                     levelColors[
-                                                        getLevel(day.total_duration_sec)
+                                                        getLevel(
+                                                            day.total_duration_sec,
+                                                        )
                                                     ],
                                                 )}
                                             >
@@ -117,7 +124,9 @@ const MonthlySummary = () => {
                                                 </span>
                                             </h5>
                                             <h5 className="flex gap-2">
-                                                <span>Number of Sessions: </span>
+                                                <span>
+                                                    Number of Sessions:{' '}
+                                                </span>
                                                 <span className="font-bold">
                                                     {day.session_count ?? 0}
                                                 </span>
@@ -125,7 +134,8 @@ const MonthlySummary = () => {
                                             <h5 className="flex gap-2">
                                                 <span>Task Completed:</span>
                                                 <span className="font-bold">
-                                                    {day.completed_task_count ?? 0}
+                                                    {day.completed_task_count ??
+                                                        0}
                                                 </span>
                                             </h5>
                                         </TooltipContent>

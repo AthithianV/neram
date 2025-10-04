@@ -25,18 +25,23 @@ const SessionGroup = ({
     return (
         <Accordion type="single" collapsible>
             <AccordionItem value={group.title}>
-                <AccordionTrigger className="shadow p-4 border hover:underline-offset-0">
+                <AccordionTrigger className="shadow p-4 border hover:underline-offset-0 flex-row-reverse bg-sidebar">
                     <div
                         className={cn(
                             'flex justify-between w-full font-bold text-md',
-                            isFirst && timer && timer.is_running && 'text-blue-500',
+                            isFirst &&
+                                timer &&
+                                timer.is_running &&
+                                'text-blue-500',
                         )}
                     >
                         <span>{group.title}</span>
                         <span>
                             {formatDuration(
                                 group.total_duration_sec +
-                                    (isFirst && timer ? timer.session_time_elapsed : 0),
+                                    (isFirst && timer
+                                        ? timer.session_time_elapsed
+                                        : 0),
                             )}
                         </span>
                     </div>

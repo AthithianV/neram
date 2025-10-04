@@ -29,7 +29,7 @@ const TagModal = () => {
 
     return (
         <Dialog>
-            <DialogTrigger className="text-sm font-semibold rounded-sm flex gap-1 items-center cursor-pointer p-2 hover:bg-gray-50">
+            <DialogTrigger className="text-sm font-semibold rounded-sm flex gap-1 items-center cursor-pointer p-2 hover:bg-muted">
                 <TagIcon size={15} />
                 Tags
             </DialogTrigger>
@@ -43,7 +43,9 @@ const TagModal = () => {
                         {/* Tag List */}
                         <div className="flex flex-1 flex-col gap-2">
                             {isLoading ? (
-                                <p className="text-sm text-gray-500">Loading...</p>
+                                <p className="text-sm text-gray-500">
+                                    Loading...
+                                </p>
                             ) : (
                                 <ul className="flex gap-1 pb-2 items-center flex-wrap">
                                     {tags?.map(
@@ -51,17 +53,22 @@ const TagModal = () => {
                                             tag.id && (
                                                 <li
                                                     key={tag.title}
-                                                    onClick={() => openForm(tag)}
+                                                    onClick={() =>
+                                                        openForm(tag)
+                                                    }
                                                     className="cursor-pointer"
                                                 >
                                                     <Badge
                                                         style={{
-                                                            backgroundColor: tag.color,
+                                                            backgroundColor:
+                                                                tag.color,
                                                         }}
                                                         className="text-sm px-2 rounded-[0.3rem]"
                                                     >
                                                         {tag.title}
-                                                        <DeleteTag tagId={tag.id} />
+                                                        <DeleteTag
+                                                            tagId={tag.id}
+                                                        />
                                                     </Badge>
                                                 </li>
                                             ),
@@ -71,7 +78,10 @@ const TagModal = () => {
                                             openForm(null);
                                         }}
                                     >
-                                        <Button variant={'ghost'} className="h-8">
+                                        <Button
+                                            variant={'ghost'}
+                                            className="h-8"
+                                        >
                                             <Plus />
                                         </Button>
                                     </li>

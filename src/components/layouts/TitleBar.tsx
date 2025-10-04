@@ -1,3 +1,4 @@
+import { platform } from '@tauri-apps/plugin-os';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
@@ -10,21 +11,19 @@ import RestoreUp from '../icons/RestoreUp';
 
 const TitleBar = () => {
     const [isMaximized, setIsMaximized] = useState(false);
+    const [os, setOs] = useState<string | null>(null);
     const { mutateAsync: stopTimer } = useStopTimer();
 
     useEffect(() => {
-        const setupWindow = async () => {
+        const init = async () => {
             const appWindow = getCurrentWindow();
+            setOs(platform());
 
-            // Check initial maximized state
             const maximized = await appWindow.isMaximized();
             setIsMaximized(maximized);
 
-            // Listen for resize events
             const unlisten = await appWindow.onResized(() => {
-                appWindow.isMaximized().then((maximized) => {
-                    setIsMaximized(maximized);
-                });
+                appWindow.isMaximized().then((max) => setIsMaximized(max));
             });
 
             return () => {
@@ -32,65 +31,87 @@ const TitleBar = () => {
             };
         };
 
-        setupWindow();
+        init();
     }, []);
 
     const handleMinimize = async () => {
-        const appWindow = getCurrentWindow();
-        await appWindow.minimize();
+        await getCurrentWindow().minimize();
     };
 
     const handleMaximize = async () => {
-        const appWindow = getCurrentWindow();
-        await appWindow.toggleMaximize();
+        await getCurrentWindow().toggleMaximize();
     };
 
     const handleClose = async () => {
         await stopTimer();
-        const appWindow = getCurrentWindow();
-        await appWindow.close();
+        await getCurrentWindow().close();
     };
 
     const handleStartDragging = async (e: React.MouseEvent) => {
-        if ((e.target as HTMLElement).closest('button')) {
-            return;
-        }
-
-        const appWindow = getCurrentWindow();
-        await appWindow.startDragging();
+        if ((e.target as HTMLElement).closest('button')) return;
+        await getCurrentWindow().startDragging();
     };
 
+    const isMac = os === 'darwin';
+
     return (
-        <div className="w-full h-full flex flex-col items-center bg-sidebar">
+        <div className="w-full h-full flex flex-col items-center bg-sidebar select-none">
             <div
                 onMouseDown={handleStartDragging}
-                className="w-full flex justify-end items-center h-full"
+                className={`w-full flex h-full justify-end items-center`}
             >
-                <div className="flex items-center h-full">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="px-6 h-full rounded-none"
-                        onClick={handleMinimize}
-                    >
-                        <Minimize />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="px-6 h-full rounded-none"
-                        onClick={handleMaximize}
-                    >
-                        {isMaximized ? <RestoreDown /> : <RestoreUp />}
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="px-6 h-full rounded-none hover:bg-red-500 dark:hover:bg-red-800"
-                        onClick={handleClose}
-                    >
-                        <Close />
-                    </Button>
+                <div className="flex items-center h-full gap-2">
+                    {isMac ? (
+                        <div className=" pe-5">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-4 w-4 rounded-full bg-yellow-400 hover:bg-yellow-500 p-0"
+                                onClick={handleMinimize}
+                            />
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-4 w-4 rounded-full bg-green-500 hover:bg-green-600 p-0"
+                                onClick={handleMaximize}
+                            />
+                            {/* macOS style: red, yellow, green on the left */}
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-4 w-4 rounded-full bg-red-500 hover:bg-red-600 p-0"
+                                onClick={handleClose}
+                            />
+                        </div>
+                    ) : (
+                        <>
+                            {/* Windows/Linux style: right side */}
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="px-6 h-full rounded-none"
+                                onClick={handleMinimize}
+                            >
+                                <Minimize />
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="px-6 h-full rounded-none"
+                                onClick={handleMaximize}
+                            >
+                                {isMaximized ? <RestoreDown /> : <RestoreUp />}
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="px-6 h-full rounded-none hover:bg-red-500 dark:hover:bg-red-800"
+                                onClick={handleClose}
+                            >
+                                <Close />
+                            </Button>
+                        </>
+                    )}
                 </div>
             </div>
         </div>

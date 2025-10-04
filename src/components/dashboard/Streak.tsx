@@ -22,12 +22,18 @@ const Streak = () => {
                 </p>
             </CardHeader>
             <CardContent className="flex gap-4">
-                <div className="flex-1 rounded-lg bg-muted p-4 text-center">
-                    <p className="text-2xl font-bold">{streaks.current_streak} days</p>
-                    <p className="text-sm text-muted-foreground">Current Streak</p>
+                <div className="flex-1 rounded-[5px] bg-muted p-4 text-center">
+                    <p className="text-2xl font-bold">
+                        {streaks.current_streak} days
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                        Current Streak
+                    </p>
                 </div>
-                <div className="flex-1 rounded-lg bg-muted p-4 text-center">
-                    <p className="text-2xl font-bold">{streaks.total_streak} days</p>
+                <div className="flex-1 rounded-[5px] bg-muted p-4 text-center">
+                    <p className="text-2xl font-bold">
+                        {streaks.total_streak} days
+                    </p>
                     <p className="text-sm text-muted-foreground">Best Streak</p>
                 </div>
             </CardContent>
