@@ -7,9 +7,18 @@ import {
     closestCorners,
     useDroppable,
 } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import {
+    SortableContext,
+    verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { Plus } from 'lucide-react';
-import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+    Suspense,
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 
 import { Badge } from '@/components/ui/badge';
@@ -44,15 +53,7 @@ const Kanban = () => {
     const [overColumn, setOverColumn] = useState<TaskStatus | null>(null);
 
     useEffect(() => {
-        setTasks((prev) => {
-            const isSame =
-                prev.length === tasksData.length &&
-                prev.every(
-                    (t, i) =>
-                        t.id === tasksData[i]?.id && t.status === tasksData[i]?.status,
-                );
-            return isSame ? prev : [...tasksData];
-        });
+        setTasks(tasksData);
     }, [tasksData]);
 
     const columns: KanbanColumn[] = useMemo(
@@ -114,7 +115,9 @@ const Kanban = () => {
                         ...activeTask,
                         status: newStatus,
                         completed_at:
-                            newStatus === 'Completed' ? formatDate(dayjs()) : undefined,
+                            newStatus === 'Completed'
+                                ? formatDate(dayjs())
+                                : undefined,
                     },
                     taskId: activeTask.id,
                 });
@@ -137,7 +140,9 @@ const Kanban = () => {
                 const [moved] = reordered.splice(oldIndex, 1);
                 reordered.splice(newIndex, 0, moved);
 
-                const nonColumnTasks = tasks.filter((t) => t.status !== oldStatus);
+                const nonColumnTasks = tasks.filter(
+                    (t) => t.status !== oldStatus,
+                );
                 setTasks([...nonColumnTasks, ...reordered]);
             }
         }
@@ -225,7 +230,9 @@ const Column = ({
                         <div className="space-y-1 max-h-[var(--kanban-column-height)] pe-2">
                             {column.tasks.map((task) => (
                                 <Suspense
-                                    fallback={<Skeleton className="flex-1 h-12" />}
+                                    fallback={
+                                        <Skeleton className="flex-1 h-12" />
+                                    }
                                     key={task.id}
                                 >
                                     <TaskCard task={task} key={task.id} />

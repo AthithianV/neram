@@ -23,7 +23,7 @@ import {
     FormMessage,
 } from '../ui/form';
 
-import { DB_DATE_FORMAT } from '@/constants/session';
+import { DB_DATE_FORMAT, DB_DATE_TIME } from '@/constants/session';
 import {
     TASK_INTIAL_VALUE,
     TASK_PRIORITY,
@@ -182,7 +182,8 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                                         title: priority,
                                         value: priority,
                                         color: TASK_PRIORITY_COLOR[
-                                            (priority as TaskPriority) ?? 'Default'
+                                            (priority as TaskPriority) ??
+                                                'Default'
                                         ],
                                     }))}
                                     fallbackText="No Priority Available"
@@ -243,7 +244,9 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                                 </FormLabel>
                                 <FormControl>
                                     <Suspense
-                                        fallback={<Skeleton className="w-full h-3" />}
+                                        fallback={
+                                            <Skeleton className="w-full h-3" />
+                                        }
                                     >
                                         <DatePicker
                                             dateValue={field.value}
@@ -269,12 +272,16 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                                 </FormLabel>
                                 <FormControl>
                                     <Suspense
-                                        fallback={<Skeleton className="w-full h-3" />}
+                                        fallback={
+                                            <Skeleton className="w-full h-3" />
+                                        }
                                     >
                                         <DatePicker
                                             dateValue={field.value}
                                             onChange={field.onChange}
                                             nullable={true}
+                                            format={DB_DATE_TIME}
+                                            endOf={true}
                                         />
                                     </Suspense>
                                 </FormControl>
@@ -328,7 +335,9 @@ const TaskForm = ({ taskId, closeModal, status }: Prop) => {
                                 </FormLabel>
                                 <FormControl>
                                     <Suspense
-                                        fallback={<Skeleton className="w-full h-3" />}
+                                        fallback={
+                                            <Skeleton className="w-full h-3" />
+                                        }
                                     >
                                         <DatePicker
                                             dateValue={field.value}

@@ -59,9 +59,10 @@ const TaskCard = ({ task, isDragged }: PropType) => {
 
     const { data: settings } = useSettings();
 
-    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
-        id: task.id,
-    });
+    const { attributes, listeners, setNodeRef, transform, transition } =
+        useSortable({
+            id: task.id,
+        });
 
     const style = {
         transition,
@@ -69,7 +70,8 @@ const TaskCard = ({ task, isDragged }: PropType) => {
     };
 
     const getPriorityStyle = (priority?: string | null) => {
-        const color = TASK_PRIORITY_COLOR[(priority as TaskPriority) ?? 'Default'];
+        const color =
+            TASK_PRIORITY_COLOR[(priority as TaskPriority) ?? 'Default'];
         return { color };
     };
 
@@ -133,7 +135,9 @@ const TaskCard = ({ task, isDragged }: PropType) => {
                             <TaskAttribute
                                 title="Deadline"
                                 text={
-                                    task.deadline ? formatDeadLine(task.deadline) : null
+                                    task.deadline
+                                        ? formatDeadLine(task.deadline)
+                                        : ''
                                 }
                                 icon={<Calendar />}
                                 className={
@@ -324,7 +328,8 @@ const TaskMoreOptions = ({ task }: { task: ReadTask }) => {
                                 >
                                     <span
                                         style={{
-                                            backgroundColor: TASK_STATUS_COLOR[status],
+                                            backgroundColor:
+                                                TASK_STATUS_COLOR[status],
                                         }}
                                         className="w-3 h-3 rounded"
                                     ></span>
@@ -347,12 +352,16 @@ const TaskTimer = ({ task }: { task: ReadTask }) => {
         setDuration(task.total_duration_sec || 0);
     }, []);
 
-    const isTimerRunning = timer && timer.task_id === task.id && timer.is_running;
+    const isTimerRunning =
+        timer && timer.task_id === task.id && timer.is_running;
 
     useEffect(() => {
         if (isTimerRunning) {
             const startingTime = task.total_duration_sec || 0;
-            setDuration(startingTime + (isTimerRunning ? timer.session_time_elapsed : 0));
+            setDuration(
+                startingTime +
+                    (isTimerRunning ? timer.session_time_elapsed : 0),
+            );
         }
     }, [timer]);
 

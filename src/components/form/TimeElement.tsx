@@ -50,15 +50,15 @@ const TimeElement = ({
         } else {
             setError('');
             const pickedDate = dayjs(date);
+
             const d = pickedDate.get('date');
             const m = pickedDate.get('month');
             const y = pickedDate.get('year');
-            parsedTime
+            const time = parsedTime
                 .set('month', m)
                 .set('date', d)
-                .set('year', y)
-                .format('DD MMMM YYYY HH:mm:SS');
-            setValue(parsedTime.valueOf());
+                .set('year', y);
+            setValue(time.valueOf());
         }
         adjustDuration && adjustDuration();
     };

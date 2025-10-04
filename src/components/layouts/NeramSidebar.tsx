@@ -32,9 +32,11 @@ const NeramSidebar = () => {
                                         <SidebarMenuButton
                                             asChild
                                             className={cn(
-                                                pathname.startsWith(link.props.to) &&
+                                                pathname.startsWith(
+                                                    link.props.to,
+                                                ) &&
                                                     'bg-sidebar-accent font-semibold text-theme hover:text-theme',
-                                                'px-4 !h-auto text-[0.9rem] rounded-md active:text-none',
+                                                'px-4 !h-auto text-[0.9rem] rounded-[5px] active:text-none',
                                             )}
                                         >
                                             {link}

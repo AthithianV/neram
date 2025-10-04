@@ -4,7 +4,11 @@ import dayjs from 'dayjs';
 import { useState } from 'react';
 
 import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/components/ui/popover';
 import { DB_DATE_FORMAT } from '@/constants/session';
 import { useSettings } from '@/hooks/useSettings';
 import { XCircleIcon } from 'lucide-react';
@@ -16,15 +20,39 @@ type PropsType = {
     disable?: boolean;
     format?: string;
     nullable?: boolean;
+    startOf?: boolean;
+    endOf?: boolean;
 };
 
-const DatePicker = ({ dateValue, onChange, disable, format, nullable }: PropsType) => {
+const DatePicker = ({
+    dateValue,
+    onChange,
+    disable,
+    format,
+    nullable,
+    startOf,
+    endOf,
+}: PropsType) => {
     const [open, setOpen] = useState(false);
     const { data: settings } = useSettings();
 
     const handleSelect = (date: Date | undefined) => {
-        date && onChange(formatDate(date, { format: format ? format : DB_DATE_FORMAT }));
-        setOpen(false);
+        if (date) {
+            let pickedDate = dayjs(date);
+            if (startOf) {
+                pickedDate = pickedDate.startOf('day');
+            }
+            if (endOf) {
+                pickedDate = pickedDate.endOf('day');
+            }
+            date &&
+                onChange(
+                    formatDate(pickedDate, {
+                        format: format ? format : DB_DATE_FORMAT,
+                    }),
+                );
+            setOpen(false);
+        }
     };
 
     const clearDate = () => {
@@ -44,7 +72,9 @@ const DatePicker = ({ dateValue, onChange, disable, format, nullable }: PropsTyp
                         )}
                         value={
                             dateValue
-                                ? formatDate(dateValue, { format: settings?.date_format })
+                                ? formatDate(dateValue, {
+                                      format: settings?.date_format,
+                                  })
                                 : 'Pick a date'
                         }
                         readOnly

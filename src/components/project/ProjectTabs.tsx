@@ -4,7 +4,6 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import LoaderWrapper from '@/components/layouts/Loader';
 import { cn } from '@/lib/utils';
 import { Edit, Folder, Plus, SquareArrowOutUpRight, Trash } from 'lucide-react';
-import { toast } from 'sonner';
 import { Button } from '../ui/button';
 import {
     ContextMenu,
@@ -20,10 +19,6 @@ const ProjectTabs = () => {
     const { projectId } = useParams();
 
     const handleAdd = async () => {
-        if (projects && projects.length >= 5) {
-            toast.warning('Cannot Add more than 5 Projects');
-            return;
-        }
         setSearchParams({ modal: 'add_project' });
     };
 
@@ -145,7 +140,9 @@ const ProjectTab = ({
             >
                 <Folder
                     className="h-4 w-4"
-                    fill={isSelected(project.id) ? 'currentColor' : 'transparent'}
+                    fill={
+                        isSelected(project.id) ? 'currentColor' : 'transparent'
+                    }
                 />
                 {project.title}
             </div>

@@ -34,12 +34,17 @@ import {
     DEFAULT_CURRENCY,
     PROJECT_INITIAL_VALUES,
 } from '@/constants/project';
-import { useCreateProject, useProjectById, useUpdateProject } from '@/hooks/useProject';
+import {
+    useCreateProject,
+    useProjectById,
+    useUpdateProject,
+} from '@/hooks/useProject';
 
 import Editor from '../editor/Editor';
 import ColorPicker from '../form/ColorPicker';
 import LoaderWrapper from '../layouts/Loader';
 import { Skeleton } from '../ui/skeleton';
+import { DB_DATE_TIME } from '@/constants/session';
 
 const Title = React.lazy(() => import('../form/Title'));
 const DatePicker = React.lazy(() => import('../form/DatePicker'));
@@ -62,7 +67,8 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
     });
 
     useEffect(() => {
-        if (project) form.reset({ ...project, tags: project.tags ? project.tags : [] });
+        if (project)
+            form.reset({ ...project, tags: project.tags ? project.tags : [] });
     }, [project]);
 
     useEffect(() => {
@@ -154,7 +160,9 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                                 </FormLabel>
                                 <FormControl>
                                     <Suspense
-                                        fallback={<Skeleton className="w-full h-3" />}
+                                        fallback={
+                                            <Skeleton className="w-full h-3" />
+                                        }
                                     >
                                         <DatePicker
                                             dateValue={field.value}
@@ -180,12 +188,16 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                                 </FormLabel>
                                 <FormControl>
                                     <Suspense
-                                        fallback={<Skeleton className="w-full h-3" />}
+                                        fallback={
+                                            <Skeleton className="w-full h-3" />
+                                        }
                                     >
                                         <DatePicker
                                             dateValue={field.value}
                                             onChange={field.onChange}
                                             nullable={true}
+                                            format={DB_DATE_TIME}
+                                            endOf={true}
                                         />
                                     </Suspense>
                                 </FormControl>
@@ -205,7 +217,9 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                                 </FormLabel>
                                 <FormControl>
                                     <Suspense
-                                        fallback={<Skeleton className="w-full h-3" />}
+                                        fallback={
+                                            <Skeleton className="w-full h-3" />
+                                        }
                                     >
                                         <DatePicker
                                             dateValue={field.value}
@@ -226,7 +240,9 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                     name="is_billable"
                     render={({ field }) => (
                         <FormItem className="w-1/2 flex items-center gap-5">
-                            <FormLabel className="font-semibold">Freelancing</FormLabel>
+                            <FormLabel className="font-semibold">
+                                Freelancing
+                            </FormLabel>
                             <FormControl>
                                 <Switch
                                     checked={field.value ? field.value : false}
@@ -252,7 +268,9 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                                         <FormControl>
                                             <Input
                                                 value={
-                                                    field.value ? field.value : undefined
+                                                    field.value
+                                                        ? field.value
+                                                        : undefined
                                                 }
                                                 onChange={field.onChange}
                                                 placeholder="Enter name..."
@@ -282,14 +300,17 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                                                     value={
                                                         field.value
                                                             ? field.value
-                                                            : BILLING_TYPE[0].title
+                                                            : BILLING_TYPE[0]
+                                                                  .title
                                                     }
                                                     onChange={field.onChange}
-                                                    items={BILLING_TYPE.map((type) => ({
-                                                        value: type.title,
-                                                        color: type.color,
-                                                        title: type.title,
-                                                    }))}
+                                                    items={BILLING_TYPE.map(
+                                                        (type) => ({
+                                                            value: type.title,
+                                                            color: type.color,
+                                                            title: type.title,
+                                                        }),
+                                                    )}
                                                     fallbackText="No Type Available"
                                                     placeholder="Select Billing TYpe"
                                                 />
@@ -313,7 +334,8 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                                     <FormItem className="w-1/2 flex items-center gap-5">
                                         <FormLabel className="min-w-32 font-semibold">
                                             <Gauge size={16} />{' '}
-                                            {form.watch('billing_type') === 'Hourly'
+                                            {form.watch('billing_type') ===
+                                            'Hourly'
                                                 ? 'Hourly Rate'
                                                 : 'Fixed Rate'}
                                         </FormLabel>
@@ -338,7 +360,8 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                                 render={({ field }) => (
                                     <FormItem className="w-1/2 flex items-center gap-5">
                                         <FormLabel className="min-w-32 font-semibold">
-                                            <CircleDollarSign size={16} /> Currency
+                                            <CircleDollarSign size={16} />{' '}
+                                            Currency
                                         </FormLabel>
                                         <FormControl>
                                             <Suspense
@@ -349,13 +372,17 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                                                 <Selector
                                                     onChange={field.onChange}
                                                     value={
-                                                        field.value ?? DEFAULT_CURRENCY
+                                                        field.value ??
+                                                        DEFAULT_CURRENCY
                                                     }
-                                                    items={CURRENCT_LIST.map((type) => ({
-                                                        value: `${type.symbol} ${type.code}`,
-                                                        color: COLORS[4].value,
-                                                        title: `${type.symbol} ${type.code}`,
-                                                    }))}
+                                                    items={CURRENCT_LIST.map(
+                                                        (type) => ({
+                                                            value: `${type.symbol} ${type.code}`,
+                                                            color: COLORS[4]
+                                                                .value,
+                                                            title: `${type.symbol} ${type.code}`,
+                                                        }),
+                                                    )}
                                                     fallbackText="No Type Available"
                                                     placeholder="Select Billing TYpe"
                                                 />
@@ -377,7 +404,11 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <Suspense fallback={<Skeleton className="w-full h-4" />}>
+                                <Suspense
+                                    fallback={
+                                        <Skeleton className="w-full h-4" />
+                                    }
+                                >
                                     <Editor
                                         value={field.value ?? ''}
                                         onChange={field.onChange}

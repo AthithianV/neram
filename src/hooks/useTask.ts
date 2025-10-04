@@ -81,13 +81,39 @@ export const useUpdateTask = (projectId: number) => {
             queryClient.setQueryData(['tasks'], projectId);
             console.error('Update failed:', err);
         },
+        onMutate: async ({ taskToUpdate, taskId }) => {
+            await queryClient.cancelQueries({ queryKey: ['tasks', projectId] });
+
+            const previousTasks = queryClient.getQueryData<ReadTask[]>([
+                'tasks',
+                projectId,
+            ]);
+            queryClient.setQueryData<ReadTask[]>(
+                ['tasks', projectId],
+                (old) => {
+                    return old?.map((task) =>
+                        task.id === taskId
+                            ? { ...task, ...taskToUpdate }
+                            : task,
+                    );
+                },
+            );
+
+            return { previousTasks };
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ['tasks', projectId] });
+        },
     });
 };
 
 export const useDeleteTask = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (data: { id: number; shouldDeleteSessions: boolean }) => {
+        mutationFn: async (data: {
+            id: number;
+            shouldDeleteSessions: boolean;
+        }) => {
             try {
                 return await invoke('delete_task', data);
             } catch (err) {
@@ -103,7 +129,13 @@ export const useDeleteTask = () => {
 export const useAddTagToTask = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async ({ task_id, tag_id }: { task_id: number; tag_id: number }) => {
+        mutationFn: async ({
+            task_id,
+            tag_id,
+        }: {
+            task_id: number;
+            tag_id: number;
+        }) => {
             return await invoke('add_tag_to_task', {
                 task_id,
                 tag_id,
@@ -118,7 +150,13 @@ export const useAddTagToTask = () => {
 export const useRemoveTagFromTask = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async ({ task_id, tag_id }: { task_id: number; tag_id: number }) => {
+        mutationFn: async ({
+            task_id,
+            tag_id,
+        }: {
+            task_id: number;
+            tag_id: number;
+        }) => {
             return await invoke('remove_tag_from_task', {
                 task_id,
                 tag_id,

@@ -46,12 +46,18 @@ export const useCreateProject = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (project: Project) => {
-            const projectId = await invoke('create_project', { newProject: project });
+            console.log(project);
+            const projectId = await invoke('create_project', {
+                newProject: project,
+            });
             return projectId as number;
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['projects'] });
             toast.success('New Project Created');
+        },
+        onError: (err) => {
+            console.log(err);
         },
     });
 };
@@ -59,7 +65,12 @@ export const useCreateProject = () => {
 export const useUpdateProject = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (data: { projectToUpdate: Project; projectId: number }) => {
+        mutationFn: async (data: {
+            projectToUpdate: Project;
+            projectId: number;
+        }) => {
+            console.log(data);
+
             return await invoke('update_project', data);
         },
         onSuccess: () => {
