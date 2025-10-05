@@ -20,9 +20,8 @@ export function AboutModal() {
                 w-full
                 flex items-center gap-2 p-2 px-4 text-sm
                 rounded-[5px] cursor-pointer
-                bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600
-                text-white font-semibold
-                shadow-sm shadow-teal-400/50
+                bg-gradient-to-r
+                shadow-teal-400/50
                 transition-all duration-300 ease-in-out
                 hover:scale-102 hover:shadow-md hover:from-teal-500 hover:via-teal-600 hover:to-teal-500
                 active:scale-95
