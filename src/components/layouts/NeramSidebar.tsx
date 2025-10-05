@@ -15,6 +15,7 @@ import { SIDEBAR_BODY_LINKS, SIDEBAR_FOOTER_LINKS } from '@/constants/sidebar';
 import { cn } from '@/lib/utils';
 import { useLocation } from 'react-router-dom';
 import Brand from './Brand';
+import { AboutModal } from '../about/AboutModal';
 
 const NeramSidebar = () => {
     const { pathname } = useLocation();
@@ -65,6 +66,11 @@ const NeramSidebar = () => {
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
                         ))}
+                        <SidebarMenuItem>
+                            <SidebarMenuButton asChild>
+                                <AboutModal />
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
                     </SidebarMenu>
                 </SidebarFooter>
             </Sidebar>
