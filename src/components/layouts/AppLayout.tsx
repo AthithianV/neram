@@ -3,11 +3,12 @@ import { useUpdater } from '@/hooks/useUpdater';
 import React, { Suspense, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useDb } from '../../hooks/useDb';
-import { ThemeProvider, useTheme } from '../theme/ThemeProvider';
+import { ThemeProvider } from '../theme/ThemeProvider';
 import { Skeleton } from '../ui/skeleton';
 import { Toaster } from '../ui/sonner';
 import { ToastContainer, toast } from 'react-toastify';
 import DonateToast from '../about/DonateToast';
+import UpdateToast from '../update/UpdateToast';
 
 const ModalLayout = React.lazy(() => import('./ModalLayout'));
 const NeramSidebar = React.lazy(() => import('./NeramSidebar'));
@@ -16,8 +17,6 @@ const TitleBar = React.lazy(() => import('./TitleBar'));
 export function AppLayout() {
     const { isLoading, error } = useDb();
     useUpdater();
-
-    const { theme } = useTheme();
 
     const { mutateAsync: updateIncompleteSession } =
         useUpdateIncompleteSession();
@@ -28,11 +27,20 @@ export function AppLayout() {
 
     useEffect(() => {
         toast(DonateToast, {
-            className: 'p-0 border border-gray-700 shadow-lg opacity-100',
+            className:
+                '!p-0 border border-gray-700 shadow-lg bg-background opacity-100',
             hideProgressBar: true,
-            theme: theme,
             pauseOnHover: true,
-            autoClose: 10000,
+            autoClose: false,
+        });
+
+        toast(<UpdateToast />, {
+            className:
+                '!p-0 border border-gray-700 shadow-lg bg-background opacity-100',
+            autoClose: false,
+            hideProgressBar: true,
+            pauseOnHover: false,
+            closeOnClick: false,
         });
     }, []);
 
