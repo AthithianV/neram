@@ -20,7 +20,7 @@ const SessionsBar = () => {
                         ? Math.floor(index / 2) < session_completed
                             ? 'bg-[#ff6347]'
                             : 'bg-gray-300'
-                        : Math.floor(index / 2 - 1) < break_completed
+                        : Math.floor(index / 2 + 1) < break_completed
                           ? 'text-emerald-400'
                           : 'text-gray-300';
 
