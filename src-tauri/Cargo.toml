@@ -1,6 +1,6 @@
 [package]
 name = "Neram"
-version = "0.1.1"
+version = "0.1.0"
 description = "Neram - a Productivity app for Time Logging, Pomodaro, Managing To Do list, and Analysing Time"
 authors = ["Athithian"]
 edition = "2021"
@@ -27,6 +27,7 @@ tauri-plugin-os = "2.3.1"
 tauri-plugin-process = "2.3.0"
 tauri-plugin-dialog = "2.4.0"
 tauri-plugin-log = "2.7.0"
+tauri-plugin-notification = "2"
 
 # Serde
 serde = { version = "1", features = ["derive"] }

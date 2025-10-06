@@ -9,7 +9,8 @@ const SessionsBar = () => {
         return <Skeleton className="h-5" />;
     }
 
-    const { session_count, session_completed, break_completed } = pomodoroSettings;
+    const { session_count, session_completed, break_completed } =
+        pomodoroSettings;
 
     return (
         <ul className="w-8/12 flex-center gap-2">
@@ -19,7 +20,7 @@ const SessionsBar = () => {
                         ? Math.floor(index / 2) < session_completed
                             ? 'bg-[#ff6347]'
                             : 'bg-gray-300'
-                        : Math.floor(index / 2) < break_completed
+                        : Math.floor(index / 2 - 1) < break_completed
                           ? 'text-emerald-400'
                           : 'text-gray-300';
 

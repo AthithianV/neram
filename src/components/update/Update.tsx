@@ -7,7 +7,7 @@ const Update = () => {
     const { status } = useUpdater();
 
     useEffect(() => {
-        if (status) {
+        if (status === 'available') {
             toast(<UpdateToast />, {
                 className:
                     '!p-0 border border-gray-700 shadow-lg bg-background opacity-100',
@@ -17,7 +17,7 @@ const Update = () => {
                 closeOnClick: false,
             });
         }
-    }, []);
+    }, [status]);
 
     return <></>;
 };

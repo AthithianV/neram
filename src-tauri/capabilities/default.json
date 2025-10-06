@@ -23,6 +23,8 @@
         "log:default",
         "opener:allow-open-url",
         "opener:allow-default-urls",
+        "notification:allow-request-permission",
+        "notification:default",
         {
             "identifier": "fs:allow-exists",
             "allow": [{ "path": "$APPDATA/*" }]
