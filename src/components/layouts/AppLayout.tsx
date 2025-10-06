@@ -7,8 +7,8 @@ import { ThemeProvider } from '../theme/ThemeProvider';
 import { Skeleton } from '../ui/skeleton';
 import { Toaster } from '../ui/sonner';
 import { ToastContainer, toast } from 'react-toastify';
-import DonateToast from '../about/DonateToast';
-import UpdateToast from '../update/UpdateToast';
+import Update from '../update/Update';
+import ProductHuntUpvote from '../about/ProductHuntUpvote';
 
 const ModalLayout = React.lazy(() => import('./ModalLayout'));
 const NeramSidebar = React.lazy(() => import('./NeramSidebar'));
@@ -25,22 +25,23 @@ export function AppLayout() {
         updateIncompleteSession();
     }, [isLoading]);
 
+    // useEffect(() => {
+    //     toast(DonateToast, {
+    //         className:
+    //             '!p-0 border border-gray-700 shadow-lg bg-background opacity-100',
+    //         hideProgressBar: true,
+    //         pauseOnHover: true,
+    //         autoClose: false,
+    //     });
+    // }, []);
+
     useEffect(() => {
-        toast(DonateToast, {
+        toast(ProductHuntUpvote, {
             className:
                 '!p-0 border border-gray-700 shadow-lg bg-background opacity-100',
             hideProgressBar: true,
             pauseOnHover: true,
             autoClose: false,
-        });
-
-        toast(<UpdateToast />, {
-            className:
-                '!p-0 border border-gray-700 shadow-lg bg-background opacity-100',
-            autoClose: false,
-            hideProgressBar: true,
-            pauseOnHover: false,
-            closeOnClick: false,
         });
     }, []);
 
@@ -74,6 +75,7 @@ export function AppLayout() {
                     position="bottom-right"
                     style={{ padding: '0px' }}
                 />
+                <Update />
             </div>
         </ThemeProvider>
     );

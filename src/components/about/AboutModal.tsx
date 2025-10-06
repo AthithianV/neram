@@ -53,7 +53,7 @@ export function AboutModal() {
                             key={item.link}
                             variant={'ghost'}
                             onClick={() => open(item.link)}
-                            className="flex items-center justify-center px-1 hover:bg-transparent"
+                            className="flex items-center justify-center px-1 hover:bg-transparent active:scale-90"
                         >
                             <a href={item.link} target="_blank">
                                 {item.icon}

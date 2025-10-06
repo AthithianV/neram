@@ -1,6 +1,10 @@
 export const GITHUB_LINK = 'https://github.com/AthithianV';
 export const LINKEDIN_LINK = 'https://www.linkedin.com/in/athithianv/';
 export const BUY_ME_COFFEE_LINK = 'https://buymeacoffee.com/athithianv';
+export const PRODUCT_HUNT_LINK = 'https://www.producthunt.com/products/neram';
+export const PRODUCT_HUNT_REVIEW_LINK =
+    'https://www.producthunt.com/products/neram/reviews/new';
+export const YOUTUBE_LINK = 'https://www.youtube.com/watch?v=OOJF6Q_iO10';
 
 export const ABOUT_BUTTONS = [
     {
@@ -25,6 +29,29 @@ export const ABOUT_BUTTONS = [
             </div>
         ),
         link: LINKEDIN_LINK,
+    },
+    {
+        title: 'Product Hunt',
+        icon: (
+            <div>
+                <img
+                    src={'/product-hunt-logo.png'}
+                    alt=""
+                    height={35}
+                    width={35}
+                />
+            </div>
+        ),
+        link: PRODUCT_HUNT_LINK,
+    },
+    {
+        title: 'Youtube',
+        icon: (
+            <div>
+                <img src={'/youtube-logo.png'} alt="" height={35} width={35} />
+            </div>
+        ),
+        link: YOUTUBE_LINK,
     },
     {
         title: 'Donate',
