@@ -12,9 +12,17 @@ enum PomodoroSettings {
     SessionCount,
     BreakDuration,
     AutoStart,
+    NotificationSound,
     SyncWithTimeTracking,
     SessionCompleted,
     BreakCompleted,
+    DefaultProject,
+}
+
+#[derive(DeriveIden)]
+enum Projects {
+    Table,
+    Id,
 }
 
 #[async_trait::async_trait]
@@ -63,6 +71,12 @@ impl MigrationTrait for Migration {
                             .default(false),
                     )
                     .col(
+                        ColumnDef::new(PomodoroSettings::NotificationSound)
+                            .boolean()
+                            .not_null()
+                            .default(false),
+                    )
+                    .col(
                         ColumnDef::new(PomodoroSettings::SessionCompleted)
                             .integer()
                             .not_null()
@@ -73,6 +87,19 @@ impl MigrationTrait for Migration {
                             .integer()
                             .not_null()
                             .default(0),
+                    )
+                    .col(
+                        ColumnDef::new(PomodoroSettings::DefaultProject)
+                            .integer()
+                            .null(),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_pomodoro_settings_project")
+                            .from(PomodoroSettings::Table, PomodoroSettings::DefaultProject)
+                            .to(Projects::Table, Projects::Id)
+                            .on_delete(ForeignKeyAction::Cascade)
+                            .on_update(ForeignKeyAction::Cascade),
                     )
                     .to_owned(),
             )

@@ -8,6 +8,7 @@ mod m20250605_000004_create_tag_table;
 mod m20250605_000005_create_pomodaro_table;
 mod m20250605_000006_create_settings_table;
 mod m20250605_000007_create_pivot_tables;
+mod m20251011_000008_add_columns_pomodoro_table;
 
 pub struct Migrator;
 
@@ -22,6 +23,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20250605_000005_create_pomodaro_table::Migration),
             Box::new(m20250605_000006_create_settings_table::Migration),
             Box::new(m20250605_000007_create_pivot_tables::Migration),
+            Box::new(m20251011_000008_add_columns_pomodoro_table::Migration),
         ]
     }
 }

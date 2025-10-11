@@ -9,6 +9,8 @@ export interface ReadPomodoroSettings {
     sync_with_time_tracking: boolean;
     session_completed: number;
     break_completed: number;
+    default_project: number | null;
+    notification_sound: boolean;
 }
 
 export type UpdatePomodoroSettings = Partial<ReadPomodoroSettings>;
@@ -35,7 +37,9 @@ export const useUpdatePomodoroSettings = () => {
     return useMutation({
         mutationFn: async (settingsToUpdate: UpdatePomodoroSettings) => {
             try {
-                return await invoke('update_pomodoro_settings', { settingsToUpdate });
+                return await invoke('update_pomodoro_settings', {
+                    settingsToUpdate,
+                });
             } catch (err) {
                 console.log(err);
             }

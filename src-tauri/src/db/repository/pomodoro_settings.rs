@@ -24,6 +24,8 @@ impl<'a> PomodoroSettingsRepository<'a> {
             sync_with_time_tracking: true,
             session_completed: 0,
             break_completed: 0,
+            notification_sound: false,
+            default_project: None,
         };
 
         if let Some(settings) = settings {
@@ -34,6 +36,8 @@ impl<'a> PomodoroSettingsRepository<'a> {
             result.sync_with_time_tracking = settings.sync_with_time_tracking;
             result.session_completed = settings.session_completed;
             result.break_completed = settings.break_completed;
+            result.notification_sound = settings.notification_sound;
+            result.default_project = settings.default_project
         }
 
         Ok(result)
@@ -51,6 +55,8 @@ impl<'a> PomodoroSettingsRepository<'a> {
             sync_with_time_tracking,
             session_completed,
             break_completed,
+            notification_sound,
+            default_project,
         } = settings_to_update;
 
         if let Some(session_duration) = session_duration {
@@ -79,6 +85,14 @@ impl<'a> PomodoroSettingsRepository<'a> {
 
         if let Some(break_completed) = break_completed {
             active_pomodoro_settings.break_completed = Set(break_completed);
+        }
+
+        if let Some(notification_sound) = notification_sound {
+            active_pomodoro_settings.notification_sound = Set(notification_sound);
+        }
+
+        if let Some(default_project) = default_project {
+            active_pomodoro_settings.default_project = Set(default_project);
         }
 
         active_pomodoro_settings.update(self.db).await?;
