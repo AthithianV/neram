@@ -1,3 +1,5 @@
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
 mod commands;
 mod db;
 mod utils;
@@ -18,6 +20,7 @@ pub use utils::*;
 
 pub use sea_orm::DatabaseConnection;
 use std::sync::Arc;
+use tauri::{WebviewUrl, WebviewWindowBuilder};
 use tokio::sync::Mutex;
 
 #[derive(Clone)]
@@ -29,18 +32,40 @@ struct AppState {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub async fn run() {
     tauri::Builder::default()
+        .setup(|app| {
+            let handle = app.handle();
+
+            #[cfg(target_os = "macos")]
+            {
+                // macOS: native titlebar
+                WebviewWindowBuilder::new(&handle, "main", WebviewUrl::App("index.html".into()))
+                    .title("Neram")
+                    .decorations(true)
+                    .title_bar_style(TitleBarStyle::Visible)
+                    .maximized(true)
+                    .build()?;
+            }
+
+            #[cfg(not(target_os = "macos"))]
+            {
+                // Windows/Linux: custom titlebar
+                WebviewWindowBuilder::new(handle, "main", WebviewUrl::App("index.html".into()))
+                    .title("Neram")
+                    .decorations(false)
+                    .transparent(false)
+                    .maximized(true)
+                    .build()?;
+            }
+
+            Ok(())
+        })
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_os::init())
         .plugin(
             tauri_plugin_log::Builder::new()
                 .targets([tauri_plugin_log::Target::new(
-                    tauri_plugin_log::TargetKind::Folder {
-                        path: std::path::PathBuf::from("/logs"),
-                        file_name: None,
-                    },
+                    tauri_plugin_log::TargetKind::Stdout,
                 )])
-                .max_file_size(50_000)
-                .rotation_strategy(tauri_plugin_log::RotationStrategy::KeepAll)
                 .build(),
         )
         .plugin(tauri_plugin_dialog::init())

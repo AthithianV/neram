@@ -88,11 +88,7 @@ const TaskCard = ({ task, isDragged }: PropType) => {
     };
 
     return (
-        <div
-            ref={setNodeRef}
-            style={style}
-            className="hover:scale-101 hover:z-10  transition-all duration-100 ease-in-out"
-        >
+        <div ref={setNodeRef} style={style}>
             <Card
                 className={cn(
                     'transition-all hover:shadow-md rounded-md gap-0 py-3 px-4 w-full z-800',

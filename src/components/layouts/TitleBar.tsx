@@ -2,12 +2,12 @@ import { platform } from '@tauri-apps/plugin-os';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
-
 import { useStopTimer } from '@/hooks/useTimer';
 import Close from '../icons/Close';
 import Minimize from '../icons/Minimize';
 import RestoreDown from '../icons/RestoreDown';
 import RestoreUp from '../icons/RestoreUp';
+import Brand from './Brand';
 
 const TitleBar = () => {
     const [isMaximized, setIsMaximized] = useState(false);
@@ -17,18 +17,17 @@ const TitleBar = () => {
     useEffect(() => {
         const init = async () => {
             const appWindow = getCurrentWindow();
-            setOs(platform());
+            const currentOs = await platform();
+            setOs(currentOs);
 
             const maximized = await appWindow.isMaximized();
             setIsMaximized(maximized);
 
             const unlisten = await appWindow.onResized(() => {
-                appWindow.isMaximized().then((max) => setIsMaximized(max));
+                appWindow.isMaximized().then(setIsMaximized);
             });
 
-            return () => {
-                unlisten();
-            };
+            return () => unlisten();
         };
 
         init();
@@ -52,67 +51,48 @@ const TitleBar = () => {
         await getCurrentWindow().startDragging();
     };
 
-    const isMac = os === 'darwin';
+    const isMac = os === 'darwin' || os === 'macos';
 
     return (
-        <div className="w-full h-full flex flex-col items-center bg-sidebar select-none">
+        <div className="w-full h-8 flex items-center bg-sidebar select-none">
             <div
                 onMouseDown={handleStartDragging}
-                className={`w-full flex h-full justify-end items-center`}
+                className={`w-full flex items-center justify-between px-3`}
             >
-                <div className="flex items-center h-full gap-2">
-                    {isMac ? (
-                        <div className=" pe-5">
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-4 w-4 rounded-full bg-yellow-400 hover:bg-yellow-500 p-0"
-                                onClick={handleMinimize}
-                            />
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-4 w-4 rounded-full bg-green-500 hover:bg-green-600 p-0"
-                                onClick={handleMaximize}
-                            />
-                            {/* macOS style: red, yellow, green on the left */}
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-4 w-4 rounded-full bg-red-500 hover:bg-red-600 p-0"
-                                onClick={handleClose}
-                            />
-                        </div>
-                    ) : (
-                        <>
-                            {/* Windows/Linux style: right side */}
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="px-6 h-full rounded-none"
-                                onClick={handleMinimize}
-                            >
-                                <Minimize />
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="px-6 h-full rounded-none"
-                                onClick={handleMaximize}
-                            >
-                                {isMaximized ? <RestoreDown /> : <RestoreUp />}
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="px-6 h-full rounded-none hover:bg-red-500 dark:hover:bg-red-800"
-                                onClick={handleClose}
-                            >
-                                <Close />
-                            </Button>
-                        </>
-                    )}
-                </div>
+                {isMac && <Brand />}
+
+                {/* Center section (for app title, if you want later) */}
+                <div className="flex-1 text-center text-sm font-medium text-muted-foreground"></div>
+
+                {/* Windows/Linux controls on right */}
+                {!isMac && (
+                    <div className="flex items-center h-full">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="px-6 h-full rounded-none"
+                            onClick={handleMinimize}
+                        >
+                            <Minimize />
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="px-6 h-full rounded-none"
+                            onClick={handleMaximize}
+                        >
+                            {isMaximized ? <RestoreDown /> : <RestoreUp />}
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="px-6 h-full rounded-none hover:bg-red-500 dark:hover:bg-red-800"
+                            onClick={handleClose}
+                        >
+                            <Close />
+                        </Button>
+                    </div>
+                )}
             </div>
         </div>
     );
