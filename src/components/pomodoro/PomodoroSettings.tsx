@@ -28,11 +28,12 @@ import {
     usePomodoroSettings,
     useUpdatePomodoroSettings,
 } from '@/hooks/usePomodoro';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const PomodoroSettings = () => {
     const { data: pomodoro_settings } = usePomodoroSettings();
     const { mutateAsync: updatePomodoro } = useUpdatePomodoroSettings();
+    const [open, setOpen] = useState(false);
 
     const form = useForm<PomodoroSettingsValues>({
         resolver: zodResolver(PomodoroSettingsSchema),
@@ -55,11 +56,12 @@ const PomodoroSettings = () => {
             session_duration: data.session_duration * 60,
             break_duration: data.break_duration * 60,
         });
+        setOpen(false);
     };
 
     return (
         <div className="flex justify-end">
-            <Popover>
+            <Popover onOpenChange={setOpen} open={open}>
                 <PopoverTrigger asChild>
                     <Button variant="ghost" size="icon">
                         <Settings className="w-5 h-5" />
@@ -218,6 +220,7 @@ const PomodoroSettings = () => {
                                         </div>
                                         <FormControl>
                                             <Switch
+                                                disabled={true}
                                                 checked={field.value}
                                                 onCheckedChange={field.onChange}
                                             />

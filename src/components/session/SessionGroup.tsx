@@ -6,6 +6,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from '@/components/ui/accordion';
+import { usePomodoroSettings } from '@/hooks/usePomodoro';
 import { GroupedSession } from '@/hooks/useSession';
 
 import { useTimer } from '@/hooks/useTimer';
@@ -21,6 +22,7 @@ const SessionGroup = ({
     isFirst: boolean;
 }) => {
     const { data: timer } = useTimer();
+    const { data: pomodoroSettings } = usePomodoroSettings();
 
     return (
         <Accordion type="single" collapsible>
@@ -39,7 +41,9 @@ const SessionGroup = ({
                         <span>
                             {formatDuration(
                                 group.total_duration_sec +
-                                    (isFirst && timer
+                                    (isFirst &&
+                                    timer &&
+                                    pomodoroSettings?.sync_with_time_tracking
                                         ? timer.session_time_elapsed
                                         : 0),
                             )}

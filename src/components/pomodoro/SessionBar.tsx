@@ -1,9 +1,19 @@
 import { usePomodoroSettings } from '@/hooks/usePomodoro';
 import { Coffee } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
+import { useEffect } from 'react';
 
 const SessionsBar = () => {
     const { data: pomodoroSettings } = usePomodoroSettings();
+
+    useEffect(() => {
+        console.log(
+            'Session: ',
+            pomodoroSettings?.session_completed,
+            'Break: ',
+            pomodoroSettings?.break_completed,
+        );
+    }, [pomodoroSettings]);
 
     if (!pomodoroSettings) {
         return <Skeleton className="h-5" />;
@@ -20,7 +30,7 @@ const SessionsBar = () => {
                         ? Math.floor(index / 2) < session_completed
                             ? 'bg-[#ff6347]'
                             : 'bg-gray-300'
-                        : Math.floor(index / 2 + 1) < break_completed
+                        : Math.floor(index / 2) < break_completed
                           ? 'text-emerald-400'
                           : 'text-gray-300';
 

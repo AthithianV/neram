@@ -79,7 +79,7 @@ const SessionCard = ({ sessionWithTaskAndTag, timer }: SessionCardProps) => {
                                                         backgroundColor:
                                                             tag.color,
                                                     }}
-                                                    className="text-[0.6rem] px-2 rounded-[0.3rem]"
+                                                    className="text-[0.6rem] px-2 rounded-[0.2rem]"
                                                 >
                                                     {tag.title}
                                                 </Badge>

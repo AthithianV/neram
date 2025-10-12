@@ -50,6 +50,7 @@ export const useStartTimer = () => {
     const { mutateAsync: createSession } = useCreateSession();
     return useMutation({
         mutationFn: async (data: StartTimerData) => {
+            console.log(data);
             const { sessionData, timerData, shouldCreateSession } = data;
 
             let sessionId: number | null = null;

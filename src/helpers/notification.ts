@@ -19,3 +19,15 @@ export const systemNotiFication = async (title: string, body: string) => {
         sendNotification({ title, body });
     }
 };
+
+export const playSound = (filePath: string) => {
+    try {
+        const audio = new Audio(filePath);
+        audio.volume = 0.6; // optional: adjust volume
+        audio.play().catch((err) => {
+            console.warn('Sound playback failed:', err);
+        });
+    } catch (e) {
+        console.error('Error playing sound:', e);
+    }
+};

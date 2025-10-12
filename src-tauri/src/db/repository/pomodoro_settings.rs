@@ -99,4 +99,22 @@ impl<'a> PomodoroSettingsRepository<'a> {
 
         Ok(())
     }
+
+    pub async fn check_and_remove_project(&self, project_id: i32) -> Result<(), DbErr> {
+        println!("I am checking...");
+        let current_settings = PomodoroSettings::find().one(self.db).await?;
+
+        if let Some(settings) = current_settings {
+            if let Some(current_project_id) = settings.default_project {
+                if current_project_id == project_id {
+                    let mut active_pomodoro_settings: ActivePomodoroSettings = settings.into();
+
+                    active_pomodoro_settings.default_project = Set(None);
+                    active_pomodoro_settings.update(self.db).await?;
+                }
+            }
+        };
+
+        Ok(())
+    }
 }

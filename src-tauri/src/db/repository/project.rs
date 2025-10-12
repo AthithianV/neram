@@ -1,4 +1,5 @@
 use crate::models::project::{CreateProjectModel, MinimalProjectModel, ReadProjectModel};
+use crate::repository::pomodoro_settings::PomodoroSettingsRepository;
 use crate::time::now;
 use ::entity::projects::{
     ActiveModel as ProjectActiveModel, Column as ProjectColumn, Entity as Project,
@@ -7,6 +8,7 @@ use ::entity::projects::{
 use ::entity::projects_tags::{ActiveModel as ProjectsTagsActiveModel, Entity as ProjectsTags};
 use ::entity::sessions::{Column as SessionColumn, Entity as Session};
 use ::entity::tasks::{Column as TaskColumn, Entity as Task};
+
 use sea_orm::*;
 use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 
@@ -94,6 +96,12 @@ impl<'a> ProjectRepository<'a> {
             .filter(TaskColumn::ProjectId.eq(id))
             .exec(self.db)
             .await?;
+
+        let pomodoro_setting_repository = PomodoroSettingsRepository::new(self.db);
+        pomodoro_setting_repository
+            .check_and_remove_project(id)
+            .await?;
+
         let result = Project::delete_by_id(id).exec(self.db).await?;
         Ok(result)
     }

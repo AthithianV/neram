@@ -69,8 +69,6 @@ export const useUpdateProject = () => {
             projectToUpdate: Project;
             projectId: number;
         }) => {
-            console.log(data);
-
             return await invoke('update_project', data);
         },
         onSuccess: () => {
@@ -87,7 +85,12 @@ export const useDeleteProject = () => {
             return await invoke('delete_project', { id });
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['projects'] });
+            queryClient.invalidateQueries({
+                queryKey: ['projects'],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ['pomodoro_settings'],
+            });
             toast.success('Project is Deleted');
         },
     });

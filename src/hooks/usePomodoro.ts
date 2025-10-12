@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
+import { toast } from 'sonner';
 
 export interface ReadPomodoroSettings {
     session_duration: number;
@@ -46,6 +47,7 @@ export const useUpdatePomodoroSettings = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['pomodoro_settings'] });
+            toast.success('Pomodoro Settings Updated Successfully');
         },
     });
 };
