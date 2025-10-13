@@ -346,7 +346,11 @@ const ProjectForm = ({ projectId, closeModal }: PropType) => {
                                                 placeholder="00.00"
                                                 className="input"
                                                 value={field.value ?? 0}
-                                                onChange={field.onChange}
+                                                onChange={(e) =>
+                                                    field.onChange(
+                                                        Number(e.target.value),
+                                                    )
+                                                }
                                             />
                                         </FormControl>
                                         <FormMessage />

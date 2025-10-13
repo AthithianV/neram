@@ -12,11 +12,18 @@ import {
     AlertDialogTrigger,
 } from '../ui/alert-dialog';
 
-const DeleteTag = ({ tagId }: { tagId: number }) => {
+const DeleteTag = ({
+    tagId,
+    clearSelectedTag,
+}: {
+    tagId: number;
+    clearSelectedTag: () => void;
+}) => {
     const { mutateAsync: deleteTag, isPending } = useDeleteTag();
 
     const handleDelete = async () => {
         await deleteTag(tagId);
+        clearSelectedTag();
     };
 
     return (

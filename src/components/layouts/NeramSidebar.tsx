@@ -1,5 +1,3 @@
-import { platform } from '@tauri-apps/plugin-os';
-
 import {
     Sidebar,
     SidebarContent,
@@ -18,7 +16,6 @@ import { cn } from '@/lib/utils';
 import { useLocation } from 'react-router-dom';
 import Brand from './Brand';
 import { AboutModal } from '../about/AboutModal';
-import { useEffect, useState } from 'react';
 
 const NeramSidebar = () => {
     const { pathname } = useLocation();
@@ -82,34 +79,20 @@ const NeramSidebar = () => {
 };
 
 const Header = () => {
-    const [os, setOs] = useState<string | null>(null);
-
-    useEffect(() => {
-        const init = async () => {
-            const currentOs = await platform();
-            setOs(currentOs);
-        };
-
-        init();
-    }, []);
     const { open } = useSidebar();
 
-    const isMac = os === 'darwin' || os === 'macos';
-
     return (
-        !isMac && (
-            <SidebarHeader className={cn('title-bar-height')}>
-                <SidebarMenu>
-                    <SidebarMenuItem
-                        className={`${
-                            open ? 'flex-row' : 'flex-col'
-                        } flex gap-2 px-4 items-center`}
-                    >
-                        <Brand />
-                    </SidebarMenuItem>
-                </SidebarMenu>
-            </SidebarHeader>
-        )
+        <SidebarHeader className={cn('title-bar-height')}>
+            <SidebarMenu>
+                <SidebarMenuItem
+                    className={`${
+                        open ? 'flex-row' : 'flex-col'
+                    } flex gap-2 px-4 items-center`}
+                >
+                    <Brand />
+                </SidebarMenuItem>
+            </SidebarMenu>
+        </SidebarHeader>
     );
 };
 

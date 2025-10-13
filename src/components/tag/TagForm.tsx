@@ -59,7 +59,10 @@ const TagForm = ({ setShowForm, selectedTag }: PropType) => {
 
         if (selectedTag) {
             if (selectedTag.id)
-                updateTag.mutateAsync({ tagId: selectedTag.id, tagToUpdate: values });
+                updateTag.mutateAsync({
+                    tagId: selectedTag.id,
+                    tagToUpdate: values,
+                });
         } else {
             createTag.mutateAsync(
                 {
@@ -89,7 +92,10 @@ const TagForm = ({ setShowForm, selectedTag }: PropType) => {
                     render={({ field }) => (
                         <FormItem className="border-b-1 pb-2">
                             <FormControl>
-                                <Title onChange={field.onChange} value={field.value} />
+                                <Title
+                                    onChange={field.onChange}
+                                    value={field.value}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -115,6 +121,11 @@ const TagForm = ({ setShowForm, selectedTag }: PropType) => {
                         <FormItem>
                             <FormControl>
                                 <Editor
+                                    key={
+                                        selectedTag
+                                            ? `tag-${selectedTag.id}`
+                                            : `new-${Date.now()}`
+                                    }
                                     value={field.value ?? ''}
                                     onChange={field.onChange}
                                 />

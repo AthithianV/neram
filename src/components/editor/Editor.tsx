@@ -26,7 +26,10 @@ export default ({
         },
         editorProps: {
             handleKeyDown(_, event) {
-                if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'b') {
+                if (
+                    (event.ctrlKey || event.metaKey) &&
+                    event.key.toLowerCase() === 'b'
+                ) {
                     event.stopPropagation(); // ✅ prevent it from bubbling
                     return false; // let Tiptap handle the bold shortcut
                 }

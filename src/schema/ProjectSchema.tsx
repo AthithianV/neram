@@ -11,7 +11,7 @@ const ProjectSchema = z.object({
     client_name: z.string().optional().nullable(),
     is_billable: z.boolean().optional().nullable(),
     billing_type: z.enum(['Hourly', 'Fixed']).optional().nullable(),
-    hourly_rate: z.number().optional().nullable(),
+    hourly_rate: z.coerce.number().optional().nullable(),
     fixed_rate: z.number().optional().nullable(),
     currency: z.string().optional().nullable(),
     tags: z.array(z.number()),

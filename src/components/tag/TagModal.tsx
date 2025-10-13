@@ -53,9 +53,9 @@ const TagModal = () => {
                                             tag.id && (
                                                 <li
                                                     key={tag.title}
-                                                    onClick={() =>
-                                                        openForm(tag)
-                                                    }
+                                                    onClick={() => {
+                                                        openForm(tag);
+                                                    }}
                                                     className="cursor-pointer"
                                                 >
                                                     <Badge
@@ -68,6 +68,11 @@ const TagModal = () => {
                                                         {tag.title}
                                                         <DeleteTag
                                                             tagId={tag.id}
+                                                            clearSelectedTag={() =>
+                                                                setSelectedTag(
+                                                                    null,
+                                                                )
+                                                            }
                                                         />
                                                     </Badge>
                                                 </li>
