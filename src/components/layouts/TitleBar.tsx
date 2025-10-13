@@ -57,7 +57,7 @@ const TitleBar = () => {
         <div className="w-full h-8 flex items-center bg-sidebar select-none">
             <div
                 onMouseDown={handleStartDragging}
-                className={`w-full flex items-center justify-between px-3`}
+                className={`w-full flex h-full items-center justify-between`}
             >
                 {isMac && <Brand />}
 

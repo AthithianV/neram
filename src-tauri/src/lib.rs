@@ -20,7 +20,7 @@ pub use utils::*;
 
 pub use sea_orm::DatabaseConnection;
 use std::sync::Arc;
-use tauri::{WebviewUrl, WebviewWindowBuilder};
+use tauri::{TitleBarStyle, WebviewUrl, WebviewWindowBuilder};
 use tokio::sync::Mutex;
 
 #[derive(Clone)]
@@ -38,7 +38,7 @@ pub async fn run() {
             #[cfg(target_os = "macos")]
             {
                 // macOS: native titlebar
-                WebviewWindowBuilder::new(&handle, "main", WebviewUrl::App("index.html".into()))
+                WebviewWindowBuilder::new(handle, "main", WebviewUrl::App("index.html".into()))
                     .title("Neram")
                     .decorations(true)
                     .title_bar_style(TitleBarStyle::Visible)
