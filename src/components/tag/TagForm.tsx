@@ -121,11 +121,7 @@ const TagForm = ({ setShowForm, selectedTag }: PropType) => {
                         <FormItem>
                             <FormControl>
                                 <Editor
-                                    key={
-                                        selectedTag
-                                            ? `tag-${selectedTag.id}`
-                                            : `new-${Date.now()}`
-                                    }
+                                    key={form.watch('title') + '-editor'}
                                     value={field.value ?? ''}
                                     onChange={field.onChange}
                                 />
