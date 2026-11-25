@@ -4,8 +4,6 @@
 
 # Neram
 
-### A calm, focused workspace for tracking time and getting meaningful work done.
-
 Neram is an open-source desktop productivity app for time logging, projects,
 tasks, Pomodoro sessions, and personal analytics — designed to help you
 understand where your time goes without getting in your way.
