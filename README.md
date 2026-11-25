@@ -1,126 +1,128 @@
-# Check List for New Version Release
-1. Chande the Versions in tarui.config.json, package.json, Cargo.toml
-2. Commit and push all code to Remote.
-3. Create a tag: `git tag -a v1.0.0 -m "Release version 1.0.0"`
-4. Push the Tag: `git push origin v1.0.0`. This will trigger the github actions.
-5. Now take the windows bundle(build locally) and Apple bundle(github actions) and upload it to `neram-release`.
-6. Release the new bundles.
-7. Update the lastest.json with the new pub key and bundle URL.
-8. Update the URL in Landing Page.
+<div align="center">
+
+<img src="app-icon.png" alt="Neram logo" width="110" />
 
 # Neram
 
-### Libraries
+### A calm, focused workspace for tracking time and getting meaningful work done.
 
-1. Tailwindcss 4
-2. Radix UI
-3. zustand
-4. date-fns
-5. clsx
-6. lucide-react (icon)
-7. shadcn
-8. Tanstack Query
-9. React Hook Form
-10. Zod
+Neram is an open-source desktop productivity app for time logging, projects,
+tasks, Pomodoro sessions, and personal analytics — designed to help you
+understand where your time goes without getting in your way.
 
-# Features
+<p>
+  <a href="https://github.com/AthithianV/neram/releases">Releases</a> ·
+  <a href="https://github.com/AthithianV/neram/issues">Report a bug</a> ·
+  <a href="CONTRIBUTING.md">Contribute</a>
+</p>
 
-## 1. Time Management
+![Version](https://img.shields.io/badge/version-0.1.3-6d5dfc?style=flat-square)
+![License](https://img.shields.io/badge/license-MIT-22c55e?style=flat-square)
+![Built with Tauri](https://img.shields.io/badge/built%20with-Tauri-24c8db?style=flat-square)
+![Status](https://img.shields.io/badge/status-early%20development-f59e0b?style=flat-square)
 
-### 1.1 Show all Sessions.
+</div>
 
-- Show all Sessions.
-- Show Session in a Day, Week,Month, Year and Range.
-- Able to filter based on project, task and Tags.
+## Why Neram?
 
-### 1.2 Add/Update New Session.
+Most productivity tools make you manage the tool before you can do the work.
+Neram keeps the workflow close to the essentials: choose what you are working
+on, start the clock, capture the work, and use the resulting data to make better
+decisions.
 
-- Every Session will be associated with a Project and a Task. Cannot Create a session unless a project and a task is selected.
-- Title and Description is Optional.
-- Start Time, End Time, Duration and Break is Mandatory.
-- Start Time and End Time will be used to calculate the Duration and Break. Duration and Break will be used to calculate the End Time.
-- User can choose the format of Date and Time. By default date has `DD/MM/YYYY` and Time has `HH:mm A` format.
-- The Start and End time should not interfere with any other session.
+Your data is stored locally, making Neram a good fit for focused individual
+work, freelancing, and project-based teams who want a lightweight desktop tool.
 
-### 1.3 Timer
+## Highlights
 
-- A Start button will be given to start a timer which create new session with end time as null.
-- When the timer is running there will be Pause and Stop Button.
-- Pause Button will pause the duration timer but will start break timer in background.
-  **For Example:** If user start timer at 11:00 AM and pause it on 11:40 AM, then at 11:45 AM user will resume the timer. The duration will be 40 minutes and break will be 5 minutes.
-- Stop Button will stop the timer and end time will be.
+| | Capability | What it gives you |
+| --- | --- | --- |
+| ⏱️ | Time tracking | Record sessions with start time, end time, duration, and breaks. |
+| ▶️ | Focus timer | Start, pause, resume, and stop active work sessions. |
+| 🗂️ | Projects and tasks | Organize work with projects, tags, task states, and a Kanban-style view. |
+| 🍅 | Pomodoro | Configure focus and break intervals to support deliberate work. |
+| 📊 | Analytics | Explore time spent across projects, tasks, and tags. |
+| 🎨 | Personal settings | Adjust themes and date/time formats to suit your workflow. |
+| 💾 | Local-first storage | Keep your productivity data on your own device with SQLite. |
 
-## 2. Project Management.
+## Product direction
 
-### 2.1 Project
+Neram is actively evolving. The longer-term direction includes richer date-range
+filters, data exports, invoicing support, and optional cloud-drive sync. These
+areas are tracked in the repository and may not be available in the current
+release.
 
-- All Project will be show in Tabs. On clicking project tab, all tasks of project will be displayed.
-- Each Project will display task in Kanban style, displaying different state of each task.
-- User can drag the task to change the state of the task.
-- Project will have fields like Billing type, Customer name, rate, currency which will be useful for Freelancer to generate invoices.
-- Billing type will be `Fixed` or `Hourly`.
-- If Billing type is `Fixed`, then rate will be the total amount of the project.
-- If Billing type is `Hourly`, then rate will be the rate of the project.
-- A plus icon at the end of all project will allow user to add new project.
+## Installation
 
-### 2.2 Task
+Download the latest release for your platform from the
+[GitHub Releases page](https://github.com/AthithianV/neram/releases).
 
-- Each Task will have a state. The state will be `Planning`, `In Progress`, `Paused` and `Completed`.
-- Task list in each state will have plus icon. On clicking plus icon, user will be able to add new task.
-- On clicking a task and pop up will open to update task.
-- Pop up will have a text area where user can Brain strom ideas about the task.
+> Neram is currently in early development. Back up important local application
+> data before testing development or pre-release builds.
 
-## Analytics
+## Development
 
-### 3.1 Graph
+### Requirements
 
-- User can view the time spent on each task, project and tags in a Bar or Pie Chart.
-- User can filter the Date Range.
+- [Node.js](https://nodejs.org/) and npm
+- [Rust](https://www.rust-lang.org/tools/install) and Cargo
+- [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) for your OS
+- Git
 
-### 3.2 Exports
+Neram uses SQLite locally, so no separate database server is required.
 
-- User can export the data in CSV, Excel and PDF format.
-- User can generate a invoice.
+### Run locally
 
-## 4. Sync
-
-- User can set up google Drive, one drive etc.
-- User can hit sync button and all data will be stored in the Drive.
-
-## 5. Pomodoro
-
-- User can set up duration and count for session and break.
-- Pomodoro timer can be in sync with the session Management.
-
-## 6. Settings
-
-- User can update theme, Date and Time Format.
-
-# To-Dos
-
-## Session
-
-[] Must Allow use to add or Update Session without project or Task.
-[] Active session showing wrong duration on Form.
-[] On Closing App, Timer must be Stopped.
-
-## Project
-
-[] Complete all CRUD methods for Project.
-[] Finish the Add New Project and Update Project Form.
-[] Complete all CRUD methods for Task.
-[] Finish add and Update Task form.
-[] Complete all CRUD methods for Tags.
-[] Finish add and Update Tags form.
-
-# Future Works
-
-## Session
-
-[] Filter Session based on Project, Task, Tags.
-[] Group Session based on Date, week, Month, Year.
-
-
+```bash
+git clone https://github.com/AthithianV/neram.git
+cd neram
+npm install
+npm run tauri dev
 ```
-dW50cnVzdGVkIGNvbW1lbnQ6IHJzaWduIGVuY3J5cHRlZCBzZWNyZXQga2V5ClJXUlRZMEl5dEc5Vi9SZ0txSFdRckZEN1FldFZTSzNHT05rQTFLRkNqR1ZyaW0xTzlWY0FBQkFBQUFBQUFBQUFBQUlBQUFBQWpNOHFkWHpGU2Yrd3ova1psUGN1QzhUeHhqeis3RlNlVkExMGxMN3EwNzJIVWlIUDRhTXh0RlllY2sxOCt6UUk3QUp1MktGbFdTTTZWOWQ1c0pwTXE0dk9sckxIWXNUSmhWa3dsQ3J2bTN5TkNrdEgyQnllREU4QVpCRUx2VDBHWVFZSk1UdXMrTUk9Cg==
+
+### Build and test
+
+```bash
+npm run build
+cargo test --manifest-path src-tauri/Cargo.toml
 ```
+
+The frontend is built with Vite and TypeScript. The desktop layer is powered
+by Rust and Tauri.
+
+## Technology
+
+- **Desktop:** Tauri 2, Rust
+- **Frontend:** React, TypeScript, Vite
+- **UI:** Tailwind CSS, Radix UI, shadcn/ui, Lucide
+- **State and data:** Zustand, TanStack Query, SeaORM, SQLite
+- **Forms and validation:** React Hook Form, Zod
+- **Charts and time:** Chart.js, date-fns, Day.js
+
+## Contributing
+
+Contributions are welcome — from bug fixes and UI improvements to documentation
+and feature ideas.
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
+For community expectations, see the [Code of Conduct](CODE_OF_CONDUCT.md). If
+you discover a security issue, follow [SECURITY.md](SECURITY.md) instead of
+opening a public issue.
+
+## Project documents
+
+- [Changelog](CHANGELOG.md)
+- [Contributing guide](CONTRIBUTING.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Security Policy](SECURITY.md)
+- [MIT License](LICENSE)
+
+## License
+
+Neram is released under the [MIT License](LICENSE).
+
+<div align="center">
+
+Made with focus by [Athithian V](https://github.com/AthithianV)
+
+</div>
